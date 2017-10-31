@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 import MySQLdb
 import requests
+import sys
 
 import lots
 import variables
@@ -58,14 +59,17 @@ def publish_tender():
                          data=json.dumps(json_tender),
                          headers=headers,
                          cookies=requests.utils.dict_from_cookiejar(s.cookies))
-    prepped = s.prepare_request(r)
-    resp = s.send(prepped)
-    print("Publishing tender:")
-    print("       status code:  {}".format(resp.status_code))
-    print("       response content:  {}".format(resp.content))
-    print("       headers:           {}".format(resp.headers))
-    print("       tender id:         {}".format(resp.headers['Location'].split('/')[-1]))
-    return resp
+    try:
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        print("Publishing tender:")
+        print("       status code:  {}".format(resp.status_code))
+        print("       response content:  {}".format(resp.content))
+        print("       headers:           {}".format(resp.headers))
+        print("       tender id:         {}".format(resp.headers['Location'].split('/')[-1]))
+        return resp
+    except:
+        sys.exit("CDB error")
 response = publish_tender()
 
 
@@ -81,13 +85,16 @@ def activating_tender():
                          data=json.dumps(activate_tender),
                          headers=headers,
                          cookies=requests.utils.dict_from_cookiejar(s.cookies))
-    prepped = s.prepare_request(r)
-    resp = s.send(prepped)
-    print("Activating tender:")
-    print("       status code:  {}".format(resp.status_code))
-    print("       response content:  {}".format(resp.content))
-    print("       headers:           {}".format(resp.headers))
-    return resp
+    try:
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        print("Activating tender:")
+        print("       status code:  {}".format(resp.status_code))
+        print("       response content:  {}".format(resp.content))
+        print("       headers:           {}".format(resp.headers))
+        return resp
+    except:
+        sys.exit("CDB error")
 activating_tender = activating_tender()
 
 tender_id_long = response.headers['Location'].split('/')[-1]

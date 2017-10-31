@@ -40,3 +40,4 @@ ID: 151195, Link: http://tender.byustudio.in.ua/buyer/tender/view/151195
 ID: 151196, Link: http://tender.byustudio.in.ua/buyer/tender/view/151196
 ID: 151197, Link: http://tender.byustudio.in.ua/buyer/tender/view/151197
 ID: 151213, Link: http://tender.byustudio.in.ua/buyer/tender/view/151213
+ID: 151242, Link: http://tender.byustudio.in.ua/buyer/tender/view/151242

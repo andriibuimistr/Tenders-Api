@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import tender
+import sys
 import requests
 from variables import host, api_version, auth_key, number_of_lots, procurement_method, valueAddedTaxIncluded,\
     tender_currency, above_threshold_procurement_for_bid
@@ -153,13 +154,16 @@ def create_bid_openua_procedure(n_bid):
                          data=json.dumps(bid_json),
                          headers=headers,
                          cookies=requests.utils.dict_from_cookiejar(s.cookies))
-    prepped = s.prepare_request(r)
-    resp = s.send(prepped)
-    print('{}{}:'.format('Publishing bid ', n_bid))
-    print("       status code:  {}".format(resp.status_code))
-    print("       response content:  {}".format(resp.content))
-    print("       headers:           {}".format(resp.headers))
-    return resp
+    try:
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        print('{}{}:'.format('Publishing bid ', n_bid))
+        print("       status code:  {}".format(resp.status_code))
+        print("       response content:  {}".format(resp.content))
+        print("       headers:           {}".format(resp.headers))
+        return resp
+    except:
+        sys.exit("CDB error")
 
 
 def activate_bid(bid_location, bid_token, n_bid):
@@ -170,13 +174,16 @@ def activate_bid(bid_location, bid_token, n_bid):
                          data=json.dumps(activate_bid_body),
                          headers=headers,
                          cookies=requests.utils.dict_from_cookiejar(s.cookies))
-    prepped = s.prepare_request(r)
-    resp = s.send(prepped)
-    print('{}{}:'.format('Activating bid ', n_bid))
-    print("       status code:  {}".format(resp.status_code))
-    print("       response content:  {}".format(resp.content))
-    print("       headers:           {}".format(resp.headers))
-    return resp
+    try:
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        print('{}{}:'.format('Activating bid ', n_bid))
+        print("       status code:  {}".format(resp.status_code))
+        print("       response content:  {}".format(resp.content))
+        print("       headers:           {}".format(resp.headers))
+        return resp
+    except:
+        sys.exit("CDB error")
 
 
 def get_bid_info(bid_location, bid_token, n_bid):
