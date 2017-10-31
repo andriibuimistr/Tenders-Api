@@ -21,7 +21,7 @@ def list_of_lots():
     for i in range(number_of_lots):
         lot_id = list_of_id[i]
         one_lot = json.loads(u"{}{}{}{}{}{}{}{}{}{}{}".format(
-            '{"id": "', lot_id, '"', variables.lot_title, variables.lot_description(), variables.title_en,
+            '{"id": "', lot_id, '"', variables.title_for_lot(), variables.lot_description(), variables.title_en,
             variables.lot_description_en, variables.lot_guarantee, variables.lot_value, variables.minimal_step(), '}'))
         list_of_lots_for_tender.append(one_lot)
     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)

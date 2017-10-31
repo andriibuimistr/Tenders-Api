@@ -185,13 +185,16 @@ def lot_id_generator():
     lot_id_generated = (binascii.hexlify(os.urandom(16)))
     return lot_id_generated
 
-lot_random_title = u"{}{}".format(u'Лот ', random.randint(1, 99999))
-lot_title = u"{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"')
+
+def title_for_lot():
+    lot_random_title = u"{}{}".format(u'Лот ', random.randint(1, 99999))
+    lot_title = u"{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"')
+    return lot_title
 
 
 # description of lot
 def lot_description():
-    lot_description_name = u"{}{}{}".format(u'"Описание ', lot_random_title, '"')
+    lot_description_name = u"{}".format(u'"Описание лота"')
     lot_description_fragment = u"{}{}".format(', "description": ', lot_description_name)
     return lot_description_fragment
 
@@ -318,7 +321,7 @@ def procuring_entity():
 
 procurementMethodType = ', "procurementMethodType": "{}"'.format(procurement_method)
 mode = ', "mode": "test"'
-submissionMethodDetails = ', "submissionMethodDetails": "quick"'
+submissionMethodDetails = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
 procurementMethodDetails = ', "procurementMethodDetails": "quick, accelerator=1440"'
 status = ', "status": "draft"'
 

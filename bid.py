@@ -6,11 +6,12 @@ from variables import host, api_version, auth_key, number_of_lots, procurement_m
 from lots import list_of_id
 import json
 import MySQLdb
+import time
 from random import randint
 # DB connections
-db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+'''db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-cursor = db.cursor()
+cursor = db.cursor()'''
 
 tender_id = tender.tender_id_long  # get tender_id from tender file
 
@@ -194,10 +195,10 @@ def get_bid_info(bid_location, bid_token, n_bid):
     return resp
 
 
-def bid_to_db(bid_id, bid_token):
+'''def bid_to_db(bid_id, bid_token):
     bid_to_sql = \
         "INSERT INTO bids VALUES(null, '{}', '{}', '{}', null, null, null, null)".format(bid_id, bid_token, tender_id)
-    cursor.execute(bid_to_sql)
+    cursor.execute(bid_to_sql)'''
 
 
 def run_cycle(bids_quantity):
@@ -211,9 +212,16 @@ def run_cycle(bids_quantity):
             bid_location = created_bid.headers['Location']
             bid_token = created_bid.json()['access']['token']
             bid_id = created_bid.json()['data']['id']
-            activate_bid(bid_location, bid_token, count)
-            bid_to_db(bid_id, bid_token)  # write bid info to db
+            time.sleep(0.5)
+            for every_bid in range(5):
+                bid_activation_status = activate_bid(bid_location, bid_token, count)
+                if bid_activation_status.status_code == 200:
+                    break
+                else:
+                    activate_bid(bid_location, bid_token, count)
+
+            '''bid_to_db(bid_id, bid_token)  # write bid info to db
             # get_bid_info(bid_location, bid_token, count)
     db.commit()  # you need to call commit() method to save your changes to the database
-    db.close()
+    db.close()'''
 run_cycle(number_of_bids)
