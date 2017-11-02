@@ -5,6 +5,7 @@ from datetime import datetime
 import MySQLdb
 import requests
 import sys
+import document
 
 import lots
 import variables
@@ -102,6 +103,8 @@ tender_token = response.json()['access']['token']
 tender_status = activating_tender.json()['data']['status']
 tender_id_short = response.json()['data']['tenderID']
 
+
+document.add_documents_to_tender(tender_id_long, tender_token)
 '''
 # save info to DB
 def tender_to_db():
@@ -131,8 +134,8 @@ def add_tender_to_site():
         time.sleep(60)
         company_id = 61
         add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
-            variables.tender_byustudio_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
-            '&company=', company_id,'&acc_token=SUPPPER_SEEECRET_STRIIING'))
+            variables.tender_byustudio_host, '/tender/add-tender-to-company?tid=',
+            tender_id_long, '&token=', tender_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
         add_to_site_response = add_to_site.json()
         if 'tid' in add_to_site_response:
             print 'Tender was added to site'
@@ -142,12 +145,12 @@ def add_tender_to_site():
             print tender_id_site
             print link_to_tender
 
-            def save_added_tender_info_to_file():
+            '''def save_added_tender_info_to_file():
                 text_for_file = "{}{}{}{}{}".format('ID: ', add_to_site_response['tid'], ', ', link_to_tender, '\n')
                 my_file = open('saved_files/tender-info-site.txt', 'a+')
                 my_file.write(text_for_file)
                 my_file.close()
-            save_added_tender_info_to_file()
+            save_added_tender_info_to_file()'''
             break
         else:
             print add_to_site_response

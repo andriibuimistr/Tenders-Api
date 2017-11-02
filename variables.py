@@ -16,7 +16,7 @@ tender_byustudio_host = 'http://tender.byustudio.in.ua'
 
 
 def tender_currency():
-    return random.choice(['"UAH"', '"USD"', '"EUR"', '"RUB"', '"GBP"'])
+    return random.choice(['"UAH"', '"USD"', '"EUR"', '"RUB"'])  # '"GBP"'
 tender_currency = tender_currency()
 
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()
@@ -66,7 +66,7 @@ def procurement_method_selector():
     procurement_method_from_user = (raw_input(
         'Необходимо выбрать тип процедуры, указав ее номер: ')).decode('utf-8')
     while procurement_method_from_user.isdigit() is not True or int(procurement_method_from_user) < 1 or \
-                    int(procurement_method_from_user) > len(
+            int(procurement_method_from_user) > len(
                                 above_threshold_procurement + below_threshold_procurement + limited_procurement):
         procurement_method_from_user = raw_input('Введите правильное значение: ').decode('utf-8')
     else:
@@ -84,7 +84,7 @@ def procurement_method_selector():
 user_procurement_method = procurement_method_selector()
 
 
-#def procurement_method():
+# def procurement_method():
 if user_procurement_method in above_threshold_procurement:
     number_of_lots = number_of_lots()
     if number_of_lots == 0:
@@ -96,7 +96,7 @@ elif user_procurement_method in below_threshold_procurement:
     sys.exit("Error. Данный функционал еще не был разработан :)")
 else:
     sys.exit("Error. Данный функционал еще не был разработан :)")
-#procurement_method = procurement_method()
+# procurement_method = procurement_method()
 
 # Items
 items_m = ', "items": '
@@ -232,7 +232,7 @@ tender_value = u"{}{}{}{}{}{}{}{}".format(
 tender_guarantee = u"{}{}{}{}{}{}{}".format(', "guarantee": {"amount": ', '"', '0', '"', ', "currency": ',
                                             tender_currency, '}')
 
-tender_minimalStep = u"{}{}{}{}{}{}{}{}".format(', "minimalStep": {', '"amount": ', '"0"', ', "currency": ',
+tender_minimalStep = u"{}{}{}{}{}{}{}{}".format(', "minimalStep": {', '"amount": ', '"100"', ', "currency": ',
                                                 tender_currency, ', "valueAddedTaxIncluded": ',
                                                 valueAddedTaxIncluded, '}')
 

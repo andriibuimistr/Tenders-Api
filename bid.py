@@ -34,7 +34,7 @@ def lot_values_bid_generator():
     list_of_lots_in_bid = []
     for lot in range(number_of_lots):
         lot_id = list_of_id[lot]
-        #if procurement_method in above_threshold_procurement_for_bid:
+        # if procurement_method in above_threshold_procurement_for_bid:
         related_lot_value = json.loads(
             '{}{}{}{}{}{}{}{}{}'.format('{"relatedLot": "', lot_id, '", "value": {"amount": ', randint(100, 999),
                                         ', "valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "currency": ',
@@ -86,7 +86,7 @@ def bid_json_open_procedure_lots():
                             "subcontractingDetails": "ДКП «Книга», Україна, м. Львів, вул. Островського, 33",
                             "lotValues": json.loads(bid_lot_value)
                             }
-                            }
+                          }
     return bid_json_open_body
 
 
@@ -121,7 +121,7 @@ def bid_json_open_procedure():
                             "value": tender_value,
                             "subcontractingDetails": "ДКП «Книга», Україна, м. Львів, вул. Островського, 33"
                             }
-                            }
+                          }
     return bid_json_open_body
 # ----------------------------------------
 
