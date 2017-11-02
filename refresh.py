@@ -17,7 +17,7 @@ cursor.execute(list_of_tenders)
 tenders_list = cursor.fetchall()
 
 
-def get_tender_status(tender_status_in_db, tender_id_long):
+def update_tender_status(tender_status_in_db, tender_id_long):
     get_tender_info = requests.get(host + tender_id_long)
     actual_tender_status = get_tender_info.json()['data']['status']
     if actual_tender_status == tender_status_in_db and actual_tender_status != 'unsuccessful':
@@ -32,23 +32,28 @@ def get_tender_status(tender_status_in_db, tender_id_long):
             print '{}{}{}'.format('Tender ', tender_id_long,
                                   ' and its related bids were deleted because of "unsuccessful" status')
         else:
-            update_tender_status = \
+            sql_update_tender_status = \
                 'UPDATE tenders SET tender_status = "{}" WHERE tender_id_long = "{}"'.format(
                     actual_tender_status, tender_id_long)
-            cursor.execute(update_tender_status)
+            cursor.execute(sql_update_tender_status)
             print '{}{}{}{}{}'.format(
                 tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status)
 
-if len(tenders_list) == 0:
-    print 'DB is empty'
 
-for tender in range(len(tenders_list)):
-    tender_id = tenders_list[tender][0]
-    db_tender_status = tenders_list[tender][1]
-    get_tender_status(db_tender_status, tender_id)
+def get_tenders_list():
+    if len(tenders_list) == 0:
+        print 'DB is empty'
+    else:
+        print "Update tenders in local DB"
+        for tender in range(len(tenders_list)):
+            tender_id = tenders_list[tender][0]
+            db_tender_status = tenders_list[tender][1]
+            update_tender_status(db_tender_status, tender_id)
+get_tenders_list()
 
 
 def add_tender_to_site():
+    print '\nAdd tenders to site'
     actual_list_of_tenders = "SELECT tender_id_long, tender_token, added_to_site FROM tenders"
     cursor.execute(actual_list_of_tenders)
     tenders_actual_list = cursor.fetchall()
@@ -63,16 +68,18 @@ def add_tender_to_site():
                 '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
             add_to_site_response = add_to_site.json()
             if 'tid' in add_to_site_response:
-                mark_as_added = 'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
+                mark_as_added = \
+                    'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
                 cursor.execute(mark_as_added)
-                print 'Tender was added to site - ' + tender_id_long
+                print '\nTender was added to site - ' + tender_id_long
                 tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
                 link_to_tender = '{}{}{}{}'.format(
                     'Link: ', tender_byustudio_host, '/buyer/tender/view/', add_to_site_response['tid'])
                 print tender_id_site
                 print link_to_tender
             elif 'tender has company' in add_to_site_response['error']:
-                mark_as_added_before = 'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
+                mark_as_added_before = \
+                    'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
                 cursor.execute(mark_as_added_before)
                 print 'Tender has company'
             else:

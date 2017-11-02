@@ -10,9 +10,9 @@ import MySQLdb
 import time
 from random import randint
 # DB connections
-'''db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-cursor = db.cursor()'''
+cursor = db.cursor()
 
 tender_id = tender.tender_id_long  # get tender_id from tender file
 
@@ -34,14 +34,10 @@ def lot_values_bid_generator():
     list_of_lots_in_bid = []
     for lot in range(number_of_lots):
         lot_id = list_of_id[lot]
-        # if procurement_method in above_threshold_procurement_for_bid:
         related_lot_value = json.loads(
             '{}{}{}{}{}{}{}{}{}'.format('{"relatedLot": "', lot_id, '", "value": {"amount": ', randint(100, 999),
                                         ', "valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "currency": ',
                                         tender_currency, '}}'))
-        '''else:
-            related_lot_value = json.loads('{}{}{}{}{}'.format(
-                '{"relatedLot": "', lot_id, '", "value": {"amount": ', randint(100, 999), '}}'))'''
         list_of_lots_in_bid.append(related_lot_value)
     bid_value = json.dumps(list_of_lots_in_bid)
     return '{}'.format(bid_value)
@@ -56,7 +52,7 @@ def values_bid_generator():
 
 
 # generate json for bid (tender with lots)
-def bid_json_open_procedure_lots():
+def bid_json_open_procedure_lots(user_idf):
     bid_lot_value = lot_values_bid_generator()
     bid_json_open_body = {"data": {
                             "selfEligible": True,
@@ -70,7 +66,7 @@ def bid_json_open_procedure_lots():
                                 },
                                 "identifier": {
                                   "scheme": "UA-EDR",
-                                  "id": randint(1000000000, 9999999999),
+                                  "id": user_idf,
                                   "uri": "http://www.site.domain"
                                 },
                                 "name": "ДКП «Школяр»",
@@ -91,7 +87,7 @@ def bid_json_open_procedure_lots():
 
 
 # generate json for bid (simple tender)
-def bid_json_open_procedure():
+def bid_json_open_procedure(user_idf):
     tender_value = values_bid_generator()
     bid_json_open_body = {"data": {
                             "selfEligible": True,
@@ -105,7 +101,7 @@ def bid_json_open_procedure():
                                 },
                                 "identifier": {
                                   "scheme": "UA-EDR",
-                                  "id": randint(1000000000, 9999999999),
+                                  "id": user_idf,
                                   "uri": "http://www.site.domain"
                                 },
                                 "name": "ДКП «Школяр»",
@@ -126,9 +122,9 @@ def bid_json_open_procedure():
 # ----------------------------------------
 
 if number_of_lots == 0:
-    bid_json_open_length = bid_json_open_procedure()
+    bid_json_open_length = bid_json_open_procedure(randint(10000000, 99999999))
 else:
-    bid_json_open_length = bid_json_open_procedure_lots()
+    bid_json_open_length = bid_json_open_procedure_lots(randint(10000000, 99999999))
 
 # select status for activate bid
 if procurement_method in above_threshold_procurement_for_bid:
@@ -142,13 +138,13 @@ headers = {"Authorization": "Basic {}".format(auth_key),
            "Host": "lb.api-sandbox.openprocurement.org"}
 
 
-def create_bid_openua_procedure(n_bid):
+def create_bid_openua_procedure(n_bid, uid):
     s = requests.Session()
     s.request('GET', '{}/api/{}/tenders'.format(host, api_version))
     if number_of_lots == 0:
-        bid_json = bid_json_open_procedure()
+        bid_json = bid_json_open_procedure(uid)
     else:
-        bid_json = bid_json_open_procedure_lots()
+        bid_json = bid_json_open_procedure_lots(uid)
     r = requests.Request('POST',
                          '{}/api/{}/tenders/{}/bids'.format(host, api_version, tender_id),
                          data=json.dumps(bid_json),
@@ -202,10 +198,11 @@ def get_bid_info(bid_location, bid_token, n_bid):
     return resp
 
 
-'''def bid_to_db(bid_id, bid_token):
+def bid_to_db(bid_id, bid_token, u_identifier):
     bid_to_sql = \
-        "INSERT INTO bids VALUES(null, '{}', '{}', '{}', null, null, null, null)".format(bid_id, bid_token, tender_id)
-    cursor.execute(bid_to_sql)'''
+        "INSERT INTO bids VALUES(null, '{}', '{}', '{}', null, null, null, null, '{}')".format(
+            bid_id, bid_token, tender_id, u_identifier)
+    cursor.execute(bid_to_sql)
 
 
 def run_cycle(bids_quantity):
@@ -215,7 +212,15 @@ def run_cycle(bids_quantity):
         count = 0
         for x in range(bids_quantity):
             count += 1
-            created_bid = create_bid_openua_procedure(count)  # create bid
+            identifier_list = ['00037256', '14360570', '01202000']
+            if bids_quantity < 4:
+                identifier_list = identifier_list
+                identifier = identifier_list[x]
+            else:
+                for uid in range(bids_quantity - 3):
+                    identifier_list.append(randint(10000000, 99999999))
+                identifier = identifier_list[x]
+            created_bid = create_bid_openua_procedure(count, identifier)  # create bid
             bid_location = created_bid.headers['Location']
             bid_token = created_bid.json()['access']['token']
             bid_id = created_bid.json()['data']['id']
@@ -227,8 +232,8 @@ def run_cycle(bids_quantity):
                 else:
                     activate_bid(bid_location, bid_token, count)
 
-            '''bid_to_db(bid_id, bid_token)  # write bid info to db
+            bid_to_db(bid_id, bid_token, identifier)  # write bid info to db
             # get_bid_info(bid_location, bid_token, count)
     db.commit()  # you need to call commit() method to save your changes to the database
-    db.close()'''
+    db.close()
 run_cycle(number_of_bids)

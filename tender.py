@@ -13,9 +13,9 @@ from variables import tender_value, tender_guarantee, tender_minimalStep, tender
     tender_description, tender_title_en, tender_description_en, tender_features, procuring_entity, \
     procurementMethodType, mode, submissionMethodDetails, procurementMethodDetails, status, auth_key
 
-'''db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-cursor = db.cursor()'''
+cursor = db.cursor()
 
 # tender_guarantee_amount = lots.lot_guarantee_amount
 
@@ -105,7 +105,8 @@ tender_id_short = response.json()['data']['tenderID']
 
 
 document.add_documents_to_tender(tender_id_long, tender_token)
-'''
+
+
 # save info to DB
 def tender_to_db():
     tender_to_sql = \
@@ -114,7 +115,7 @@ def tender_to_db():
     cursor.execute(tender_to_sql)
     db.commit()  # you need to call commit() method to save your changes to the database
     db.close()
-tender_to_db()'''
+tender_to_db()
 
 
 # Save id to file
@@ -155,4 +156,4 @@ def add_tender_to_site():
         else:
             print add_to_site_response
             continue
-add_tender_to_site()
+# add_tender_to_site()
