@@ -49,6 +49,8 @@ def get_tenders_list():
             tender_id = tenders_list[tender][0]
             db_tender_status = tenders_list[tender][1]
             update_tender_status(db_tender_status, tender_id)
+
+
 get_tenders_list()
 
 
@@ -86,6 +88,8 @@ def add_tender_to_site():
                 print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
         else:
             print '{}{}{}'.format('Tender ', tender_id_long, ' was added to site before', )
+
+
 add_tender_to_site()
 
 

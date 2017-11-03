@@ -13,7 +13,7 @@ doc_api_version = '2.4'
 tender_token = 'e6cf1aca507d4a4b95cea8dfef68aa26'''''
 
 
-file_for_upload = open('{}\doc.pdf'.format(path), 'rb').read()
+file_for_upload = open('{}{}doc.pdf'.format(path, os.sep), 'rb').read()
 filename = 'doc.pdf'
 document_data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
           "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
