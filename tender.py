@@ -11,7 +11,8 @@ import lots
 import variables
 from variables import tender_value, tender_guarantee, tender_minimalStep, tender_period, tender_title, \
     tender_description, tender_title_en, tender_description_en, tender_features, procuring_entity, \
-    procurementMethodType, mode, submissionMethodDetails, procurementMethodDetails, status, auth_key
+    procurementMethodType, mode, submissionMethodDetails, procurementMethodDetails, status, auth_key, \
+    user_procurement_method
 
 db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
@@ -110,8 +111,9 @@ document.add_documents_to_tender(tender_id_long, tender_token)
 # save info to DB
 def tender_to_db():
     tender_to_sql = \
-        "INSERT INTO tenders VALUES(null, '{}', '{}', '{}', '{}', '{}', null, null, null)".format(
-            tender_id_long, response.json()['data']['tenderID'], tender_token, tender_status, variables.number_of_lots)
+        "INSERT INTO tenders VALUES(null, '{}', '{}', '{}', '{}', null, '{}', '{}', null, null, null)".format(
+            tender_id_long, response.json()['data']['tenderID'], tender_token, user_procurement_method, tender_status,
+            variables.number_of_lots)
     cursor.execute(tender_to_sql)
     db.commit()  # you need to call commit() method to save your changes to the database
     db.close()
