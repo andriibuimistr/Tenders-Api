@@ -6,35 +6,71 @@ import MySQLdb
 import requests
 import sys
 import document
-
-import lots
 import variables
-from variables import tender_value, tender_guarantee, tender_minimalStep, tender_period, tender_title, \
-    tender_description, tender_title_en, tender_description_en, tender_features, procuring_entity, \
-    procurementMethodType, mode, submissionMethodDetails, procurementMethodDetails, status, auth_key, \
-    user_procurement_method
-
-db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
-# db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-cursor = db.cursor()
-
-# tender_guarantee_amount = lots.lot_guarantee_amount
+from variables import tender_values, tender_features, auth_key, procurement_method, number_of_lots, number_of_items,\
+    lot_values, tender_data, tender_titles
 
 
+# generate list of id fot lots
+def list_of_id_for_lots():
+    list_of_lot_id = []
+    for x in range(number_of_lots):
+        list_of_lot_id.append(variables.lot_id_generator())
+    return list_of_lot_id
+
+
+list_of_id_lots = list_of_id_for_lots()
+
+
+# generate list of lots
+def list_of_lots():
+    list_of_lots_for_tender = []
+    for i in range(number_of_lots):
+        lot_id = list_of_id_lots[i]
+        one_lot = json.loads(u"{}{}{}{}{}{}".format(
+            '{"id": "', lot_id, '"', variables.title_for_lot(), lot_values[0], '}'))
+        list_of_lots_for_tender.append(one_lot)
+    list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
+    lots_list = u"{}{}{}".format(variables.lots_m, list_of_lots_for_tender, variables.lots_close)
+    return lots_list
+
+
+# generate items for tender with lots (for lots)
+def list_of_items_for_lots():
+    list_of_items = []
+    for i in range(number_of_lots):
+        related_lot_id = list_of_id_lots[i]
+        item = json.loads(u"{}{}{}{}{}{}".format(
+            '{ "relatedLot": ', '"', related_lot_id, '"', variables.item_data(i), "}"))
+        list_of_items.append(item)
+    list_of_items = json.dumps(list_of_items)
+    items_list = u"{}{}".format(variables.items_m, list_of_items)
+    return items_list
+
+
+# generate items for tender without lots
+def list_of_items_for_tender():
+    list_of_items = []
+    for i in range(number_of_items):
+        item = json.loads(u"{}{}{}".format(
+            '{', variables.item_data(i), "}"))
+        list_of_items.append(item)
+    list_of_items = json.dumps(list_of_items)
+    items_list = u"{}{}".format(variables.items_m, list_of_items)
+    return items_list
+
+
+# generate json for tender with lots
 def tender_with_lots():
-    return u"{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}".format(
-        '{"data": {', tender_value, tender_guarantee, tender_minimalStep, tender_title, tender_description,
-        tender_title_en, tender_description_en, lots.list_of_lots(), lots.list_of_items_for_lots(), tender_features,
-        tender_period, procuring_entity(), procurementMethodType, mode, submissionMethodDetails,
-        procurementMethodDetails, status, '}}')
+    return u"{}{}{}{}{}{}{}{}".format(
+        '{"data": {', tender_values, tender_titles(), list_of_lots(), list_of_items_for_lots(), tender_features,
+        tender_data(), '}}')
 
 
+# generate json for tender without lots
 def tender():
-    return u"{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}".format(
-        '{"data": {', tender_value, tender_guarantee, tender_minimalStep, tender_title, tender_description,
-        tender_title_en, tender_description_en, lots.list_of_items_for_tender(), tender_features,
-        tender_period, procuring_entity(), procurementMethodType, mode, submissionMethodDetails,
-        procurementMethodDetails, status, '}}')
+    return u"{}{}{}{}{}{}{}".format(
+        '{"data": {', tender_values, tender_titles(), list_of_items_for_tender(), tender_features, tender_data(), '}}')
 
 if variables.number_of_lots == 0:
     json_tender = json.loads(tender())
@@ -105,14 +141,19 @@ tender_status = activating_tender.json()['data']['status']
 tender_id_short = response.json()['data']['tenderID']
 
 
-document.add_documents_to_tender(tender_id_long, tender_token)
+# document.add_documents_to_tender(tender_id_long, tender_token)
+
+# CONNECTION TO DB
+db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+# db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
+cursor = db.cursor()
 
 
-# save info to DB
+# save tender info to DB
 def tender_to_db():
     tender_to_sql = \
         "INSERT INTO tenders VALUES(null, '{}', '{}', '{}', '{}', null, '{}', '{}', null, null, null)".format(
-            tender_id_long, response.json()['data']['tenderID'], tender_token, user_procurement_method, tender_status,
+            tender_id_long, response.json()['data']['tenderID'], tender_token, procurement_method, tender_status,
             variables.number_of_lots)
     cursor.execute(tender_to_sql)
     db.commit()  # you need to call commit() method to save your changes to the database
@@ -147,13 +188,6 @@ def add_tender_to_site():
                 'Link: ', variables.tender_byustudio_host, '/buyer/tender/view/', add_to_site_response['tid'])
             print tender_id_site
             print link_to_tender
-
-            '''def save_added_tender_info_to_file():
-                text_for_file = "{}{}{}{}{}".format('ID: ', add_to_site_response['tid'], ', ', link_to_tender, '\n')
-                my_file = open('saved_files/tender-info-site.txt', 'a+')
-                my_file.write(text_for_file)
-                my_file.close()
-            save_added_tender_info_to_file()'''
             break
         else:
             print add_to_site_response

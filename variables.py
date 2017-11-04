@@ -7,7 +7,7 @@ import sys
 import key
 
 
-# GLOBAL
+# GLOBAL VARIABLES
 host = "https://lb.api-sandbox.openprocurement.org"
 api_version = "2.3"
 auth_key = key.auth_key
@@ -62,6 +62,7 @@ for method in range(len(limited_procurement)):
                           method + 1 + len(above_threshold_procurement + below_threshold_procurement))
 
 
+# Procurement method from user
 def procurement_method_selector():
     procurement_method_from_user = (raw_input(
         'Необходимо выбрать тип процедуры, указав ее номер: ')).decode('utf-8')
@@ -81,28 +82,24 @@ def procurement_method_selector():
         return selected_procurement_method
 
 
-user_procurement_method = procurement_method_selector()
+procurement_method = procurement_method_selector()
 
 
-# def procurement_method():
-if user_procurement_method in above_threshold_procurement:
+if procurement_method in above_threshold_procurement:
     number_of_lots = number_of_lots()
     if number_of_lots == 0:
         number_of_items = number_of_items()
-        procurement_method = user_procurement_method
-    else:
-        procurement_method = user_procurement_method
-elif user_procurement_method in below_threshold_procurement:
+elif procurement_method in below_threshold_procurement:
     sys.exit("Error. Данный функционал еще не был разработан :)")
 else:
     sys.exit("Error. Данный функционал еще не был разработан :)")
-# procurement_method = procurement_method()
 
-# Items
+
+# ITEMS
 items_m = ', "items": '
 
 
-# item description from list
+# generate item description
 def description_of_item():
     description_text = [u'"Описание предмета закупки ']
     description_item = []
@@ -121,8 +118,6 @@ def description_of_item():
                                                     u'Лот ', items_count, '"')
             description_item.append(item_description)
         return description_item
-'''description_item = u"{}{}{}".format(', "description": ', random.choice(description_text), '"')
-        return description_item'''
 
 
 # generate delivery address
@@ -175,6 +170,14 @@ def unit():
 quantity = u"{}{}{}{}".format(', "quantity": ', '"', random.randint(1, 99999), '"')
 
 
+# generate data for item
+def item_data(i):
+    data_for_item = u'{}{}{}{}{}{}{}{}{}'.format(
+        description_of_item()[i], classification, additionalClassifications, description_en(), delivery_address_block(),
+        deliveryDate, item_id_generator(), unit(), quantity)
+    return data_for_item
+
+
 # --LOTS-- ###############
 lots_m = ', "lots":'
 lots_close = ''
@@ -187,54 +190,49 @@ def lot_id_generator():
 
 
 def title_for_lot():
+    lot_title_en = ', "title_en": ""'
     lot_random_title = u"{}{}".format(u'Лот ', random.randint(1, 99999))
-    lot_title = u"{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"')
-    return lot_title
+    lot_title = u"{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"', lot_title_en)
+    lot_description_en = ', "description_en": ""'
+    lot_description_name = u"{}{}{}".format(u'"Описание лота ', lot_random_title, '"')
+    lot_description_fragment = u"{}{}{}".format(', "description": ', lot_description_name, lot_description_en)
+    lot_data = u'{}{}'.format(lot_title, lot_description_fragment)
+    return lot_data
 
-
-# description of lot
-def lot_description():
-    lot_description_name = u"{}".format(u'"Описание лота"')
-    lot_description_fragment = u"{}{}".format(', "description": ', lot_description_name)
-    return lot_description_fragment
-
-title_en = ', "title_en": ""'
-lot_description_en = ', "description_en": ""'
 
 # lot value amount
-lot_value_amount = random.randint(1000, 100000)
-lot_value = u"{}{}{}".format(', "value": {"amount": "', lot_value_amount, '"}')
-
-
-# lot guarantee amount
-lot_guarantee_amount = lot_value_amount * 0.004  # 0.4%
-lot_guarantee = u"{}{}{}".format(', "guarantee": {"amount": "', lot_guarantee_amount, '"}')
-
-
-# lot minimal step amount
-def minimal_step():
+def lot_values():
+    lot_value_amount = random.randint(1000, 100000)
+    lot_value = u"{}{}{}".format(', "value": {"amount": "', lot_value_amount, '"}')
+    # lot minimal step amount
     minimal_step_amount = lot_value_amount * 0.02
     minimal_step_fragment = u"{}{}{}".format(', "minimalStep": {"amount": "', minimal_step_amount, '"}')
-    return minimal_step_fragment
+    # lot guarantee amount
+    lot_guarantee_amount = lot_value_amount * 0.004  # 0.4%
+    lot_guarantee = u"{}{}{}".format(', "guarantee": {"amount": "', lot_guarantee_amount, '"}')
+    values_of_lot = '{}{}{}'.format(lot_value, lot_guarantee, minimal_step_fragment)
+    return values_of_lot, lot_value_amount
+lot_values = lot_values()
 
 
 # TENDERS
-# tender value amount
-if number_of_lots == 0:
-    tender_value_amount = lot_value_amount
-else:
-    tender_value_amount = lot_value_amount * number_of_lots
-
-tender_value = u"{}{}{}{}{}{}{}{}".format(
-    '"value": {', '"valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "amount": ', tender_value_amount,
-    ', "currency": ', tender_currency, '}')
-
-tender_guarantee = u"{}{}{}{}{}{}{}".format(', "guarantee": {"amount": ', '"', '0', '"', ', "currency": ',
-                                            tender_currency, '}')
-
-tender_minimalStep = u"{}{}{}{}{}{}{}{}".format(', "minimalStep": {', '"amount": ', '"100"', ', "currency": ',
-                                                tender_currency, ', "valueAddedTaxIncluded": ',
-                                                valueAddedTaxIncluded, '}')
+# tender values
+def tender_values():
+    if number_of_lots == 0:
+        tender_value_amount = lot_values[1]
+    else:
+        tender_value_amount = lot_values[1] * number_of_lots
+    tender_value = u"{}{}{}{}{}{}{}{}".format(
+        '"value": {', '"valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "amount": ', tender_value_amount,
+        ', "currency": ', tender_currency, '}')
+    tender_guarantee = u"{}{}{}{}{}{}{}".format(', "guarantee": {"amount": ', '"', '0', '"', ', "currency": ',
+                                                tender_currency, '}')
+    tender_minimal_step = u"{}{}{}{}{}{}{}{}".format(
+        ', "minimalStep": {', '"amount": ', '"100"', ', "currency": ', tender_currency, ', "valueAddedTaxIncluded": ',
+        valueAddedTaxIncluded, '}')
+    values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
+    return values_of_tender
+tender_values = tender_values()
 
 
 # tender classification from list
@@ -261,32 +259,32 @@ def description_en():
     return description_en_fragment
 
 
-def tender_start_date():
+# Generate tender period
+def tender_period():
+    # tender_start_date
     date_now = datetime.now()
-    return date_now.strftime('"%Y-%m-%dT%H:%M:%S+02:00"')
-
-
-def tender_end_date():
+    tender_start_date = date_now.strftime('"%Y-%m-%dT%H:%M:%S+02:00"')
+    # tender_end_date
     day = timedelta(minutes=31)  # input(u'Дата окончания приема предложений ( в минутах): ')
     date_now = datetime.now()
     date_day = date_now + day
-    return date_day.strftime('"%Y-%m-%dT%H:%M:%S+02:00"')
+    tender_end_date = date_day.strftime('"%Y-%m-%dT%H:%M:%S+02:00"')
+    tender_period_data = u"{}{}{}{}{}{}".format(
+        ', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
+    return tender_period_data
 
 
-tender_period = u"{}{}{}{}{}{}".format(
-    ', "tenderPeriod": {', '"startDate": ', tender_start_date(), ', "endDate": ', tender_end_date(), '}')
+def tender_titles():
+    tender_number = datetime.now().strftime('%d-%H%M%S"')
+    tender_random_title = u"{}{}".format(u'Тест ', tender_number)
+    tender_title = u"{}{}".format(', "title": "', tender_random_title)
+    tender_description = u"{}{}{}".format(', "description": ', u'"Примечания для тендера ', tender_random_title)
+    tender_title_en = u"{}{}".format(', "title_en": ', '"Title of tender in english"')
+    tender_description_en = u"{}{}".format(', "description_en": ', '""')
+    tender_title_description = u'{}{}{}{}'.format(tender_title, tender_description, tender_title_en,
+                                                  tender_description_en)
+    return tender_title_description
 
-
-def tender_number():
-    number_tender_number = datetime.now()
-    return number_tender_number.strftime('%d-%H%M%S"')
-
-tender_number = tender_number()
-tender_random_title = u"{}{}".format(u'Тест ', tender_number)
-tender_title = u"{}{}".format(', "title": "', tender_random_title)
-tender_description = u"{}{}{}".format(', "description": ', u'"Примечания для тендера ', tender_random_title)
-tender_title_en = u"{}{}".format(', "title_en": ', '"Title of tender in english"')
-tender_description_en = u"{}{}".format(', "description_en": ', '""')
 tender_features = u"{}{}".format(', "features": ', '[ ]')
 
 
@@ -319,11 +317,17 @@ def procuring_entity():
         ', "procuringEntity": {', name, name_en, address, contact_point, identifier, kind, '}')
     return procuring_entity_block
 
-procurementMethodType = ', "procurementMethodType": "{}"'.format(procurement_method)
-mode = ', "mode": "test"'
-submissionMethodDetails = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
-procurementMethodDetails = ', "procurementMethodDetails": "quick, accelerator=1440"'
-status = ', "status": "draft"'
+
+def tender_data():
+    procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
+    mode = ', "mode": "test"'
+    submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
+    procurement_method_details = ', "procurementMethodDetails": "quick, accelerator=1440"'
+    status = ', "status": "draft"'
+    constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(), procuring_entity(), procurement_method_type, mode,
+                                                    submission_method_details, procurement_method_details, status)
+    return constant_tender_data
+
 
 # VARIABLES FOR BID
 above_threshold_procurement_for_bid = ['aboveThresholdUA', 'aboveThresholdUA.defense']

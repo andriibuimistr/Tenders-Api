@@ -4,7 +4,7 @@ import sys
 import requests
 from variables import host, api_version, auth_key, number_of_lots, procurement_method, valueAddedTaxIncluded,\
     tender_currency, above_threshold_procurement_for_bid
-from lots import list_of_id
+from tender import list_of_id_lots
 import json
 import MySQLdb
 import time
@@ -33,7 +33,7 @@ number_of_bids = number_of_bids()
 def lot_values_bid_generator():
     list_of_lots_in_bid = []
     for lot in range(number_of_lots):
-        lot_id = list_of_id[lot]
+        lot_id = list_of_id_lots[lot]
         related_lot_value = json.loads(
             '{}{}{}{}{}{}{}{}{}'.format('{"relatedLot": "', lot_id, '", "value": {"amount": ', randint(100, 999),
                                         ', "valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "currency": ',
