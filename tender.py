@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
 import time
-from datetime import datetime
 import MySQLdb
 import requests
 import sys
-import document
 import variables
 from variables import tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles
 
@@ -71,8 +69,9 @@ def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procureme
 # generate json for tender without lots
 def tender(number_of_lots, number_of_items, procurement_method):
     return u"{}{}{}{}{}{}{}".format(
-        '{"data": {', tender_values(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items),
-        tender_features, tender_data(procurement_method), '}}')
+        '{"data": {', tender_values(number_of_lots), tender_titles(),
+        list_of_items_for_tender(number_of_lots, number_of_items), tender_features, tender_data(procurement_method),
+        '}}')
 
 
 def headers_tender(json_tender):
@@ -95,11 +94,15 @@ def publish_tender(headers, json_tender):
     try:
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
-        print("Publishing tender:")
-        print("       status code:  {}".format(resp.status_code))
-        print("       response content:  {}".format(resp.content))
-        print("       headers:           {}".format(resp.headers))
-        print("       tender id:         {}".format(resp.headers['Location'].split('/')[-1]))
+        if resp.status_code == 201:
+            print("Publishing tender: Success")
+            print("       status code:  {}".format(resp.status_code))
+        else:
+            print("Publishing tender: Error")
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+            print("       tender id:         {}".format(resp.headers['Location'].split('/')[-1]))
         return resp
     except:
         sys.exit("CDB error")
@@ -120,10 +123,14 @@ def activating_tender(publish_tender_response, headers):
     try:
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
-        print("Activating tender:")
-        print("       status code:  {}".format(resp.status_code))
-        print("       response content:  {}".format(resp.content))
-        print("       headers:           {}".format(resp.headers))
+        if resp.status_code == 200:
+            print("Activating tender: Success")
+            print("       status code:  {}".format(resp.status_code))
+        else:
+            print("Activating tender: Error")
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
         return resp
     except:
         sys.exit("CDB error")

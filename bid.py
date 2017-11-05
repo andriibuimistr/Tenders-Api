@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-import tender
 import sys
 import requests
-from variables import host, api_version, auth_key, valueAddedTaxIncluded,\
-    tender_currency, above_threshold_active_bid_procurements
+from variables import host, api_version, auth_key, valueAddedTaxIncluded, tender_currency,\
+    above_threshold_active_bid_procurements
 import json
 import MySQLdb
 import time
 from random import randint
 
 
-'''# number of bids
+# number of bids
 def number_of_bids():
     number_of_bids_input = (raw_input('Количество ставок (от 1 до 10, 0 - не делать ставки)')).decode('utf-8')
     while number_of_bids_input.isdigit() is not True or int(number_of_bids_input) > 10:
@@ -19,7 +18,6 @@ def number_of_bids():
     else:
         number_of_bids_input = int(number_of_bids_input)
     return number_of_bids_input
-number_of_bids = number_of_bids()'''
 
 
 # generate value for lots
@@ -144,10 +142,14 @@ def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers):
     try:
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
-        print('{}{}:'.format('Publishing bid ', n_bid))
-        print("       status code:  {}".format(resp.status_code))
-        print("       response content:  {}".format(resp.content))
-        print("       headers:           {}".format(resp.headers))
+        if resp.status_code == 201:
+            print('{}{}: {}'.format('Publishing bid ', n_bid, 'Success'))
+            print("       status code:  {}".format(resp.status_code))
+        else:
+            print('{}{}: {}'.format('Publishing bid ', n_bid, 'Error'))
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
         return resp
     except:
         sys.exit("CDB error")
@@ -164,10 +166,14 @@ def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body):
     try:
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
-        print('{}{}:'.format('Activating bid ', n_bid))
-        print("       status code:  {}".format(resp.status_code))
-        print("       response content:  {}".format(resp.content))
-        print("       headers:           {}".format(resp.headers))
+        if resp.status_code == 200:
+            print('{}{}: {}'.format('Activating bid ', n_bid,  'Success'))
+            print("       status code:  {}".format(resp.status_code))
+        else:
+            print('{}{}: {}'.format('Activating bid ', n_bid,  'Error'))
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
         return resp
     except:
         sys.exit("CDB error")
@@ -180,13 +186,20 @@ def get_bid_info(bid_location, bid_token, n_bid):
                          "{}{}{}".format(bid_location, '?acc_token=', bid_token),
                          headers={"Authorization": "Basic " + auth_key},
                          cookies=requests.utils.dict_from_cookiejar(s.cookies))
-    prepped = s.prepare_request(r)
-    resp = s.send(prepped)
-    print('{}{}:'.format('Getting info bid ', n_bid))
-    print("       status code:  {}".format(resp.status_code))
-    print("       response content:  {}".format(resp.content))
-    print("       headers:           {}".format(resp.headers))
-    return resp
+    try:
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        if resp.status_code == 200:
+            print('{}{}: {}'.format('Getting info bid ', n_bid, 'Success'))
+            print("       status code:  {}".format(resp.status_code))
+        else:
+            print('{}{}: {}'.format('Getting info bid ', n_bid, 'Error'))
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+        return resp
+    except:
+        sys.exit("CDB error")
 
 
 # DB connections

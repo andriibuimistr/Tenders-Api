@@ -4,13 +4,29 @@ import tender
 import document
 import bid
 import json
+import sys
 
 
-procurement_method = 'aboveThresholdUA'
-number_of_lots = 3
-number_of_items = 2
-add_documents = 1
-number_of_bids = 1
+procurement_method = variables.procurement_method_selector()
+if procurement_method in variables.above_threshold_procurement:
+    number_of_lots = variables.number_of_lots()
+    if number_of_lots == 0:
+        number_of_items = variables.number_of_items()
+    else:
+        number_of_items = 0
+elif procurement_method in variables.below_threshold_procurement:
+    sys.exit("Error. Данный функционал еще не был разработан :)")
+else:
+    sys.exit("Error. Данный функционал еще не был разработан :)")
+
+number_of_bids = bid.number_of_bids()
+
+
+#procurement_method = 'aboveThresholdUA'
+#number_of_lots = 0
+#number_of_items = 2
+add_documents = 0
+#number_of_bids = 1
 
 
 list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)

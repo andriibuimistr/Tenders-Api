@@ -22,7 +22,7 @@ tender_currency = tender_currency()
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
 
-'''# INPUTS
+# INPUTS
 # number of lots from user
 def number_of_lots():
     number_of_lots_from_user = (raw_input(
@@ -52,7 +52,7 @@ above_threshold_procurement = [
     'competitiveDialogueEU']
 below_threshold_procurement = ['open_belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
-
+# print list of procurement methods
 for method in range(len(above_threshold_procurement)):
     print '{}{}{}'.format(above_threshold_procurement[method], ' - ', method + 1)
 for method in range(len(below_threshold_procurement)):
@@ -64,6 +64,7 @@ for method in range(len(limited_procurement)):
 
 # Procurement method from user
 def procurement_method_selector():
+    # get procurement method from user
     procurement_method_from_user = (raw_input(
         'Необходимо выбрать тип процедуры, указав ее номер: ')).decode('utf-8')
     while procurement_method_from_user.isdigit() is not True or int(procurement_method_from_user) < 1 or \
@@ -82,19 +83,6 @@ def procurement_method_selector():
         return selected_procurement_method
 
 
-procurement_method = procurement_method_selector()
-
-
-if procurement_method in above_threshold_procurement:
-    number_of_lots = number_of_lots()
-    if number_of_lots == 0:
-        number_of_items = number_of_items()
-elif procurement_method in below_threshold_procurement:
-    sys.exit("Error. Данный функционал еще не был разработан :)")
-else:
-    sys.exit("Error. Данный функционал еще не был разработан :)")
-
-'''
 # ITEMS
 items_m = ', "items": '
 

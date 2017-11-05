@@ -5,12 +5,9 @@ import json
 import sys
 from key import auth_key
 
-path = os.getcwd()
+path = os.getcwd()  # path to file for upload
 doc_host = 'https://lb.api-sandbox.openprocurement.org'
 doc_api_version = '2.4'
-
-'''tender_id_long = '38ead6d4155f48a8b3321ee39b8b1e71'
-tender_token = 'e6cf1aca507d4a4b95cea8dfef68aa26'''''
 
 
 file_for_upload = open('{}{}doc.pdf'.format(path, os.sep), 'rb').read()
@@ -48,8 +45,6 @@ def upload_documents_to_tender(t_id_long, t_token):
         print("Uploading documentation:")
         if resp.status_code == 201:
             print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
         else:
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
@@ -75,10 +70,8 @@ def patch_document_of_tender(type_for_doc, name_for_doc, added_tender_doc, t_id_
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
         print('{}{}'.format("Patching documentation: ", name_for_doc))
-        if resp.status_code == 201:
+        if resp.status_code == 200:
             print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
         else:
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
