@@ -22,7 +22,7 @@ tender_currency = tender_currency()
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
 
-# INPUTS
+'''# INPUTS
 # number of lots from user
 def number_of_lots():
     number_of_lots_from_user = (raw_input(
@@ -94,13 +94,13 @@ elif procurement_method in below_threshold_procurement:
 else:
     sys.exit("Error. Данный функционал еще не был разработан :)")
 
-
+'''
 # ITEMS
 items_m = ', "items": '
 
 
 # generate item description
-def description_of_item():
+def description_of_item(number_of_lots, number_of_items):
     description_text = [u'"Описание предмета закупки ']
     description_item = []
     if number_of_lots == 0:
@@ -171,9 +171,10 @@ quantity = u"{}{}{}{}".format(', "quantity": ', '"', random.randint(1, 99999), '
 
 
 # generate data for item
-def item_data(i):
+def item_data(number_of_lots, number_of_items, i):
     data_for_item = u'{}{}{}{}{}{}{}{}{}'.format(
-        description_of_item()[i], classification, additionalClassifications, description_en(), delivery_address_block(),
+        description_of_item(number_of_lots, number_of_items)[i], classification, additionalClassifications,
+        description_en(), delivery_address_block(),
         deliveryDate, item_id_generator(), unit(), quantity)
     return data_for_item
 
@@ -217,7 +218,7 @@ lot_values = lot_values()
 
 # TENDERS
 # tender values
-def tender_values():
+def tender_values(number_of_lots):
     if number_of_lots == 0:
         tender_value_amount = lot_values[1]
     else:
@@ -232,7 +233,7 @@ def tender_values():
         valueAddedTaxIncluded, '}')
     values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
     return values_of_tender
-tender_values = tender_values()
+# from tender - tender_values = tender_values(number_of_lots)
 
 
 # tender classification from list
@@ -318,7 +319,7 @@ def procuring_entity():
     return procuring_entity_block
 
 
-def tender_data():
+def tender_data(procurement_method):
     procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
     mode = ', "mode": "test"'
     submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
@@ -330,4 +331,5 @@ def tender_data():
 
 
 # VARIABLES FOR BID
-above_threshold_procurement_for_bid = ['aboveThresholdUA', 'aboveThresholdUA.defense']
+# Above threshold procedures with active bid status
+above_threshold_active_bid_procurements = ['aboveThresholdUA', 'aboveThresholdUA.defense']
