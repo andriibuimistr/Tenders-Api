@@ -9,7 +9,7 @@ import time
 from random import randint
 
 
-# number of bids
+# number of bids input
 def number_of_bids():
     number_of_bids_input = (raw_input('Количество ставок (от 1 до 10, 0 - не делать ставки)')).decode('utf-8')
     while number_of_bids_input.isdigit() is not True or int(number_of_bids_input) > 10:
@@ -113,6 +113,7 @@ def bid_json_open_procedure(user_idf):
 # ----------------------------------------
 
 
+# select correct json for bid using procurement method
 def determine_procedure_for_bid(procurement_method):
     if procurement_method in above_threshold_active_bid_procurements:
         activate_bid_body = {"data": {"status": "active"}}
@@ -120,9 +121,8 @@ def determine_procedure_for_bid(procurement_method):
         activate_bid_body = {"data": {"status": "pending"}}
     return activate_bid_body
 
-# select status for activate bid
 
-
+#  generate headers for bid request
 def headers_bid(bid_json_open_length):
     headers = {"Authorization": "Basic {}".format(auth_key),
                "Content-Length": "{}".format(len(json.dumps(bid_json_open_length))),
@@ -131,6 +131,7 @@ def headers_bid(bid_json_open_length):
     return headers
 
 
+# create bid in CDB
 def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers):
     s = requests.Session()
     s.request('GET', '{}/api/{}/tenders'.format(host, api_version))
@@ -155,6 +156,7 @@ def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers):
         sys.exit("CDB error")
 
 
+# activate created bid
 def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body):
     s = requests.Session()
     s.request("GET", "{}/api/{}/tenders".format(host, api_version))
@@ -179,6 +181,7 @@ def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body):
         sys.exit("CDB error")
 
 
+# get info about bid
 def get_bid_info(bid_location, bid_token, n_bid):
     s = requests.Session()
     s.request("GET", "{}/api/{}/tenders".format(host, api_version))
@@ -208,6 +211,7 @@ db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="pyth
 cursor = db.cursor()
 
 
+# add bid info to DB
 def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
     bid_to_sql = \
         "INSERT INTO bids VALUES(null, '{}', '{}', '{}', null, null, null, null, '{}')".format(
@@ -215,6 +219,7 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
     cursor.execute(bid_to_sql)
 
 
+# create and activate bid for created tender
 def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots):
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     if bids_quantity == 0:
@@ -223,23 +228,23 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
         count = 0
         for x in range(bids_quantity):
             count += 1
-            identifier_list = ['00037256', '14360570', '01202000']
+            identifier_list = ['00037256', '14360570', '01202000']  # list of user identifiers from site
             if bids_quantity < 4:
                 identifier_list = identifier_list
                 identifier = identifier_list[x]
             else:
                 for uid in range(bids_quantity - 3):
-                    identifier_list.append(randint(10000000, 99999999))
+                    identifier_list.append(randint(10000000, 99999999))  # random user identifier
                 identifier = identifier_list[x]
             if number_of_lots == 0:
                 bid_json = bid_json_open_procedure(identifier)
             else:
                 bid_json = bid_json_open_procedure_lots(identifier, number_of_lots, list_of_id_lots)
-            headers = headers_bid(bid_json)
+            headers = headers_bid(bid_json)  # generate headers for bid
             created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers)  # create bid
-            bid_location = created_bid.headers['Location']  # url of created bid
-            bid_token = created_bid.json()['access']['token']
-            bid_id = created_bid.json()['data']['id']
+            bid_location = created_bid.headers['Location']  # get url of created bid
+            bid_token = created_bid.json()['access']['token']  # get token of created bid
+            bid_id = created_bid.json()['data']['id']  # get id of created bid
             time.sleep(0.5)
             for every_bid in range(5):  # activate bid
                 bid_activation_status = activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
@@ -247,8 +252,7 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                     break
                 else:
                     activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
-
             bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
-            get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
+            # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
     db.commit()  # you need to call commit() method to save your changes to the database
     db.close()

@@ -74,6 +74,7 @@ def tender(number_of_lots, number_of_items, procurement_method):
         '}}')
 
 
+# generate headers for create tender
 def headers_tender(json_tender):
     headers = {"Authorization": "Basic {}".format(auth_key),
                "Content-Length": "{}".format(len(json.dumps(json_tender))),
@@ -136,22 +137,23 @@ def activating_tender(publish_tender_response, headers):
         sys.exit("CDB error")
 
 
-# CONNECTION TO DB
-db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
-# db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-cursor = db.cursor()
-
-
 # save tender info to DB
 def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurement_method, tender_status,
                  number_of_lots):
-    tender_to_sql = \
-        "INSERT INTO tenders VALUES(null, '{}', '{}', '{}', '{}', null, '{}', '{}', null, null, null)".format(
-            tender_id_long, publish_tender_response.json()['data']['tenderID'], tender_token, procurement_method,
-            tender_status, number_of_lots)
-    cursor.execute(tender_to_sql)
-    db.commit()  # you need to call commit() method to save your changes to the database
-    db.close()
+    try:
+        # Connect to DB
+        db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+        # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
+        cursor = db.cursor()
+        tender_to_sql = \
+            "INSERT INTO tenders VALUES(null, '{}', '{}', '{}', '{}', null, '{}', '{}', null, null, null)".format(
+                tender_id_long, publish_tender_response.json()['data']['tenderID'], tender_token, procurement_method,
+                tender_status, number_of_lots)
+        cursor.execute(tender_to_sql)
+        db.commit()  # you need to call commit() method to save your changes to the database
+        db.close()
+    except:
+        sys.exit('Couldn\'t connect to database')
 
 
 def add_tender_to_site(tender_id_long, tender_token):

@@ -52,18 +52,18 @@ above_threshold_procurement = [
     'competitiveDialogueEU']
 below_threshold_procurement = ['open_belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
-# print list of procurement methods
-for method in range(len(above_threshold_procurement)):
-    print '{}{}{}'.format(above_threshold_procurement[method], ' - ', method + 1)
-for method in range(len(below_threshold_procurement)):
-    print '{}{}{}'.format(below_threshold_procurement[method], ' - ', method + 1 + len(above_threshold_procurement))
-for method in range(len(limited_procurement)):
-    print '{}{}{}'.format(limited_procurement[method], ' - ',
-                          method + 1 + len(above_threshold_procurement + below_threshold_procurement))
 
 
 # Procurement method from user
 def procurement_method_selector():
+    # print list of procurement methods
+    for method in range(len(above_threshold_procurement)):
+        print '{}{}{}'.format(above_threshold_procurement[method], ' - ', method + 1)
+    for method in range(len(below_threshold_procurement)):
+        print '{}{}{}'.format(below_threshold_procurement[method], ' - ', method + 1 + len(above_threshold_procurement))
+    for method in range(len(limited_procurement)):
+        print '{}{}{}'.format(limited_procurement[method], ' - ',
+                              method + 1 + len(above_threshold_procurement + below_threshold_procurement))
     # get procurement method from user
     procurement_method_from_user = (raw_input(
         'Необходимо выбрать тип процедуры, указав ее номер: ')).decode('utf-8')

@@ -11,17 +11,18 @@ db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="pyth
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
 cursor = db.cursor()
 
-list_of_tenders = "SELECT tender_id_long, tender_status FROM tenders"
+list_of_tenders = "SELECT tender_id_long, tender_status, procurementMethodType FROM tenders"
 cursor.execute(list_of_tenders)
 
 tenders_list = cursor.fetchall()
 
 
-def update_tender_status(tender_status_in_db, tender_id_long):
+def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
     get_tender_info = requests.get(host + tender_id_long)
     actual_tender_status = get_tender_info.json()['data']['status']
     if actual_tender_status == tender_status_in_db and actual_tender_status != 'unsuccessful':
-        print '{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status)
+        print '{}{}{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status, ' - ',
+                                  procurement_method_type)
     else:
         if actual_tender_status == 'unsuccessful':
             delete_unsuccessful_tender = 'DELETE FROM tenders WHERE tender_id_long = "{}"'.format(tender_id_long)
@@ -36,8 +37,9 @@ def update_tender_status(tender_status_in_db, tender_id_long):
                 'UPDATE tenders SET tender_status = "{}" WHERE tender_id_long = "{}"'.format(
                     actual_tender_status, tender_id_long)
             cursor.execute(sql_update_tender_status)
-            print '{}{}{}{}{}'.format(
-                tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status)
+            print '{}{}{}{}{}{}{}'.format(
+                tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status, ' - ',
+                procurement_method_type)
 
 
 def get_tenders_list():
@@ -48,7 +50,8 @@ def get_tenders_list():
         for tender in range(len(tenders_list)):
             tender_id = tenders_list[tender][0]
             db_tender_status = tenders_list[tender][1]
-            update_tender_status(db_tender_status, tender_id)
+            procurement_method_type = tenders_list[tender][2]
+            update_tender_status(db_tender_status, tender_id, procurement_method_type)
 
 
 get_tenders_list()
@@ -88,8 +91,6 @@ def add_tender_to_site():
                 print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
         else:
             print '{}{}{}'.format('Tender ', tender_id_long, ' was added to site before', )
-
-
 add_tender_to_site()
 
 
