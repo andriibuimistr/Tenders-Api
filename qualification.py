@@ -4,11 +4,17 @@ import requests
 import key
 import sys
 import json
+import variables
 import time
 
 
 auth_key = key.auth_key
 api_version = "2.3"
+
+host = "https://lb.api-sandbox.openprocurement.org"
+db = variables.database()
+cursor = db.cursor()
+
 
 # headers for prequalification requests
 headers_prequalification = {
@@ -39,10 +45,6 @@ finish_prequalification_json = {
     "status": "active.pre-qualification.stand-still"
   }
 }
-
-host = "https://lb.api-sandbox.openprocurement.org"
-db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
-cursor = db.cursor()
 
 
 def get_tender_token(tender_id_long):
@@ -104,8 +106,6 @@ def select_my_bids(qualifications, tender_id_long, tender_token):
 def finish_prequalification(tender_id_long, tender_token):
     s = requests.Session()
     s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
-    print "{}/api/{}/tenders/{}?acc_token={}".format(
-                             host, api_version, tender_id_long, tender_token)
     r = requests.Request('PATCH',
                          "{}/api/{}/tenders/{}?acc_token={}".format(
                              host, api_version, tender_id_long, tender_token),

@@ -6,6 +6,7 @@ from variables import host, api_version, auth_key, valueAddedTaxIncluded, tender
 import json
 import MySQLdb
 import time
+import variables
 from random import randint
 
 
@@ -206,17 +207,21 @@ def get_bid_info(bid_location, bid_token, n_bid):
 
 
 # DB connections
-db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-cursor = db.cursor()
 
 
 # add bid info to DB
 def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
+    print 'Add bid to local database'
+    db = variables.database()
+    cursor = db.cursor()
     bid_to_sql = \
         "INSERT INTO bids VALUES(null, '{}', '{}', '{}', null, null, null, null, '{}')".format(
             bid_id, bid_token, tender_id, u_identifier)
     cursor.execute(bid_to_sql)
+    db.commit()  # you need to call commit() method to save your changes to the database
+    db.close()
 
 
 # create and activate bid for created tender
@@ -254,5 +259,3 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                     activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
             bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
             # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
-    db.commit()  # you need to call commit() method to save your changes to the database
-    db.close()

@@ -4,9 +4,14 @@ import os
 import binascii
 from datetime import datetime, timedelta
 import key
+import MySQLdb
 
 
 # GLOBAL VARIABLES
+def database():
+    db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+    return db
+
 host = "https://lb.api-sandbox.openprocurement.org"
 api_version = "2.3"
 auth_key = key.auth_key

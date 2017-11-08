@@ -3,26 +3,26 @@ import requests
 
 
 tender_byustudio_host = 'http://tender.byustudio.in.ua'
-
-
 host = "https://lb.api-sandbox.openprocurement.org/api/2.3/tenders/"
+
+invalid_tender_status_list = ['unsuccessful', 'cancelled']
 
 
 def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type, cursor):
     get_tender_info = requests.get(host + tender_id_long)
     actual_tender_status = get_tender_info.json()['data']['status']
-    if actual_tender_status == tender_status_in_db and actual_tender_status != 'unsuccessful':
+    if actual_tender_status == tender_status_in_db and actual_tender_status not in invalid_tender_status_list:
         print '{}{}{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status, ' - ',
                                   procurement_method_type)
     else:
-        if actual_tender_status == 'unsuccessful':
+        if actual_tender_status in invalid_tender_status_list:
             delete_unsuccessful_tender = 'DELETE FROM tenders WHERE tender_id_long = "{}"'.format(tender_id_long)
             delete_unsuccessful_bids = \
                 'DELETE FROM bids WHERE tender_id = "{}"'.format(tender_id_long)
             cursor.execute(delete_unsuccessful_bids)
             cursor.execute(delete_unsuccessful_tender)
             print '{}{}{}'.format('Tender ', tender_id_long,
-                                  ' and its related bids were deleted because of "unsuccessful" status')
+                                  ' and its related bids were deleted because of it\'s status')
         else:
             sql_update_tender_status = \
                 'UPDATE tenders SET tender_status = "{}" WHERE tender_id_long = "{}"'.format(

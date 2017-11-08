@@ -142,7 +142,7 @@ def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurem
                  number_of_lots):
     try:
         # Connect to DB
-        db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+        db = variables.database()
         # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
         cursor = db.cursor()
         tender_to_sql = \
@@ -152,6 +152,7 @@ def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurem
         cursor.execute(tender_to_sql)
         db.commit()  # you need to call commit() method to save your changes to the database
         db.close()
+        print "Tender was added to local database"
     except:
         sys.exit('Couldn\'t connect to database')
 
