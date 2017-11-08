@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import MySQLdb
 import requests
 
 
@@ -7,17 +6,9 @@ tender_byustudio_host = 'http://tender.byustudio.in.ua'
 
 
 host = "https://lb.api-sandbox.openprocurement.org/api/2.3/tenders/"
-db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
-# db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-cursor = db.cursor()
-
-list_of_tenders = "SELECT tender_id_long, tender_status, procurementMethodType FROM tenders"
-cursor.execute(list_of_tenders)
-
-tenders_list = cursor.fetchall()
 
 
-def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
+def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type, cursor):
     get_tender_info = requests.get(host + tender_id_long)
     actual_tender_status = get_tender_info.json()['data']['status']
     if actual_tender_status == tender_status_in_db and actual_tender_status != 'unsuccessful':
@@ -42,7 +33,10 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
                 procurement_method_type)
 
 
-def get_tenders_list():
+def get_tenders_list(cursor):
+    list_of_tenders = "SELECT tender_id_long, tender_status, procurementMethodType FROM tenders"
+    cursor.execute(list_of_tenders)
+    tenders_list = cursor.fetchall()
     if len(tenders_list) == 0:
         print 'DB is empty'
     else:
@@ -51,13 +45,13 @@ def get_tenders_list():
             tender_id = tenders_list[tender][0]
             db_tender_status = tenders_list[tender][1]
             procurement_method_type = tenders_list[tender][2]
-            update_tender_status(db_tender_status, tender_id, procurement_method_type)
+            update_tender_status(db_tender_status, tender_id, procurement_method_type, cursor)
 
 
-get_tenders_list()
+# get_tenders_list()
 
 
-def add_tender_to_site():
+def add_all_tenders_to_company(cursor):
     print '\nAdd tenders to site'
     actual_list_of_tenders = "SELECT tender_id_long, tender_token, added_to_site FROM tenders"
     cursor.execute(actual_list_of_tenders)
@@ -91,8 +85,14 @@ def add_tender_to_site():
                 print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
         else:
             print '{}{}{}'.format('Tender ', tender_id_long, ' was added to site before', )
-add_tender_to_site()
+
+# add_tender_to_site()
 
 
-db.commit()
-db.close()
+def get_tenders_prequalification_status(cursor):
+    get_tenders_list(cursor)
+    list_tenders_prequalification = "SELECT tender_id_long, procurementMethodType FROM tenders WHERE tender_status " \
+                                    "= 'active.pre-qualification'"
+    cursor.execute(list_tenders_prequalification)
+    tenders_prequalification_list = cursor.fetchall()
+    return tenders_prequalification_list

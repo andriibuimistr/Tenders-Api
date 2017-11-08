@@ -3,7 +3,6 @@ import random
 import os
 import binascii
 from datetime import datetime, timedelta
-import sys
 import key
 
 
@@ -137,6 +136,7 @@ def delivery_end_date():
     date_month = date_now + month
     return date_month.strftime('"%Y-%m-%dT%H:%M:%S+03:00"')
 
+
 # delivery date
 deliveryDate = u"{}{}{}{}{}{}".format(
     ', "deliveryDate": {', ' "startDate": ', delivery_start_date(), ', "endDate": ', delivery_end_date(), " }")
@@ -153,6 +153,7 @@ def unit():
     unit_code = random.choice([['"BX"', u'"ящик"'], ['"D64"', u'"блок"'], ['"E48"', u'"послуга"']])
     unit_fragment = u"{}{}{}{}{}{}".format(', "unit": {', ' "code": ', unit_code[0], ', "name": ', unit_code[1], ' }')
     return unit_fragment
+
 
 # quantity
 quantity = u"{}{}{}{}".format(', "quantity": ', '"', random.randint(1, 99999), '"')

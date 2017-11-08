@@ -4,6 +4,7 @@ import requests
 import key
 import sys
 import json
+import time
 
 
 auth_key = key.auth_key
@@ -62,8 +63,6 @@ def list_of_qualifications(tender_id_long):
 def approve_prequalification(qualification_id, prequalification_bid_json, tender_id_long, tender_token):
     s = requests.Session()
     s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
-    print "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(
-                             host, api_version, tender_id_long, qualification_id, tender_token)
     r = requests.Request('PATCH',
                          "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(
                              host, api_version, tender_id_long, qualification_id, tender_token),
@@ -84,7 +83,7 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
         sys.exit("Error")
 
 
-def approve_my_bids(qualifications, tender_id_long, tender_token):
+def select_my_bids(qualifications, tender_id_long, tender_token):
     my_bids_for_tender = 'SELECT bid_id FROM bids WHERE tender_id = "{}"'.format(tender_id_long)
     cursor.execute(my_bids_for_tender)
     list_of_my_bids = cursor.fetchall()
@@ -95,8 +94,10 @@ def approve_my_bids(qualifications, tender_id_long, tender_token):
         qualification_id = qualifications[x]['id']
         qualification_bid_id = qualifications[x]['bidID']
         if qualification_bid_id in my_bids:
+            time.sleep(1)
             approve_prequalification(qualification_id, prequalification_approve_bid_json, tender_id_long, tender_token)
         else:
+            time.sleep(1)
             approve_prequalification(qualification_id, prequalification_decline_bid_json, tender_id_long, tender_token)
 
 
