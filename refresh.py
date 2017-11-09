@@ -91,8 +91,8 @@ def add_all_tenders_to_company(cursor):
 
 def get_tenders_prequalification_status(cursor):
     get_tenders_list(cursor)
-    list_tenders_prequalification = "SELECT tender_id_long, procurementMethodType FROM tenders WHERE tender_status " \
-                                    "= 'active.pre-qualification'"
+    list_tenders_prequalification = "SELECT tender_id_long, procurementMethodType, tender_status FROM tenders WHERE " \
+                                    "tender_status = 'active.pre-qualification'"
     cursor.execute(list_tenders_prequalification)
     tenders_prequalification_list = cursor.fetchall()
     return tenders_prequalification_list

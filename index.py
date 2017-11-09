@@ -9,11 +9,9 @@ import qualification
 import time
 import refresh
 from flask import Flask, jsonify
-import MySQLdb
 
 
 app = Flask(__name__)
-
 
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
 # cursor = db.cursor()
@@ -33,7 +31,7 @@ def index():
 
 @app.route('/api/tenders/type/<procurement_method>/lots/<int:number_of_lots>/items/<int:number_of_items>/documents/'
            '<int:add_documents>/bids/<int:number_of_bids>', methods=['POST'])
-def create_tender_function(procurement_method, number_of_lots, number_of_items, add_documents, number_of_bids ):
+def create_tender_function(procurement_method, number_of_lots, number_of_items, add_documents, number_of_bids):
     """procurement_method = variables.procurement_method_selector()
     if procurement_method in variables.above_threshold_procurement:
         number_of_lots = variables.number_of_lots()
@@ -87,16 +85,15 @@ def get_list_tenders_prequalification_status():
     db = variables.database()
     cursor = db.cursor()
     list_tenders_preq = refresh.get_tenders_prequalification_status(cursor)
-    print list_tenders_preq
     db.commit()
     db.close()
     list_json = []
     for x in range(len(list_tenders_preq)):
         id_tp = list_tenders_preq[x][0]
         procedure = list_tenders_preq[x][1]
-        list_json.append({"id": id_tp, "procurementMethodType": procedure})
-        print list_json
-    return jsonify({'result': list_json})
+        status = list_tenders_preq[x][2]
+        list_json.append({"id": id_tp, "procurementMethodType": procedure, "status": status})
+    return jsonify({'data': {"tenders": list_json}})
 
 
 @app.route('/api/tenders/prequalifications/<tender_id_long>', methods=['POST'])
@@ -104,10 +101,13 @@ def pass_prequalification(tender_id_long):
     # tender_id_long = raw_input('Tender ID: ')
     tender_token = qualification.get_tender_token(tender_id_long)  # get tender token
     qualifications = qualification.list_of_qualifications(tender_id_long)  # get list of qualifications for tender
-    qualification.select_my_bids(qualifications, tender_id_long, tender_token)  # approve all my bids
+    prequalification_result = qualification.select_my_bids(
+        qualifications, tender_id_long, tender_token)  # approve all my bids
     time.sleep(2)
-    qualification.finish_prequalification(tender_id_long, tender_token)  # submit prequalification protocol
-    return jsonify({'result': '???'})
+    finish_prequalification = qualification.finish_prequalification(
+        tender_id_long, tender_token)  # submit prequalification protocol
+    return jsonify({'data': {"tenderID": tender_id_long, "prequalifications": prequalification_result,
+                             "submit protocol": finish_prequalification}})
 
 
 # db.close()
