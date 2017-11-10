@@ -11,8 +11,6 @@ auth_key = key.auth_key
 api_version = "2.3"
 
 host = "https://lb.api-sandbox.openprocurement.org"
-db = variables.database()
-cursor = db.cursor()
 
 
 # headers for prequalification requests
@@ -47,7 +45,7 @@ finish_prequalification_json = {
 
 
 # get tender token from local DB
-def get_tender_token(tender_id_long):
+def get_tender_token(tender_id_long, cursor):
     try:
         tender_token = 'SELECT tender_token FROM tenders WHERE tender_id_long = "{}"'.format(tender_id_long)
         cursor.execute(tender_token)
@@ -55,7 +53,6 @@ def get_tender_token(tender_id_long):
         return token
     except:
         raise Exception()
-
 
 
 # get list of qualifications for tender
@@ -97,7 +94,7 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
 
 
 # select my bids
-def select_my_bids(qualifications, tender_id_long, tender_token):
+def select_my_bids(qualifications, tender_id_long, tender_token, cursor):
     my_bids_for_tender = 'SELECT bid_id FROM bids WHERE tender_id = "{}"'.format(tender_id_long)
     cursor.execute(my_bids_for_tender)
     list_of_my_bids = cursor.fetchall()

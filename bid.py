@@ -4,7 +4,6 @@ import requests
 from variables import host, api_version, auth_key, valueAddedTaxIncluded, tender_currency,\
     above_threshold_active_bid_procurements
 import json
-import MySQLdb
 import time
 import variables
 from random import randint
@@ -213,7 +212,6 @@ def get_bid_info(bid_location, bid_token, n_bid):
 
 # add bid info to DB
 def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
-    print 'Add bid to local database'
     db = variables.database()
     cursor = db.cursor()
     bid_to_sql = \
@@ -222,11 +220,14 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
     cursor.execute(bid_to_sql)
     db.commit()  # you need to call commit() method to save your changes to the database
     db.close()
+    print 'Add bid to local database'
+    return "success"
 
 
 # create and activate bid for created tender
 def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots):
     activate_bid_body = determine_procedure_for_bid(procurement_method)
+    bids_json = []
     if bids_quantity == 0:
         print 'Ставки не были сделаны!'
     else:
@@ -250,12 +251,21 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
             bid_location = created_bid.headers['Location']  # get url of created bid
             bid_token = created_bid.json()['access']['token']  # get token of created bid
             bid_id = created_bid.json()['data']['id']  # get id of created bid
+
+            activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
             time.sleep(0.5)
             for every_bid in range(5):  # activate bid
-                bid_activation_status = activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
-                if bid_activation_status.status_code == 200:
+                if activate_created_bid.status_code == 200:
+                    activate_created_bid = activate_created_bid
                     break
                 else:
                     activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
-            bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
+                    activate_created_bid = activate_created_bid
+            add_bid_db = bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
             # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
+            bids_json.append({"bid id": bid_id,
+                              "create bid status code": created_bid.status_code,
+                              "activate bid status code": activate_created_bid.status_code,
+                              "add bid to db status": add_bid_db
+                              })
+        return bids_json

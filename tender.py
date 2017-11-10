@@ -98,13 +98,15 @@ def publish_tender(headers, json_tender):
         if resp.status_code == 201:
             print("Publishing tender: Success")
             print("       status code:  {}".format(resp.status_code))
+            publish_tender_response = {"status code": resp.status_code}
         else:
             print("Publishing tender: Error")
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
             print("       headers:           {}".format(resp.headers))
             print("       tender id:         {}".format(resp.headers['Location'].split('/')[-1]))
-        return resp
+            publish_tender_response = {"status code": resp.status_code, "description": resp.headers}
+        return resp, publish_tender_response
     except:
         sys.exit("CDB error")
 
@@ -127,12 +129,14 @@ def activating_tender(publish_tender_response, headers):
         if resp.status_code == 200:
             print("Activating tender: Success")
             print("       status code:  {}".format(resp.status_code))
+            activate_tender_response = {"status code": resp.status_code}
         else:
             print("Activating tender: Error")
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
             print("       headers:           {}".format(resp.headers))
-        return resp
+            activate_tender_response = {"status code": resp.status_code, "description": resp.headers}
+        return resp, activate_tender_response
     except:
         sys.exit("CDB error")
 
@@ -153,6 +157,7 @@ def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurem
         db.commit()  # you need to call commit() method to save your changes to the database
         db.close()
         print "Tender was added to local database"
+        return {"status": "success"}
     except:
         sys.exit('Couldn\'t connect to database')
 

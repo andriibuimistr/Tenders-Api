@@ -33,7 +33,7 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
                 procurement_method_type)
 
 
-def get_tenders_list(cursor):
+def update_tenders_list(cursor):
     list_of_tenders = "SELECT tender_id_long, tender_status, procurementMethodType FROM tenders"
     cursor.execute(list_of_tenders)
     tenders_list = cursor.fetchall()
@@ -48,7 +48,23 @@ def get_tenders_list(cursor):
             update_tender_status(db_tender_status, tender_id, procurement_method_type, cursor)
 
 
-# get_tenders_list()
+def get_tenders_list(cursor):
+    list_of_tenders = "SELECT tender_id_long, tender_status, procurementMethodType FROM tenders"
+    cursor.execute(list_of_tenders)
+    tenders_list = cursor.fetchall()
+    list_of_tenders = []
+    if len(tenders_list) == 0:
+        print 'DB is empty'
+        return {"description": "DB is empty"}
+    else:
+        print "Get tenders in local DB"
+        for tender in range(len(tenders_list)):
+            tender_id = tenders_list[tender][0]
+            db_tender_status = tenders_list[tender][1]
+            procurement_method_type = tenders_list[tender][2]
+            list_of_tenders.append({"tender id": tender_id, "tender status": db_tender_status,
+                                    "procurementMethodType": procurement_method_type})
+        return list_of_tenders
 
 
 def add_all_tenders_to_company(cursor):
@@ -90,7 +106,6 @@ def add_all_tenders_to_company(cursor):
 
 
 def get_tenders_prequalification_status(cursor):
-    get_tenders_list(cursor)
     list_tenders_prequalification = "SELECT tender_id_long, procurementMethodType, tender_status FROM tenders WHERE " \
                                     "tender_status = 'active.pre-qualification'"
     cursor.execute(list_tenders_prequalification)

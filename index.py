@@ -54,33 +54,60 @@ def create_tender_function(procurement_method, number_of_lots, number_of_items, 
                                                              procurement_method))
         headers_tender = tender.headers_tender(json_tender)  # get headers for publish tender
         publish_tender_response = tender.publish_tender(headers_tender, json_tender)  # publish tender in draft status
-        activate_tender = tender.activating_tender(publish_tender_response, headers_tender)  # activate tender
+        activate_tender = tender.activating_tender(publish_tender_response[0], headers_tender)  # activate tender
 
-        tender_id_long = publish_tender_response.headers['Location'].split('/')[-1]
-        tender_token = publish_tender_response.json()['access']['token']
-        tender_status = activate_tender.json()['data']['status']
+        tender_id_long = publish_tender_response[0].headers['Location'].split('/')[-1]
+        tender_token = publish_tender_response[0].json()['access']['token']
+        tender_status = activate_tender[0].json()['data']['status']
 
         # add documents to tender
         if add_documents == 1:
             document.add_documents_to_tender(tender_id_long, tender_token)
         # add tender to database
-        tender.tender_to_db(tender_id_long, publish_tender_response, tender_token, procurement_method, tender_status,
-                            number_of_lots)
+        add_tender_db = tender.tender_to_db(tender_id_long, publish_tender_response[0], tender_token,
+                                            procurement_method, tender_status, number_of_lots)
         # tender.add_tender_to_site(tender_id_long, tender_token)
         # bids
-        bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots)
+        run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
+                                          list_of_id_lots)
     elif procurement_method in variables.below_threshold_procurement:
         sys.exit("Error. Данный функционал еще не был разработан :)")
     else:
         sys.exit("Error. Данный функционал еще не был разработан :)")
-    return jsonify({'result': "Create document"})
-# create_tender_function()
+    return jsonify({'data': {
+                            "tender": [{
+                                "publish tender": publish_tender_response[1],
+                                "activate tender": activate_tender[1],
+                                "add tender to db": add_tender_db
+                            }],
+                            "bids": run_create_tender
+
+    }
+    })
 
 
+@app.route('/api/synchronization', methods=['GET'])
+def update_list_of_tenders():
+    db = variables.database()
+    cursor = db.cursor()
+    refresh.update_tenders_list(cursor)
+    db.commit()
+    db.close()
+    return jsonify({"status": "success"})
+
+
+@app.route('/api/tenders', methods=['GET'])
+def get_list_of_tenders():
+    db = variables.database()
+    cursor = db.cursor()
+    list_of_tenders = refresh.get_tenders_list(cursor)
+    db.commit()
+    db.close()
+    return jsonify({"data": {"tenders": list_of_tenders}})
 # ########################## PREQUALIFICATIONS ###################################
 
 
-@app.route('/api/tenders/prequalifications', methods=['GET'])
+@app.route('/api/tenders/prequalification', methods=['GET'])
 def get_list_tenders_prequalification_status():
     db = variables.database()
     cursor = db.cursor()
@@ -96,16 +123,20 @@ def get_list_tenders_prequalification_status():
     return jsonify({'data': {"tenders": list_json}})
 
 
-@app.route('/api/tenders/prequalifications/<tender_id_long>', methods=['POST'])
+@app.route('/api/tenders/prequalification/<tender_id_long>', methods=['POST'])
 def pass_prequalification(tender_id_long):
     # tender_id_long = raw_input('Tender ID: ')
-    tender_token = qualification.get_tender_token(tender_id_long)  # get tender token
+    db = variables.database()
+    cursor = db.cursor()
+    tender_token = qualification.get_tender_token(tender_id_long, cursor)  # get tender token
     qualifications = qualification.list_of_qualifications(tender_id_long)  # get list of qualifications for tender
     prequalification_result = qualification.select_my_bids(
-        qualifications, tender_id_long, tender_token)  # approve all my bids
+        qualifications, tender_id_long, tender_token, cursor)  # approve all my bids
     time.sleep(2)
     finish_prequalification = qualification.finish_prequalification(
         tender_id_long, tender_token)  # submit prequalification protocol
+    db.commit()
+    db.close()
     return jsonify({'data': {"tenderID": tender_id_long, "prequalifications": prequalification_result,
                              "submit protocol": finish_prequalification}})
 
