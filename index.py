@@ -8,11 +8,29 @@ import sys
 import qualification
 import time
 import refresh
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, abort, make_response
 
 
 app = Flask(__name__)
 
+
+# ###################### ERRORS ################################
+@app.errorhandler(400)
+def custom400(error):
+    return make_response(jsonify(
+        {'error': '400 Bad Request', 'description': error.description}), 400)
+
+
+@app.errorhandler(422)
+def custom422(error):
+    return make_response(jsonify(
+        {'error': '422 Unprocessable Entity', 'description': error.description}), 422)
+
+
+@app.errorhandler(404)
+def custom404(error):
+    return make_response(jsonify(
+        {'error': '404 Not Found', 'description': error.description}), 404)
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
 # cursor = db.cursor()
 
@@ -20,7 +38,16 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return "Main page"
-
+# create tender example
+'''data = {
+    "data": {
+        "procurementMethodType": "aboveThresholdEU",
+        "number_of_lots": 2,
+        "number_of_items": 3,
+        "documents": 0,
+        "bids": 3
+    }
+}'''
 
 # procurement_method = 'aboveThresholdUA'
 # number_of_lots = 0
@@ -29,21 +56,40 @@ def index():
 # number_of_bids = 1
 
 
-@app.route('/api/tenders/type/<procurement_method>/lots/<int:number_of_lots>/items/<int:number_of_items>/documents/'
-           '<int:add_documents>/bids/<int:number_of_bids>', methods=['POST'])
-def create_tender_function(procurement_method, number_of_lots, number_of_items, add_documents, number_of_bids):
-    """procurement_method = variables.procurement_method_selector()
-    if procurement_method in variables.above_threshold_procurement:
-        number_of_lots = variables.number_of_lots()
-        if number_of_lots == 0:
-            number_of_items = variables.number_of_items()
-        else:
-            number_of_items = 0
-    elif procurement_method in variables.below_threshold_procurement:
-        sys.exit("Error. Данный функционал еще не был разработан :)")
-    else:
-        sys.exit("Error. Данный функционал еще не был разработан :)")
-    number_of_bids = bid.number_of_bids()"""
+@app.route('/api/tenders', methods=['POST'])
+def create_tender_function():
+    tc_request = request.json['data']
+    if not tc_request or 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
+            or 'number_of_items' not in tc_request or 'documents' not in tc_request \
+            or 'number_of_bids' not in tc_request:
+        abort(400)
+
+    procurement_method = tc_request["procurementMethodType"]
+    number_of_lots = tc_request["number_of_lots"]
+    number_of_items = tc_request["number_of_items"]
+    add_documents = tc_request["documents"]
+    number_of_bids = tc_request["number_of_bids"]
+
+    if type(number_of_lots) != int:
+        abort(400, 'Number of lots must be integer')
+    elif 0 > number_of_lots or number_of_lots > 10:
+        abort(422, 'Number of lots must be between 0 and 10')
+
+    if type(number_of_items) != int:
+        abort(400, 'Number of items must be integer')
+    elif 1 > number_of_items or number_of_items > 10:
+        abort(422, 'Number of items must be between 1 and 10')
+
+    if type(add_documents) != int:
+        abort(400, 'Documents must be integer')
+    elif 0 > add_documents or add_documents > 1:
+        abort(422, 'Documents must be 0 or 1')
+
+    if type(number_of_bids) != int:
+        abort(400, 'Number of bids must be integer')
+    elif 0 > number_of_bids or number_of_bids > 10:
+        abort(422, 'Number of bids must be between 0 and 10')
+
     if procurement_method in variables.above_threshold_procurement:
         list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)  # get list of id for lots
         # select type of tender (with or without lots)
@@ -70,23 +116,27 @@ def create_tender_function(procurement_method, number_of_lots, number_of_items, 
         # bids
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots)
+        return jsonify({'data': {
+            "tender": [{
+                "publish tender": publish_tender_response[1],
+                "activate tender": activate_tender[1],
+                "add tender to db": add_tender_db
+            }],
+            "bids": run_create_tender
+
+        }
+        })
     elif procurement_method in variables.below_threshold_procurement:
-        sys.exit("Error. Данный функционал еще не был разработан :)")
+        print "Error. Данный функционал еще не был разработан :)"
+        abort(422, "This procurementMethodType wasn't implemented yet")
+    elif procurement_method in variables.limited_procurement:
+        print "Error. Данный функционал еще не был разработан :)"
+        abort(422, "This procurementMethodType wasn't implemented yet")
     else:
-        sys.exit("Error. Данный функционал еще не был разработан :)")
-    return jsonify({'data': {
-                            "tender": [{
-                                "publish tender": publish_tender_response[1],
-                                "activate tender": activate_tender[1],
-                                "add tender to db": add_tender_db
-                            }],
-                            "bids": run_create_tender
-
-    }
-    })
+        abort(400, 'Incorrect procurementMethodType')
 
 
-@app.route('/api/synchronization', methods=['GET'])
+@app.route('/api/tenders/synchronization', methods=['GET'])
 def update_list_of_tenders():
     db = variables.database()
     cursor = db.cursor()
