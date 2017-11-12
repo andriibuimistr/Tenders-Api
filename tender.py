@@ -160,25 +160,3 @@ def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurem
         return {"status": "success"}
     except:
         sys.exit('Couldn\'t connect to database')
-
-
-def add_tender_to_site(tender_id_long, tender_token):
-    print 'Don\'t worry, script is working ...'
-    for x in range(5):
-        time.sleep(60)
-        company_id = 61
-        add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
-            variables.tender_byustudio_host, '/tender/add-tender-to-company?tid=',
-            tender_id_long, '&token=', tender_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
-        add_to_site_response = add_to_site.json()
-        if 'tid' in add_to_site_response:
-            print 'Tender was added to site'
-            tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
-            link_to_tender = '{}{}{}{}'.format(
-                'Link: ', variables.tender_byustudio_host, '/buyer/tender/view/', add_to_site_response['tid'])
-            print tender_id_site
-            print link_to_tender
-            break
-        else:
-            print add_to_site_response
-            continue

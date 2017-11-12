@@ -4,14 +4,22 @@ import tender
 import document
 import bid
 import json
-import sys
 import qualification
 import time
 import refresh
 from flask import Flask, jsonify, request, abort, make_response
+from flask_httpauth import HTTPBasicAuth
 
 
+auth = HTTPBasicAuth()
 app = Flask(__name__)
+
+
+@auth.get_password
+def get_password(username):
+    if username == 'tender':
+        return '123456'
+    return None
 
 
 # ###################### ERRORS ################################
@@ -21,16 +29,28 @@ def custom400(error):
         {'error': '400 Bad Request', 'description': error.description}), 400)
 
 
-@app.errorhandler(422)
-def custom422(error):
-    return make_response(jsonify(
-        {'error': '422 Unprocessable Entity', 'description': error.description}), 422)
+@auth.error_handler  # 401 error
+def unauthorized():
+    return make_response(jsonify({'error': '401 Unauthorized access', 'description':
+                                 'You are not authorized to access this resource'}), 401)
 
 
 @app.errorhandler(404)
 def custom404(error):
     return make_response(jsonify(
         {'error': '404 Not Found', 'description': error.description}), 404)
+
+
+@app.errorhandler(422)
+def custom422(error):
+    return make_response(jsonify(
+        {'error': '422 Unprocessable Entity', 'description': error.description}), 422)
+
+
+@app.errorhandler(405)
+def custom405(error):
+    return make_response(jsonify(
+        {'error': '405 Method Not Allowed', 'description': error.description}), 405)
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
 # cursor = db.cursor()
 
@@ -45,24 +65,26 @@ def index():
         "number_of_lots": 2,
         "number_of_items": 3,
         "documents": 0,
-        "bids": 3
+        "number_of_bids": 3
     }
 }'''
 
-# procurement_method = 'aboveThresholdUA'
-# number_of_lots = 0
-# number_of_items = 2
-# add_documents = 0
-# number_of_bids = 1
 
-
+# create tender
 @app.route('/api/tenders', methods=['POST'])
+@auth.login_required
 def create_tender_function():
+    if not request.json:
+        abort(400)
+    try:
+        request.json['data']
+    except:
+        abort(400, "Data was not found in request")
     tc_request = request.json['data']
-    if not tc_request or 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
+    if 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
             or 'number_of_items' not in tc_request or 'documents' not in tc_request \
             or 'number_of_bids' not in tc_request:
-        abort(400)
+        abort(400, "One or more parameters are incorrect.")
 
     procurement_method = tc_request["procurementMethodType"]
     number_of_lots = tc_request["number_of_lots"]
@@ -136,7 +158,9 @@ def create_tender_function():
         abort(400, 'Incorrect procurementMethodType')
 
 
-@app.route('/api/tenders/synchronization', methods=['GET'])
+# run synchronization
+@app.route('/api/tenders/synchronization', methods=['PATCH'])
+@auth.login_required
 def update_list_of_tenders():
     db = variables.database()
     cursor = db.cursor()
@@ -146,6 +170,7 @@ def update_list_of_tenders():
     return jsonify({"status": "success"})
 
 
+# get list of all tenders in local database
 @app.route('/api/tenders', methods=['GET'])
 def get_list_of_tenders():
     db = variables.database()
@@ -154,9 +179,10 @@ def get_list_of_tenders():
     db.commit()
     db.close()
     return jsonify({"data": {"tenders": list_of_tenders}})
+
+
 # ########################## PREQUALIFICATIONS ###################################
-
-
+# get list of tenders in prequalification status
 @app.route('/api/tenders/prequalification', methods=['GET'])
 def get_list_tenders_prequalification_status():
     db = variables.database()
@@ -173,11 +199,17 @@ def get_list_tenders_prequalification_status():
     return jsonify({'data': {"tenders": list_json}})
 
 
-@app.route('/api/tenders/prequalification/<tender_id_long>', methods=['POST'])
+# pass prequalification for indicated tender
+@app.route('/api/tenders/prequalification/<tender_id_long>', methods=['PATCH'])
+@auth.login_required
 def pass_prequalification(tender_id_long):
-    # tender_id_long = raw_input('Tender ID: ')
+    check_tender_id = 'SELECT tender_id_long FROM tenders WHERE tender_id_long = "{}"'.format(tender_id_long)
     db = variables.database()
     cursor = db.cursor()
+    cursor.execute(check_tender_id)
+    if_tender_in_db = cursor.fetchall()
+    if len(if_tender_in_db) == 0:
+        abort(404)
     tender_token = qualification.get_tender_token(tender_id_long, cursor)  # get tender token
     qualifications = qualification.list_of_qualifications(tender_id_long)  # get list of qualifications for tender
     prequalification_result = qualification.select_my_bids(
@@ -191,7 +223,70 @@ def pass_prequalification(tender_id_long):
                              "submit protocol": finish_prequalification}})
 
 
-# db.close()
+# add all tenders to company
+@app.route('/api/tenders/company', methods=['POST'])
+@auth.login_required
+def all_tenders_to_company():
+    if not request.json:  # check if json exists
+        abort(400, 'JSON was not found in request')
+    try:  # check if data is in json
+        request.json['data']
+    except:
+        abort(400, 'Data was not found in request')
+    tenders_to_company_request = request.json['data']
+    if 'company_uid' not in tenders_to_company_request:  # check if company_id is in json
+        abort(400, 'Company UID was not found in request')
+    company_uid = tenders_to_company_request['company_uid']
+    if type(company_uid) != int:
+        abort(400, 'Company UID must be integer')
+    db = variables.database()
+    cursor = db.cursor()
+    get_list_of_company_uid = "SELECT id FROM companies"
+    cursor.execute(get_list_of_company_uid)
+    list_of_company_uid = cursor.fetchall()
+    list_of_uid = []
+    for uid in range(len(list_of_company_uid)):
+        list_of_uid.append(list_of_company_uid[0][uid])
+    if company_uid in list_of_uid:
+        get_company_id = "SELECT company_id, platform_id FROM companies WHERE id = {}".format(company_uid)
+        cursor.execute(get_company_id)
+        company_info = cursor.fetchone()
+        company_id = company_info[0]
+        platform_id = company_info[1]
+        get_platform_url = "SELECT platform_url FROM platforms WHERE id = {}".format(platform_id)
+        cursor.execute(get_platform_url)
+        company_platform_host = cursor.fetchone()[0]
+        add_tenders_to_company = refresh.add_all_tenders_to_company(cursor, company_id, company_platform_host)
+        success_message = '{}{}'.format(add_tenders_to_company, ' tenders were added to company')
+        db.commit()
+        db.close()
+        return jsonify({"status": "success", "description": success_message})
+    else:
+        error_no_uid = '{}{}{}'.format('Company with UID ', company_uid, ' was not found in database')
+        print error_no_uid
+        db.close()
+        return jsonify({"status": "error", "description": error_no_uid})
+
+
+'''def add_tender_to_company(tender_id_long, tender_token):
+    print 'Don\'t worry, script is working ...'
+    for x in range(5):
+        company_id = 61
+        add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
+            variables.tender_byustudio_host, '/tender/add-tender-to-company?tid=',
+            tender_id_long, '&token=', tender_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+        add_to_site_response = add_to_site.json()
+        if 'tid' in add_to_site_response:
+            print 'Tender was added to site'
+            tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
+            link_to_tender = '{}{}{}{}'.format(
+                'Link: ', variables.tender_byustudio_host, '/buyer/tender/view/', add_to_site_response['tid'])
+            print tender_id_site
+            print link_to_tender
+            break
+        else:
+            print add_to_site_response
+            continue'''
 
 if __name__ == '__main__':
     app.run(debug=True)

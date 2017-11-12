@@ -13,7 +13,7 @@ def database():
     return db
 
 host = "https://lb.api-sandbox.openprocurement.org"
-api_version = "2.3"
+api_version = "2.4"
 auth_key = key.auth_key
 
 tender_byustudio_host = 'http://tender.byustudio.in.ua'
