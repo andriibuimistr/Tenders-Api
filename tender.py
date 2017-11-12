@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import pprint
 import time
 import MySQLdb
 import requests
@@ -98,7 +99,7 @@ def publish_tender(headers, json_tender):
         if resp.status_code == 201:
             print("Publishing tender: Success")
             print("       status code:  {}".format(resp.status_code))
-            publish_tender_response = {"status code": resp.status_code}
+            publish_tender_response = {"status code": resp.status_code, "id": resp.json()['data']['id']}
         else:
             print("Publishing tender: Error")
             print("       status code:  {}".format(resp.status_code))
