@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import pprint
-import time
-import MySQLdb
 import requests
 import sys
 import variables
@@ -60,18 +57,19 @@ def list_of_items_for_tender(number_of_lots, number_of_items):
 
 
 # generate json for tender with lots
-def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method):
+def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator):
     return u"{}{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values(number_of_lots), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots),
         list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots), tender_features,
-        tender_data(procurement_method), '}}')
+        tender_data(procurement_method, accelerator), '}}')
 
 
 # generate json for tender without lots
-def tender(number_of_lots, number_of_items, procurement_method):
+def tender(number_of_lots, number_of_items, procurement_method, accelerator):
     return u"{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values(number_of_lots), tender_titles(),
-        list_of_items_for_tender(number_of_lots, number_of_items), tender_features, tender_data(procurement_method),
+        list_of_items_for_tender(number_of_lots, number_of_items), tender_features,
+        tender_data(procurement_method, accelerator),
         '}}')
 
 

@@ -5,6 +5,7 @@ import binascii
 from datetime import datetime, timedelta
 import key
 import MySQLdb
+import pytz
 
 
 # GLOBAL VARIABLES
@@ -255,15 +256,18 @@ def description_en():
 
 
 # Generate tender period
-def tender_period():
+def tender_period(accelerator):
+    tz = pytz.timezone('Europe/Kiev')
+    kiev_now = str(datetime.now(tz))[26:]
     # tender_start_date
     date_now = datetime.now()
-    tender_start_date = date_now.strftime('"%Y-%m-%dT%H:%M:%S+02:00"')
+    tender_start_date = date_now.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
     # tender_end_date
-    day = timedelta(minutes=31)  # input(u'Дата окончания приема предложений ( в минутах): ')
+    minutes = int(round(31 * (1440.0 / accelerator)) + 1)
+    day = timedelta(minutes=minutes)  # input(u'Дата окончания приема предложений ( в минутах): ')
     date_now = datetime.now()
     date_day = date_now + day
-    tender_end_date = date_day.strftime('"%Y-%m-%dT%H:%M:%S+02:00"')
+    tender_end_date = date_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
     tender_period_data = u"{}{}{}{}{}{}".format(
         ', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
     return tender_period_data
@@ -313,14 +317,15 @@ def procuring_entity():
     return procuring_entity_block
 
 
-def tender_data(procurement_method):
+def tender_data(procurement_method, accelerator):
     procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
     mode = ', "mode": "test"'
     submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
-    procurement_method_details = ', "procurementMethodDetails": "quick, accelerator=1440"'
+    procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
     status = ', "status": "draft"'
-    constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(), procuring_entity(), procurement_method_type, mode,
-                                                    submission_method_details, procurement_method_details, status)
+    constant_tender_data = u'{}{}{}{}{}{}{}'.format(
+        tender_period(accelerator), procuring_entity(), procurement_method_type, mode, submission_method_details,
+        procurement_method_details, status)
     return constant_tender_data
 
 

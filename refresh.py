@@ -32,18 +32,20 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
             print '{}{}{}{}{}{}{}'.format(
                 tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status, ' - ',
                 procurement_method_type)
+            return 1
 
 
 # get updated tenders from CDB
 def update_tenders_list(cursor):
     cron = open('cron/synchronization.txt', 'r')
     last_cron = cron.read()
-    print last_cron
     year = last_cron[:4]
     month = last_cron[5:7]
     day = last_cron[8:10]
     hours = last_cron[11:13]
     minutes = int(last_cron[14:16]) - 1
+    if minutes == 0:
+        minutes = 1
     seconds = last_cron[17:]
     cron.close()
 
@@ -66,14 +68,18 @@ def update_tenders_list(cursor):
     else:
         count = 0
         print "Update tenders in local DB"
+        n_updated_tenders = 0
         for tender in range(len(tenders_list)):
             tender_id = tenders_list[tender][0]
             db_tender_status = tenders_list[tender][1]
             procurement_method_type = tenders_list[tender][2]
             if tender_id in list_of_updated_tenders:
                 count += 1
-                update_tender_status(db_tender_status, tender_id, procurement_method_type, cursor)
+                num_updated_tenders = update_tender_status(db_tender_status, tender_id, procurement_method_type, cursor)
+                n_updated_tenders += num_updated_tenders
+        print n_updated_tenders
         print '{}{}'.format(count, ' tenders were found in synchronization list')
+        return n_updated_tenders
 
 
 def get_tenders_list(cursor):

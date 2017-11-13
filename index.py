@@ -83,7 +83,7 @@ def create_tender_function():
     tc_request = request.json['data']
     if 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
             or 'number_of_items' not in tc_request or 'documents' not in tc_request \
-            or 'number_of_bids' not in tc_request:
+            or 'number_of_bids' not in tc_request or 'accelerator' not in tc_request:
         abort(400, "One or more parameters are incorrect.")
 
     procurement_method = tc_request["procurementMethodType"]
@@ -91,6 +91,7 @@ def create_tender_function():
     number_of_items = tc_request["number_of_items"]
     add_documents = tc_request["documents"]
     number_of_bids = tc_request["number_of_bids"]
+    accelerator = tc_request["accelerator"]
 
     if type(number_of_lots) != int:
         abort(400, 'Number of lots must be integer')
@@ -112,14 +113,19 @@ def create_tender_function():
     elif 0 > number_of_bids or number_of_bids > 10:
         abort(422, 'Number of bids must be between 0 and 10')
 
+    if type(accelerator) != int:
+        abort(400, 'Accelerator must be integer')
+    elif 1 > accelerator or accelerator > 15000:
+        abort(422, 'Accelerator must be between 1 and 15000')
+
     if procurement_method in variables.above_threshold_procurement:
         list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)  # get list of id for lots
         # select type of tender (with or without lots)
         if number_of_lots == 0:
-            json_tender = json.loads(tender.tender(number_of_lots, number_of_items, procurement_method))
+            json_tender = json.loads(tender.tender(number_of_lots, number_of_items, procurement_method, accelerator))
         else:
             json_tender = json.loads(tender.tender_with_lots(number_of_lots, number_of_items, list_of_id_lots,
-                                                             procurement_method))
+                                                             procurement_method, accelerator))
         headers_tender = tender.headers_tender(json_tender)  # get headers for publish tender
         publish_tender_response = tender.publish_tender(headers_tender, json_tender)  # publish tender in draft status
         activate_tender = tender.activating_tender(publish_tender_response[0], headers_tender)  # activate tender
@@ -164,10 +170,10 @@ def create_tender_function():
 def update_list_of_tenders():
     db = variables.database()
     cursor = db.cursor()
-    refresh.update_tenders_list(cursor)
+    update_tenders = refresh.update_tenders_list(cursor)
     db.commit()
     db.close()
-    return jsonify({"status": "success"})
+    return jsonify({"status": "success", "updated tenders": update_tenders})
 
 
 # get list of all tenders in local database
