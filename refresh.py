@@ -140,6 +140,47 @@ def add_all_tenders_to_company(cursor, company_id, company_platform_host):
     return count
 
 
+def add_one_tender_to_company(cursor, company_id, company_platform_host, tender_id_long):
+    get_tender_data = "SELECT tender_id_long, tender_token, added_to_site FROM tenders WHERE tender_id_long = '{}'"\
+        .format(tender_id_long)
+    cursor.execute(get_tender_data)
+    tender_data = cursor.fetchone()
+    tender_id_long = tender_data[0]
+    tender_token = tender_data[1]
+    added_to_site = tender_data[2]
+    if added_to_site == 0 or added_to_site is None:
+        add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
+            company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
+            '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+        add_to_site_response = add_to_site.json()
+        if 'tid' in add_to_site_response:
+            mark_as_added = \
+                'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
+            cursor.execute(mark_as_added)
+            print '\nTender was added to site - ' + tender_id_long
+            tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
+            link_to_tender = '{}{}{}{}'.format(
+                'Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+            print tender_id_site
+            print link_to_tender
+            return {'status': 'success'}
+        elif 'tender has company' in add_to_site_response['error']:
+            mark_as_added_before = \
+                'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
+            cursor.execute(mark_as_added_before)
+            print 'Tender has company'
+            return {'status': 'error', 'description': 'Tender has company'}
+        else:
+            print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
+            return {'status': 'error', 'description': add_to_site_response}
+    else:
+        print '{}{}{}'.format('Tender ', tender_id_long, ' was added to site before')
+        return {'status': 'error', 'description': 'Tender was added to site before'}
+
+
+
+
+
 # list of tenders in prequalification status
 def get_tenders_prequalification_status(cursor):
     list_tenders_prequalification = "SELECT tender_id_long, procurementMethodType, tender_status FROM tenders WHERE " \

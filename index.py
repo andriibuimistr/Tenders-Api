@@ -274,9 +274,51 @@ def all_tenders_to_company():
         return jsonify({"status": "error", "description": error_no_uid})
 
 
-''''@app.route('/api/tenders/<tender_id_long>/company', methods=['POST'])
+@app.route('/api/tenders/<tender_id_long>/company', methods=['POST'])
 @auth.login_required
-def add_tender_to_company(tender_id_long, tender_token, company_uid):'''
+def add_tender_to_company(tender_id_long):
+    db = variables.database()
+    cursor = db.cursor()
+    list_of_tenders = 'SELECT tender_id_long FROM tenders'
+    cursor.execute(list_of_tenders)
+    list_of_id = cursor.fetchall()
+    list_tid = []
+    for tid in range(len(list_of_id)):
+        list_tid.append(list_of_id[tid][0])
+    if tender_id_long not in list_tid:
+        abort(404, 'Tender id was not found in database')
+
+    if not request.json:  # check if json exists
+        abort(400, 'JSON was not found in request')
+    try:  # check if data is in json
+        request.json['data']
+    except:
+        abort(400, 'Data was not found in request')
+    tender_to_company_request = request.json['data']
+    if 'company_uid' not in tender_to_company_request:  # check if company_id is in json
+        abort(400, 'Company UID was not found in request')
+    company_uid = tender_to_company_request['company_uid']
+    if type(company_uid) != int:
+        abort(400, 'Company UID must be integer')
+
+    get_list_of_company_uid = "SELECT id FROM companies"
+    cursor.execute(get_list_of_company_uid)
+    list_of_company_uid = cursor.fetchall()
+    list_of_uid = []
+    for uid in range(len(list_of_company_uid)):
+        list_of_uid.append(int(list_of_company_uid[uid][0]))
+    if company_uid not in list_of_uid:
+        abort(422, 'Company was not found in database')
+    get_company_id = "SELECT company_id, platform_id FROM companies WHERE id = {}".format(company_uid)
+    cursor.execute(get_company_id)
+    company_info = cursor.fetchone()
+    company_id = company_info[0]
+    platform_id = company_info[1]
+    get_platform_url = "SELECT platform_url FROM platforms WHERE id = {}".format(platform_id)
+    cursor.execute(get_platform_url)
+    company_platform_host = cursor.fetchone()[0]
+    add_tender_company = refresh.add_one_tender_to_company(cursor, company_id, company_platform_host, tender_id_long)
+    return jsonify(add_tender_company)
 
 
 if __name__ == '__main__':
