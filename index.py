@@ -153,7 +153,7 @@ def create_tender_function():
             "bids": run_create_tender
 
         }
-        })
+        }), 201
     elif procurement_method in variables.below_threshold_procurement:
         print "Error. Данный функционал еще не был разработан :)"
         abort(422, "This procurementMethodType wasn't implemented yet")
@@ -266,7 +266,7 @@ def all_tenders_to_company():
         success_message = '{}{}'.format(add_tenders_to_company, ' tenders were added to company')
         db.commit()
         db.close()
-        return jsonify({"status": "success", "description": success_message})
+        return jsonify({"status": "success", "description": success_message}), 201
     else:
         error_no_uid = '{}{}{}'.format('Company with UID ', company_uid, ' was not found in database')
         print error_no_uid
@@ -318,7 +318,12 @@ def add_tender_to_company(tender_id_long):
     cursor.execute(get_platform_url)
     company_platform_host = cursor.fetchone()[0]
     add_tender_company = refresh.add_one_tender_to_company(cursor, company_id, company_platform_host, tender_id_long)
-    return jsonify(add_tender_company)
+    db.commit()
+    db.close()
+    if add_tender_company[1] == 201:
+        return jsonify(add_tender_company[0]), 201
+    else:
+        return jsonify(add_tender_company)
 
 
 if __name__ == '__main__':

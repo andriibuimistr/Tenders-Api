@@ -2,7 +2,7 @@
 import requests
 from variables import host, api_version
 from datetime import datetime
-
+from flask import abort
 
 tender_byustudio_host = 'http://tender.byustudio.in.ua'
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
@@ -82,8 +82,9 @@ def update_tenders_list(cursor):
         return n_updated_tenders
 
 
+# get list of all tenders
 def get_tenders_list(cursor):
-    list_of_tenders = "SELECT tender_id_long, tender_status, procurementMethodType FROM tenders"
+    list_of_tenders = "SELECT tender_id_long, tender_status, procurementMethodType, added_to_site FROM tenders"
     cursor.execute(list_of_tenders)
     tenders_list = cursor.fetchall()
     list_of_tenders = []
@@ -96,8 +97,13 @@ def get_tenders_list(cursor):
             tender_id = tenders_list[tender][0]
             db_tender_status = tenders_list[tender][1]
             procurement_method_type = tenders_list[tender][2]
+            added_to_site = tenders_list[tender][3]
+            if added_to_site == 1:
+                added_to_site = True
+            else:
+                added_to_site = False
             list_of_tenders.append({"tender id": tender_id, "tender status": db_tender_status,
-                                    "procurementMethodType": procurement_method_type})
+                                    "procurementMethodType": procurement_method_type, 'has company': added_to_site})
         return list_of_tenders
 
 
@@ -163,22 +169,19 @@ def add_one_tender_to_company(cursor, company_id, company_platform_host, tender_
                 'Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
             print tender_id_site
             print link_to_tender
-            return {'status': 'success'}
+            return {'status': 'success'}, 201
         elif 'tender has company' in add_to_site_response['error']:
             mark_as_added_before = \
                 'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
             cursor.execute(mark_as_added_before)
             print 'Tender has company'
-            return {'status': 'error', 'description': 'Tender has company'}
+            return abort(422, 'Tender has company')
         else:
             print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
             return {'status': 'error', 'description': add_to_site_response}
     else:
-        print '{}{}{}'.format('Tender ', tender_id_long, ' was added to site before')
-        return {'status': 'error', 'description': 'Tender was added to site before'}
-
-
-
+        print '{}{}{}'.format('Tender ', tender_id_long, ' was added to company before')
+        return abort(422, 'Tender was added to site before')
 
 
 # list of tenders in prequalification status
