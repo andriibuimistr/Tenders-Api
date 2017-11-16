@@ -9,6 +9,7 @@ import time
 import refresh
 from flask import Flask, jsonify, request, abort, make_response
 from flask_httpauth import HTTPBasicAuth
+import re
 
 
 auth = HTTPBasicAuth()
@@ -254,19 +255,27 @@ def all_tenders_to_company():
     for uid in range(len(list_of_company_uid)):
         list_of_uid.append(list_of_company_uid[0][uid])
     if company_uid in list_of_uid:
-        get_company_id = "SELECT company_id, platform_id FROM companies WHERE id = {}".format(company_uid)
+        get_company_id = "SELECT company_id, platform_id, company_role_id FROM companies WHERE id = {}"\
+            .format(company_uid)
         cursor.execute(get_company_id)
         company_info = cursor.fetchone()
         company_id = company_info[0]
         platform_id = company_info[1]
+        company_role_id = company_info[2]
+        if company_role_id != 1:
+            abort(422, 'Company role must be Buyer (1)')
         get_platform_url = "SELECT platform_url FROM platforms WHERE id = {}".format(platform_id)
         cursor.execute(get_platform_url)
         company_platform_host = cursor.fetchone()[0]
         add_tenders_to_company = refresh.add_all_tenders_to_company(cursor, company_id, company_platform_host)
+        if add_tenders_to_company == 0:
+            response_code = 200
+        else:
+            response_code = 201
         success_message = '{}{}'.format(add_tenders_to_company, ' tenders were added to company')
         db.commit()
         db.close()
-        return jsonify({"status": "success", "description": success_message}), 201
+        return jsonify({"status": "success", "description": success_message}), response_code
     else:
         error_no_uid = '{}{}{}'.format('Company with UID ', company_uid, ' was not found in database')
         print error_no_uid
@@ -309,11 +318,14 @@ def add_tender_to_company(tender_id_long):
         list_of_uid.append(int(list_of_company_uid[uid][0]))
     if company_uid not in list_of_uid:
         abort(422, 'Company was not found in database')
-    get_company_id = "SELECT company_id, platform_id FROM companies WHERE id = {}".format(company_uid)
+    get_company_id = "SELECT company_id, platform_id, company_role_id FROM companies WHERE id = {}".format(company_uid)
     cursor.execute(get_company_id)
     company_info = cursor.fetchone()
     company_id = company_info[0]
     platform_id = company_info[1]
+    company_role_id = company_info[2]
+    if company_role_id != 1:
+        abort(422, 'Company role must be Buyer (1)')
     get_platform_url = "SELECT platform_url FROM platforms WHERE id = {}".format(platform_id)
     cursor.execute(get_platform_url)
     company_platform_host = cursor.fetchone()[0]
@@ -324,6 +336,82 @@ def add_tender_to_company(tender_id_long):
         return jsonify(add_tender_company[0]), 201
     else:
         return jsonify(add_tender_company)
+
+
+# Add new company in database
+@app.route('/api/tenders/companies', methods=['POST'])
+@auth.login_required
+def create_company():
+    if not request.json:  # check if json exists
+        abort(400, 'JSON was not found in request')
+    try:  # check if data is in json
+        request.json['data']
+    except:
+        abort(400, 'Data was not found in request')
+    cc_request = request.json['data']
+    if 'company_email' not in cc_request or 'company_id' not in cc_request \
+            or 'company_role_id' not in cc_request or 'company_platform_name' not in cc_request \
+            or 'platform_id' not in cc_request or 'company_identifier' not in cc_request:
+        abort(400, "Can not find one or more parameters.")
+    company_email = cc_request['company_email']
+    company_id = cc_request['company_id']
+    company_role_id = cc_request['company_role_id']
+    company_platform_name = cc_request['company_platform_name']
+    platform_id = cc_request['platform_id']
+    company_identifier = cc_request['company_identifier']
+
+    if type(company_id) != int:
+        abort(400, 'Company ID must be integer')
+    if type(company_role_id) != int:
+        abort(400, 'Company Role ID must be integer')
+    if type(company_platform_name) != unicode:
+        abort(400, "Company Platform Name must be string, got '{}' instead.".format(type(
+            company_platform_name).__name__))
+    if type(company_identifier) not in [int, long]:
+        abort(400, 'Company Identifier must be integer')
+    if len(str(company_identifier)) not in [8, 10]:
+        abort(422, 'Company Identifier must be 8 or 10 characters long')
+    if type(platform_id) != int:
+        abort(400, 'Platform ID must be integer')
+
+    db = variables.database()
+    cursor = db.cursor()
+    check_company_role_id = 'SELECT id FROM roles'
+    cursor.execute(check_company_role_id)
+    list_of_roles_id = cursor.fetchall()
+    list_roles = []
+    for rid in range(len(list_of_roles_id)):
+        list_roles.append(int(list_of_roles_id[rid][0]))
+    if company_role_id not in list_roles:
+        abort(422, 'Role wasn\'t found in database')
+
+    check_platform_id = 'SELECT id FROM platforms'
+    cursor.execute(check_platform_id)
+    list_of_platform_id = cursor.fetchall()
+    list_platforms_id = []
+    for pid in range(len(list_of_platform_id)):
+        list_platforms_id.append(int(list_of_platform_id[pid][0]))
+    if platform_id not in list_platforms_id:
+        abort(422, 'Platform ID wasn\'t found in database')
+    if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", company_email):
+        abort(400, 'Email address is invalid')
+
+    get_company_email_platform = "SELECT company_email, platform_id FROM companies"
+    cursor.execute(get_company_email_platform)
+    email_platform_id_combination = cursor.fetchall()
+    combinations = []
+    for combination in range(len(email_platform_id_combination)):
+        email = email_platform_id_combination[combination][0]
+        pl_id = email_platform_id_combination[combination][1]
+        combinations.append([email, pl_id])
+    if [company_email, platform_id] in combinations:
+        abort(422, "Company with this email was added to this platform before")
+    add_company = "INSERT INTO companies VALUES(null, '{}', '{}', '{}', '{}', '{}', '{}')".format(
+        company_email, company_id, company_role_id, company_platform_name, platform_id, company_identifier)
+    cursor.execute(add_company)
+    db.commit()
+    db.close()
+    return jsonify({'status': 'success'})
 
 
 if __name__ == '__main__':
