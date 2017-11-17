@@ -253,7 +253,7 @@ def all_tenders_to_company():
     list_of_company_uid = cursor.fetchall()
     list_of_uid = []
     for uid in range(len(list_of_company_uid)):
-        list_of_uid.append(list_of_company_uid[0][uid])
+        list_of_uid.append(list_of_company_uid[uid][0])
     if company_uid in list_of_uid:
         get_company_id = "SELECT company_id, platform_id, company_role_id FROM companies WHERE id = {}"\
             .format(company_uid)
