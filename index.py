@@ -36,6 +36,12 @@ def unauthorized():
                                  'You are not authorized to access this resource'}), 401)
 
 
+@app.errorhandler(403)
+def custom403(error):
+    return make_response(jsonify(
+        {'error': '403 Forbidden', 'description': error.description}), 403)
+
+
 @app.errorhandler(404)
 def custom404(error):
     return make_response(jsonify(
@@ -52,6 +58,12 @@ def custom422(error):
 def custom405(error):
     return make_response(jsonify(
         {'error': '405 Method Not Allowed', 'description': error.description}), 405)
+
+
+@app.errorhandler(500)
+def custom500(error):
+    return make_response(jsonify(
+        {'error': '500 Internal Server Error', 'description': error.description}), 500)
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
 # cursor = db.cursor()
 
@@ -118,7 +130,7 @@ def create_tender_function():
         abort(400, 'Accelerator must be integer')
     elif 1 > accelerator or accelerator > 15000:
         abort(422, 'Accelerator must be between 1 and 15000')
-
+    # check procurement method
     if procurement_method in variables.above_threshold_procurement:
         list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)  # get list of id for lots
         # select type of tender (with or without lots)
@@ -127,9 +139,21 @@ def create_tender_function():
         else:
             json_tender = json.loads(tender.tender_with_lots(number_of_lots, number_of_items, list_of_id_lots,
                                                              procurement_method, accelerator))
-        headers_tender = tender.headers_tender(json_tender)  # get headers for publish tender
+        headers_tender = tender.headers_tender(json_tender)  # get headers for publish and activate tender
+
+        # run publish tender function
         publish_tender_response = tender.publish_tender(headers_tender, json_tender)  # publish tender in draft status
+        if publish_tender_response[1] == 1:
+            abort(500, '{}'.format(publish_tender_response[0]))
+        elif publish_tender_response[2] != 201:
+            abort(publish_tender_response[2], json.loads(publish_tender_response[1]))
+
+        # run activate tender function
         activate_tender = tender.activating_tender(publish_tender_response[0], headers_tender)  # activate tender
+        if activate_tender[1] == 1:
+            abort(500, '{}'.format(activate_tender[0]))
+        elif activate_tender[2] != 200:
+            abort(activate_tender[2], json.loads(activate_tender[1]))
 
         tender_id_long = publish_tender_response[0].headers['Location'].split('/')[-1]
         tender_token = publish_tender_response[0].json()['access']['token']
@@ -141,15 +165,16 @@ def create_tender_function():
         # add tender to database
         add_tender_db = tender.tender_to_db(tender_id_long, publish_tender_response[0], tender_token,
                                             procurement_method, tender_status, number_of_lots)
-        # tender.add_tender_to_site(tender_id_long, tender_token)
-        # bids
+        if add_tender_db[1] == 1:
+            abort(500, '{}'.format(add_tender_db[0]))
+
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots)
         return jsonify({'data': {
             "tender": [{
                 "publish tender": publish_tender_response[1],
                 "activate tender": activate_tender[1],
-                "add tender to db": add_tender_db
+                "add tender to db": add_tender_db[0]
             }],
             "bids": run_create_tender
 
@@ -350,13 +375,12 @@ def create_company():
         abort(400, 'Data was not found in request')
     cc_request = request.json['data']
     if 'company_email' not in cc_request or 'company_id' not in cc_request \
-            or 'company_role_id' not in cc_request or 'company_platform_name' not in cc_request \
-            or 'platform_id' not in cc_request or 'company_identifier' not in cc_request:
+            or 'company_role_id' not in cc_request or 'platform_id' not in cc_request or 'company_identifier'\
+            not in cc_request:
         abort(400, "Can not find one or more parameters.")
     company_email = cc_request['company_email']
     company_id = cc_request['company_id']
     company_role_id = cc_request['company_role_id']
-    company_platform_name = cc_request['company_platform_name']
     platform_id = cc_request['platform_id']
     company_identifier = cc_request['company_identifier']
 
@@ -364,9 +388,6 @@ def create_company():
         abort(400, 'Company ID must be integer')
     if type(company_role_id) != int:
         abort(400, 'Company Role ID must be integer')
-    if type(company_platform_name) != unicode:
-        abort(400, "Company Platform Name must be string, got '{}' instead.".format(type(
-            company_platform_name).__name__))
     if type(company_identifier) not in [int, long]:
         abort(400, 'Company Identifier must be integer')
     if len(str(company_identifier)) not in [8, 10]:
@@ -396,22 +417,26 @@ def create_company():
     if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", company_email):
         abort(400, 'Email address is invalid')
 
-    get_company_email_platform = "SELECT company_email, platform_id FROM companies"
-    cursor.execute(get_company_email_platform)
-    email_platform_id_combination = cursor.fetchall()
+    get_company_id_platform = "SELECT company_id, platform_id FROM companies"
+    cursor.execute(get_company_id_platform)
+    company_platform_id_combination = cursor.fetchall()
     combinations = []
-    for combination in range(len(email_platform_id_combination)):
-        email = email_platform_id_combination[combination][0]
-        pl_id = email_platform_id_combination[combination][1]
-        combinations.append([email, pl_id])
-    if [company_email, platform_id] in combinations:
-        abort(422, "Company with this email was added to this platform before")
-    add_company = "INSERT INTO companies VALUES(null, '{}', '{}', '{}', '{}', '{}', '{}')".format(
-        company_email, company_id, company_role_id, company_platform_name, platform_id, company_identifier)
+    for combination in range(len(company_platform_id_combination)):
+        comp_id = company_platform_id_combination[combination][0]
+        pl_id = company_platform_id_combination[combination][1]
+        combinations.append([comp_id, pl_id])
+    if [company_id, platform_id] in combinations:
+        abort(422, "Company with this ID was added to this platform before")
+    add_company = "INSERT INTO companies VALUES(null, '{}', '{}', '{}', '{}', '{}')".format(
+        company_email, company_id, company_role_id, platform_id, company_identifier)
     cursor.execute(add_company)
+    get_company_uid = "SELECT id FROM companies WHERE company_id = '{}' AND platform_id = '{}'".format(company_id,
+                                                                                                       platform_id)
+    cursor.execute(get_company_uid)
+    uid = cursor.fetchone()[0]
     db.commit()
     db.close()
-    return jsonify({'status': 'success'})
+    return jsonify({'status': 'success', 'id': int('{}'.format(uid))})
 
 
 if __name__ == '__main__':

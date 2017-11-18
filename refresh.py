@@ -15,6 +15,7 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
     if actual_tender_status == tender_status_in_db and actual_tender_status not in invalid_tender_status_list:
         print '{}{}{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status, ' - ',
                                   procurement_method_type)
+        return 0
     else:
         if actual_tender_status in invalid_tender_status_list:
             delete_unsuccessful_tender = 'DELETE FROM tenders WHERE tender_id_long = "{}"'.format(tender_id_long)
@@ -24,6 +25,7 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
             cursor.execute(delete_unsuccessful_tender)
             print '{}{}{}'.format('Tender ', tender_id_long,
                                   ' and its related bids were deleted because of it\'s status')
+            return 0
         else:
             sql_update_tender_status = \
                 'UPDATE tenders SET tender_status = "{}" WHERE tender_id_long = "{}"'.format(
