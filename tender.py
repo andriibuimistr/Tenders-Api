@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import requests
-import sys
 import variables
 from variables import tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles
 

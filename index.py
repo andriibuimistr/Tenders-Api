@@ -89,10 +89,8 @@ def index():
 def create_tender_function():
     if not request.json:
         abort(400)
-    try:
-        request.json['data']
-    except:
-        abort(400, "Data was not found in request")
+    if 'data' not in request.json:  # check if data is in json
+        abort(400, 'Data was not found in request')
     tc_request = request.json['data']
     if 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
             or 'number_of_items' not in tc_request or 'documents' not in tc_request \
@@ -261,9 +259,7 @@ def pass_prequalification(tender_id_long):
 def all_tenders_to_company():
     if not request.json:  # check if json exists
         abort(400, 'JSON was not found in request')
-    try:  # check if data is in json
-        request.json['data']
-    except:
+    if 'data' not in request.json:  # check if data is in json
         abort(400, 'Data was not found in request')
     tenders_to_company_request = request.json['data']
     if 'company_uid' not in tenders_to_company_request:  # check if company_id is in json
@@ -308,6 +304,7 @@ def all_tenders_to_company():
         return jsonify({"status": "error", "description": error_no_uid})
 
 
+# add one tender to company
 @app.route('/api/tenders/<tender_id_long>/company', methods=['POST'])
 @auth.login_required
 def add_tender_to_company(tender_id_long):
@@ -324,9 +321,7 @@ def add_tender_to_company(tender_id_long):
 
     if not request.json:  # check if json exists
         abort(400, 'JSON was not found in request')
-    try:  # check if data is in json
-        request.json['data']
-    except:
+    if 'data' not in request.json:  # check if data is in json
         abort(400, 'Data was not found in request')
     tender_to_company_request = request.json['data']
     if 'company_uid' not in tender_to_company_request:  # check if company_id is in json
@@ -369,9 +364,7 @@ def add_tender_to_company(tender_id_long):
 def create_company():
     if not request.json:  # check if json exists
         abort(400, 'JSON was not found in request')
-    try:  # check if data is in json
-        request.json['data']
-    except:
+    if 'data' not in request.json:  # check if data is in json
         abort(400, 'Data was not found in request')
     cc_request = request.json['data']
     if 'company_email' not in cc_request or 'company_id' not in cc_request \

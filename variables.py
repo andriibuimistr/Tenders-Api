@@ -93,19 +93,19 @@ items_m = ', "items": '
 
 
 # generate item description
-def description_of_item(number_of_lots, number_of_items):
+def description_of_item(di_number_of_lots, di_number_of_items):
     description_text = [u'"Описание предмета закупки ']
     description_item = []
     if number_of_lots == 0:
         items_count = 0
-        for item in range(number_of_items):
+        for item in range(di_number_of_items):
             items_count += 1
             item_description = u"{}{}{}{}".format('"description": ', random.choice(description_text), items_count, '"')
             description_item.append(item_description)
         return description_item
     else:
         items_count = 0
-        for item in range(number_of_lots):
+        for item in range(di_number_of_lots):
             items_count += 1
             item_description = u"{}{}{}{}{}".format(', "description": ', random.choice(description_text),
                                                     u'Лот ', items_count, '"')
@@ -166,9 +166,9 @@ quantity = u"{}{}{}{}".format(', "quantity": ', '"', random.randint(1, 99999), '
 
 
 # generate data for item
-def item_data(number_of_lots, number_of_items, i):
+def item_data(id_number_of_lots, id_number_of_items, i):
     data_for_item = u'{}{}{}{}{}{}{}{}{}'.format(
-        description_of_item(number_of_lots, number_of_items)[i], classification, additionalClassifications,
+        description_of_item(id_number_of_lots, id_number_of_items)[i], classification, additionalClassifications,
         description_en(), delivery_address_block(),
         deliveryDate, item_id_generator(), unit(), quantity)
     return data_for_item
@@ -213,11 +213,11 @@ lot_values = lot_values()
 
 # TENDERS
 # tender values
-def tender_values(number_of_lots):
+def tender_values(tv_number_of_lots):
     if number_of_lots == 0:
         tender_value_amount = lot_values[1]
     else:
-        tender_value_amount = lot_values[1] * number_of_lots
+        tender_value_amount = lot_values[1] * tv_number_of_lots
     tender_value = u"{}{}{}{}{}{}{}{}".format(
         '"value": {', '"valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "amount": ', tender_value_amount,
         ', "currency": ', tender_currency, '}')

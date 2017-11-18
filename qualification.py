@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 import key
-import sys
 import json
-import variables
 import time
 
 
@@ -66,15 +64,15 @@ def list_of_qualifications(tender_id_long):
 # approve/cancel qualifications
 def approve_prequalification(qualification_id, prequalification_bid_json, tender_id_long, tender_token,
                              qualification_bid_id, is_my_bid):
-    s = requests.Session()
-    s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
-    r = requests.Request('PATCH',
-                         "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(
-                             host, api_version, tender_id_long, qualification_id, tender_token),
-                         data=json.dumps(prequalification_bid_json),
-                         headers=headers_prequalification,
-                         cookies=requests.utils.dict_from_cookiejar(s.cookies))
     try:
+        s = requests.Session()
+        s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
+        r = requests.Request('PATCH',
+                             "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(
+                                 host, api_version, tender_id_long, qualification_id, tender_token),
+                             data=json.dumps(prequalification_bid_json),
+                             headers=headers_prequalification,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
         print("Approve bid:")
@@ -89,8 +87,9 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
                             "status code": resp.status_code,
                             "description": json.loads(resp.content)['errors'][0]['description']}
         return approve_json
-    except:
-        sys.exit("Error")
+    except Exception as e:
+        print e
+        return {"bidID": qualification_bid_id, "status code": 500, "reason": str(e)}
 
 
 # select my bids
@@ -119,15 +118,15 @@ def select_my_bids(qualifications, tender_id_long, tender_token, cursor):
 
 # submit protocol of prequalification
 def finish_prequalification(tender_id_long, tender_token):
-    s = requests.Session()
-    s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
-    r = requests.Request('PATCH',
-                         "{}/api/{}/tenders/{}?acc_token={}".format(
-                             host, api_version, tender_id_long, tender_token),
-                         data=json.dumps(finish_prequalification_json),
-                         headers=headers_prequalification,
-                         cookies=requests.utils.dict_from_cookiejar(s.cookies))
     try:
+        s = requests.Session()
+        s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
+        r = requests.Request('PATCH',
+                             "{}/api/{}/tenders/{}?acc_token={}".format(
+                                 host, api_version, tender_id_long, tender_token),
+                             data=json.dumps(finish_prequalification_json),
+                             headers=headers_prequalification,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
         print("Finish prequalification:")
@@ -139,5 +138,6 @@ def finish_prequalification(tender_id_long, tender_token):
             print("       response content:  {}".format(resp.content))
             f_prequalification_json = {"status code": resp.status_code, "reason": resp.content}
         return f_prequalification_json
-    except:
-        return sys.exit("gbfbf")
+    except Exception as e:
+        print e
+        return {"status code": 500, "reason": str(e)}

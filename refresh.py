@@ -24,7 +24,7 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
             cursor.execute(delete_unsuccessful_bids)
             cursor.execute(delete_unsuccessful_tender)
             print '{}{}{}'.format('Tender ', tender_id_long,
-                                  ' and its related bids were deleted because of it\'s status')
+                                  ' and its related bids were deleted because of its status')
             return 0
         else:
             sql_update_tender_status = \
