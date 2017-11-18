@@ -148,18 +148,18 @@ def create_tender_function():
 
         # run activate tender function
         activate_tender = tender.activating_tender(publish_tender_response[0], headers_tender)  # activate tender
-        if activate_tender[1] == 1:
+        if activate_tender[0] == 1:
             abort(500, '{}'.format(activate_tender[0]))
-        elif activate_tender[2] != 200:
-            abort(activate_tender[2], json.loads(activate_tender[1]))
+        elif activate_tender[3] != 200:
+            abort(activate_tender[3], str(json.loads(activate_tender[2])))
 
         tender_id_long = publish_tender_response[0].headers['Location'].split('/')[-1]
         tender_token = publish_tender_response[0].json()['access']['token']
-        tender_status = activate_tender[0].json()['data']['status']
+        tender_status = activate_tender[1].json()['data']['status']
 
         # add documents to tender
         if add_documents == 1:
-            document.add_documents_to_tender(tender_id_long, tender_token)
+            document.add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots)
         # add tender to database
         add_tender_db = tender.tender_to_db(tender_id_long, publish_tender_response[0], tender_token,
                                             procurement_method, tender_status, number_of_lots)
@@ -171,11 +171,10 @@ def create_tender_function():
         return jsonify({'data': {
             "tender": [{
                 "publish tender": publish_tender_response[1],
-                "activate tender": activate_tender[1],
+                "activate tender": activate_tender[2],
                 "add tender to db": add_tender_db[0]
             }],
             "bids": run_create_tender
-
         }
         }), 201
     elif procurement_method in variables.below_threshold_procurement:
@@ -430,6 +429,14 @@ def create_company():
     db.commit()
     db.close()
     return jsonify({'status': 'success', 'id': int('{}'.format(uid))})
+
+
+'''# get list of companies in database
+@app.route('/api/tenders/companies', methods=['POST'])
+@auth.login_required
+def create_company():
+    pass'''
+
 
 
 if __name__ == '__main__':

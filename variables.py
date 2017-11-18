@@ -96,7 +96,7 @@ items_m = ', "items": '
 def description_of_item(di_number_of_lots, di_number_of_items):
     description_text = [u'"Описание предмета закупки ']
     description_item = []
-    if number_of_lots == 0:
+    if di_number_of_lots == 0:
         items_count = 0
         for item in range(di_number_of_items):
             items_count += 1
@@ -214,7 +214,7 @@ lot_values = lot_values()
 # TENDERS
 # tender values
 def tender_values(tv_number_of_lots):
-    if number_of_lots == 0:
+    if tv_number_of_lots == 0:
         tender_value_amount = lot_values[1]
     else:
         tender_value_amount = lot_values[1] * tv_number_of_lots
@@ -301,7 +301,7 @@ def procuring_entity():
         ', "address": {', '"countryName": ', country_name, ', "region": ', region, ', "locality": ', locality,
         ', "streetAddress": ', street_address, ', "postalCode": ', postal_code, '}')
     contact_name = u'"Теркин Василий Васильевич"'
-    email = '"formyqatesting@gmail.com"'
+    email = '"testik@gmail.com"'
     telephone = '"+380002222222"'
     url = '"http://www.site.site"'
     contact_name_en = u'"Name of person in english"'

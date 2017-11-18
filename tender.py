@@ -106,37 +106,38 @@ def publish_tender(headers, json_tender):
             print("       headers:           {}".format(resp.headers))
             return resp, resp.content, resp.status_code
     except Exception as e:
+        print 'CDB Error'
         return e, 1
 
 
 # Activate tender
 def activating_tender(publish_tender_response, headers):
-    activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
-    tender_location = publish_tender_response.headers['Location']
-    token = publish_tender_response.json()['access']['token']
-    s = requests.Session()
-    s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-    r = requests.Request('PATCH',
-                         "{}{}{}".format(tender_location, '?acc_token=', token),
-                         data=json.dumps(activate_tender),
-                         headers=headers,
-                         cookies=requests.utils.dict_from_cookiejar(s.cookies))
     try:
+        activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
+        tender_location = publish_tender_response.headers['Location']
+        token = publish_tender_response.json()['access']['token']
+        s = requests.Session()
+        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+        r = requests.Request('PATCH',
+                             "{}{}{}".format(tender_location, '?acc_token=', token),
+                             data=json.dumps(activate_tender),
+                             headers=headers,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
         if resp.status_code == 200:
             print("Activating tender: Success")
             print("       status code:  {}".format(resp.status_code))
             activate_tender_response = {"status code": resp.status_code}
-            return resp, activate_tender_response, resp.status_code
+            return 0, resp, activate_tender_response, resp.status_code
         else:
             print("Activating tender: Error")
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
             print("       headers:           {}".format(resp.headers))
-        return resp, resp.content, resp.status_code
+        return 0, resp, resp.content, resp.status_code
     except Exception as e:
-        return e, 1
+        return 1, e
 
 
 # save tender info to DB
