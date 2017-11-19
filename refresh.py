@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Tenders
+from variables import Companies, Tenders, db, host, api_version
 import requests
-from variables import host, api_version
 from datetime import datetime
 from flask import abort
 
@@ -149,23 +148,20 @@ def add_all_tenders_to_company(cursor, company_id, company_platform_host):
     return count
 
 
-def add_one_tender_to_company(cursor, company_id, company_platform_host, tender_id_long):
-    get_tender_data = "SELECT tender_id_long, tender_token, added_to_site FROM tenders WHERE tender_id_long = '{}'"\
-        .format(tender_id_long)
-    cursor.execute(get_tender_data)
-    tender_data = cursor.fetchone()
-    tender_id_long = tender_data[0]
-    tender_token = tender_data[1]
-    added_to_site = tender_data[2]
+# add one tender to company (SQLA)
+def add_one_tender_to_company(company_id, company_platform_host, tender_id_long):
+    get_tender_data = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
+    tender_id_long = get_tender_data.tender_id_long
+    tender_token = get_tender_data.tender_token
+    added_to_site = get_tender_data.added_to_site
     if added_to_site == 0 or added_to_site is None:
         add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
             company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
             '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
         add_to_site_response = add_to_site.json()
         if 'tid' in add_to_site_response:
-            mark_as_added = \
-                'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
-            cursor.execute(mark_as_added)
+            Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1))  # set added to site=1
+            db.session.commit()
             print '\nTender was added to site - ' + tender_id_long
             tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
             link_to_tender = '{}{}{}{}'.format(
@@ -174,9 +170,8 @@ def add_one_tender_to_company(cursor, company_id, company_platform_host, tender_
             print link_to_tender
             return {'status': 'success'}, 201
         elif 'tender has company' in add_to_site_response['error']:
-            mark_as_added_before = \
-                'UPDATE tenders SET added_to_site = 1 WHERE tender_id_long = "{}"'.format(tender_id_long)
-            cursor.execute(mark_as_added_before)
+            Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1))  # set added to site=1
+            db.session.commit()
             print 'Tender has company'
             return abort(422, 'Tender has company')
         else:
