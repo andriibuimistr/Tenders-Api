@@ -71,6 +71,8 @@ def custom500(error):
 @app.route('/')
 def index():
     return "Main page"
+
+
 # create tender example
 '''data = {
     "data": {
@@ -151,7 +153,7 @@ def create_tender_function():
         if activate_tender[0] == 1:
             abort(500, '{}'.format(activate_tender[0]))
         elif activate_tender[3] != 200:
-            abort(activate_tender[3], str(json.loads(activate_tender[2])))
+            abort(activate_tender[3], str(activate_tender[2]))
 
         tender_id_long = publish_tender_response[0].headers['Location'].split('/')[-1]
         tender_token = publish_tender_response[0].json()['access']['token']
@@ -431,12 +433,12 @@ def create_company():
     return jsonify({'status': 'success', 'id': int('{}'.format(uid))})
 
 
-'''# get list of companies in database
-@app.route('/api/tenders/companies', methods=['POST'])
+# get list of companies in database
+@app.route('/api/tenders/companies', methods=['GET'])
 @auth.login_required
-def create_company():
-    pass'''
-
+def get_list_of_companies():
+    list_companies = refresh.get_list_of_companies()
+    return jsonify({"data": {"companies": list_companies}})
 
 
 if __name__ == '__main__':

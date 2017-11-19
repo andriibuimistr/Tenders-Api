@@ -6,12 +6,44 @@ from datetime import datetime, timedelta
 import key
 import MySQLdb
 import pytz
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+
+# SQLAlchemy
+app = Flask(__name__)
+db_host = '82.163.176.242'
+user = 'carrosde_python'
+password = 'python'
+d_base = 'carrosde_tenders'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/{}'.format(user, password, db_host, d_base)
+db = SQLAlchemy(app)
+
+
+class Companies(db.Model):
+    __tablename__ = 'companies'
+    id = db.Column(db.Integer, primary_key=True)
+    company_email = db.Column(db.String(255), unique=True)
+    company_id = db.Column(db.String(255), unique=True)
+    company_role_id = db.Column(db.String(255), unique=True)
+    platform_id = db.Column(db.String(255), unique=True)
+    company_identifier = db.Column(db.String(255), unique=True)
+
+    def __init__(self, id, company_email, company_id, company_role_id, platform_id, company_identifier):
+        self.id = id
+        self.company_email = company_email
+        self.company_id = company_id
+        self.company_role_id = company_role_id
+        self.platform_id = platform_id
+        self.company_identifier = company_identifier
 
 
 # GLOBAL VARIABLES
 def database():
-    db = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
-    return db
+    dbs = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
+    return dbs
+
 
 host = "https://lb.api-sandbox.openprocurement.org"
 api_version = "2.4"
@@ -21,7 +53,7 @@ tender_byustudio_host = 'http://tender.byustudio.in.ua'
 
 
 def tender_currency():
-    return random.choice(['"UAH"', '"USD"', '"EUR"', '"RUB"'])  # '"GBP"'
+    return random.choice(['"UAH"', '"USD"', '"EUR"', '"RUB"', '"GBP"'])  #
 tender_currency = tender_currency()
 
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()

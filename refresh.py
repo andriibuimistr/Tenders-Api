@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from variables import Companies
 import requests
 from variables import host, api_version
 from datetime import datetime
@@ -193,3 +194,17 @@ def get_tenders_prequalification_status(cursor):
     cursor.execute(list_tenders_prequalification)
     tenders_prequalification_list = cursor.fetchall()
     return tenders_prequalification_list
+
+
+# get list of companies
+def get_list_of_companies():
+    all_companies = Companies.query.all()
+    companies_list = []
+    for company in range(len(all_companies)):
+        companies_list.append(
+            {"id": int(all_companies[company].id), "company_email": all_companies[company].company_email,
+             "company_id": int(all_companies[company].company_id),
+             "company_role_id": int(all_companies[company].company_role_id),
+             "platform_id": int(all_companies[company].platform_id),
+             "company_identifier": int(all_companies[company].company_identifier)})
+    return companies_list
