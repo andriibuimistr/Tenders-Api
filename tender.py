@@ -2,7 +2,7 @@
 import json
 import requests
 import variables
-from variables import tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles
+from variables import tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles, Tenders
 
 
 host = variables.host
@@ -140,21 +140,16 @@ def activating_tender(publish_tender_response, headers):
         return 1, e
 
 
-# save tender info to DB
+# save tender info to DB (SQLA)
 def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurement_method, tender_status,
                  number_of_lots):
     try:
         # Connect to DB
-        db = variables.database()
-        # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-        cursor = db.cursor()
-        tender_to_sql = \
-            "INSERT INTO tenders VALUES(null, '{}', '{}', '{}', '{}', null, '{}', '{}', null, null, null)".format(
-                tender_id_long, publish_tender_response.json()['data']['tenderID'], tender_token, procurement_method,
-                tender_status, number_of_lots)
-        cursor.execute(tender_to_sql)
-        db.commit()  # you need to call commit() method to save your changes to the database
-        db.close()
+        db = variables.db
+        tender_to_sql = Tenders(None, tender_id_long, publish_tender_response.json()['data']['tenderID'], tender_token,
+                                procurement_method, None, tender_status, number_of_lots, None, None, None)
+        db.session.add(tender_to_sql)
+        db.session.commit()  # you need to call commit() method to save your changes to the database
         print "Tender was added to local database"
         return {"status": "success"}, 0
     except Exception as e:

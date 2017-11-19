@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import requests
 from variables import host, api_version, auth_key, valueAddedTaxIncluded, tender_currency,\
-    above_threshold_active_bid_procurements
+    above_threshold_active_bid_procurements, Bids
 import json
 import time
 import variables
@@ -212,16 +212,12 @@ def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body):
 # db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
 
 
-# add bid info to DB
+# add bid info to DB (SQLA)
 def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
-    db = variables.database()
-    cursor = db.cursor()
-    bid_to_sql = \
-        "INSERT INTO bids VALUES(null, '{}', '{}', '{}', null, null, null, null, '{}')".format(
-            bid_id, bid_token, tender_id, u_identifier)
-    cursor.execute(bid_to_sql)
-    db.commit()  # you need to call commit() method to save your changes to the database
-    db.close()
+    db = variables.db
+    bid_to_sql = Bids(None, bid_id, bid_token, tender_id, None, None, None, None, u_identifier)
+    db.session.add(bid_to_sql)
+    db.session.commit()  # you need to call commit() method to save your changes to the database
     print 'Add bid to local database'
     return "success"
 

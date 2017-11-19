@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from variables import Companies, Platforms, Roles
 import variables
 import tender
 import document
@@ -213,21 +214,11 @@ def get_list_of_tenders():
 
 
 # ########################## PREQUALIFICATIONS ###################################
-# get list of tenders in prequalification status
+# get list of tenders in prequalification status (SQLA)
 @app.route('/api/tenders/prequalification', methods=['GET'])
 def get_list_tenders_prequalification_status():
-    db = variables.database()
-    cursor = db.cursor()
-    list_tenders_preq = refresh.get_tenders_prequalification_status(cursor)
-    db.commit()
-    db.close()
-    list_json = []
-    for x in range(len(list_tenders_preq)):
-        id_tp = list_tenders_preq[x][0]
-        procedure = list_tenders_preq[x][1]
-        status = list_tenders_preq[x][2]
-        list_json.append({"id": id_tp, "procurementMethodType": procedure, "status": status})
-    return jsonify({'data': {"tenders": list_json}})
+    list_tenders_preq = refresh.get_tenders_prequalification_status()
+    return jsonify(list_tenders_preq)
 
 
 # pass prequalification for indicated tender
@@ -359,7 +350,7 @@ def add_tender_to_company(tender_id_long):
         return jsonify(add_tender_company)
 
 
-# Add new company in database
+# Add new company to database (SQLA)
 @app.route('/api/tenders/companies', methods=['POST'])
 @auth.login_required
 def create_company():
@@ -389,51 +380,44 @@ def create_company():
     if type(platform_id) != int:
         abort(400, 'Platform ID must be integer')
 
-    db = variables.database()
-    cursor = db.cursor()
-    check_company_role_id = 'SELECT id FROM roles'
-    cursor.execute(check_company_role_id)
-    list_of_roles_id = cursor.fetchall()
+    db = variables.db
+
+    # check if role exists in database
+    check_company_role_id = Roles.query.all()
     list_roles = []
-    for rid in range(len(list_of_roles_id)):
-        list_roles.append(int(list_of_roles_id[rid][0]))
+    for rid in range(len(check_company_role_id)):
+        list_roles.append(int(check_company_role_id[rid].id))
     if company_role_id not in list_roles:
         abort(422, 'Role wasn\'t found in database')
 
-    check_platform_id = 'SELECT id FROM platforms'
-    cursor.execute(check_platform_id)
-    list_of_platform_id = cursor.fetchall()
+    # check if platform id exists in database
+    check_platform_id = Platforms.query.all()
     list_platforms_id = []
-    for pid in range(len(list_of_platform_id)):
-        list_platforms_id.append(int(list_of_platform_id[pid][0]))
+    for pid in range(len(check_platform_id)):
+        list_platforms_id.append(int(check_platform_id[pid].id))
     if platform_id not in list_platforms_id:
         abort(422, 'Platform ID wasn\'t found in database')
     if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", company_email):
         abort(400, 'Email address is invalid')
 
-    get_company_id_platform = "SELECT company_id, platform_id FROM companies"
-    cursor.execute(get_company_id_platform)
-    company_platform_id_combination = cursor.fetchall()
+    # check company_id platform_id combinations
+    get_companies_list = Companies.query.all()
     combinations = []
-    for combination in range(len(company_platform_id_combination)):
-        comp_id = company_platform_id_combination[combination][0]
-        pl_id = company_platform_id_combination[combination][1]
-        combinations.append([comp_id, pl_id])
+    for combination in range(len(get_companies_list)):
+        combinations.append(
+            [int(get_companies_list[combination].company_id), int(get_companies_list[combination].platform_id)])
     if [company_id, platform_id] in combinations:
         abort(422, "Company with this ID was added to this platform before")
-    add_company = "INSERT INTO companies VALUES(null, '{}', '{}', '{}', '{}', '{}')".format(
-        company_email, company_id, company_role_id, platform_id, company_identifier)
-    cursor.execute(add_company)
-    get_company_uid = "SELECT id FROM companies WHERE company_id = '{}' AND platform_id = '{}'".format(company_id,
-                                                                                                       platform_id)
-    cursor.execute(get_company_uid)
-    uid = cursor.fetchone()[0]
-    db.commit()
-    db.close()
-    return jsonify({'status': 'success', 'id': int('{}'.format(uid))})
+
+    add_company = Companies(None, company_email, company_id, company_role_id, platform_id, company_identifier)
+    db.session.add(add_company)
+    uid = Companies.query.filter_by(company_id=company_id, platform_id=platform_id).first().id
+
+    db.session.commit()  # commit changes
+    return jsonify({'status': 'success', 'id': int('{}'.format(uid))})  # return json
 
 
-# get list of companies in database
+# get list of companies in database (SQLA)
 @app.route('/api/tenders/companies', methods=['GET'])
 @auth.login_required
 def get_list_of_companies():

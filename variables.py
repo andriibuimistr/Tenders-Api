@@ -10,7 +10,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 
-# SQLAlchemy
+# ########################################### SQLAlchemy ####################################
 app = Flask(__name__)
 db_host = '82.163.176.242'
 user = 'carrosde_python'
@@ -24,11 +24,11 @@ db = SQLAlchemy(app)
 class Companies(db.Model):
     __tablename__ = 'companies'
     id = db.Column(db.Integer, primary_key=True)
-    company_email = db.Column(db.String(255), unique=True)
-    company_id = db.Column(db.String(255), unique=True)
-    company_role_id = db.Column(db.String(255), unique=True)
-    platform_id = db.Column(db.String(255), unique=True)
-    company_identifier = db.Column(db.String(255), unique=True)
+    company_email = db.Column(db.String(255))
+    company_id = db.Column(db.String(255))
+    company_role_id = db.Column(db.String(255))
+    platform_id = db.Column(db.String(255))
+    company_identifier = db.Column(db.String(255))
 
     def __init__(self, id, company_email, company_id, company_role_id, platform_id, company_identifier):
         self.id = id
@@ -39,7 +39,83 @@ class Companies(db.Model):
         self.company_identifier = company_identifier
 
 
-# GLOBAL VARIABLES
+class Tenders(db.Model):
+    __tablename__ = 'tenders'
+    id = db.Column(db.Integer, primary_key=True)
+    tender_id_long = db.Column(db.String(255))
+    tender_id_short = db.Column(db.String(255))
+    tender_token = db.Column(db.String(255))
+    procurementMethodType = db.Column(db.String(255))
+    related_tender_id = db.Column(db.String(255))
+    tender_status = db.Column(db.String(255))
+    n_lots = db.Column(db.Integer)
+    tender_platform_id = db.Column(db.Integer)
+    tender_user_id = db.Column(db.Integer)
+    added_to_site = db.Column(db.Integer)
+
+    def __init__(self, id, tender_id_long, tender_id_short, tender_token, procurementMethodType, related_tender_id,
+                 tender_status, n_lots, tender_platform_id, tender_user_id, added_to_site):
+        self.id = id
+        self.tender_id_long = tender_id_long
+        self.tender_id_short = tender_id_short
+        self.tender_token = tender_token
+        self.procurementMethodType = procurementMethodType
+        self.related_tender_id = related_tender_id
+        self.tender_status = tender_status
+        self.n_lots = n_lots
+        self.tender_platform_id = tender_platform_id
+        self.tender_user_id = tender_user_id
+        self.added_to_site = added_to_site
+
+
+class Bids(db.Model):
+    __tablename__ = 'bids'
+    id = db.Column(db.Integer, primary_key=True)
+    bid_id = db.Column(db.String(255))
+    bid_token = db.Column(db.String(255))
+    tender_id = db.Column(db.String(255))
+    bid_status = db.Column(db.String(255))
+    bid_platform_id = db.Column(db.Integer)
+    bid_user_id = db.Column(db.Integer)
+    added_on_site = db.Column(db.Integer)
+    user_identifier = db.Column(db.String(255))
+
+    def __init__(self, id, bid_id, bid_token, tender_id, bid_status, bid_platform_id,
+                 bid_user_id, added_on_site, user_identifier):
+        self.id = id
+        self.bid_id = bid_id
+        self.bid_token = bid_token
+        self.tender_id = tender_id
+        self.bid_status = bid_status
+        self.bid_platform_id = bid_platform_id
+        self.bid_user_id = bid_user_id
+        self.added_on_site = added_on_site
+        self.user_identifier = user_identifier
+
+
+class Platforms(db.Model):
+    __tablename__ = 'platforms'
+    id = db.Column(db.Integer, primary_key=True)
+    platform_name = db.Column(db.String(255))
+    platform_url = db.Column(db.String(255))
+
+    def __init__(self, id, platform_name, platform_url):
+        self.id = id
+        self.platform_name = platform_name
+        self.platform_url = platform_url
+
+
+class Roles(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    role_name = db.Column(db.String(255))
+
+    def __init__(self, id, role_name):
+        self.id = id
+        self.role_name = role_name
+
+
+# ########################################### GLOBAL VARIABLES ############################
 def database():
     dbs = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
     return dbs
@@ -53,7 +129,9 @@ tender_byustudio_host = 'http://tender.byustudio.in.ua'
 
 
 def tender_currency():
-    return random.choice(['"UAH"', '"USD"', '"EUR"', '"RUB"', '"GBP"'])  #
+    return random.choice(['"UAH"', '"USD"', '"EUR"', '"RUB"', '"GBP"'])
+
+
 tender_currency = tender_currency()
 
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()
@@ -240,6 +318,8 @@ def lot_values():
     lot_guarantee = u"{}{}{}".format(', "guarantee": {"amount": "', lot_guarantee_amount, '"}')
     values_of_lot = '{}{}{}'.format(lot_value, lot_guarantee, minimal_step_fragment)
     return values_of_lot, lot_value_amount
+
+
 lot_values = lot_values()
 
 
@@ -275,6 +355,8 @@ def classification():
         '"description": ', classification_codes[1], ', "id": ', classification_codes[0])
     classification_block = u"{}{}{}{}".format(', "classification": {', classification_scheme, classification_id, " }")
     return classification_block
+
+
 classification = classification()
 
 additionalClassifications = ', "additionalClassifications": [ ]'
@@ -315,6 +397,7 @@ def tender_titles():
     tender_title_description = u'{}{}{}{}'.format(tender_title, tender_description, tender_title_en,
                                                   tender_description_en)
     return tender_title_description
+
 
 tender_features = u"{}{}".format(', "features": ', '[ ]')
 

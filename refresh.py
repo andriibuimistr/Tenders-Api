@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import Companies
+from variables import Companies, Tenders
 import requests
 from variables import host, api_version
 from datetime import datetime
@@ -187,16 +187,19 @@ def add_one_tender_to_company(cursor, company_id, company_platform_host, tender_
         return abort(422, 'Tender was added to site before')
 
 
-# list of tenders in prequalification status
-def get_tenders_prequalification_status(cursor):
-    list_tenders_prequalification = "SELECT tender_id_long, procurementMethodType, tender_status FROM tenders WHERE " \
-                                    "tender_status = 'active.pre-qualification'"
-    cursor.execute(list_tenders_prequalification)
-    tenders_prequalification_list = cursor.fetchall()
-    return tenders_prequalification_list
+# list of tenders in prequalification status (SQLA)
+def get_tenders_prequalification_status():
+    list_tenders_preq = Tenders.query.filter_by(tender_status='active.pre-qualification').all()
+    list_json = []
+    for x in range(len(list_tenders_preq)):
+        id_tp = int(list_tenders_preq[x].id)
+        procedure = list_tenders_preq[x].procurementMethodType
+        status = list_tenders_preq[x].tender_status
+        list_json.append({"id": id_tp, "procurementMethodType": procedure, "status": status})
+    return {'data': {"tenders": list_json}}
 
 
-# get list of companies
+# get list of companies (SQLA)
 def get_list_of_companies():
     all_companies = Companies.query.all()
     companies_list = []
