@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Platforms, Roles, Tenders
+from variables import Companies, Platforms, Roles, Tenders, Bids
 import variables
 import tender
 import document
@@ -326,7 +326,8 @@ def add_tender_to_company(tender_id_long):
         abort(422, 'Company role must be Buyer (1)')
     get_platform_url = Platforms.query.filter_by(id=platform_id).first()
     company_platform_host = get_platform_url.platform_url
-    add_tender_company = refresh.add_one_tender_to_company(company_id, company_platform_host, tender_id_long)
+    add_tender_company = refresh.add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
+                                                           company_uid)
     if add_tender_company[1] == 201:
         return jsonify(add_tender_company[0]), 201
     else:
@@ -356,10 +357,11 @@ def create_company():
         abort(400, 'Company ID must be integer')
     if type(company_role_id) != int:
         abort(400, 'Company Role ID must be integer')
-    if type(company_identifier) not in [int, long]:
-        abort(400, 'Company Identifier must be integer')
-    if len(str(company_identifier)) not in [8, 10]:
-        abort(422, 'Company Identifier must be 8 or 10 characters long')
+    if company_identifier.isdigit():
+        if len(company_identifier) not in [8, 10]:
+            abort(422, 'Company Identifier must be 8 or 10 characters long')
+    else:
+        abort(400, 'Company Identifier must be numeric')
     if type(platform_id) != int:
         abort(400, 'Platform ID must be integer')
 
@@ -406,6 +408,80 @@ def create_company():
 def get_list_of_companies():
     list_companies = refresh.get_list_of_companies()
     return jsonify({"data": {"companies": list_companies}})
+
+
+# ##################################### BIDS #############################################
+# show all bids of tender (SQLA)
+@app.route('/api/tenders/<tender_id_long>/bids', methods=['GET'])
+@auth.login_required
+def show_bids_of_tender(tender_id_long):
+    list_of_tenders = Tenders.query.all()  # 'SELECT tender_id_long FROM tenders'???
+    list_tid = []
+    for tid in range(len(list_of_tenders)):
+        list_tid.append(list_of_tenders[tid].tender_id_long)
+    if tender_id_long not in list_tid:
+        abort(404, 'Tender id was not found in database')
+
+    get_bids_of_tender = Bids.query.filter_by(tender_id=tender_id_long).all()
+    list_of_tender_bids = []
+    for every_bid in range(len(get_bids_of_tender)):
+        bid_id = get_bids_of_tender[every_bid].bid_id
+        bid_token = get_bids_of_tender[every_bid].bid_token
+        user_identifier = get_bids_of_tender[every_bid].user_identifier
+        company_uid = get_bids_of_tender[every_bid].company_uid
+        added_to_site = get_bids_of_tender[every_bid].added_to_site
+
+        list_of_tender_bids.append({"bid_id": bid_id, "bid_token": bid_token,
+                                    "user_identifier": user_identifier, "has company": added_to_site})
+        if added_to_site == 1:
+            list_of_tender_bids[every_bid]['company uid'] = company_uid
+            list_of_tender_bids[every_bid]['has company'] = True
+        else:
+            list_of_tender_bids[every_bid]['has company'] = False
+    return jsonify({"data": list_of_tender_bids})
+
+
+# add one bid to company (SQLA)
+@app.route('/api/tenders/bids/<bid_id>/company', methods=['POST'])
+@auth.login_required
+def add_bid_to_company(bid_id):
+    list_of_bids = Bids.query.all()  # 'SELECT tender_id_long FROM tenders'???
+    list_bid = []
+    for tid in range(len(list_of_bids)):
+        list_bid.append(list_of_bids[tid].bid_id)
+    if bid_id not in list_bid:
+        abort(404, 'Bid id was not found in database')
+
+    if not request.json:  # check if json exists
+        abort(400, 'JSON was not found in request')
+    if 'data' not in request.json:  # check if data is in json
+        abort(400, 'Data was not found in request')
+    bid_to_company_request = request.json['data']
+    if 'company_uid' not in bid_to_company_request:  # check if company_id is in json
+        abort(400, 'Company UID was not found in request')
+    company_uid = bid_to_company_request['company_uid']
+    if type(company_uid) != int:
+        abort(400, 'Company UID must be integer')
+
+    get_list_of_company_uid = Companies.query.all()  # "SELECT id FROM companies"???
+    list_of_uid = []
+    for uid in range(len(get_list_of_company_uid)):
+        list_of_uid.append(int(get_list_of_company_uid[uid].id))
+    if company_uid not in list_of_uid:
+        abort(422, 'Company was not found in database')
+    get_company_id = Companies.query.filter_by(id=company_uid).first()
+    company_id = get_company_id.company_id
+    platform_id = get_company_id.platform_id
+    company_role_id = get_company_id.company_role_id
+    if company_role_id != 2:
+        abort(422, 'Company role must be Seller (2)')
+    get_platform_url = Platforms.query.filter_by(id=platform_id).first()
+    company_platform_host = get_platform_url.platform_url
+    add_bid_company = refresh.add_one_bid_to_company(company_id, company_platform_host, bid_id, company_uid)
+    if add_bid_company[1] == 201:
+        return jsonify(add_bid_company[0]), 201
+    else:
+        return jsonify(add_bid_company)
 
 
 if __name__ == '__main__':

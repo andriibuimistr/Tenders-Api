@@ -50,11 +50,11 @@ class Tenders(db.Model):
     tender_status = db.Column(db.String(255))
     n_lots = db.Column(db.Integer)
     tender_platform_id = db.Column(db.Integer)
-    tender_user_id = db.Column(db.Integer)
+    company_uid = db.Column(db.Integer)
     added_to_site = db.Column(db.Integer)
 
     def __init__(self, id, tender_id_long, tender_id_short, tender_token, procurementMethodType, related_tender_id,
-                 tender_status, n_lots, tender_platform_id, tender_user_id, added_to_site):
+                 tender_status, n_lots, tender_platform_id, company_uid, added_to_site):
         self.id = id
         self.tender_id_long = tender_id_long
         self.tender_id_short = tender_id_short
@@ -64,7 +64,7 @@ class Tenders(db.Model):
         self.tender_status = tender_status
         self.n_lots = n_lots
         self.tender_platform_id = tender_platform_id
-        self.tender_user_id = tender_user_id
+        self.company_uid = company_uid
         self.added_to_site = added_to_site
 
 
@@ -76,20 +76,20 @@ class Bids(db.Model):
     tender_id = db.Column(db.String(255))
     bid_status = db.Column(db.String(255))
     bid_platform_id = db.Column(db.Integer)
-    bid_user_id = db.Column(db.Integer)
-    added_on_site = db.Column(db.Integer)
+    company_uid = db.Column(db.Integer)
+    added_to_site = db.Column(db.Integer)
     user_identifier = db.Column(db.String(255))
 
     def __init__(self, id, bid_id, bid_token, tender_id, bid_status, bid_platform_id,
-                 bid_user_id, added_on_site, user_identifier):
+                 company_uid, added_to_site, user_identifier):
         self.id = id
         self.bid_id = bid_id
         self.bid_token = bid_token
         self.tender_id = tender_id
         self.bid_status = bid_status
         self.bid_platform_id = bid_platform_id
-        self.bid_user_id = bid_user_id
-        self.added_on_site = added_on_site
+        self.company_uid = company_uid
+        self.added_to_site = added_to_site
         self.user_identifier = user_identifier
 
 
