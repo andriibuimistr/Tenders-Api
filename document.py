@@ -123,7 +123,3 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots):
         document_id = json.loads(added_tender_document.content)['data']['id']
         patch_document_of_tender(0, "Інші Лот " + str(lot_number), added_tender_document, tender_id_long,
                                  document_id, tender_token, lot_id, 'lot')
-
-
-
-

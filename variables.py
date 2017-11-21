@@ -4,7 +4,7 @@ import os
 import binascii
 from datetime import datetime, timedelta
 import key
-import MySQLdb
+# import MySQLdb
 import pytz
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -116,9 +116,9 @@ class Roles(db.Model):
 
 
 # ########################################### GLOBAL VARIABLES ############################
-def database():
+'''def database():
     dbs = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
-    return dbs
+    return dbs'''
 
 
 host = "https://lb.api-sandbox.openprocurement.org"

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Platforms, Roles, Tenders, Bids
-import variables
+from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement,\
+    below_threshold_procurement, limited_procurement
 import tender
 import document
 import bid
@@ -65,25 +65,11 @@ def custom405(error):
 def custom500(error):
     return make_response(jsonify(
         {'error': '500 Internal Server Error', 'description': error.description}), 500)
-# db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-# cursor = db.cursor()
 
 
 @app.route('/')
 def index():
     return "Main page"
-
-
-# create tender example
-'''data = {
-    "data": {
-        "procurementMethodType": "aboveThresholdEU",
-        "number_of_lots": 2,
-        "number_of_items": 3,
-        "documents": 0,
-        "number_of_bids": 3
-    }
-}'''
 
 
 # create tender
@@ -132,7 +118,7 @@ def create_tender_function():
     elif 1 > accelerator or accelerator > 15000:
         abort(422, 'Accelerator must be between 1 and 15000')
     # check procurement method
-    if procurement_method in variables.above_threshold_procurement:
+    if procurement_method in above_threshold_procurement:
         list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)  # get list of id for lots
         # select type of tender (with or without lots)
         if number_of_lots == 0:
@@ -180,36 +166,28 @@ def create_tender_function():
             "bids": run_create_tender
         }
         }), 201
-    elif procurement_method in variables.below_threshold_procurement:
+    elif procurement_method in below_threshold_procurement:
         print "Error. Данный функционал еще не был разработан :)"
         abort(422, "This procurementMethodType wasn't implemented yet")
-    elif procurement_method in variables.limited_procurement:
+    elif procurement_method in limited_procurement:
         print "Error. Данный функционал еще не был разработан :)"
         abort(422, "This procurementMethodType wasn't implemented yet")
     else:
         abort(400, 'Incorrect procurementMethodType')
 
 
-# run synchronization
+# run synchronization (SQLA)
 @app.route('/api/tenders/synchronization', methods=['PATCH'])
 @auth.login_required
 def update_list_of_tenders():
-    db = variables.database()
-    cursor = db.cursor()
-    update_tenders = refresh.update_tenders_list(cursor)
-    db.commit()
-    db.close()
+    update_tenders = refresh.update_tenders_list()
     return jsonify({"status": "success", "updated tenders": update_tenders})
 
 
-# get list of all tenders in local database
+# get list of all tenders in local database (SQLA)
 @app.route('/api/tenders', methods=['GET'])
 def get_list_of_tenders():
-    db = variables.database()
-    cursor = db.cursor()
-    list_of_tenders = refresh.get_tenders_list(cursor)
-    db.commit()
-    db.close()
+    list_of_tenders = refresh.get_tenders_list()
     return jsonify({"data": {"tenders": list_of_tenders}})
 
 
@@ -225,27 +203,21 @@ def get_list_tenders_prequalification_status():
 @app.route('/api/tenders/prequalification/<tender_id_long>', methods=['PATCH'])
 @auth.login_required
 def pass_prequalification(tender_id_long):
-    check_tender_id = 'SELECT tender_id_long FROM tenders WHERE tender_id_long = "{}"'.format(tender_id_long)
-    db = variables.database()
-    cursor = db.cursor()
-    cursor.execute(check_tender_id)
-    if_tender_in_db = cursor.fetchall()
-    if len(if_tender_in_db) == 0:
-        abort(404)
-    tender_token = qualification.get_tender_token(tender_id_long, cursor)  # get tender token
+    check_tender_id = Tenders.query.filter_by(tender_id_long=tender_id_long).first().tender_id_long
+    if len(check_tender_id) == 0:
+        abort(404, 'Tender wasn\'t found in database')
+    tender_token = qualification.get_tender_token(tender_id_long)  # get tender token
     qualifications = qualification.list_of_qualifications(tender_id_long)  # get list of qualifications for tender
     prequalification_result = qualification.select_my_bids(
-        qualifications, tender_id_long, tender_token, cursor)  # approve all my bids
+        qualifications, tender_id_long, tender_token)  # approve all my bids
     time.sleep(2)
     finish_prequalification = qualification.finish_prequalification(
         tender_id_long, tender_token)  # submit prequalification protocol
-    db.commit()
-    db.close()
     return jsonify({'data': {"tenderID": tender_id_long, "prequalifications": prequalification_result,
                              "submit protocol": finish_prequalification}})
 
 
-# add all tenders to company
+# add all tenders to company (SQLA)
 @app.route('/api/tenders/company', methods=['POST'])
 @auth.login_required
 def all_tenders_to_company():
@@ -259,8 +231,6 @@ def all_tenders_to_company():
     company_uid = tenders_to_company_request['company_uid']
     if type(company_uid) != int:
         abort(400, 'Company UID must be integer')
-    db = variables.database()
-    cursor = db.cursor()
     get_list_of_company_uid = Companies.query.all()
     list_of_uid = []
     for uid in range(len(get_list_of_company_uid)):
@@ -274,19 +244,16 @@ def all_tenders_to_company():
             abort(422, 'Company role must be Buyer (1)')
         get_platform_url = Platforms.query.filter_by(id=platform_id).first()
         company_platform_host = get_platform_url.platform_url
-        add_tenders_to_company = refresh.add_all_tenders_to_company(cursor, company_id, company_platform_host)
+        add_tenders_to_company = refresh.add_all_tenders_to_company(company_id, company_platform_host, company_uid)
         if add_tenders_to_company == 0:
             response_code = 200
         else:
             response_code = 201
         success_message = '{}{}'.format(add_tenders_to_company, ' tenders were added to company')
-        db.commit()
-        db.close()
         return jsonify({"status": "success", "description": success_message}), response_code
     else:
         error_no_uid = '{}{}{}'.format('Company with UID ', company_uid, ' was not found in database')
         print error_no_uid
-        db.close()
         return jsonify({"status": "error", "description": error_no_uid})
 
 
@@ -365,8 +332,6 @@ def create_company():
     if type(platform_id) != int:
         abort(400, 'Platform ID must be integer')
 
-    db = variables.db
-
     # check if role exists in database
     check_company_role_id = Roles.query.all()
     list_roles = []
@@ -396,9 +361,8 @@ def create_company():
 
     add_company = Companies(None, company_email, company_id, company_role_id, platform_id, company_identifier)
     db.session.add(add_company)
+    db.session.commit()
     uid = Companies.query.filter_by(company_id=company_id, platform_id=platform_id).first().id
-
-    db.session.commit()  # commit changes
     return jsonify({'status': 'success', 'id': int('{}'.format(uid))})  # return json
 
 

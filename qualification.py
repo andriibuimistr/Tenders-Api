@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from variables import Tenders, Bids
 import requests
 import key
 import json
@@ -42,18 +43,16 @@ finish_prequalification_json = {
 }
 
 
-# get tender token from local DB
-def get_tender_token(tender_id_long, cursor):
+# get tender token from local DB (SQLA)
+def get_tender_token(tender_id_long):
     try:
-        tender_token = 'SELECT tender_token FROM tenders WHERE tender_id_long = "{}"'.format(tender_id_long)
-        cursor.execute(tender_token)
-        token = cursor.fetchone()[0]
+        token = Tenders.query.filter_by(tender_id_long=tender_id_long).first().tender_token
         return token
     except:
         raise Exception()
 
 
-# get list of qualifications for tender
+# get list of qualifications for tender (SQLA)
 def list_of_qualifications(tender_id_long):
     tender_json = requests.get("{}/api/{}/tenders/{}".format(host, api_version, tender_id_long))
     response = tender_json.json()
@@ -93,14 +92,12 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
 
 
 # select my bids
-def select_my_bids(qualifications, tender_id_long, tender_token, cursor):
-    my_bids_for_tender = 'SELECT bid_id FROM bids WHERE tender_id = "{}"'.format(tender_id_long)
-    cursor.execute(my_bids_for_tender)
-    list_of_my_bids = cursor.fetchall()
+def select_my_bids(qualifications, tender_id_long, tender_token):
+    list_of_my_bids = Bids.query.filter_by(tender_id=tender_id_long).all()
     my_bids = []
     bids_json = []
-    for x in range(len(list_of_my_bids)):
-        my_bids.append(list_of_my_bids[x][0])
+    for x in range(len(list_of_my_bids)):  # select bid_id of every bid
+        my_bids.append(list_of_my_bids[x].bid_id)
     for x in range(len(qualifications)):
         qualification_id = qualifications[x]['id']
         qualification_bid_id = qualifications[x]['bidID']
