@@ -49,6 +49,12 @@ def custom404(error):
         {'error': '404 Not Found', 'description': error.description}), 404)
 
 
+@app.errorhandler(415)
+def custom415(error):
+    return make_response(jsonify(
+        {'error': '415 Unsupported Media Type', 'description': error.description}), 415)
+
+
 @app.errorhandler(422)
 def custom422(error):
     return make_response(jsonify(
@@ -126,7 +132,8 @@ def create_tender_function():
                 json_tender = json.loads(tender.tender_esco(number_of_lots, number_of_items, procurement_method,
                                                             accelerator))
             else:
-                json_tender = json.loads(tender.tender(number_of_lots, number_of_items, procurement_method, accelerator))
+                json_tender = json.loads(tender.tender(
+                    number_of_lots, number_of_items, procurement_method, accelerator))
         else:
             if procurement_method == 'esco':
                 json_tender = json.loads(tender.tender_esco_with_lots(number_of_lots, number_of_items, list_of_id_lots,
@@ -134,7 +141,7 @@ def create_tender_function():
             else:
                 json_tender = json.loads(tender.tender_with_lots(number_of_lots, number_of_items, list_of_id_lots,
                                                                  procurement_method, accelerator))
-        headers_tender = tender.headers_tender(json_tender, headers_host(procurement_method))  # get headers for publish and activate tender
+        headers_tender = tender.headers_tender(json_tender, headers_host())  # get headers for tender
 
         # run publish tender function
         publish_tender_response = tender.publish_tender(headers_tender, json_tender)  # publish tender in draft status
@@ -162,17 +169,20 @@ def create_tender_function():
 
         # add documents to tender
         if add_documents == 1:
-            document.add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots)
+            add_documents = document.add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots)
+        else:
+            add_documents = 'tender was created without documents'
 
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
-                                          list_of_id_lots, headers_host(procurement_method))
+                                          list_of_id_lots, headers_host())
         return jsonify({'data': {
             "tender": [{
                 "publish tender": publish_tender_response[1],
                 "activate tender": activate_tender[2],
                 "add tender to db": add_tender_db[0]
             }],
-            "bids": run_create_tender
+            "bids": run_create_tender,
+            "documents": add_documents
         }
         }), 201
     elif procurement_method in below_threshold_procurement:
@@ -190,7 +200,10 @@ def create_tender_function():
 @auth.login_required
 def update_list_of_tenders():
     update_tenders = refresh.update_tenders_list()
-    return jsonify({"status": "success", "updated tenders": update_tenders})
+    if update_tenders[0] == 0:
+        return jsonify({"status": "success", "updated tenders": update_tenders[1]})
+    else:
+        return jsonify({"status": "error", "description": str(update_tenders[1])})
 
 
 # get list of all tenders in local database (SQLA)
@@ -216,14 +229,17 @@ def pass_prequalification(tender_id_long):
     if len(check_tender_id) == 0:
         abort(404, 'Tender wasn\'t found in database')
     tender_token = qualification.get_tender_token(tender_id_long)  # get tender token
-    qualifications = qualification.list_of_qualifications(tender_id_long)  # get list of qualifications for tender
-    prequalification_result = qualification.select_my_bids(
-        qualifications, tender_id_long, tender_token)  # approve all my bids
-    time.sleep(2)
-    finish_prequalification = qualification.finish_prequalification(
-        tender_id_long, tender_token)  # submit prequalification protocol
-    return jsonify({'data': {"tenderID": tender_id_long, "prequalifications": prequalification_result,
-                             "submit protocol": finish_prequalification}})
+    if tender_token[0] == 1:
+        abort(500, str(tender_token[1]))
+    else:
+        qualifications = qualification.list_of_qualifications(tender_id_long)  # get list of qualifications for tender
+        prequalification_result = qualification.select_my_bids(
+            qualifications, tender_id_long, tender_token[1])  # approve all my bids
+        time.sleep(2)
+        finish_prequalification = qualification.finish_prequalification(
+            tender_id_long, tender_token[1])  # submit prequalification protocol
+        return jsonify({'data': {"tenderID": tender_id_long, "prequalifications": prequalification_result,
+                                 "submit protocol": finish_prequalification}})
 
 
 # add all tenders to company (SQLA)

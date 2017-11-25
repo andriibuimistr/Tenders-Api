@@ -18,11 +18,10 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
         return 0
     else:
         if actual_tender_status in invalid_tender_status_list:
+            Bids.query.filter_by(tender_id=tender_id_long).delete()
+            db.session.commit()
             delete_unsuccessful_tender = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
             db.session.delete(delete_unsuccessful_tender)
-            db.session.commit()
-            delete_unsuccessful_bids = Bids.query.filter_by(tender_id=tender_id_long).all()
-            db.session.delete(delete_unsuccessful_bids)
             db.session.commit()
             print '{}{}{}'.format('Tender ', tender_id_long,
                                   ' and its related bids were deleted because of its status')
@@ -63,24 +62,29 @@ def update_tenders_list():
     cron.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     cron.close()
 
-    tenders_list = Tenders.query.all()
-    if len(tenders_list) == 0:
-        print 'DB is empty'
-    else:
-        count = 0
-        print "Update tenders in local DB"
-        n_updated_tenders = 0
-        for tender in range(len(tenders_list)):
-            tender_id = tenders_list[tender].tender_id_long
-            db_tender_status = tenders_list[tender].tender_status
-            procurement_method_type = tenders_list[tender].procurementMethodType
-            if tender_id in list_of_updated_tenders:
-                count += 1
-                num_updated_tenders = update_tender_status(db_tender_status, tender_id, procurement_method_type)
-                n_updated_tenders += num_updated_tenders
-        print n_updated_tenders
-        print '{}{}'.format(count, ' tenders were found in synchronization list')
-        return n_updated_tenders
+    try:
+        tenders_list = Tenders.query.all()
+        if len(tenders_list) == 0:
+            print 'DB is empty'
+        else:
+            count = 0
+            print "Update tenders in local DB"
+            n_updated_tenders = 0
+            for tender in range(len(tenders_list)):
+                tender_id = tenders_list[tender].tender_id_long
+                db_tender_status = tenders_list[tender].tender_status
+                procurement_method_type = tenders_list[tender].procurementMethodType
+                if tender_id in list_of_updated_tenders:
+                    count += 1
+                    num_updated_tenders = update_tender_status(db_tender_status, tender_id, procurement_method_type)
+                    n_updated_tenders += num_updated_tenders
+            print n_updated_tenders
+            print '{}{}'.format(count, ' tenders were found in synchronization list')
+            return 0, n_updated_tenders
+    except Exception, e:
+        db.session.rollback()
+        print e
+        return 1, e
 
 
 # get list of all tenders (SQLA)

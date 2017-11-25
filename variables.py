@@ -18,7 +18,13 @@ password = 'python'
 d_base = 'carrosde_tenders'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/{}'.format(user, password, db_host, d_base)
-db = SQLAlchemy(app)
+
+
+def db():
+    return SQLAlchemy(app)
+
+
+db = db()
 
 
 class Companies(db.Model):
@@ -121,18 +127,24 @@ class Roles(db.Model):
     return dbs'''
 
 
-def headers_host(procurement_method):
-    #if procurement_method == 'esco':
-    header_host = 'api-sandbox.prozorro.openprocurement.net'
-    #else:
-        #header_host = 'lb.api-sandbox.openprocurement.org'
+sandbox = 1
+
+
+def headers_host():
+    if sandbox == 2:
+        header_host = 'api-sandbox.prozorro.openprocurement.net'
+    else:
+        header_host = 'lb.api-sandbox.openprocurement.org'
     return header_host
 
 
-# host = "https://lb.api-sandbox.openprocurement.org"
-# api_version = "2.4"
-host = "https://api-sandbox.prozorro.openprocurement.net"
-api_version = "dev"
+if sandbox == 2:
+    host = "https://api-sandbox.prozorro.openprocurement.net"
+    api_version = "dev"
+else:
+    host = "https://lb.api-sandbox.openprocurement.org"
+    api_version = "2.4"
+
 auth_key = key.auth_key
 
 tender_byustudio_host = 'http://tender.byustudio.in.ua'

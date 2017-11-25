@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import Tenders, Bids
+from variables import Tenders, Bids, host, api_version
 import requests
 import key
 import json
@@ -7,9 +7,6 @@ import time
 
 
 auth_key = key.auth_key
-api_version = "2.3"
-
-host = "https://lb.api-sandbox.openprocurement.org"
 
 
 # headers for prequalification requests
@@ -47,9 +44,9 @@ finish_prequalification_json = {
 def get_tender_token(tender_id_long):
     try:
         token = Tenders.query.filter_by(tender_id_long=tender_id_long).first().tender_token
-        return token
-    except:
-        raise Exception()
+        return 0, token
+    except Exception, e:
+        return 1, e
 
 
 # get list of qualifications for tender (SQLA)
