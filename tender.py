@@ -2,7 +2,8 @@
 import json
 import requests
 import variables
-from variables import tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles, Tenders
+from variables import tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles, Tenders,\
+    tender_values_esco, lot_values_esco
 
 
 host = variables.host
@@ -24,6 +25,18 @@ def list_of_lots(number_of_lots, list_of_id_lots):
         lot_id = list_of_id_lots[i]
         one_lot = json.loads(u"{}{}{}{}{}{}".format(
             '{"id": "', lot_id, '"', variables.title_for_lot(), lot_values[0], '}'))
+        list_of_lots_for_tender.append(one_lot)
+    list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
+    lots_list = u"{}{}{}".format(variables.lots_m, list_of_lots_for_tender, variables.lots_close)
+    return lots_list
+
+
+def list_of_lots_esco(number_of_lots, list_of_id_lots):
+    list_of_lots_for_tender = []
+    for i in range(number_of_lots):
+        lot_id = list_of_id_lots[i]
+        one_lot = json.loads(u"{}{}{}{}{}{}".format(
+            '{"id": "', lot_id, '"', variables.title_for_lot(), lot_values_esco, '}'))
         list_of_lots_for_tender.append(one_lot)
     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
     lots_list = u"{}{}{}".format(variables.lots_m, list_of_lots_for_tender, variables.lots_close)
@@ -72,12 +85,30 @@ def tender(number_of_lots, number_of_items, procurement_method, accelerator):
         '}}')
 
 
+# generate json for tender with lots
+def tender_esco_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator):
+    return u"{}{}{}{}{}{}{}{}".format(
+        '{"data": {', tender_values_esco(number_of_lots), tender_titles(),
+        list_of_lots_esco(number_of_lots, list_of_id_lots),
+        list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots), tender_features,
+        tender_data(procurement_method, accelerator), '}}')
+
+
+# generate json for tender esco without lots
+def tender_esco(number_of_lots, number_of_items, procurement_method, accelerator):
+    return u"{}{}{}{}{}{}{}".format(
+        '{"data": {', tender_values_esco(number_of_lots), tender_titles(),
+        list_of_items_for_tender(number_of_lots, number_of_items), tender_features,
+        tender_data(procurement_method, accelerator),
+        '}}')
+
+
 # generate headers for create tender
-def headers_tender(json_tender):
+def headers_tender(json_tender, headers_host):
     headers = {"Authorization": "Basic {}".format(auth_key),
                "Content-Length": "{}".format(len(json.dumps(json_tender))),
                "Content-Type": "application/json",
-               "Host": "lb.api-sandbox.openprocurement.org"}
+               "Host": headers_host}
     return headers
 
 

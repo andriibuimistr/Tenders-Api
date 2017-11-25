@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from variables import host, api_version
 import requests
 import os
 import json
@@ -6,8 +7,8 @@ import sys
 from key import auth_key
 
 path = os.getcwd()  # path to file for upload
-doc_host = 'https://lb.api-sandbox.openprocurement.org'
-doc_api_version = '2.4'
+doc_host = host
+doc_api_version = api_version
 
 
 file_for_upload = open('{}{}doc.pdf'.format(path, os.sep), 'rb').read()

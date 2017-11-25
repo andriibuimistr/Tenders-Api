@@ -34,7 +34,7 @@ def lot_values_bid_generator(number_of_lots, list_of_id_lots):
 
 
 # generate value for tender
-def values_bid_generator():
+def values_bid_generator_above():
         tender_bid_value = json.loads(
             '{}{}{}{}{}{}{}'.format('{"amount": ', randint(100, 999), ', "currency": ', tender_currency,
                                     ', "valueAddedTaxIncluded": ', valueAddedTaxIncluded, '}'))
@@ -78,7 +78,7 @@ def bid_json_open_procedure_lots(user_idf, number_of_lots, list_of_id_lots):
 
 # generate json for bid (simple tender)
 def bid_json_open_procedure(user_idf):
-    tender_value = values_bid_generator()
+    tender_value = values_bid_generator_above()
     bid_json_open_body = {"data": {
                             "selfEligible": True,
                             "selfQualified": True,
@@ -112,6 +112,113 @@ def bid_json_open_procedure(user_idf):
 # ----------------------------------------
 
 
+# generate values for simple esco bid
+def values_bid_generator_esco():
+    annual_costs_reduction_list = []
+    cost = 0
+    for x in range(21):
+        cost += 1000
+        annual_costs_reduction_list.append(cost)
+    return annual_costs_reduction_list
+
+
+# # generate values for multilot esco bid
+def lot_values_bid_generator_esco(number_of_lots, list_of_id_lots):
+    list_of_lots_in_bid = []
+    tender_value = values_bid_generator_esco()
+    for lot in range(number_of_lots):
+        lot_id = list_of_id_lots[lot]
+        related_lot_value = {"relatedLot": lot_id,
+                             "value": {
+                                  "contractDuration": {
+                                    "days": 74,
+                                    "years": 10
+                                  },
+                                  "yearlyPaymentsPercentage": 0.8,
+                                  "annualCostsReduction": tender_value
+                                }}
+        list_of_lots_in_bid.append(related_lot_value)
+    bid_value = json.dumps(list_of_lots_in_bid)
+    return '{}'.format(bid_value)
+
+
+# generate json for bid (tender with lots)
+def bid_json_esco_lots(user_idf, number_of_lots, list_of_id_lots):
+    bid_lot_value = lot_values_bid_generator_esco(number_of_lots, list_of_id_lots)
+    bid_json_esco_body = {"data": {
+                            "selfEligible": True,
+                            "selfQualified": True,
+                            "tenderers": [
+                              {
+                                "contactPoint": {
+                                  "telephone": "+380 (432) 21-69-30",
+                                  "name": "Сергій Олексюк",
+                                  "email": "bidder@r.com"
+                                },
+                                "identifier": {
+                                  "scheme": "UA-EDR",
+                                  "id": user_idf,
+                                  "uri": "http://www.site.domain"
+                                },
+                                "name": "ДКП «Школяр»",
+                                "address": {
+                                  "countryName": "Україна",
+                                  "postalCode": "21100",
+                                  "region": "м. Вінниця",
+                                  "streetAddress": "вул. Островського, 33",
+                                  "locality": "м. Вінниця"
+                                }
+                              }
+                            ],
+                            "subcontractingDetails": "ДКП «Книга», Україна, м. Львів, вул. Островського, 33",
+                            "lotValues": json.loads(bid_lot_value)
+                            }
+                          }
+    return bid_json_esco_body
+
+
+# generate json for bid (simple tender)
+def bid_json_esco_simple(user_idf):
+    tender_value = values_bid_generator_esco()
+    bid_json_esco_body = {"data": {
+                            "selfEligible": True,
+                            "selfQualified": True,
+                            "tenderers": [
+                              {
+                                "contactPoint": {
+                                  "telephone": "+380 (432) 21-69-30",
+                                  "name": "Сергій Олексюк",
+                                  "email": "bidder@r.com"
+                                },
+                                "identifier": {
+                                  "scheme": "UA-EDR",
+                                  "id": user_idf,
+                                  "uri": "http://www.site.domain"
+                                },
+                                "name": "ДКП «Школяр»",
+                                "address": {
+                                  "countryName": "Україна",
+                                  "postalCode": "21100",
+                                  "region": "м. Вінниця",
+                                  "streetAddress": "вул. Островського, 33",
+                                  "locality": "м. Вінниця"
+                                }
+                              }
+                            ],
+                            "value": {
+                                  "contractDuration": {
+                                    "days": 74,
+                                    "years": 10
+                                  },
+                                  "yearlyPaymentsPercentage": 0.8,
+                                  "annualCostsReduction": tender_value
+                                },
+                            "subcontractingDetails": "ДКП «Книга», Україна, м. Львів, вул. Островського, 33"
+                            }
+                          }
+    return bid_json_esco_body
+
+
 # select correct json for bid using procurement method
 def determine_procedure_for_bid(procurement_method):
     if procurement_method in above_threshold_active_bid_procurements:
@@ -122,11 +229,11 @@ def determine_procedure_for_bid(procurement_method):
 
 
 #  generate headers for bid request
-def headers_bid(bid_json_open_length):
+def headers_bid(bid_json_open_length, headers_host):
     headers = {"Authorization": "Basic {}".format(auth_key),
                "Content-Length": "{}".format(len(json.dumps(bid_json_open_length))),
                "Content-Type": "application/json",
-               "Host": "lb.api-sandbox.openprocurement.org"}
+               "Host": headers_host}
     return headers
 
 
@@ -223,7 +330,7 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
 
 
 # create and activate bid for created tender
-def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots):
+def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, headers_host):
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     bids_json = []
     if bids_quantity == 0:
@@ -241,11 +348,18 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 for uid in range(bids_quantity - 3):
                     identifier_list.append(randint(10000000, 99999999))  # random user identifier
                 identifier = identifier_list[x]
-            if number_of_lots == 0:
-                bid_json = bid_json_open_procedure(identifier)
+            if number_of_lots == 0:  # select json for bid
+                if procurement_method == 'esco':
+                    bid_json = bid_json_esco_simple(identifier)
+                else:
+                    bid_json = bid_json_open_procedure(identifier)
             else:
-                bid_json = bid_json_open_procedure_lots(identifier, number_of_lots, list_of_id_lots)
-            headers = headers_bid(bid_json)  # generate headers for bid
+                if procurement_method == 'esco':
+                    bid_json = bid_json_esco_lots(identifier, number_of_lots, list_of_id_lots)
+                else:
+                    bid_json = bid_json_open_procedure_lots(identifier, number_of_lots, list_of_id_lots)
+
+            headers = headers_bid(bid_json, headers_host)  # generate headers for bid
             created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers)  # create bid
             if created_bid[0] == 1:
                 print created_bid[1]

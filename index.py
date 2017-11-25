@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement,\
-    below_threshold_procurement, limited_procurement
+    below_threshold_procurement, limited_procurement, headers_host
 import tender
 import document
 import bid
@@ -122,11 +122,19 @@ def create_tender_function():
         list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)  # get list of id for lots
         # select type of tender (with or without lots)
         if number_of_lots == 0:
-            json_tender = json.loads(tender.tender(number_of_lots, number_of_items, procurement_method, accelerator))
+            if procurement_method == 'esco':
+                json_tender = json.loads(tender.tender_esco(number_of_lots, number_of_items, procurement_method,
+                                                            accelerator))
+            else:
+                json_tender = json.loads(tender.tender(number_of_lots, number_of_items, procurement_method, accelerator))
         else:
-            json_tender = json.loads(tender.tender_with_lots(number_of_lots, number_of_items, list_of_id_lots,
-                                                             procurement_method, accelerator))
-        headers_tender = tender.headers_tender(json_tender)  # get headers for publish and activate tender
+            if procurement_method == 'esco':
+                json_tender = json.loads(tender.tender_esco_with_lots(number_of_lots, number_of_items, list_of_id_lots,
+                                                                      procurement_method, accelerator))
+            else:
+                json_tender = json.loads(tender.tender_with_lots(number_of_lots, number_of_items, list_of_id_lots,
+                                                                 procurement_method, accelerator))
+        headers_tender = tender.headers_tender(json_tender, headers_host(procurement_method))  # get headers for publish and activate tender
 
         # run publish tender function
         publish_tender_response = tender.publish_tender(headers_tender, json_tender)  # publish tender in draft status
@@ -146,17 +154,18 @@ def create_tender_function():
         tender_token = publish_tender_response[0].json()['access']['token']
         tender_status = activate_tender[1].json()['data']['status']
 
-        # add documents to tender
-        if add_documents == 1:
-            document.add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots)
         # add tender to database
         add_tender_db = tender.tender_to_db(tender_id_long, publish_tender_response[0], tender_token,
                                             procurement_method, tender_status, number_of_lots)
         if add_tender_db[1] == 1:
             abort(500, '{}'.format(add_tender_db[0]))
 
+        # add documents to tender
+        if add_documents == 1:
+            document.add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots)
+
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
-                                          list_of_id_lots)
+                                          list_of_id_lots, headers_host(procurement_method))
         return jsonify({'data': {
             "tender": [{
                 "publish tender": publish_tender_response[1],

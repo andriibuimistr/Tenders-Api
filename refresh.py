@@ -21,7 +21,7 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
             delete_unsuccessful_tender = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
             db.session.delete(delete_unsuccessful_tender)
             db.session.commit()
-            delete_unsuccessful_bids = Bids.query.filter_by(tender_id_long=tender_id_long).all()
+            delete_unsuccessful_bids = Bids.query.filter_by(tender_id=tender_id_long).all()
             db.session.delete(delete_unsuccessful_bids)
             db.session.commit()
             print '{}{}{}'.format('Tender ', tender_id_long,
@@ -52,6 +52,8 @@ def update_tenders_list():
 
     r = requests.get("{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(
         host, api_version, year, month, day, hours, minutes, seconds))
+    print "{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(
+        host, api_version, year, month, day, hours, minutes, seconds)
     updated_tenders = r.json()['data']
     list_of_updated_tenders = []
     for x in range(len(updated_tenders)):
@@ -125,7 +127,7 @@ def add_all_tenders_to_company(company_id, company_platform_host, company_uid):
                 print '\nTender was added to site - ' + tender_id_long
                 tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
                 link_to_tender = '{}{}{}{}'.format(
-                    'Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+                    'Link: ', company_platform_host, 'buyer/tender/view/', add_to_site_response['tid'])
                 print tender_id_site
                 print link_to_tender
                 count += 1

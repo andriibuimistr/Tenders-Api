@@ -121,8 +121,18 @@ class Roles(db.Model):
     return dbs'''
 
 
-host = "https://lb.api-sandbox.openprocurement.org"
-api_version = "2.4"
+def headers_host(procurement_method):
+    #if procurement_method == 'esco':
+    header_host = 'api-sandbox.prozorro.openprocurement.net'
+    #else:
+        #header_host = 'lb.api-sandbox.openprocurement.org'
+    return header_host
+
+
+# host = "https://lb.api-sandbox.openprocurement.org"
+# api_version = "2.4"
+host = "https://api-sandbox.prozorro.openprocurement.net"
+api_version = "dev"
 auth_key = key.auth_key
 
 tender_byustudio_host = 'http://tender.byustudio.in.ua'
@@ -164,7 +174,7 @@ def number_of_items():
 # SELECT PROCUREMENT METHOD
 above_threshold_procurement = [
     'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA',
-    'competitiveDialogueEU']
+    'competitiveDialogueEU', 'esco']
 below_threshold_procurement = ['open_belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
 
@@ -323,6 +333,15 @@ def lot_values():
 lot_values = lot_values()
 
 
+def lot_values_esco():
+    minimal_step_percentage = '"minimalStepPercentage": 0.02'
+    lot_value_esco = '{}{}'.format(', ', minimal_step_percentage)
+    return lot_value_esco
+
+
+lot_values_esco = lot_values_esco()
+
+
 # TENDERS
 # tender values
 def tender_values(tv_number_of_lots):
@@ -341,6 +360,17 @@ def tender_values(tv_number_of_lots):
     values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
     return values_of_tender
 # from tender - tender_values = tender_values(number_of_lots)
+
+
+#######################################################################################################################
+def tender_values_esco(tv_number_of_lots):
+    funding_kind = '"fundingKind": "other"'
+    nbu_discount_rate = '"NBUdiscountRate": 0.99'
+    minimal_step_percentage = '"minimalStepPercentage": 0.02'
+    esco_values = '{}, {}, {}'.format(funding_kind, nbu_discount_rate, minimal_step_percentage)
+    if tv_number_of_lots != 0:
+        esco_values = '{}, {}'.format(nbu_discount_rate, minimal_step_percentage)
+    return esco_values
 
 
 # tender classification from list
