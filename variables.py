@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from faker import Faker
+import json
 import random
 import os
 import binascii
 from datetime import datetime, timedelta
 import key
-# import MySQLdb
 import pytz
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -122,9 +123,7 @@ class Roles(db.Model):
 
 
 # ########################################### GLOBAL VARIABLES ############################
-'''def database():
-    dbs = MySQLdb.connect(host="82.163.176.242", user="carrosde_python", passwd="python", db="carrosde_tenders")
-    return dbs'''
+fake = Faker()
 
 
 sandbox = 2
@@ -153,7 +152,7 @@ tender_byustudio_host = 'http://tender.byustudio.in.ua'
 
 
 def tender_currency():
-    return random.choice(['"UAH"', '"USD"', '"EUR"', '"RUB"', '"GBP"'])
+    return random.choice(['UAH', 'USD', 'EUR', 'RUB', 'GBP'])
 
 
 tender_currency = tender_currency()
@@ -193,7 +192,7 @@ below_threshold_procurement = ['open_belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
 
 
-# Procurement method from user
+'''# Procurement method from user
 def procurement_method_selector():
     # print list of procurement methods
     for method in range(len(above_threshold_procurement)):
@@ -219,7 +218,7 @@ def procurement_method_selector():
         else:
             selected_procurement_method = limited_procurement[procurement_method_from_user - (
                 len(above_threshold_procurement + below_threshold_procurement) + 1)]
-        return selected_procurement_method
+        return selected_procurement_method'''
 
 
 # ITEMS
@@ -249,37 +248,35 @@ def description_of_item(di_number_of_lots, di_number_of_items):
 
 # generate delivery address
 def delivery_address_block():
-    delivery_postal_code = '"12345"'
-    delivery_country_name = random.choice([u'"Україна"'])
-    delivery_street_address = random.choice([u'"Улица 1"', u'"Улица 2"', u'"Улица 3"'])
-    delivery_region = random.choice([u'"Вінницька область"', u'"Волинська область"', u'"Дніпропетровська область"'])
-    delivery_locality = random.choice([u'"Город 1"', u'"Город 2"', u'"Город 3"'])
-    delivery_address = u"{}{}{}{}{}{}{}{}{}{}{}{}".format(
-        ', "deliveryAddress": {', ' "postalCode": ', delivery_postal_code, ', "countryName": ', delivery_country_name,
-        ', "streetAddress": ', delivery_street_address, ', "region": ', delivery_region, ', "locality": ',
-        delivery_locality, " }")
+    delivery_address_json = {"postalCode": fake.zipcode(),
+                             "countryName": "Україна",
+                             "streetAddress": "Улица",
+                             "region": "Дніпропетровська область",
+                             "locality": "Город"
+                             }
+    delivery_address = u"{}{}".format(
+        ', "deliveryAddress": ', json.dumps(delivery_address_json))
     return delivery_address
 
 
 # generate delivery start date
 def delivery_start_date():
-    week = timedelta(days=7)
-    date_now = datetime.now()
-    date_week = date_now + week
-    return date_week.strftime('"%Y-%m-%dT%H:%M:%S+03:00"')
+    date_week = datetime.now() + timedelta(days=7)
+    return date_week.strftime('%Y-%m-%dT%H:%M:%S+03:00')
 
 
 # generate delivery end date
 def delivery_end_date():
-    month = timedelta(days=30)
-    date_now = datetime.now()
-    date_month = date_now + month
-    return date_month.strftime('"%Y-%m-%dT%H:%M:%S+03:00"')
+    date_month = datetime.now() + timedelta(days=30)
+    return date_month.strftime('%Y-%m-%dT%H:%M:%S+03:00')
 
 
 # delivery date
-deliveryDate = u"{}{}{}{}{}{}".format(
-    ', "deliveryDate": {', ' "startDate": ', delivery_start_date(), ', "endDate": ', delivery_end_date(), " }")
+delivery_date_data = {"startDate": delivery_start_date(),
+                      "endDate": delivery_end_date()
+                      }
+deliveryDate = u"{}{}".format(
+    ', "deliveryDate": ', json.dumps(delivery_date_data))
 
 
 # generate id for item(s)
@@ -291,20 +288,18 @@ def item_id_generator():
 # generate unit
 def unit():
     unit_code = random.choice([['"BX"', u'"ящик"'], ['"D64"', u'"блок"'], ['"E48"', u'"послуга"']])
-    unit_fragment = u"{}{}{}{}{}{}".format(', "unit": {', ' "code": ', unit_code[0], ', "name": ', unit_code[1], ' }')
+    unit_fragment = u"{}{}{}{}{}{}{}{}{}{}".format(', "unit": {', ' "code": ', unit_code[0], ', "name": ',
+                                                   unit_code[1], ' }', ', "quantity": ', '"', random.randint(1, 99999),
+                                                   '"')
     return unit_fragment
-
-
-# quantity
-quantity = u"{}{}{}{}".format(', "quantity": ', '"', random.randint(1, 99999), '"')
 
 
 # generate data for item
 def item_data(id_number_of_lots, id_number_of_items, i):
-    data_for_item = u'{}{}{}{}{}{}{}{}{}'.format(
+    data_for_item = u'{}{}{}{}{}{}{}{}'.format(
         description_of_item(id_number_of_lots, id_number_of_items)[i], classification, additionalClassifications,
         description_en(), delivery_address_block(),
-        deliveryDate, item_id_generator(), unit(), quantity)
+        deliveryDate, item_id_generator(), unit())
     return data_for_item
 
 
@@ -363,17 +358,22 @@ def tender_values(tv_number_of_lots):
         tender_value_amount = lot_values[1]
     else:
         tender_value_amount = lot_values[1] * tv_number_of_lots
-    tender_value = u"{}{}{}{}{}{}{}{}".format(
-        '"value": {', '"valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "amount": ', tender_value_amount,
-        ', "currency": ', tender_currency, '}')
-    tender_guarantee = u"{}{}{}{}{}{}{}".format(', "guarantee": {"amount": ', '"', '0', '"', ', "currency": ',
-                                                tender_currency, '}')
-    tender_minimal_step = u"{}{}{}{}{}{}{}{}".format(
-        ', "minimalStep": {', '"amount": ', '"100"', ', "currency": ', tender_currency, ', "valueAddedTaxIncluded": ',
-        valueAddedTaxIncluded, '}')
+    value_json = {"valueAddedTaxIncluded": valueAddedTaxIncluded,
+                  "amount": tender_value_amount,
+                  "currency": tender_currency
+                  }
+    tender_value = u"{}{}".format('"value": ', json.dumps(value_json))
+    guarantee_json = {"amount": 0,
+                      "currency": tender_currency
+                      }
+    tender_guarantee = u"{}{}".format(', "guarantee": ', json.dumps(guarantee_json))
+    tender_minimal_step_json = {"amount": 100,
+                                "currency": tender_currency,
+                                "valueAddedTaxIncluded": valueAddedTaxIncluded
+                                }
+    tender_minimal_step = u"{}{}".format(', "minimalStep": ', json.dumps(tender_minimal_step_json))
     values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
     return values_of_tender
-# from tender - tender_values = tender_values(number_of_lots)
 
 
 #######################################################################################################################
@@ -415,16 +415,11 @@ def description_en():
 
 # Generate tender period
 def tender_period(accelerator):
-    tz = pytz.timezone('Europe/Kiev')
-    kiev_now = str(datetime.now(tz))[26:]
+    kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
     # tender_start_date
-    date_now = datetime.now()
-    tender_start_date = date_now.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+    tender_start_date = datetime.now().strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
     # tender_end_date
-    minutes = int(round(31 * (1440.0 / accelerator)) + 1)
-    day = timedelta(minutes=minutes)  # input(u'Дата окончания приема предложений ( в минутах): ')
-    date_now = datetime.now()
-    date_day = date_now + day
+    date_day = datetime.now() + timedelta(minutes=int(round(31 * (1440.0 / accelerator)) + 1))
     tender_end_date = date_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
     tender_period_data = u"{}{}{}{}{}{}".format(
         ', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
@@ -434,7 +429,7 @@ def tender_period(accelerator):
 def tender_titles():
     tender_number = datetime.now().strftime('%d-%H%M%S"')
     tender_random_title = u"{}{}".format(u'Тест ', tender_number)
-    tender_title = u"{}{}".format(', "title": "', tender_random_title)
+    tender_title = u'{}{}"'.format(', "title": "', fake.text(100))  # ', "title": "', tender_random_title
     tender_description = u"{}{}{}".format(', "description": ', u'"Примечания для тендера ', tender_random_title)
     tender_title_en = u"{}{}".format(', "title_en": ', '"Title of tender in english"')
     tender_description_en = u"{}{}".format(', "description_en": ', '""')
@@ -447,32 +442,32 @@ tender_features = u"{}{}".format(', "features": ', '[ ]')
 
 
 def procuring_entity():
-    company_name = u'"Тестовая организация ООО Тест"'
-    company_name_en = '"Company name en english"'
-    name = u"{}{}".format('"name": ', company_name)
-    name_en = u"{}{}".format(', "name_en": ', company_name_en)
-    country_name = u'"Україна"'
-    region = u'"місто Київ"'
-    locality = u'"Киев"'
-    street_address = u'"Улица"'
-    postal_code = '"01234"'
-    address = u"{}{}{}{}{}{}{}{}{}{}{}{}".format(
-        ', "address": {', '"countryName": ', country_name, ', "region": ', region, ', "locality": ', locality,
-        ', "streetAddress": ', street_address, ', "postalCode": ', postal_code, '}')
-    contact_name = u'"Теркин Василий Васильевич"'
-    email = '"testik@gmail.com"'
-    telephone = '"+380002222222"'
-    url = '"http://www.site.site"'
-    contact_name_en = u'"Name of person in english"'
-    contact_point = u"{}{}{}{}{}{}{}{}{}{}{}{}".format(
-        ', "contactPoint": {', '"name": ', contact_name, ', "email": ', email, ', "telephone": ', telephone,
-        ', "url": ', url, ', "name_en": ', contact_name_en, '}')
-    identifier = u"{}{}{}{}{}".format(
-        ', "identifier": { "id": "1111111111", "scheme": "UA-EDR", "legalName": ', company_name, ', "legalName_en":',
-        company_name_en, '}')
-    kind = ', "kind": "defense"'
-    procuring_entity_block = u"{}{}{}{}{}{}{}{}".format(
-        ', "procuringEntity": {', name, name_en, address, contact_point, identifier, kind, '}')
+    procuring_entity_json = {"name": "Тестовая организация ООО Тест",
+                             "name_en": "Company name en english",
+                             "address": {
+                                   "countryName": "Україна",
+                                   "region": "місто Київ",
+                                   "locality": fake.city(),
+                                   "streetAddress": fake.street_address(),
+                                   "postalCode": fake.zipcode()
+                             },
+                             "contactPoint": {
+                                   "name": fake.name(),
+                                   "email": "testik@gmail.test",
+                                   "telephone": "+380002222222",
+                                   "url": "http://www.site.site",
+                                   "name_en": "Name of person in english"
+                             },
+                             "identifier": {
+                                   "id": "1111111111",
+                                   "scheme": "UA-EDR",
+                                   "legalName": "Тестовая организация ООО Тест",
+                                   "legalName_en": fake.company()
+                             },
+                             "kind": "defense"
+                             }
+    procuring_entity_block = u"{}{}".format(
+        ', "procuringEntity": ', json.dumps(procuring_entity_json))
     return procuring_entity_block
 
 
