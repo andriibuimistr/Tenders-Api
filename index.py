@@ -169,7 +169,7 @@ def create_tender_function():
 
         # add documents to tender
         if add_documents == 1:
-            add_documents = document.add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots)
+            add_documents = document.add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots)
         else:
             add_documents = 'tender was created without documents'
 
@@ -200,6 +200,7 @@ def create_tender_function():
 @auth.login_required
 def update_list_of_tenders():
     update_tenders = refresh.update_tenders_list()
+    db.session.close()
     if update_tenders[0] == 0:
         return jsonify({"status": "success", "updated tenders": update_tenders[1]})
     else:
@@ -320,6 +321,7 @@ def add_tender_to_company(tender_id_long):
     company_platform_host = get_platform_url.platform_url
     add_tender_company = refresh.add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
                                                            company_uid)
+    db.session.close()
     if add_tender_company[1] == 201:
         return jsonify(add_tender_company[0]), 201
     else:

@@ -127,7 +127,7 @@ class Roles(db.Model):
     return dbs'''
 
 
-sandbox = 1
+sandbox = 2
 
 
 def headers_host():
@@ -139,9 +139,11 @@ def headers_host():
 
 
 if sandbox == 2:
+    ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
     host = "https://api-sandbox.prozorro.openprocurement.net"
     api_version = "dev"
 else:
+    ds_host = 'https://upload.docs-sandbox.openprocurement.org/upload'
     host = "https://lb.api-sandbox.openprocurement.org"
     api_version = "2.4"
 

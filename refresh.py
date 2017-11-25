@@ -51,8 +51,6 @@ def update_tenders_list():
 
     r = requests.get("{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(
         host, api_version, year, month, day, hours, minutes, seconds))
-    print "{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(
-        host, api_version, year, month, day, hours, minutes, seconds)
     updated_tenders = r.json()['data']
     list_of_updated_tenders = []
     for x in range(len(updated_tenders)):
