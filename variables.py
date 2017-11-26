@@ -148,19 +148,8 @@ else:
 
 auth_key = key.auth_key
 
-tender_byustudio_host = 'http://tender.byustudio.in.ua'
 
-
-def tender_currency():
-    return random.choice(['UAH', 'USD', 'EUR', 'RUB', 'GBP'])
-
-
-tender_currency = tender_currency()
-
-valueAddedTaxIncluded = str(random.choice([True, False])).lower()
-
-
-# INPUTS
+'''# INPUTS
 # number of lots from user
 def number_of_lots():
     number_of_lots_from_user = (raw_input(
@@ -181,15 +170,7 @@ def number_of_items():
         number_of_items_from_user = raw_input('Введите правильное значение (от 1 до 10)').decode('utf-8')
     else:
         number_of_items_from_user = int(number_of_items_from_user)
-    return number_of_items_from_user
-
-
-# SELECT PROCUREMENT METHOD
-above_threshold_procurement = [
-    'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA',
-    'competitiveDialogueEU', 'esco']
-below_threshold_procurement = ['open_belowThreshold']
-limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
+    return number_of_items_from_user'''
 
 
 '''# Procurement method from user
@@ -221,26 +202,35 @@ def procurement_method_selector():
         return selected_procurement_method'''
 
 
+tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB', 'GBP'])
+valueAddedTaxIncluded = str(random.choice([True, False])).lower()
+
+
+# SELECT PROCUREMENT METHOD
+above_threshold_procurement = [
+    'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA',
+    'competitiveDialogueEU', 'esco']
+below_threshold_procurement = ['open_belowThreshold']
+limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
+
+
 # ITEMS
-items_m = ', "items": '
-
-
 # generate item description
 def description_of_item(di_number_of_lots, di_number_of_items):
-    description_text = [u'"Описание предмета закупки ']
+    description_text = u'"Описание предмета закупки '
     description_item = []
     if di_number_of_lots == 0:
         items_count = 0
         for item in range(di_number_of_items):
             items_count += 1
-            item_description = u"{}{}{}{}".format('"description": ', random.choice(description_text), items_count, '"')
+            item_description = u"{}{}{}{}".format('"description": ', description_text, items_count, '"')
             description_item.append(item_description)
         return description_item
     else:
         items_count = 0
         for item in range(di_number_of_lots):
             items_count += 1
-            item_description = u"{}{}{}{}{}".format(', "description": ', random.choice(description_text),
+            item_description = u"{}{}{}{}{}".format(', "description": ', description_text,
                                                     u'Лот ', items_count, '"')
             description_item.append(item_description)
         return description_item
@@ -271,14 +261,6 @@ def delivery_end_date():
     return date_month.strftime('%Y-%m-%dT%H:%M:%S+03:00')
 
 
-# delivery date
-delivery_date_data = {"startDate": delivery_start_date(),
-                      "endDate": delivery_end_date()
-                      }
-deliveryDate = u"{}{}".format(
-    ', "deliveryDate": ', json.dumps(delivery_date_data))
-
-
 # generate id for item(s)
 def item_id_generator():
     item_id_generated = "{}{}{}".format(', "id": "', (binascii.hexlify(os.urandom(16))), '"')
@@ -288,10 +270,15 @@ def item_id_generator():
 # generate unit
 def unit():
     unit_code = random.choice([['"BX"', u'"ящик"'], ['"D64"', u'"блок"'], ['"E48"', u'"послуга"']])
-    unit_fragment = u"{}{}{}{}{}{}{}{}{}{}".format(', "unit": {', ' "code": ', unit_code[0], ', "name": ',
-                                                   unit_code[1], ' }', ', "quantity": ', '"', random.randint(1, 99999),
-                                                   '"')
+    unit_fragment = u"{}{}{}{}{}{}{}".format(', "unit": {"code": ', unit_code[0], ', "name": ', unit_code[1],
+                                             ' }, "quantity": "', random.randint(1, 99999), '"')
     return unit_fragment
+
+
+# delivery date
+delivery_date_data = {"startDate": delivery_start_date(), "endDate": delivery_end_date()}
+deliveryDate = u"{}{}".format(', "deliveryDate": ', json.dumps(delivery_date_data))
+additionalClassifications = ', "additionalClassifications": [ ]'
 
 
 # generate data for item
@@ -304,9 +291,6 @@ def item_data(id_number_of_lots, id_number_of_items, i):
 
 
 # --LOTS-- ###############
-lots_m = ', "lots":'
-lots_close = ''
-
 
 # generate id for lot(s)
 def lot_id_generator():
@@ -403,8 +387,6 @@ def classification():
 
 classification = classification()
 
-additionalClassifications = ', "additionalClassifications": [ ]'
-
 
 # random tender description from list
 def description_en():
@@ -427,8 +409,7 @@ def tender_period(accelerator):
 
 
 def tender_titles():
-    tender_number = datetime.now().strftime('%d-%H%M%S"')
-    tender_random_title = u"{}{}".format(u'Тест ', tender_number)
+    tender_random_title = u"{}{}".format(u'Тест ', datetime.now().strftime('%d-%H%M%S"'))
     tender_title = u'{}{}"'.format(', "title": "', fake.text(100))  # ', "title": "', tender_random_title
     tender_description = u"{}{}{}".format(', "description": ', u'"Примечания для тендера ', tender_random_title)
     tender_title_en = u"{}{}".format(', "title_en": ', '"Title of tender in english"')

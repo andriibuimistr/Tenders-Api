@@ -27,7 +27,7 @@ def list_of_lots(number_of_lots, list_of_id_lots):
             '{"id": "', lot_id, '"', variables.title_for_lot(), lot_values[0], '}'))
         list_of_lots_for_tender.append(one_lot)
     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
-    lots_list = u"{}{}{}".format(variables.lots_m, list_of_lots_for_tender, variables.lots_close)
+    lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
     return lots_list
 
 
@@ -39,7 +39,7 @@ def list_of_lots_esco(number_of_lots, list_of_id_lots):
             '{"id": "', lot_id, '"', variables.title_for_lot(), lot_values_esco, '}'))
         list_of_lots_for_tender.append(one_lot)
     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
-    lots_list = u"{}{}{}".format(variables.lots_m, list_of_lots_for_tender, variables.lots_close)
+    lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
     return lots_list
 
 
@@ -48,11 +48,11 @@ def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots):
     list_of_items = []
     for i in range(number_of_lots):
         related_lot_id = list_of_id_lots[i]
-        item = json.loads(u"{}{}{}{}{}{}".format(
-            '{ "relatedLot": ', '"', related_lot_id, '"', variables.item_data(number_of_lots, number_of_items, i), "}"))
+        item = json.loads(u"{}{}{}{}{}".format(
+            '{ "relatedLot": "', related_lot_id, '"', variables.item_data(number_of_lots, number_of_items, i), "}"))
         list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
-    items_list = u"{}{}".format(variables.items_m, list_of_items)
+    items_list = u"{}{}".format(', "items": ', list_of_items)
     return items_list
 
 
@@ -61,10 +61,10 @@ def list_of_items_for_tender(number_of_lots, number_of_items):
     list_of_items = []
     for i in range(number_of_items):
         item = json.loads(u"{}{}{}".format(
-            '{', variables.item_data(number_of_lots, number_of_items, i), "}"))
+            '{', variables.item_data(number_of_lots, number_of_items, i), '}'))
         list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
-    items_list = u"{}{}".format(variables.items_m, list_of_items)
+    items_list = u"{}{}".format(', "items": ', list_of_items)
     return items_list
 
 
@@ -78,11 +78,6 @@ def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procureme
 
 # generate json for tender without lots
 def tender(number_of_lots, number_of_items, procurement_method, accelerator):
-    print u"{}{}{}{}{}{}{}".format(
-        '{"data": {', tender_values(number_of_lots), tender_titles(),
-        list_of_items_for_tender(number_of_lots, number_of_items), tender_features,
-        tender_data(procurement_method, accelerator),
-        '}}')
     return u"{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values(number_of_lots), tender_titles(),
         list_of_items_for_tender(number_of_lots, number_of_items), tender_features,
