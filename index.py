@@ -89,13 +89,15 @@ def create_tender_function():
     tc_request = request.json['data']
     if 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
             or 'number_of_items' not in tc_request or 'documents' not in tc_request \
-            or 'number_of_bids' not in tc_request or 'accelerator' not in tc_request:
+            or 'documents_bid' not in tc_request or 'number_of_bids' not in tc_request \
+            or 'accelerator' not in tc_request:
         abort(400, "One or more parameters are incorrect.")
 
     procurement_method = tc_request["procurementMethodType"]
     number_of_lots = tc_request["number_of_lots"]
     number_of_items = tc_request["number_of_items"]
     add_documents = tc_request["documents"]
+    documents_of_bid = tc_request["documents_bid"]
     number_of_bids = tc_request["number_of_bids"]
     accelerator = tc_request["accelerator"]
 
@@ -113,6 +115,11 @@ def create_tender_function():
         abort(400, 'Documents must be integer')
     elif 0 > add_documents or add_documents > 1:
         abort(422, 'Documents must be 0 or 1')
+
+    if type(documents_of_bid) != int:
+        abort(400, 'Documents of bid must be integer')
+    elif 0 > documents_of_bid or documents_of_bid > 1:
+        abort(422, 'Documents of bid must be 0 or 1')
 
     if type(number_of_bids) != int:
         abort(400, 'Number of bids must be integer')
@@ -174,16 +181,16 @@ def create_tender_function():
             add_documents = 'tender was created without documents'
 
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
-                                          list_of_id_lots, headers_host())
+                                          list_of_id_lots, headers_host(), documents_of_bid)
         db.session.remove()
         return jsonify({'data': {
             "tender": [{
                 "publish tender": publish_tender_response[1],
                 "activate tender": activate_tender[2],
-                "add tender to db": add_tender_db[0]
+                "add tender to db": add_tender_db[0],
+                "documents of tender": add_documents
             }],
-            "bids": run_create_tender,
-            "documents": add_documents
+            "bids": run_create_tender
         }
         }), 201
     elif procurement_method in below_threshold_procurement:
@@ -330,7 +337,7 @@ def add_tender_to_company(tender_id_long):
     if add_tender_company[1] == 201:
         return jsonify(add_tender_company[0]), 201
     else:
-        return jsonify(add_tender_company)
+        return jsonify(add_tender_company[0]), 422
 
 
 # Add new company to database (SQLA)

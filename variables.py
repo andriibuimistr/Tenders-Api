@@ -121,7 +121,7 @@ class Roles(db.Model):
 
 
 # ########################################### GLOBAL VARIABLES ############################
-fake = Faker()
+fake = Faker('uk_UA')
 
 
 sandbox = 2
@@ -236,7 +236,7 @@ def description_of_item(di_number_of_lots, di_number_of_items):
 
 # generate delivery address
 def delivery_address_block():
-    delivery_address_json = {"postalCode": fake.zipcode(),
+    delivery_address_json = {"postalCode": fake.postcode(),
                              "countryName": "Україна",
                              "streetAddress": "Улица",
                              "region": "Дніпропетровська область",
@@ -428,7 +428,7 @@ def procuring_entity():
                                    "region": "місто Київ",
                                    "locality": fake.city(),
                                    "streetAddress": fake.street_address(),
-                                   "postalCode": fake.zipcode()
+                                   "postalCode": fake.postcode()
                              },
                              "contactPoint": {
                                    "name": fake.name(),
@@ -453,7 +453,10 @@ def procuring_entity():
 def tender_data(procurement_method, accelerator):
     procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
     mode = ', "mode": "test"'
-    submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
+    if procurement_method == 'esco':
+        submission_method_details = ', "submissionMethodDetails": "quick(mode:no-auction)"'
+    else:
+        submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
     procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
     status = ', "status": "draft"'
     constant_tender_data = u'{}{}{}{}{}{}{}'.format(

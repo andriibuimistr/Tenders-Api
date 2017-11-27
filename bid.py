@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+from faker import Faker
 import requests
+import document
 from variables import host, api_version, auth_key, valueAddedTaxIncluded, tender_currency,\
     above_threshold_active_bid_procurements, Bids
 import json
 import time
 import variables
 from random import randint
+
+
+fake = Faker('uk_UA')
 
 
 # number of bids input
@@ -59,7 +64,7 @@ def bid_json_open_procedure_lots(user_idf, number_of_lots, list_of_id_lots):
                                   "id": user_idf,
                                   "uri": "http://www.site.domain"
                                 },
-                                "name": "ДКП «Школяр»",
+                                "name": fake.company(),
                                 "address": {
                                   "countryName": "Україна",
                                   "postalCode": "21100",
@@ -94,7 +99,7 @@ def bid_json_open_procedure(user_idf):
                                   "id": user_idf,
                                   "uri": "http://www.site.domain"
                                 },
-                                "name": "ДКП «Школяр»",
+                                "name": fake.company(),
                                 "address": {
                                   "countryName": "Україна",
                                   "postalCode": "21100",
@@ -118,6 +123,8 @@ def values_bid_generator_esco():
     cost = 0
     for x in range(21):
         cost += 1000
+        if cost > 15000:
+            cost = 15000
         annual_costs_reduction_list.append(cost)
     return annual_costs_reduction_list
 
@@ -131,8 +138,8 @@ def lot_values_bid_generator_esco(number_of_lots, list_of_id_lots):
         related_lot_value = {"relatedLot": lot_id,
                              "value": {
                                   "contractDuration": {
-                                    "days": 74,
-                                    "years": 10
+                                    "days": 0,
+                                    "years": 15
                                   },
                                   "yearlyPaymentsPercentage": 0.8,
                                   "annualCostsReduction": tender_value
@@ -160,7 +167,7 @@ def bid_json_esco_lots(user_idf, number_of_lots, list_of_id_lots):
                                   "id": user_idf,
                                   "uri": "http://www.site.domain"
                                 },
-                                "name": "ДКП «Школяр»",
+                                "name": fake.company(),
                                 "address": {
                                   "countryName": "Україна",
                                   "postalCode": "21100",
@@ -195,7 +202,7 @@ def bid_json_esco_simple(user_idf):
                                   "id": user_idf,
                                   "uri": "http://www.site.domain"
                                 },
-                                "name": "ДКП «Школяр»",
+                                "name": fake.company(),
                                 "address": {
                                   "countryName": "Україна",
                                   "postalCode": "21100",
@@ -330,7 +337,7 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
 
 
 # create and activate bid for created tender
-def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, headers_host):
+def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, headers_host, if_docs):
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     bids_json = []
     if bids_quantity == 0:
@@ -391,9 +398,17 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                         activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
                 add_bid_db = bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
                 # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
+
+                if if_docs == 1:
+                    print "Add documents to bid"
+                    added_to_bid_documents = document.add_documents_to_bid_ds(tender_id, bid_id, bid_token)
+                else:
+                    added_to_bid_documents = []
+
                 bids_json.append({"bid id": bid_id,
                                   "create bid status code": created_bid[1],
                                   activate_bid_key: activate_created_bid_result,
-                                  "add bid to db status": add_bid_db
+                                  "add bid to db status": add_bid_db,
+                                  "documents of bid": added_to_bid_documents
                                   })
         return bids_json

@@ -180,10 +180,10 @@ def add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
                 dict(added_to_site=1, company_uid=company_uid))  # set added to site=1
             db.session.commit()
             print 'Tender has company'
-            return abort(422, 'Tender has company')
+            return {'status': 'error', 'description': 'Tender has company'}, 422
         else:
             print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
-            return {'status': 'error', 'description': add_to_site_response}
+            return {'status': 'error', 'description': add_to_site_response}, 422
     else:
         print '{}{}{}'.format('Tender ', tender_id_long, ' was added to company before')
         return abort(422, 'Tender was added to site before')
