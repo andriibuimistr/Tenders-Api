@@ -103,12 +103,16 @@ def get_tenders_list():
             db_tender_status = tenders_list[tender].tender_status
             procurement_method_type = tenders_list[tender].procurementMethodType
             added_to_site = tenders_list[tender].added_to_site
-            if added_to_site == 1:
-                added_to_site = True
-            else:
-                added_to_site = False
+            company_uid = tenders_list[tender].company_uid
+
             list_of_tenders.append({"tender id": tender_id, "tender status": db_tender_status,
-                                    "procurementMethodType": procurement_method_type, 'has company': added_to_site})
+                                    "procurementMethodType": procurement_method_type})
+            if added_to_site == 1:
+                list_of_tenders[tender]['has company'] = True
+                list_of_tenders[tender]['company uid'] = company_uid
+            else:
+                list_of_tenders[tender]['has company'] = False
+
         return list_of_tenders
 
 
