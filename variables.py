@@ -17,15 +17,13 @@ db_host = '82.163.176.242'
 user = 'carrosde_python'
 password = 'python'
 d_base = 'carrosde_tenders'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/{}'.format(user, password, db_host, d_base)
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 90
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 50
 
+db = SQLAlchemy(app)
 
-def db():
-    return SQLAlchemy(app)
-
-
-db = db()
 
 
 class Companies(db.Model):
@@ -272,7 +270,9 @@ def unit():
     unit_code = random.choice([['"BX"', u'"ящик"'], ['"D64"', u'"блок"'], ['"E48"', u'"послуга"']])
     unit_fragment = u"{}{}{}{}{}{}{}".format(', "unit": {"code": ', unit_code[0], ', "name": ', unit_code[1],
                                              ' }, "quantity": "', random.randint(1, 99999), '"')
+    print unit_fragment
     return unit_fragment
+unit()
 
 
 # delivery date

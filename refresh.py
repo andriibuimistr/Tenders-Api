@@ -20,15 +20,18 @@ def update_tender_status(tender_status_in_db, tender_id_long, procurement_method
         if actual_tender_status in invalid_tender_status_list:
             Bids.query.filter_by(tender_id=tender_id_long).delete()
             db.session.commit()
+            db.session.close()
             delete_unsuccessful_tender = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
             db.session.delete(delete_unsuccessful_tender)
             db.session.commit()
+            db.session.close()
             print '{}{}{}'.format('Tender ', tender_id_long,
                                   ' and its related bids were deleted because of its status')
             return 0
         else:
             Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(tender_status=actual_tender_status))
             db.session.commit()
+            db.session.close()
             print '{}{}{}{}{}{}{}'.format(
                 tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status, ' - ',
                 procurement_method_type)
@@ -56,12 +59,9 @@ def update_tenders_list():
     for x in range(len(updated_tenders)):
         list_of_updated_tenders.append(updated_tenders[x]['id'])
 
-    cron = open('cron/synchronization.txt', 'w')
-    cron.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    cron.close()
-
     try:
         tenders_list = Tenders.query.all()
+        db.session.close()
         if len(tenders_list) == 0:
             print 'DB is empty'
         else:
@@ -78,6 +78,10 @@ def update_tenders_list():
                     n_updated_tenders += num_updated_tenders
             print n_updated_tenders
             print '{}{}'.format(count, ' tenders were found in synchronization list')
+
+            cron = open('cron/synchronization.txt', 'w')
+            cron.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            cron.close()
             return 0, n_updated_tenders
     except Exception, e:
         db.session.rollback()
@@ -204,6 +208,7 @@ def get_list_of_companies():
              "company_role_id": int(all_companies[company].company_role_id),
              "platform_id": int(all_companies[company].platform_id),
              "company_identifier": all_companies[company].company_identifier})
+    db.session.remove()
     return companies_list
 
 

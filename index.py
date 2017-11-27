@@ -175,6 +175,7 @@ def create_tender_function():
 
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots, headers_host())
+        db.session.remove()
         return jsonify({'data': {
             "tender": [{
                 "publish tender": publish_tender_response[1],
@@ -219,6 +220,7 @@ def get_list_of_tenders():
 @app.route('/api/tenders/prequalification', methods=['GET'])
 def get_list_tenders_prequalification_status():
     list_tenders_preq = refresh.get_tenders_prequalification_status()
+    db.session.remove()
     return jsonify(list_tenders_preq)
 
 
@@ -239,6 +241,7 @@ def pass_prequalification(tender_id_long):
         time.sleep(2)
         finish_prequalification = qualification.finish_prequalification(
             tender_id_long, tender_token[1])  # submit prequalification protocol
+        db.session.remove()
         return jsonify({'data': {"tenderID": tender_id_long, "prequalifications": prequalification_result,
                                  "submit protocol": finish_prequalification}})
 
@@ -276,10 +279,12 @@ def all_tenders_to_company():
         else:
             response_code = 201
         success_message = '{}{}'.format(add_tenders_to_company, ' tenders were added to company')
+        db.session.remove()
         return jsonify({"status": "success", "description": success_message}), response_code
     else:
         error_no_uid = '{}{}{}'.format('Company with UID ', company_uid, ' was not found in database')
         print error_no_uid
+        db.session.remove()
         return jsonify({"status": "error", "description": error_no_uid})
 
 
@@ -321,7 +326,7 @@ def add_tender_to_company(tender_id_long):
     company_platform_host = get_platform_url.platform_url
     add_tender_company = refresh.add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
                                                            company_uid)
-    db.session.close()
+    db.session.remove()
     if add_tender_company[1] == 201:
         return jsonify(add_tender_company[0]), 201
     else:
@@ -390,6 +395,7 @@ def create_company():
     db.session.add(add_company)
     db.session.commit()
     uid = Companies.query.filter_by(company_id=company_id, platform_id=platform_id).first().id
+    db.session.remove()
     return jsonify({'status': 'success', 'id': int('{}'.format(uid))})  # return json
 
 
@@ -398,6 +404,7 @@ def create_company():
 @auth.login_required
 def get_list_of_companies():
     list_companies = refresh.get_list_of_companies()
+    db.session.remove()
     return jsonify({"data": {"companies": list_companies}})
 
 
@@ -429,6 +436,7 @@ def show_bids_of_tender(tender_id_long):
             list_of_tender_bids[every_bid]['has company'] = True
         else:
             list_of_tender_bids[every_bid]['has company'] = False
+    db.session.remove()
     return jsonify({"data": list_of_tender_bids})
 
 
@@ -469,6 +477,7 @@ def add_bid_to_company(bid_id):
     get_platform_url = Platforms.query.filter_by(id=platform_id).first()
     company_platform_host = get_platform_url.platform_url
     add_bid_company = refresh.add_one_bid_to_company(company_id, company_platform_host, bid_id, company_uid)
+    db.session.remove()
     if add_bid_company[1] == 201:
         return jsonify(add_bid_company[0]), 201
     else:
