@@ -30,9 +30,11 @@ def lot_values_bid_generator(number_of_lots, list_of_id_lots):
     for lot in range(number_of_lots):
         lot_id = list_of_id_lots[lot]
         related_lot_value = json.loads(
-            '{}{}{}{}{}{}{}{}{}'.format('{"relatedLot": "', lot_id, '", "value": {"amount": ', randint(100, 999),
-                                        ', "valueAddedTaxIncluded": ', valueAddedTaxIncluded, ', "currency": ',
-                                        tender_currency, '}}'))
+            '{}'.format(json.dumps({"relatedLot": lot_id,
+                                    "value": {"amount": randint(100, 999),
+                                              "valueAddedTaxIncluded": valueAddedTaxIncluded,
+                                              "currency": tender_currency}
+                                    })))
         list_of_lots_in_bid.append(related_lot_value)
     bid_value = json.dumps(list_of_lots_in_bid)
     return '{}'.format(bid_value)
@@ -41,8 +43,10 @@ def lot_values_bid_generator(number_of_lots, list_of_id_lots):
 # generate value for tender
 def values_bid_generator_above():
         tender_bid_value = json.loads(
-            '{}{}{}{}{}{}{}'.format('{"amount": ', randint(100, 999), ', "currency": ', tender_currency,
-                                    ', "valueAddedTaxIncluded": ', valueAddedTaxIncluded, '}'))
+            '{}'.format(json.dumps({"amount": randint(100, 999),
+                                    "currency": tender_currency,
+                                    "valueAddedTaxIncluded": valueAddedTaxIncluded
+                                    })))
         return tender_bid_value
 
 
