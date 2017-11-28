@@ -280,11 +280,18 @@ additionalClassifications = ', "additionalClassifications": [ ]'
 
 
 # generate data for item
-def item_data(id_number_of_lots, id_number_of_items, i):
-    data_for_item = u'{}{}{}{}{}{}{}{}'.format(
-        description_of_item(id_number_of_lots, id_number_of_items)[i], classification, additionalClassifications,
-        description_en(), delivery_address_block(),
-        deliveryDate, item_id_generator(), unit())
+def item_data(id_number_of_lots, id_number_of_items, i, procurement_method):
+    if procurement_method == 'esco':
+        data_for_item = u'{}{}{}{}{}{}{}'.format(
+            description_of_item(id_number_of_lots, id_number_of_items)[i], classification, additionalClassifications,
+            description_en(), delivery_address_block(),
+            deliveryDate, item_id_generator())
+    else:
+        data_for_item = u'{}{}{}{}{}{}{}{}'.format(
+            description_of_item(id_number_of_lots, id_number_of_items)[i], classification, additionalClassifications,
+            description_en(), delivery_address_block(),
+            deliveryDate, item_id_generator(), unit())
+
     return data_for_item
 
 

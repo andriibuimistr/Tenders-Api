@@ -126,6 +126,11 @@ def patch_bid_documents_from_ds(
     patch_bid_json['data']['documentType'] = type_for_doc
     patch_bid_json['data']['title'] = name_for_doc
 
+    if type_for_doc == 'technicalSpecifications':
+        patch_bid_json['data']['confidentialityRationale'] = "Only our company sells badgers with pink hair."
+        patch_bid_json['data']['confidentiality'] = "buyerOnly"
+        print 'Confidential document'
+
     if doc_of == 'lot':
         patch_bid_json['data']['relatedItem'] = lot_id
         patch_bid_json['data']['documentOf'] = 'lot'

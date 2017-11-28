@@ -44,12 +44,13 @@ def list_of_lots_esco(number_of_lots, list_of_id_lots):
 
 
 # generate items for tender with lots (for lots)
-def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots):
+def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method):
     list_of_items = []
     for i in range(number_of_lots):
         related_lot_id = list_of_id_lots[i]
         item = json.loads(u"{}{}{}{}{}".format(
-            '{ "relatedLot": "', related_lot_id, '"', variables.item_data(number_of_lots, number_of_items, i), "}"))
+            '{ "relatedLot": "', related_lot_id, '"', variables.item_data(number_of_lots, number_of_items, i,
+                                                                          procurement_method), "}"))
         list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
     items_list = u"{}{}".format(', "items": ', list_of_items)
@@ -57,11 +58,11 @@ def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots):
 
 
 # generate items for tender without lots
-def list_of_items_for_tender(number_of_lots, number_of_items):
+def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method):
     list_of_items = []
     for i in range(number_of_items):
         item = json.loads(u"{}{}{}".format(
-            '{', variables.item_data(number_of_lots, number_of_items, i), '}'))
+            '{', variables.item_data(number_of_lots, number_of_items, i, procurement_method), '}'))
         list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
     items_list = u"{}{}".format(', "items": ', list_of_items)
@@ -72,7 +73,7 @@ def list_of_items_for_tender(number_of_lots, number_of_items):
 def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator):
     return u"{}{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values(number_of_lots), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots),
-        list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots), tender_features,
+        list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features,
         tender_data(procurement_method, accelerator), '}}')
 
 
@@ -80,7 +81,7 @@ def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procureme
 def tender(number_of_lots, number_of_items, procurement_method, accelerator):
     return u"{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values(number_of_lots), tender_titles(),
-        list_of_items_for_tender(number_of_lots, number_of_items), tender_features,
+        list_of_items_for_tender(number_of_lots, number_of_items, procurement_method), tender_features,
         tender_data(procurement_method, accelerator),
         '}}')
 
@@ -90,7 +91,7 @@ def tender_esco_with_lots(number_of_lots, number_of_items, list_of_id_lots, proc
     return u"{}{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values_esco(number_of_lots), tender_titles(),
         list_of_lots_esco(number_of_lots, list_of_id_lots),
-        list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots), tender_features,
+        list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features,
         tender_data(procurement_method, accelerator), '}}')
 
 
@@ -98,7 +99,7 @@ def tender_esco_with_lots(number_of_lots, number_of_items, list_of_id_lots, proc
 def tender_esco(number_of_lots, number_of_items, procurement_method, accelerator):
     return u"{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values_esco(number_of_lots), tender_titles(),
-        list_of_items_for_tender(number_of_lots, number_of_items), tender_features,
+        list_of_items_for_tender(number_of_lots, number_of_items, procurement_method), tender_features,
         tender_data(procurement_method, accelerator),
         '}}')
 
