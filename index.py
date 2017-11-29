@@ -11,6 +11,7 @@ import refresh
 from flask import Flask, jsonify, request, abort, make_response
 from flask_httpauth import HTTPBasicAuth
 import re
+import validators
 
 
 auth = HTTPBasicAuth()
@@ -411,7 +412,6 @@ def create_company():
 @auth.login_required
 def get_list_of_companies():
     list_companies = refresh.get_list_of_companies()
-    db.session.remove()
     return jsonify({"data": {"companies": list_companies}})
 
 
@@ -489,6 +489,94 @@ def add_bid_to_company(bid_id):
         return jsonify(add_bid_company[0]), 201
     else:
         return jsonify(add_bid_company)
+
+
+# get list of platforms
+@app.route('/api/tenders/platforms', methods=['GET'])
+@auth.login_required
+def get_list_of_platforms():
+    list_platforms = refresh.get_list_of_platforms()
+    return jsonify({"data": {"platforms": list_platforms}})
+
+
+# create new platform
+@app.route('/api/tenders/platforms', methods=['POST'])
+@auth.login_required
+def add_new_platform():
+    if not request.json:  # check if json exists
+        abort(400, 'JSON was not found in request')
+    if 'data' not in request.json:  # check if data is in json
+        abort(400, 'Data was not found in request')
+    cp_request = request.json['data']
+    if 'platform_name' not in cp_request or 'platform_url' not in cp_request:
+        abort(400, "Can not find one or more parameters.")
+    platform_name = cp_request['platform_name']
+    platform_url = cp_request['platform_url']
+    if platform_url[-1:] == '/':
+        platform_url = platform_url[:-1]
+
+    platforms_url_list = Platforms.query.all()
+    list_platform_url = []
+    for url in range(len(platforms_url_list)):
+        list_platform_url.append(platforms_url_list[url].platform_url)
+    if platform_url in list_platform_url:
+        abort(422, 'URL exists in database')
+    if validators.url(platform_url) is not True:
+        abort(400, 'URL is invalid')
+    new_platform = Platforms(id=None, platform_name=platform_name, platform_url=platform_url)
+    db.session.add(new_platform)
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "success"}), 201
+
+
+# change existing platform
+@app.route('/api/tenders/platforms/<platform_id>', methods=['PATCH'])
+@auth.login_required
+def patch_platform(platform_id):
+    list_pid = []
+    list_of_platform_id = Platforms.query.all()
+    if platform_id.isdigit() is False:
+        abort(400, 'Platform_id must be number')
+    for pid in range(len(list_of_platform_id)):
+        list_pid.append(list_of_platform_id[pid].id)
+    if int(platform_id) not in list_pid:
+        abort(404, 'Platform id wasn\'t found in database')
+    if not request.json:  # check if json exists
+        abort(400, 'JSON was not found in request')
+    if 'data' not in request.json:  # check if data is in json
+        abort(400, 'Data was not found in request')
+    cp_request = request.json['data']
+    if 'platform_name' not in cp_request and 'platform_url' not in cp_request:
+        return jsonify({'data': {
+                            "status code": 202,
+                            "description": "Nothing was changed"
+                        }
+                        }), 202
+    platform_data = {}
+    if 'platform_name' in cp_request:
+        platform_data['platform_name'] = cp_request['platform_name']
+    if 'platform_url' in cp_request:
+        platform_url = cp_request['platform_url']
+        if validators.url(platform_url) is not True:
+            abort(400, 'URL is invalid')
+        else:
+            if platform_url[-1:] == '/':
+                platform_url = platform_url[:-1]
+            platforms_url_list = Platforms.query.all()
+            list_platform_url = []
+            for url in range(len(platforms_url_list)):
+                list_platform_url.append(platforms_url_list[url].platform_url)
+            actual_platform_url = Platforms.query.filter_by(id=platform_id).first().platform_url
+            print platform_url
+            print actual_platform_url
+            if platform_url in list_platform_url and platform_url != actual_platform_url:
+                abort(422, 'URL exists in database')
+            platform_data['platform_url'] = platform_url
+    Platforms.query.filter_by(id=platform_id).update(platform_data)
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "success"}), 200
 
 
 if __name__ == '__main__':

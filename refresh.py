@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Tenders, db, host, api_version, Bids
+from variables import Companies, Tenders, db, host, api_version, Bids, Platforms, Roles
 import requests
 from datetime import datetime
 from flask import abort
@@ -206,12 +206,17 @@ def get_list_of_companies():
     all_companies = Companies.query.all()
     companies_list = []
     for company in range(len(all_companies)):
+        company_type = Roles.query.filter_by(id=all_companies[company].company_role_id).first().role_name
+        company_platform_name = Platforms.query.filter_by(id=all_companies[company].platform_id).first().platform_name
         companies_list.append(
             {"id": int(all_companies[company].id), "company_email": all_companies[company].company_email,
              "company_id": int(all_companies[company].company_id),
              "company_role_id": int(all_companies[company].company_role_id),
+             "company_role": company_type,
              "platform_id": int(all_companies[company].platform_id),
-             "company_identifier": all_companies[company].company_identifier})
+             "company_identifier": all_companies[company].company_identifier,
+             "platform_name": company_platform_name}
+        )
     db.session.remove()
     return companies_list
 
@@ -249,3 +254,15 @@ def add_one_bid_to_company(company_id, company_platform_host, bid_id, company_ui
     else:
         print '{}{}{}'.format('Bid ', bid_id, ' was added to company before')
         return abort(422, 'Bid was added to company before')
+
+
+# get list of companies (SQLA)
+def get_list_of_platforms():
+    all_platforms = Platforms.query.all()
+    platforms_list = []
+    for platform in range(len(all_platforms)):
+        platforms_list.append(
+            {"id": int(all_platforms[platform].id), "platform_name": all_platforms[platform].platform_name,
+             "platform_url": all_platforms[platform].platform_url})
+    db.session.remove()
+    return platforms_list

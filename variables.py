@@ -25,7 +25,6 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 50
 db = SQLAlchemy(app)
 
 
-
 class Companies(db.Model):
     __tablename__ = 'companies'
     id = db.Column(db.Integer, primary_key=True)
