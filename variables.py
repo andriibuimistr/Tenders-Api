@@ -475,3 +475,9 @@ def tender_data(procurement_method, accelerator):
 # VARIABLES FOR BID
 # Above threshold procedures with active bid status
 above_threshold_active_bid_procurements = ['aboveThresholdUA', 'aboveThresholdUA.defense']
+
+# DOCS
+documents_above_procedures = ['aboveThresholdEU', 'esco', 'aboveThresholdUA.defense', 'competitiveDialogueEU.stage2',
+                              'aboveThresholdUA', 'competitiveDialogueUA.stage2']
+documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
+documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']

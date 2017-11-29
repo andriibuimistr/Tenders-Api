@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from variables import host, api_version, ds_host
+from variables import host, api_version, ds_host, documents_above_procedures, documents_above_non_financial,\
+    documents_above_non_confidential
 import requests
 import os
 import json
@@ -47,10 +48,17 @@ tender_documents_type = {'technicalSpecifications': 'Технічний опис
                          'eligibilityCriteria': 'Кваліфікаційні критерії', 'contractProforma': 'Проект договору',
                          'biddingDocuments': 'Тендерна документація', 0: 'Інші'}
 
-bid_document_types = {'technicalSpecifications': 'Технічний опис предмету закупівлі',
-                      'qualificationDocuments': 'Документи, що підтверджують кваліфікацію',
-                      'eligibilityDocuments': 'Документи, що підтверджують відповідність',
-                      'commercialProposal': 'Цінова пропозиція', 'billOfQuantity': 'Кошторис'}
+
+def docs_list_for_bid(procurement_method):
+    if procurement_method in documents_above_procedures:  # EU procedures+defense
+        bid_document_types = {'technicalSpecifications': 'Технічний опис предмету закупівлі',
+                              'qualificationDocuments': 'Документи, що підтверджують кваліфікацію',
+                              'eligibilityDocuments': 'Документи, що підтверджують відповідність',
+                              'commercialProposal': 'Цінова пропозиція', 'billOfQuantity': 'Кошторис'}
+    else:
+        bid_document_types = []
+    return bid_document_types
+
 
 financial_documents = ['commercialProposal', 'billOfQuantity']
 
@@ -119,17 +127,17 @@ def patch_tender_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc,
 
 # upload document from ds to bid
 def patch_bid_documents_from_ds(
-        type_for_doc, name_for_doc, added_tender_doc, t_id_long, bid_id, bid_token, lot_id, doc_of):
+        type_for_doc, name_for_doc, added_tender_doc, t_id_long, bid_id, bid_token, lot_id, doc_of, procurement_method):
 
     patch_bid_json = json.loads(added_tender_doc.content)
 
     patch_bid_json['data']['documentType'] = type_for_doc
     patch_bid_json['data']['title'] = name_for_doc
 
-    if type_for_doc == 'technicalSpecifications':
+    if type_for_doc == 'technicalSpecifications' and procurement_method not in documents_above_non_confidential:
         patch_bid_json['data']['confidentialityRationale'] = "Only our company sells badgers with pink hair."
         patch_bid_json['data']['confidentiality'] = "buyerOnly"
-        print 'Confidential document'
+        print '                    Confidential document!!!'
 
     if doc_of == 'lot':
         patch_bid_json['data']['relatedItem'] = lot_id
@@ -140,8 +148,9 @@ def patch_bid_documents_from_ds(
     else:
         patch_bid_json['data']['documentOf'] = 'tender'
 
-    if type_for_doc in financial_documents:  # select financial documents
-        doc_type_url = 'financial_documents'
+    if type_for_doc in financial_documents and procurement_method not in documents_above_non_financial:
+        doc_type_url = 'financial_documents'  # upload financial documents
+        print '                    Financial document!!!'
     else:
         doc_type_url = 'documents'
     try:
@@ -214,8 +223,9 @@ def add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots):
     return doc_publish_info
 
 
-def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token):
+def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token, procurement_method):
     doc_publish_info = []
+    bid_document_types = docs_list_for_bid(procurement_method)
     for doc_type in bid_document_types:  # add one document for every document type
         doc_type_name = bid_document_types[doc_type]
         added_bid_document = upload_documents_to_ds()
@@ -227,7 +237,8 @@ def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token):
             doc_resp_json = {"upload document": {"status code": added_bid_document[2]},
                              "document name": doc_type_name}
             patch_document_ds = patch_bid_documents_from_ds(doc_type, doc_type_name, added_bid_document[1],
-                                                            tender_id_long, bid_id, bid_token, 0, 'tender')
+                                                            tender_id_long, bid_id, bid_token, 0, 'tender',
+                                                            procurement_method)
             if patch_document_ds[0] == 1:
                 doc_resp_json["patch document"] = {"status": "error", "description": str(patch_document_ds[1])}
             else:

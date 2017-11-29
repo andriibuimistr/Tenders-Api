@@ -79,11 +79,13 @@ def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procureme
 
 # generate json for tender without lots
 def tender(number_of_lots, number_of_items, procurement_method, accelerator):
-    return u"{}{}{}{}{}{}{}".format(
+    tender_json = u"{}{}{}{}{}{}{}".format(
         '{"data": {', tender_values(number_of_lots), tender_titles(),
         list_of_items_for_tender(number_of_lots, number_of_items, procurement_method), tender_features,
         tender_data(procurement_method, accelerator),
         '}}')
+
+    return tender_json
 
 
 # generate json for tender with lots

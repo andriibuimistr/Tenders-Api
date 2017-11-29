@@ -405,7 +405,8 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
 
                 if if_docs == 1:
                     print "Add documents to bid"
-                    added_to_bid_documents = document.add_documents_to_bid_ds(tender_id, bid_id, bid_token)
+                    added_to_bid_documents = document.add_documents_to_bid_ds(tender_id, bid_id, bid_token,
+                                                                              procurement_method)
                 else:
                     added_to_bid_documents = []
 
