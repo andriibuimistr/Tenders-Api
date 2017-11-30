@@ -383,23 +383,24 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 bid_token = created_bid[3]
                 bid_id = created_bid[4]
 
-                activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
-                if activate_created_bid[0] == 1:
-                    activate_bid_key = "activate bid result"
-                    activate_created_bid_result = {"status code": 500, "description": str(activate_created_bid[1])}
-                else:
-                    activate_bid_key = "activate bid status code"
-                    activate_created_bid_result = activate_created_bid[1]
-
                 attempts = 0
+                activate_bid_key = ''
+                activate_created_bid_result = {}
                 for every_bid in range(5):  # activate bid
                     time.sleep(0.5)
-                    if activate_created_bid[1] == 200:
-                        break
+                    attempts += 1
+                    print '{}{}'.format('Activating bid: Attempt ', attempts)
+                    activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
+                    if activate_created_bid[0] == 1:
+                        activate_bid_key = "activate bid result"
+                        activate_created_bid_result = {"status code": 500, "description": str(activate_created_bid[1])}
+                        continue
                     else:
-                        attempts += 1
-                        print '{}{}'.format('Activating bid: Attempt ', attempts)
-                        activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
+                        activate_bid_key = "activate bid status code"
+                        activate_created_bid_result = activate_created_bid[1]
+                        if activate_created_bid[1] == 200:
+                            break
+
                 add_bid_db = bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
                 # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
 
