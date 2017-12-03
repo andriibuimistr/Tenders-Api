@@ -92,6 +92,7 @@ def update_tenders_list():
 # get list of all tenders (SQLA)
 def get_tenders_list():
     tenders_list = Tenders.query.all()
+    db.session.remove()
     list_of_tenders = []
     if len(tenders_list) == 0:
         print 'Tenders table is empty'
@@ -156,6 +157,7 @@ def add_all_tenders_to_company(company_id, company_platform_host, company_uid):
 # add one tender to company (SQLA)
 def add_one_tender_to_company(company_id, company_platform_host, tender_id_long, company_uid):
     get_tender_data = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
+    db.session.remove()
     tender_id_long = get_tender_data.tender_id_long
     tender_token = get_tender_data.tender_token
     added_to_site = get_tender_data.added_to_site
@@ -168,6 +170,7 @@ def add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
             Tenders.query.filter_by(tender_id_long=tender_id_long).update(
                 dict(added_to_site=1, company_uid=company_uid))  # set added to site=1
             db.session.commit()
+            db.session.remove()
             print '\nTender was added to site - ' + tender_id_long
             tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
             link_to_tender = '{}{}{}{}'.format(
@@ -179,6 +182,7 @@ def add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
             Tenders.query.filter_by(tender_id_long=tender_id_long).update(
                 dict(added_to_site=1, company_uid=company_uid))  # set added to site=1
             db.session.commit()
+            db.session.remove()
             print 'Tender has company'
             return {'status': 'error', 'description': 'Tender has company'}, 422
         else:

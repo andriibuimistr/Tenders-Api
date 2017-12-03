@@ -300,7 +300,8 @@ def all_tenders_to_company():
 @app.route('/api/tenders/<tender_id_long>/company', methods=['POST'])
 @auth.login_required
 def add_tender_to_company(tender_id_long):
-    list_of_tenders = Tenders.query.all()  # 'SELECT tender_id_long FROM tenders'???
+    list_of_tenders = Tenders.query.all()
+    db.session.remove()
     list_tid = []
     for tid in range(len(list_of_tenders)):
         list_tid.append(list_of_tenders[tid].tender_id_long)
@@ -318,19 +319,22 @@ def add_tender_to_company(tender_id_long):
     if type(company_uid) != int:
         abort(400, 'Company UID must be integer')
 
-    get_list_of_company_uid = Companies.query.all()  # "SELECT id FROM companies"???
+    get_list_of_company_uid = Companies.query.all()
+    db.session.remove()
     list_of_uid = []
     for uid in range(len(get_list_of_company_uid)):
         list_of_uid.append(int(get_list_of_company_uid[uid].id))
     if company_uid not in list_of_uid:
         abort(422, 'Company was not found in database')
     get_company_id = Companies.query.filter_by(id=company_uid).first()
+    db.session.remove()
     company_id = get_company_id.company_id
     platform_id = get_company_id.platform_id
     company_role_id = get_company_id.company_role_id
     if company_role_id != 1:
         abort(422, 'Company role must be Buyer (1)')
     get_platform_url = Platforms.query.filter_by(id=platform_id).first()
+    db.session.remove()
     company_platform_host = get_platform_url.platform_url
     add_tender_company = refresh.add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
                                                            company_uid)
