@@ -408,7 +408,7 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                     added_to_bid_documents = document.add_documents_to_bid_ds(tender_id, bid_id, bid_token,
                                                                               procurement_method)
                 else:
-                    added_to_bid_documents = []
+                    added_to_bid_documents = "This bid has no documents"
 
                 bids_json.append({"bid_id": bid_id,
                                   "create_bid_status_code": created_bid[1],
