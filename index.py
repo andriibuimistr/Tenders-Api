@@ -186,10 +186,10 @@ def create_tender_function():
         db.session.remove()
         return jsonify({'data': {
             "tender": [{
-                "publish tender": publish_tender_response[1],
-                "activate tender": activate_tender[2],
-                "add tender to db": add_tender_db[0],
-                "documents of tender": add_documents
+                "publish_tender": publish_tender_response[1],
+                "activate_tender": activate_tender[2],
+                "add_tender_to_db": add_tender_db[0],
+                "documents_of_tender": add_documents
             }],
             "bids": run_create_tender
         }

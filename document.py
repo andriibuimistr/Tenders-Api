@@ -183,19 +183,19 @@ def add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots):
         doc_type_name = tender_documents_type[doc_type]
         added_tender_document = upload_documents_to_ds()
         if added_tender_document[0] == 1:
-            doc_resp_json = {"upload document": {"status": "error", "description": str(added_tender_document[1])},
-                             "document name": doc_type_name}
+            doc_resp_json = {"upload_document": {"status": "error", "description": str(added_tender_document[1])},
+                             "document_name": doc_type_name}
             doc_publish_info.append(doc_resp_json)
         else:
-            doc_resp_json = {"upload document": {"status code": added_tender_document[2]},
-                             "document name": doc_type_name}
+            doc_resp_json = {"upload_document": {"status_code": added_tender_document[2]},
+                             "document_name": doc_type_name}
             patch_document_ds = patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document[1],
                                                                tender_id_long, tender_token, 0, 'tender')
             if patch_document_ds[0] == 1:
-                doc_resp_json["patch document"] = {"status": "error", "description": str(patch_document_ds[1])}
+                doc_resp_json["patch_document"] = {"status": "error", "description": str(patch_document_ds[1])}
             else:
                 document_id = json.loads(patch_document_ds[1].content)['data']['id']
-                doc_resp_json["patch document"] = {"status code": patch_document_ds[2], "id": document_id}
+                doc_resp_json["patch_document"] = {"status_code": patch_document_ds[2], "id": document_id}
             doc_publish_info.append(doc_resp_json)
 
     lot_number = 0
@@ -206,19 +206,19 @@ def add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots):
             doc_type_name = '{}{}{}'.format(tender_documents_type[doc_type], ' Лот ', lot_number)
             added_tender_document = upload_documents_to_ds()
             if added_tender_document[0] == 1:
-                doc_resp_json = {"upload document": {"status": "error", "description": str(added_tender_document[1])},
-                                 "document name": doc_type_name}
+                doc_resp_json = {"upload_document": {"status": "error", "description": str(added_tender_document[1])},
+                                 "document_name": doc_type_name}
                 doc_publish_info.append(doc_resp_json)
             else:
-                doc_resp_json = {"upload document": {"status code": added_tender_document[2]},
-                                 "document name": doc_type_name}
+                doc_resp_json = {"upload_document": {"status_code": added_tender_document[2]},
+                                 "document_name": doc_type_name}
                 patch_document_ds = patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document[1],
                                                                    tender_id_long, tender_token, lot_id, 'lot')
                 if patch_document_ds[0] == 1:
-                    doc_resp_json["patch document"] = {"status": "error", "description": str(patch_document_ds[1])}
+                    doc_resp_json["patch_document"] = {"status": "error", "description": str(patch_document_ds[1])}
                 else:
                     document_id = json.loads(patch_document_ds[1].content)['data']['id']
-                    doc_resp_json["patch document"] = {"status code": patch_document_ds[2], "id": document_id}
+                    doc_resp_json["patch_document"] = {"status_code": patch_document_ds[2], "id": document_id}
                 doc_publish_info.append(doc_resp_json)
     return doc_publish_info
 
@@ -230,20 +230,20 @@ def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token, procurement_metho
         doc_type_name = bid_document_types[doc_type]
         added_bid_document = upload_documents_to_ds()
         if added_bid_document[0] == 1:
-            doc_resp_json = {"upload document": {"status": "error", "description": str(added_bid_document[1])},
-                             "document name": doc_type_name}
+            doc_resp_json = {"upload_document": {"status": "error", "description": str(added_bid_document[1])},
+                             "document_name": doc_type_name}
             doc_publish_info.append(doc_resp_json)
         else:
-            doc_resp_json = {"upload document": {"status code": added_bid_document[2]},
-                             "document name": doc_type_name}
+            doc_resp_json = {"upload_document": {"status_code": added_bid_document[2]},
+                             "document_name": doc_type_name}
             patch_document_ds = patch_bid_documents_from_ds(doc_type, doc_type_name, added_bid_document[1],
                                                             tender_id_long, bid_id, bid_token, 0, 'tender',
                                                             procurement_method)
             if patch_document_ds[0] == 1:
-                doc_resp_json["patch document"] = {"status": "error", "description": str(patch_document_ds[1])}
+                doc_resp_json["patch_document"] = {"status": "error", "description": str(patch_document_ds[1])}
             else:
                 document_id = json.loads(patch_document_ds[1].content)['data']['id']
-                doc_resp_json["patch document"] = {"status code": patch_document_ds[2], "id": document_id}
+                doc_resp_json["patch_document"] = {"status_code": patch_document_ds[2], "id": document_id}
             doc_publish_info.append(doc_resp_json)
     return doc_publish_info
 

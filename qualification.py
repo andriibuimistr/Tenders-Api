@@ -75,17 +75,17 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
         if resp.status_code == 200:
             print("       status code:  {}".format(resp.status_code))
             approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id,
-                            "status code": resp.status_code}
+                            "status_code": resp.status_code}
         else:
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
             approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id,
-                            "status code": resp.status_code,
+                            "status_code": resp.status_code,
                             "description": json.loads(resp.content)['errors'][0]['description']}
         return approve_json
     except Exception as e:
         print e
-        return {"bidID": qualification_bid_id, "status code": 500, "reason": str(e)}
+        return {"bidID": qualification_bid_id, "status_code": 500, "reason": str(e)}
 
 
 # select my bids
@@ -130,8 +130,8 @@ def finish_prequalification(tender_id_long, tender_token):
         else:
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
-            f_prequalification_json = {"status code": resp.status_code, "reason": resp.content}
+            f_prequalification_json = {"status_code": resp.status_code, "reason": resp.content}
         return f_prequalification_json
     except Exception as e:
         print e
-        return {"status code": 500, "reason": str(e)}
+        return {"status_code": 500, "reason": str(e)}

@@ -131,7 +131,7 @@ def publish_tender(headers, json_tender):
         if resp.status_code == 201:
             print("Publishing tender: Success")
             print("       status code:  {}".format(resp.status_code))
-            publish_tender_response = {"status code": resp.status_code, "id": resp.json()['data']['id']}
+            publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
             return resp, publish_tender_response, resp.status_code
         else:
             print("Publishing tender: Error")
@@ -162,7 +162,7 @@ def activating_tender(publish_tender_response, headers):
         if resp.status_code == 200:
             print("Activating tender: Success")
             print("       status code:  {}".format(resp.status_code))
-            activate_tender_response = {"status code": resp.status_code}
+            activate_tender_response = {"status_code": resp.status_code}
             return 0, resp, activate_tender_response, resp.status_code
         else:
             print("Activating tender: Error")

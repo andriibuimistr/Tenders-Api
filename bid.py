@@ -374,8 +374,8 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
             created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers)  # create bid
             if created_bid[0] == 1:
                 print created_bid[1]
-                bids_json.append({"bid number": count,
-                                  "create bid status code": 500,
+                bids_json.append({"bid_number": count,
+                                  "create_bid_status_code": 500,
                                   "description": str(created_bid[1])
                                   })
             else:
@@ -385,10 +385,10 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
 
                 activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
                 if activate_created_bid[0] == 1:
-                    activate_bid_key = "activate bid result"
-                    activate_created_bid_result = {"status code": 500, "description": str(activate_created_bid[1])}
+                    activate_bid_key = "activate_bid_result"
+                    activate_created_bid_result = {"status_code": 500, "description": str(activate_created_bid[1])}
                 else:
-                    activate_bid_key = "activate bid status code"
+                    activate_bid_key = "activate_bid_status_code"
                     activate_created_bid_result = activate_created_bid[1]
 
                 attempts = 0
@@ -410,10 +410,10 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 else:
                     added_to_bid_documents = []
 
-                bids_json.append({"bid id": bid_id,
-                                  "create bid status code": created_bid[1],
+                bids_json.append({"bid_id": bid_id,
+                                  "create_bid_status_code": created_bid[1],
                                   activate_bid_key: activate_created_bid_result,
-                                  "add bid to db status": add_bid_db,
-                                  "documents of bid": added_to_bid_documents
+                                  "add_bid_to_db_status": add_bid_db,
+                                  "documents_of_bid": added_to_bid_documents
                                   })
         return bids_json
