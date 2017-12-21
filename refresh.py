@@ -3,6 +3,7 @@ from variables import Companies, Tenders, db, host, api_version, Bids, Platforms
 import requests
 from datetime import datetime
 from flask import abort
+import time
 
 tender_byustudio_host = 'http://tender.byustudio.in.ua'
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
@@ -152,6 +153,57 @@ def add_all_tenders_to_company(company_id, company_platform_host, company_uid):
         else:
             print '{}{}{}'.format('Tender ', tender_id_long, ' was added to site before', )
     return count
+
+
+# add one tender company (SQLA) ##############################################
+def add_one_tender_company(company_id, company_platform_host, tender_id_long):
+    get_tender_data = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
+    db.session.remove()
+    tender_id_long = get_tender_data.tender_id_long
+    tender_token = get_tender_data.tender_token
+    added_to_site = get_tender_data.added_to_site
+    if added_to_site == 0 or added_to_site is None:
+        response = None
+        add_count = 1
+        for x in range(5):
+            print "Тендер добавляется на площадку. Попытка " + str(add_count)
+            time.sleep(60)
+            add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
+                company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
+                '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+            add_to_site_response = add_to_site.json()
+            if 'tid' in add_to_site_response:
+                Tenders.query.filter_by(tender_id_long=tender_id_long).update(
+                    dict(added_to_site=1, company_uid=company_id))  # set added to site=1
+                db.session.commit()
+                db.session.remove()
+                print '\nTender was added to site - ' + tender_id_long
+                tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
+                link_to_tender = '{}{}{}{}'.format(
+                    'Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+                print tender_id_site
+                print link_to_tender
+                response = {'status': 'success'}, 201
+                break
+            elif 'tender has company' in add_to_site_response['error']:
+                Tenders.query.filter_by(tender_id_long=tender_id_long).update(
+                    dict(added_to_site=1, company_uid=company_id))  # set added to site=1
+                db.session.commit()
+                db.session.remove()
+                print 'Tender has company'
+                response = {'status': 'error', 'description': 'Tender has company'}, 422
+                break
+            else:
+                print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
+                response = {'status': 'error', 'description': add_to_site_response}, 422
+                add_count += 1
+                continue
+        return response
+    else:
+        print '{}{}{}'.format('Tender ', tender_id_long, ' was added to company before')
+        return abort(422, 'Tender was added to site before')
+
+
 
 
 # add one tender to company (SQLA)

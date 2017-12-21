@@ -91,7 +91,7 @@ def create_tender_function():
     if 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
             or 'number_of_items' not in tc_request or 'documents' not in tc_request \
             or 'documents_bid' not in tc_request or 'number_of_bids' not in tc_request \
-            or 'accelerator' not in tc_request:
+            or 'accelerator' not in tc_request or 'company_id' not in tc_request or 'platform_host' not in tc_request:
         abort(400, "One or more parameters are incorrect.")
 
     procurement_method = tc_request["procurementMethodType"]
@@ -101,6 +101,8 @@ def create_tender_function():
     documents_of_bid = tc_request["documents_bid"]
     number_of_bids = tc_request["number_of_bids"]
     accelerator = tc_request["accelerator"]
+    company_id = tc_request['company_id']
+    platform_host = tc_request['platform_host']
 
     if type(number_of_lots) != int:
         abort(400, 'Number of lots must be integer')
@@ -131,6 +133,10 @@ def create_tender_function():
         abort(400, 'Accelerator must be integer')
     elif 1 > accelerator or accelerator > 15000:
         abort(422, 'Accelerator must be between 1 and 15000')
+
+    if type(company_id) != int:
+        abort(400, 'Company ID must be integer')
+
     # check procurement method
     if procurement_method in above_threshold_procurement:
         list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)  # get list of id for lots
@@ -183,13 +189,22 @@ def create_tender_function():
 
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots, headers_host(), documents_of_bid)
+
+        add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)
+
+        if add_tender_company[1] == 201:
+            add_tender_company = add_tender_company[0]
+        else:
+            add_tender_company = add_tender_company[0]
+
         db.session.remove()
         return jsonify({'data': {
             "tender": [{
                 "publish_tender": publish_tender_response[1],
                 "activate_tender": activate_tender[2],
                 "add_tender_to_db": add_tender_db[0],
-                "documents_of_tender": add_documents
+                "documents_of_tender": add_documents,
+                "add_tender_company": add_tender_company
             }],
             "bids": run_create_tender
         }
