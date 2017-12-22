@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement,\
-    below_threshold_procurement, limited_procurement, headers_host
+    below_threshold_procurement, limited_procurement, host_selector
 import tender
-import document
+# import document
 import bid
 import json
 import qualification
@@ -89,20 +89,21 @@ def create_tender_function():
         abort(400, 'Data was not found in request')
     tc_request = request.json['data']
     if 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
-            or 'number_of_items' not in tc_request or 'documents' not in tc_request \
-            or 'documents_bid' not in tc_request or 'number_of_bids' not in tc_request \
-            or 'accelerator' not in tc_request or 'company_id' not in tc_request or 'platform_host' not in tc_request:
+            or 'number_of_items' not in tc_request or 'number_of_bids' not in tc_request \
+            or 'accelerator' not in tc_request or 'company_id' not in tc_request or 'platform_host' not in tc_request \
+            or 'api_version' not in tc_request:
         abort(400, "One or more parameters are incorrect.")
 
     procurement_method = tc_request["procurementMethodType"]
     number_of_lots = tc_request["number_of_lots"]
     number_of_items = tc_request["number_of_items"]
-    add_documents = tc_request["documents"]
-    documents_of_bid = tc_request["documents_bid"]
+    # add_documents = tc_request["documents"]
+    # documents_of_bid = tc_request["documents_bid"]
     number_of_bids = tc_request["number_of_bids"]
     accelerator = tc_request["accelerator"]
     company_id = tc_request['company_id']
     platform_host = tc_request['platform_host']
+    api_version = tc_request['api_version']
 
     if type(number_of_lots) != int:
         abort(400, 'Number of lots must be integer')
@@ -114,7 +115,7 @@ def create_tender_function():
     elif 1 > number_of_items or number_of_items > 10:
         abort(422, 'Number of items must be between 1 and 10')
 
-    if type(add_documents) != int:
+    '''if type(add_documents) != int:
         abort(400, 'Documents must be integer')
     elif 0 > add_documents or add_documents > 1:
         abort(422, 'Documents must be 0 or 1')
@@ -122,7 +123,7 @@ def create_tender_function():
     if type(documents_of_bid) != int:
         abort(400, 'Documents of bid must be integer')
     elif 0 > documents_of_bid or documents_of_bid > 1:
-        abort(422, 'Documents of bid must be 0 or 1')
+        abort(422, 'Documents of bid must be 0 or 1')'''
 
     if type(number_of_bids) != int:
         abort(400, 'Number of bids must be integer')
@@ -136,6 +137,8 @@ def create_tender_function():
 
     if type(company_id) != int:
         abort(400, 'Company ID must be integer')
+
+    host_kit = host_selector(api_version)
 
     # check procurement method
     if procurement_method in above_threshold_procurement:
@@ -155,17 +158,19 @@ def create_tender_function():
             else:
                 json_tender = json.loads(tender.tender_with_lots(number_of_lots, number_of_items, list_of_id_lots,
                                                                  procurement_method, accelerator))
-        headers_tender = tender.headers_tender(json_tender, headers_host())  # get headers for tender
+        headers_tender = tender.headers_tender(json_tender, host_kit[3])  # get headers for tender
 
         # run publish tender function
-        publish_tender_response = tender.publish_tender(headers_tender, json_tender)  # publish tender in draft status
+        publish_tender_response = tender.publish_tender(
+            headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
         if publish_tender_response[1] == 1:
             abort(500, '{}'.format(publish_tender_response[0]))
         elif publish_tender_response[2] != 201:
             abort(publish_tender_response[2], json.loads(publish_tender_response[1]))
 
         # run activate tender function
-        activate_tender = tender.activating_tender(publish_tender_response[0], headers_tender)  # activate tender
+        activate_tender = tender.activating_tender(
+            publish_tender_response[0], headers_tender, host_kit[0], host_kit[1])  # activate tender
         if activate_tender[0] == 1:
             abort(500, '{}'.format(activate_tender[0]))
         elif activate_tender[3] != 200:
@@ -181,14 +186,14 @@ def create_tender_function():
         if add_tender_db[1] == 1:
             abort(500, '{}'.format(add_tender_db[0]))
 
-        # add documents to tender
+        ''''# add documents to tender
         if add_documents == 1:
             add_documents = document.add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots)
         else:
-            add_documents = 'tender was created without documents'
+            add_documents = 'tender was created without documents'''
 
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
-                                          list_of_id_lots, headers_host(), documents_of_bid)
+                                          list_of_id_lots, host_kit, 0)  # 0 - documents of bid
 
         add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)
 
@@ -203,7 +208,7 @@ def create_tender_function():
                 "publish_tender": publish_tender_response[1],
                 "activate_tender": activate_tender[2],
                 "add_tender_to_db": add_tender_db[0],
-                "documents_of_tender": add_documents,
+                # "documents_of_tender": add_documents,
                 "add_tender_company": add_tender_company
             }],
             "bids": run_create_tender

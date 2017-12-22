@@ -6,10 +6,6 @@ from variables import tender_values, tender_features, auth_key, lot_values, tend
     tender_values_esco, lot_values_esco
 
 
-host = variables.host
-api_version = variables.api_version
-
-
 # generate list of id fot lots
 def list_of_id_for_lots(number_of_lots):
     list_of_lot_id = []
@@ -116,7 +112,7 @@ def headers_tender(json_tender, headers_host):
 
 
 # Publish tender
-def publish_tender(headers, json_tender):
+def publish_tender(headers, json_tender, host, api_version):
     try:
         s = requests.Session()
         s.request("GET", "{}/api/{}/tenders".format(host, api_version))
@@ -145,7 +141,7 @@ def publish_tender(headers, json_tender):
 
 
 # Activate tender
-def activating_tender(publish_tender_response, headers):
+def activating_tender(publish_tender_response, headers, host, api_version):
     try:
         activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
         tender_location = publish_tender_response.headers['Location']

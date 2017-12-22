@@ -2,7 +2,7 @@
 from faker import Faker
 import requests
 import document
-from variables import host, api_version, auth_key, valueAddedTaxIncluded, tender_currency,\
+from variables import auth_key, valueAddedTaxIncluded, tender_currency,\
     above_threshold_active_bid_procurements, Bids
 import json
 import time
@@ -249,7 +249,7 @@ def headers_bid(bid_json_open_length, headers_host):
 
 
 # create bid in CDB
-def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers):
+def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers, host, api_version):
     try:
         s = requests.Session()
         s.request('GET', '{}/api/{}/tenders'.format(host, api_version))
@@ -277,7 +277,7 @@ def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers):
 
 
 # activate created bid
-def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body):
+def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body, host, api_version):
     try:
         s = requests.Session()
         s.request("GET", "{}/api/{}/tenders".format(host, api_version))
@@ -341,7 +341,7 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
 
 
 # create and activate bid for created tender
-def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, headers_host, if_docs):
+def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, host_kit, if_docs):
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     bids_json = []
     if bids_quantity == 0:
@@ -370,8 +370,9 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 else:
                     bid_json = bid_json_open_procedure_lots(identifier, number_of_lots, list_of_id_lots)
 
-            headers = headers_bid(bid_json, headers_host)  # generate headers for bid
-            created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers)  # create bid
+            headers = headers_bid(bid_json, host_kit[3])  # generate headers for bid
+            created_bid = create_bid_openua_procedure(
+                count, tender_id, bid_json, headers, host_kit[0], host_kit[1])  # create bid
             if created_bid[0] == 1:
                 print created_bid[1]
                 bids_json.append({"bid_number": count,
@@ -383,7 +384,8 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 bid_token = created_bid[3]
                 bid_id = created_bid[4]
 
-                activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
+                activate_created_bid = activate_bid(
+                    bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
                 if activate_created_bid[0] == 1:
                     activate_bid_key = "activate_bid_result"
                     activate_created_bid_result = {"status_code": 500, "description": str(activate_created_bid[1])}
@@ -399,7 +401,8 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                     else:
                         attempts += 1
                         print '{}{}'.format('Activating bid: Attempt ', attempts)
-                        activate_bid(bid_location, bid_token, count, headers, activate_bid_body)
+                        activate_bid(
+                            bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
                 add_bid_db = bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
                 # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
 
