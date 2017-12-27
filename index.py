@@ -168,6 +168,8 @@ def create_tender_function():
         elif publish_tender_response[2] != 201:
             abort(publish_tender_response[2], json.loads(publish_tender_response[1]))
 
+        tender_id = publish_tender_response[0].json()['data']['id']
+
         # run activate tender function
         activate_tender = tender.activating_tender(
             publish_tender_response[0], headers_tender, host_kit[0], host_kit[1])  # activate tender
@@ -195,12 +197,12 @@ def create_tender_function():
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots, host_kit, 0)  # 0 - documents of bid
 
-        add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)
+        '''add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)
 
         if add_tender_company[1] == 201:
             add_tender_company = add_tender_company[0]
         else:
-            add_tender_company = add_tender_company[0]
+            add_tender_company = add_tender_company[0]'''
 
         db.session.remove()
         return jsonify({'data': {
@@ -209,9 +211,12 @@ def create_tender_function():
                 "activate_tender": activate_tender[2],
                 "add_tender_to_db": add_tender_db[0],
                 # "documents_of_tender": add_documents,
-                "add_tender_company": add_tender_company
+                "add_tender_company": 0
             }],
-            "bids": run_create_tender
+            "bids": run_create_tender,
+            "new_json": {
+                "tenderID": tender_id
+            }
         }
         }), 201
     elif procurement_method in below_threshold_procurement:
