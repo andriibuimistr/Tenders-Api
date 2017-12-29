@@ -12,6 +12,7 @@ from flask import Flask, jsonify, request, abort, make_response
 from flask_httpauth import HTTPBasicAuth
 import re
 import validators
+import requests
 
 
 auth = HTTPBasicAuth()
@@ -91,7 +92,7 @@ def create_tender_function():
     if 'procurementMethodType' not in tc_request or 'number_of_lots' not in tc_request \
             or 'number_of_items' not in tc_request or 'number_of_bids' not in tc_request \
             or 'accelerator' not in tc_request or 'company_id' not in tc_request or 'platform_host' not in tc_request \
-            or 'api_version' not in tc_request:
+            or 'api_version' not in tc_request or not 'tenderStatus' in tc_request:
         abort(400, "One or more parameters are incorrect.")
 
     procurement_method = tc_request["procurementMethodType"]
@@ -104,6 +105,7 @@ def create_tender_function():
     company_id = tc_request['company_id']
     platform_host = tc_request['platform_host']
     api_version = tc_request['api_version']
+    received_tender_status = tc_request['tenderStatus']
 
     if type(number_of_lots) != int:
         abort(400, 'Number of lots must be integer')
@@ -124,6 +126,8 @@ def create_tender_function():
         abort(400, 'Documents of bid must be integer')
     elif 0 > documents_of_bid or documents_of_bid > 1:
         abort(422, 'Documents of bid must be 0 or 1')'''
+
+    response_json = {}
 
     if type(number_of_bids) != int:
         abort(400, 'Number of bids must be integer')
@@ -193,6 +197,18 @@ def create_tender_function():
             add_documents = document.add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots)
         else:
             add_documents = 'tender was created without documents'''
+
+        if received_tender_status == 'active.tendering':
+            t_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
+            response_json['id'] = tender_id
+            if t_status.json()['data']['status'] == 'active.tendering':
+                response_json['tenderStatus'] = t_status.json()['data']['status']
+                response_json['status'] = 'success'
+                return jsonify(response_json), 201
+            else:
+                response_json['tenderStatus'] = t_status.json()['data']['status']
+                response_json['status'] = 'error'
+                return jsonify(response_json), 422
 
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots, host_kit, 0)  # 0 - documents of bid
