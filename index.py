@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement,\
-    below_threshold_procurement, limited_procurement, host_selector
+    below_threshold_procurement, limited_procurement, host_selector, prequalification_procedures,\
+    tender_status_list
 import tender
 # import document
 import bid
@@ -8,15 +9,16 @@ import json
 import qualification
 import time
 import refresh
-from flask import Flask, jsonify, request, abort, make_response
+from flask import Flask, jsonify, request, abort, make_response, render_template
 from flask_httpauth import HTTPBasicAuth
 import re
 import validators
 import requests
+from datetime import datetime
 
 
 auth = HTTPBasicAuth()
-app = Flask(__name__)
+app = Flask(__name__,)
 
 
 @auth.get_password
@@ -77,7 +79,7 @@ def custom500(error):
 
 @app.route('/')
 def index():
-    return "Main page"
+    return render_template('index.html')
 
 
 # create tender
@@ -136,11 +138,18 @@ def create_tender_function():
 
     if type(accelerator) != int:
         abort(400, 'Accelerator must be integer')
-    elif 1 > accelerator or accelerator > 15000:
+    elif 1 > accelerator or accelerator > 20000:
         abort(422, 'Accelerator must be between 1 and 15000')
 
     if type(company_id) != int:
         abort(400, 'Company ID must be integer')
+
+    if received_tender_status not in tender_status_list:
+        return abort(400, 'Incorrect tender status')
+    if received_tender_status == 'active.pre-qualification':
+        if procurement_method not in prequalification_procedures:
+            abort(422, '{} {}'.format(procurement_method, "has no 'prequalification' status"))
+
 
     host_kit = host_selector(api_version)
 
@@ -198,30 +207,57 @@ def create_tender_function():
         else:
             add_documents = 'tender was created without documents'''
 
-        if received_tender_status == 'active.tendering':
-            t_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
-            response_json['id'] = tender_id
-            if t_status.json()['data']['status'] == 'active.tendering':
-                response_json['tenderStatus'] = t_status.json()['data']['status']
-                response_json['status'] = 'success'
-                return jsonify(response_json), 201
-            else:
-                response_json['tenderStatus'] = t_status.json()['data']['status']
-                response_json['status'] = 'error'
-                return jsonify(response_json), 422
 
         run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots, host_kit, 0)  # 0 - documents of bid
 
-        '''add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)
+        print tender_id
+        response_json['id'] = tender_id
+        response_code = 0
+        if received_tender_status == 'active.tendering':
+            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
+            response_json['id'] = tender_id
+            if get_t_info.json()['data']['status'] == 'active.tendering':
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                response_json['status'] = 'success'
+                response_code = 201
+            else:
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                response_json['status'] = 'error'
+                response_code = 422
 
-        if add_tender_company[1] == 201:
-            add_tender_company = add_tender_company[0]
-        else:
-            add_tender_company = add_tender_company[0]'''
+        if received_tender_status == 'active.pre-qualification':
+            t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
+            waiting_time = (t_end_date - datetime.now()).seconds
+            print waiting_time
+            time.sleep(waiting_time)
+            qualif_counter = 0
+            for x in range(5):
+                qualif_counter += 1
+                print qualif_counter
+                get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
+                if get_t_info.json()['data']['status'] == 'active.pre-qualification':
+                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                    response_json['status'] = 'success'
+                    response_code = 201
+                    break
+                else:
+                    if qualif_counter < 5:
+                        time.sleep(60)
+                        continue
+                    else:
+                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                        response_json['status'] = 'error'
+                        response_code = 422
 
-        db.session.remove()
-        return jsonify({'data': {
+        add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)
+        response_json['tender_to_company'] = add_tender_company[0]
+
+        return jsonify(response_json), response_code
+
+
+        #db.session.remove()
+        '''return jsonify({'data': {
             "tender": [{
                 "publish_tender": publish_tender_response[1],
                 "activate_tender": activate_tender[2],
@@ -234,7 +270,7 @@ def create_tender_function():
                 "tenderID": tender_id
             }
         }
-        }), 201
+        }), 201'''
     elif procurement_method in below_threshold_procurement:
         print "Error. Данный функционал еще не был разработан :)"
         abort(422, "This procurementMethodType wasn't implemented yet")

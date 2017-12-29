@@ -213,6 +213,11 @@ above_threshold_procurement = [
 below_threshold_procurement = ['open_belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
 
+prequalification_procedures = ['aboveThresholdEU', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco',
+                               'competitiveDialogueEU.stage2']
+
+tender_status_list = ['active.tendering', 'active.pre-qualification']
+
 
 # ITEMS
 # generate item description
