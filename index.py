@@ -84,7 +84,6 @@ def index():
 
 # create tender
 @app.route('/api/tenders', methods=['POST'])
-@auth.login_required
 def create_tender_function():
     if not request.json:
         abort(400)
