@@ -149,59 +149,6 @@ else:
 auth_key = key.auth_key
 
 
-'''# INPUTS
-# number of lots from user
-def number_of_lots():
-    number_of_lots_from_user = (raw_input(
-        'Введите количество лотов (от 1 до 10, 0 - безлотовая закупка)')).decode('utf-8')
-    while number_of_lots_from_user.isdigit() is not True or int(number_of_lots_from_user) > 10:
-        number_of_lots_from_user = raw_input(
-            'Введите правильное значение (от 1 до 10, 0 - безлотовая закупка)').decode('utf-8')
-    else:
-        number_of_lots_from_user = int(number_of_lots_from_user)
-    return number_of_lots_from_user
-
-
-# number of items from user
-def number_of_items():
-    number_of_items_from_user = (raw_input('Введите количество предметов закупки (от 1 до 10)')).decode('utf-8')
-    while number_of_items_from_user.isdigit() is not True\
-            or int(number_of_items_from_user) < 1 or int(number_of_items_from_user) > 10:
-        number_of_items_from_user = raw_input('Введите правильное значение (от 1 до 10)').decode('utf-8')
-    else:
-        number_of_items_from_user = int(number_of_items_from_user)
-    return number_of_items_from_user'''
-
-
-'''# Procurement method from user
-def procurement_method_selector():
-    # print list of procurement methods
-    for method in range(len(above_threshold_procurement)):
-        print '{}{}{}'.format(above_threshold_procurement[method], ' - ', method + 1)
-    for method in range(len(below_threshold_procurement)):
-        print '{}{}{}'.format(below_threshold_procurement[method], ' - ', method + 1 + len(above_threshold_procurement))
-    for method in range(len(limited_procurement)):
-        print '{}{}{}'.format(limited_procurement[method], ' - ',
-                              method + 1 + len(above_threshold_procurement + below_threshold_procurement))
-    # get procurement method from user
-    procurement_method_from_user = (raw_input(
-        'Необходимо выбрать тип процедуры, указав ее номер: ')).decode('utf-8')
-    while procurement_method_from_user.isdigit() is not True or int(procurement_method_from_user) < 1 or \
-            int(procurement_method_from_user) > len(
-                                above_threshold_procurement + below_threshold_procurement + limited_procurement):
-        procurement_method_from_user = raw_input('Введите правильное значение: ').decode('utf-8')
-    else:
-        procurement_method_from_user = int(procurement_method_from_user)
-        if len(above_threshold_procurement) + 1 > procurement_method_from_user > 0:
-            selected_procurement_method = above_threshold_procurement[procurement_method_from_user - 1]
-        elif procurement_method_from_user == len(above_threshold_procurement + below_threshold_procurement):
-            selected_procurement_method = below_threshold_procurement[0]
-        else:
-            selected_procurement_method = limited_procurement[procurement_method_from_user - (
-                len(above_threshold_procurement + below_threshold_procurement) + 1)]
-        return selected_procurement_method'''
-
-
 tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB', 'GBP'])
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
@@ -216,7 +163,10 @@ limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_nego
 prequalification_procedures = ['aboveThresholdEU', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco',
                                'competitiveDialogueEU.stage2']
 
-tender_status_list = ['active.tendering', 'active.pre-qualification']
+above_procedures_without_pre_qualification = ['aboveThresholdUA', 'aboveThresholdUA.defense']
+one_stage_qualification_procedures = ['aboveThresholdEU', 'esco']
+
+tender_status_list = ['active.tendering', 'active.pre-qualification', 'active.qualification']
 
 
 # ITEMS

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import Tenders, Bids, host, api_version
+from variables import Tenders, Bids
 import requests
 import key
 import json
@@ -50,7 +50,7 @@ def get_tender_token(tender_id_long):
 
 
 # get list of qualifications for tender (SQLA)
-def list_of_qualifications(tender_id_long):
+def list_of_qualifications(tender_id_long, host, api_version):
     tender_json = requests.get("{}/api/{}/tenders/{}".format(host, api_version, tender_id_long))
     response = tender_json.json()
     qualifications = response['data']['qualifications']
@@ -59,7 +59,7 @@ def list_of_qualifications(tender_id_long):
 
 # approve/cancel qualifications
 def approve_prequalification(qualification_id, prequalification_bid_json, tender_id_long, tender_token,
-                             qualification_bid_id, is_my_bid):
+                             qualification_bid_id, is_my_bid, host, api_version):
     try:
         s = requests.Session()
         s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
@@ -89,7 +89,7 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
 
 
 # select my bids
-def select_my_bids(qualifications, tender_id_long, tender_token):
+def select_my_bids(qualifications, tender_id_long, tender_token, host, api_version):
     list_of_my_bids = Bids.query.filter_by(tender_id=tender_id_long).all()
     my_bids = []
     bids_json = []
@@ -101,17 +101,17 @@ def select_my_bids(qualifications, tender_id_long, tender_token):
         if qualification_bid_id in my_bids:
             time.sleep(1)
             action = approve_prequalification(qualification_id, prequalification_approve_bid_json, tender_id_long,
-                                              tender_token, qualification_bid_id, True)
+                                              tender_token, qualification_bid_id, True, host, api_version)
         else:
             time.sleep(1)
             action = approve_prequalification(qualification_id, prequalification_decline_bid_json, tender_id_long,
-                                              tender_token, qualification_bid_id, False)
+                                              tender_token, qualification_bid_id, False, host, api_version)
         bids_json.append(action)
     return bids_json
 
 
 # submit protocol of prequalification
-def finish_prequalification(tender_id_long, tender_token):
+def finish_prequalification(tender_id_long, tender_token, host, api_version):
     try:
         s = requests.Session()
         s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
