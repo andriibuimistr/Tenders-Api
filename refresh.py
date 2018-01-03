@@ -167,7 +167,6 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
         add_count = 1
         for x in range(5):
             print "Тендер добавляется на площадку. Попытка " + str(add_count)
-            time.sleep(60)
             add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
                 company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
                 '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
@@ -197,6 +196,7 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
                 print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
                 response = {'status': 'error', 'description': add_to_site_response}, 422
                 add_count += 1
+                time.sleep(60)
                 continue
         return response
     else:

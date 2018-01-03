@@ -234,9 +234,8 @@ def create_tender_function():
                 sys.stdout.flush()
                 time.sleep(1)
             sys.stdout.write("\rComplete!            \n")
-            time.sleep(waiting_time)
             attempt_counter = 0
-            for x in range(5):
+            for x in range(10):
                 attempt_counter += 1
                 print '{}{}'.format('Проверка статуса тендера. Попытка ', attempt_counter)
                 time.sleep(60)
@@ -247,7 +246,7 @@ def create_tender_function():
                     response_code = 201
                     break
                 else:
-                    if attempt_counter < 5:
+                    if attempt_counter < 10:
 
                         continue
                     else:
@@ -266,7 +265,6 @@ def create_tender_function():
                     sys.stdout.flush()
                     time.sleep(1)
                 sys.stdout.write("\rComplete!            \n")
-                time.sleep(waiting_time)
                 attempt_counter = 0
                 for x in range(5):
                     attempt_counter += 1
@@ -296,7 +294,6 @@ def create_tender_function():
                     sys.stdout.flush()
                     time.sleep(1)
                 sys.stdout.write("\rComplete!            \n")
-                time.sleep(waiting_time)
                 attempt_counter = 0
                 for x in range(10):
                     attempt_counter += 1
@@ -318,7 +315,6 @@ def create_tender_function():
                             sys.stdout.flush()
                             time.sleep(1)
                         sys.stdout.write("\rComplete!            \n")
-                        time.sleep(waiting_time)
                         attempt_counter = 0
                         for y in range(10):
                             attempt_counter += 1
