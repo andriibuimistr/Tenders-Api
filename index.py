@@ -7,7 +7,7 @@ import tender
 import bid
 import json
 import qualification
-import time
+import time, sys
 import refresh
 from flask import Flask, jsonify, request, abort, make_response, render_template
 from flask_httpauth import HTTPBasicAuth
@@ -228,7 +228,12 @@ def create_tender_function():
             t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'],
                                            '%Y-%m-%dT%H:%M:%S+02:00')
             waiting_time = (t_end_date - datetime.now()).seconds
-            print waiting_time
+            for remaining in range(waiting_time, 0, -1):
+                sys.stdout.write("\r")
+                sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                sys.stdout.flush()
+                time.sleep(1)
+            sys.stdout.write("\rComplete!            \n")
             time.sleep(waiting_time)
             attempt_counter = 0
             for x in range(5):
@@ -255,7 +260,12 @@ def create_tender_function():
                 t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'],
                                                '%Y-%m-%dT%H:%M:%S+02:00')
                 waiting_time = (t_end_date - datetime.now()).seconds
-                print waiting_time
+                for remaining in range(waiting_time, 0, -1):
+                    sys.stdout.write("\r")
+                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                    sys.stdout.flush()
+                    time.sleep(1)
+                sys.stdout.write("\rComplete!            \n")
                 time.sleep(waiting_time)
                 attempt_counter = 0
                 for x in range(5):
@@ -280,7 +290,12 @@ def create_tender_function():
                 t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'],
                                                '%Y-%m-%dT%H:%M:%S+02:00')
                 waiting_time = (t_end_date - datetime.now()).seconds
-                print waiting_time
+                for remaining in range(waiting_time, 0, -1):
+                    sys.stdout.write("\r")
+                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                    sys.stdout.flush()
+                    time.sleep(1)
+                sys.stdout.write("\rComplete!            \n")
                 time.sleep(waiting_time)
                 attempt_counter = 0
                 for x in range(10):
@@ -297,7 +312,12 @@ def create_tender_function():
                             tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
                         db.session.remove()
                         waiting_time = int(round(7200.0 / accelerator * 60))
-                        print waiting_time
+                        for remaining in range(waiting_time, 0, -1):
+                            sys.stdout.write("\r")
+                            sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                            sys.stdout.flush()
+                            time.sleep(1)
+                        sys.stdout.write("\rComplete!            \n")
                         time.sleep(waiting_time)
                         attempt_counter = 0
                         for y in range(10):
