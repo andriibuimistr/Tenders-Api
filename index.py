@@ -234,6 +234,7 @@ def create_tender_function():
             for x in range(5):
                 attempt_counter += 1
                 print '{}{}'.format('Проверка статуса тендера. Попытка ', attempt_counter)
+                time.sleep(60)
                 get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
                 if get_t_info.json()['data']['status'] == 'active.pre-qualification':
                     response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -242,7 +243,7 @@ def create_tender_function():
                     break
                 else:
                     if attempt_counter < 5:
-                        time.sleep(60)
+
                         continue
                     else:
                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -260,6 +261,7 @@ def create_tender_function():
                 for x in range(5):
                     attempt_counter += 1
                     print '{}{}'.format('Проверка статуса тендера. Попытка ', attempt_counter)
+                    time.sleep(60)
                     get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
                     if get_t_info.json()['data']['status'] == 'active.qualification':
                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -268,7 +270,7 @@ def create_tender_function():
                         break
                     else:
                         if attempt_counter < 5:
-                            time.sleep(60)
+
                             continue
                         else:
                             response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -284,6 +286,7 @@ def create_tender_function():
                 for x in range(10):
                     attempt_counter += 1
                     print '{}{}'.format('Проверка статуса тендера (pre). Попытка ', attempt_counter)
+                    time.sleep(60)
                     get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
                     if get_t_info.json()['data']['status'] == 'active.pre-qualification':
                         qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
@@ -300,6 +303,7 @@ def create_tender_function():
                         for y in range(10):
                             attempt_counter += 1
                             print '{}{}'.format('Проверка статуса тендера (q). Попытка ', attempt_counter)
+                            time.sleep(90)
                             get_t_info = requests.get(
                                 "{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id))
                             if get_t_info.json()['data']['status'] == 'active.qualification':
@@ -308,8 +312,8 @@ def create_tender_function():
                                 response_code = 201
                                 break
                             else:
-                                if attempt_counter < 5:
-                                    time.sleep(90)
+                                if attempt_counter < 10:
+
                                     continue
                                 else:
                                     response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -317,8 +321,8 @@ def create_tender_function():
                                     response_code = 422
                         break
                     else:
-                        if attempt_counter < 5:
-                            time.sleep(60)
+                        if attempt_counter < 10:
+
                             continue
                         else:
                             response_json['tenderStatus'] = get_t_info.json()['data']['status']

@@ -417,10 +417,7 @@ def procuring_entity():
 def tender_data(procurement_method, accelerator):
     procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
     mode = ', "mode": "test"'
-    if procurement_method == 'esco':
-        submission_method_details = ', "submissionMethodDetails": "quick(mode:no-auction)"'
-    else:
-        submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
+    submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
     procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
     status = ', "status": "draft"'
     constant_tender_data = u'{}{}{}{}{}{}{}'.format(
