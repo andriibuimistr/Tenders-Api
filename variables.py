@@ -164,9 +164,10 @@ prequalification_procedures = ['aboveThresholdEU', 'competitiveDialogueUA', 'com
                                'competitiveDialogueEU.stage2']
 
 above_procedures_without_pre_qualification = ['aboveThresholdUA', 'aboveThresholdUA.defense']
-one_stage_qualification_procedures = ['aboveThresholdEU', 'esco']
+one_stage_pre_qualification_procedures = ['aboveThresholdEU', 'esco']
 
 tender_status_list = ['active.tendering', 'active.pre-qualification', 'active.qualification']
+competitive_procedures = ['competitiveDialogueUA', 'competitiveDialogueEU']
 
 
 # ITEMS
@@ -212,7 +213,7 @@ def delivery_start_date():
 
 # generate delivery end date
 def delivery_end_date():
-    date_month = datetime.now() + timedelta(days=30)
+    date_month = datetime.now() + timedelta(days=120)
     return date_month.strftime('%Y-%m-%dT%H:%M:%S+03:00')
 
 

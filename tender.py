@@ -170,6 +170,40 @@ def activating_tender(publish_tender_response, headers, host, api_version):
         return 1, e
 
 
+# Finish first stage
+def finish_first_stage(publish_tender_response, headers, host, api_version):
+    try:
+        finish_stage_one = {
+                              "data": {
+                                "status": "active.stage2.waiting"
+                              }
+                            }
+        tender_location = publish_tender_response.headers['Location']
+        token = publish_tender_response.json()['access']['token']
+        s = requests.Session()
+        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+        r = requests.Request('PATCH',
+                             "{}{}{}".format(tender_location, '?acc_token=', token),
+                             data=json.dumps(finish_stage_one),
+                             headers=headers,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        if resp.status_code == 200:
+            print("Finish first stage: Success")
+            print("       status code:  {}".format(resp.status_code))
+            activate_tender_response = {"status_code": resp.status_code}
+            return 0, resp, activate_tender_response, resp.status_code
+        else:
+            print("Finish first stage: Error")
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+        return 0, resp, resp.content, resp.status_code
+    except Exception as e:
+        return 1, e
+
+
 # save tender info to DB (SQLA)
 def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurement_method, tender_status,
                  number_of_lots):
