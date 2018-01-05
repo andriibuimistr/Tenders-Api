@@ -285,6 +285,7 @@ def add_one_bid_to_company(company_id, company_platform_host, bid_id, company_ui
     bid_token = get_bid_data.bid_token
     added_to_site = get_bid_data.added_to_site
     tender_id = get_bid_data.tender_id
+    db.session.commit()
     if added_to_site == 0 or added_to_site is None:
         add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
             company_platform_host, '/tender/add-bid-to-company?tid=', tender_id, '&bid=', bid_id, '&token=', bid_token,
