@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
+import pytz
 import requests
 import variables
 from variables import tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles, Tenders,\
     tender_values_esco, lot_values_esco
+from datetime import datetime, timedelta
 
 
 # generate list of id fot lots
@@ -202,6 +204,103 @@ def finish_first_stage(publish_tender_response, headers, host, api_version):
         return 0, resp, resp.content, resp.status_code
     except Exception as e:
         return 1, e
+
+
+def get_2nd_stage_info(headers, host, api_version, second_stage_tender_id, tender_token):
+    try:
+        s = requests.Session()
+        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+        r = requests.Request('PATCH',
+                             "{}/api/{}/tenders/{}/credentials?acc_token={}".format(
+                                 host, api_version, second_stage_tender_id, tender_token),
+                             data=json.dumps('{}'),
+                             headers=headers,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
+
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        if resp.status_code == 200:
+            print("Get 2nd stage json: Success")
+            print("       status code:  {}".format(resp.status_code))
+            # print("  token 2-nd stage:  {}".format(resp.json()['access']['token']))
+            publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
+            return resp, publish_tender_response, resp.status_code
+        else:
+            print("Get 2nd stage json: Error")
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+            return resp, resp.content, resp.status_code
+    except Exception as e:
+        print e
+        return e, 1
+
+
+def extend_tender_period(host, api_version, accelerator, second_stage_tender_id):
+    tender_draft = requests.get("{}/api/{}/tenders/{}".format(host, api_version, second_stage_tender_id))
+    new_tender_json = tender_draft.json()
+    kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
+    new_tender_json['data']['tenderPeriod']['endDate'] = str(
+        datetime.now() + timedelta(minutes=int(round(11 * (1440.0 / accelerator)) + 201))) + kiev_now
+    return new_tender_json
+
+
+# Patch second stage
+def patch_second_stage(headers, new_tender_json, host, api_version, second_stage_tender_id, second_stage_token):
+    try:
+        s = requests.Session()
+        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+        r = requests.Request('PATCH',
+                             "{}/api/{}/tenders/{}?acc_token={}".format(
+                                 host, api_version, second_stage_tender_id, second_stage_token),
+                             data=json.dumps(new_tender_json),
+                             headers=headers,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
+
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        if resp.status_code == 200:
+            print("Patch 2nd stage: Success")
+            print("       status code:  {}".format(resp.status_code))
+            publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
+            return resp, publish_tender_response, resp.status_code
+        else:
+            print("Patch 2nd stage: Error")
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+            return resp, resp.content, resp.status_code
+    except Exception as e:
+        print 'CDB Error'
+        return e, 1
+
+
+def activate_2nd_stage(headers, host, api_version, new_tender_id, new_token, activate_2nd_stage_json):
+    try:
+        s = requests.Session()
+        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+        r = requests.Request('PATCH',
+                             "{}/api/{}/tenders/{}?acc_token={}".format(host, api_version, new_tender_id, new_token),
+                             data=json.dumps(activate_2nd_stage_json),
+                             headers=headers,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
+
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        if resp.status_code == 200:
+            print("Activate 2nd stage: Success")
+            print("       status code:  {}".format(resp.status_code))
+            print("  token 2-nd stage:  {}".format(resp.json()['access']['token']))
+            publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
+            return resp, publish_tender_response, resp.status_code
+        else:
+            print("Activate 2nd stage: Error")
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+            return resp, resp.content, resp.status_code
+    except Exception as e:
+        return e, 1
 
 
 # save tender info to DB (SQLA)
