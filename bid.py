@@ -423,3 +423,27 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                                   "documents_of_bid": added_to_bid_documents
                                   })
         return bids_json, list_of_bids_json
+
+
+def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement_method):
+    if len(list_of_bids) == 0:
+        print 'Ставки не были сделаны!'
+    else:
+        count = 0
+        for bid in range(len(list_of_bids)):
+            count += 1
+            bid_json = list_of_bids[bid]
+            created_bid = create_bid_openua_procedure(
+                count, tender_id, bid_json, headers, host_kit[0], host_kit[1])
+            if procurement_method == 'competitiveDialogueUA':
+                activate_bid_body = {"data": {"status": "active"}}
+            else:
+                activate_bid_body = {"data": {"status": "pending"}}
+            bid_location = created_bid[2]
+            bid_token = created_bid[3]
+            bid_id = created_bid[4]
+            activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body,
+                                                host_kit[0], host_kit[1])
+
+
+

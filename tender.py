@@ -241,7 +241,7 @@ def extend_tender_period(host, api_version, accelerator, second_stage_tender_id)
     new_tender_json = tender_draft.json()
     kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
     new_tender_json['data']['tenderPeriod']['endDate'] = str(
-        datetime.now() + timedelta(minutes=int(round(11 * (1440.0 / accelerator)) + 201))) + kiev_now
+        datetime.now() + timedelta(minutes=int(round(11 * (1440.0 / accelerator)) + 1))) + kiev_now
     return new_tender_json
 
 

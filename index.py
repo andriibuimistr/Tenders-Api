@@ -183,7 +183,6 @@ def create_tender_function():
         elif publish_tender_response[2] != 201:
             abort(publish_tender_response[2], json.loads(publish_tender_response[1]))
 
-
         # run activate tender function
         activate_tender = tender.activating_tender(
             publish_tender_response[0], headers_tender, host_kit[0], host_kit[1])  # activate tender
@@ -208,8 +207,8 @@ def create_tender_function():
         else:
             add_documents = 'tender was created without documents'''
         time.sleep(5)
-        make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
-                                          list_of_id_lots, host_kit, 0)  # 0 - documents of bid
+        make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots,
+                                 host_kit, 0)  # 0 - documents of bid
 
         print 'Tender id ' + tender_id_long
         print 'Tender token ' + tender_token
@@ -429,8 +428,12 @@ def create_tender_function():
                                                                   host_kit[1], second_stage_tender_id,
                                                                   second_stage_token)
                                         tender.activate_2nd_stage(headers_tender, host_kit[0], host_kit[1],
-                                                                  second_stage_tender_id,
-                                                                  second_stage_token, activate_2nd_stage_json)
+                                                                  second_stage_tender_id, second_stage_token,
+                                                                  activate_2nd_stage_json)
+                                        bid_competitive = bid.make_bid_competitive(make_bid[1],
+                                                                                   second_stage_tender_id,
+                                                                                   headers_tender, host_kit,
+                                                                                   procurement_method)
                                         break
                                     else:
                                         if attempt_counter < 10:
