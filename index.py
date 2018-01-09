@@ -16,10 +16,12 @@ import re
 import validators
 import requests
 from datetime import datetime
+from flask_cors import CORS, cross_origin
 
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
+CORS(app)
 
 
 @auth.get_password
@@ -85,6 +87,7 @@ def index():
 
 # create tender
 @app.route('/api/tenders', methods=['POST'])
+@cross_origin(resources=r'/api/*')
 def create_tender_function():
     if not request.json:
         abort(400)
