@@ -205,7 +205,7 @@ def create_tender_function():
         else:
             add_documents = 'tender was created without documents'''
         time.sleep(5)
-        run_create_tender = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
+        make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method,
                                           list_of_id_lots, host_kit, 0)  # 0 - documents of bid
 
         print 'Tender id ' + tender_id_long
@@ -403,6 +403,31 @@ def create_tender_function():
                                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                         response_json['status'] = 'success'
                                         response_code = 201
+                                        get_2nd_stage_tender_json = requests.get(
+                                            "{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                                        second_stage_tender_id = get_2nd_stage_tender_json.json()['data'][
+                                            'stage2TenderID']
+                                        print '2nd stage id: ' + second_stage_tender_id
+                                        get_2nd_stage_info = tender.get_2nd_stage_info(headers_tender, host_kit[0],
+                                                                                       host_kit[1],
+                                                                                       second_stage_tender_id,
+                                                                                       tender_token)
+                                        second_stage_token = get_2nd_stage_info[0].json()['access']['token']
+                                        # add_second_stage_to_site ------
+                                        activate_2nd_stage_json = {
+                                            "data": {
+                                                "status": "active.tendering"
+                                            }
+                                        }
+                                        second_stage_new_json = tender.extend_tender_period(host_kit[0], host_kit[1],
+                                                                                            accelerator,
+                                                                                            second_stage_tender_id)
+                                        tender.patch_second_stage(headers_tender, second_stage_new_json, host_kit[0],
+                                                                  host_kit[1], second_stage_tender_id,
+                                                                  second_stage_token)
+                                        tender.activate_2nd_stage(headers_tender, host_kit[0], host_kit[1],
+                                                                  second_stage_tender_id,
+                                                                  second_stage_token, activate_2nd_stage_json)
                                         break
                                     else:
                                         if attempt_counter < 10:
@@ -842,4 +867,4 @@ def patch_platform(platform_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)

@@ -349,6 +349,7 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
         return {"description": "tender was created without bids"}
     else:
         count = 0
+        list_of_bids_json = []
         for x in range(bids_quantity):
             count += 1
             identifier_list = ['00037256', '14360570', '01202000']  # list of user identifiers from site
@@ -369,6 +370,8 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                     bid_json = bid_json_esco_lots(identifier, number_of_lots, list_of_id_lots)
                 else:
                     bid_json = bid_json_open_procedure_lots(identifier, number_of_lots, list_of_id_lots)
+
+            list_of_bids_json.append(bid_json)
 
             headers = headers_bid(bid_json, host_kit[3])  # generate headers for bid
             created_bid = create_bid_openua_procedure(
@@ -419,4 +422,4 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                                   "add_bid_to_db_status": add_bid_db,
                                   "documents_of_bid": added_to_bid_documents
                                   })
-        return bids_json
+        return bids_json, list_of_bids_json
