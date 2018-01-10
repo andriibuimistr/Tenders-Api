@@ -176,14 +176,14 @@ def create_tender_function():
         headers_tender = tender.headers_tender(json_tender, host_kit[3])  # get headers for tender
 
         # run publish tender function
-        publish_tender_response = tender.publish_tender(
-            headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
+        publish_tender_response = tender.publish_tender(headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
         if publish_tender_response[1] == 1:
             abort(500, '{}'.format(publish_tender_response[0]))
         elif publish_tender_response[2] != 201:
             abort(publish_tender_response[2], json.loads(publish_tender_response[1]))
 
         # run activate tender function
+        time.sleep(1)
         activate_tender = tender.activating_tender(
             publish_tender_response[0], headers_tender, host_kit[0], host_kit[1])  # activate tender
         if activate_tender[0] == 1:
@@ -240,7 +240,7 @@ def create_tender_function():
             attempt_counter = 0
             for x in range(10):
                 attempt_counter += 1
-                print '{}{}'.format('Проверка статуса тендера. Попытка ', attempt_counter)
+                print '{}{}'.format('Check "active.pre-qualification" status. Attempt ', attempt_counter)
                 time.sleep(60)
                 get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
                 if get_t_info.json()['data']['status'] == 'active.pre-qualification':
@@ -259,8 +259,8 @@ def create_tender_function():
 
         if received_tender_status == 'active.qualification':
             if procurement_method in above_procedures_without_pre_qualification:
-                t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'],
-                                               '%Y-%m-%dT%H:%M:%S+02:00')
+                t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
+
                 waiting_time = (t_end_date - datetime.now()).seconds
                 for remaining in range(waiting_time, 0, -1):
                     sys.stdout.write("\r")
@@ -288,8 +288,8 @@ def create_tender_function():
                             response_json['status'] = 'error'
                             response_code = 422
             elif procurement_method in one_stage_pre_qualification_procedures:
-                t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'],
-                                               '%Y-%m-%dT%H:%M:%S+02:00')
+                t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
+
                 waiting_time = (t_end_date - datetime.now()).seconds
                 for remaining in range(waiting_time, 0, -1):
                     sys.stdout.write("\r")
@@ -349,8 +349,9 @@ def create_tender_function():
                             response_code = 422
 
             elif procurement_method in competitive_procedures:  # qualification for competitive dialogue
-                t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'],
-                                               '%Y-%m-%dT%H:%M:%S+02:00')
+                t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
+                print publish_tender_response[0].json()['data']['tenderPeriod']['endDate']
+                print t_end_date
                 waiting_time = (t_end_date - datetime.now()).seconds
                 for remaining in range(waiting_time, 0, -1):
                     sys.stdout.write("\r")
@@ -385,8 +386,7 @@ def create_tender_function():
                             print '{}{}'.format('Проверка статуса тендера (active.stage2.pending). Попытка ',
                                                 attempt_counter)
                             time.sleep(90)
-                            get_t_info = requests.get(
-                                "{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
                             if get_t_info.json()['data']['status'] == 'active.stage2.pending':
                                 response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                 response_json['status'] = 'success'
@@ -405,35 +405,58 @@ def create_tender_function():
                                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                         response_json['status'] = 'success'
                                         response_code = 201
-                                        get_2nd_stage_tender_json = requests.get(
-                                            "{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                                        second_stage_tender_id = get_2nd_stage_tender_json.json()['data'][
-                                            'stage2TenderID']
+
+                                        get_2nd_stage_tender_json = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))  # json with id of 2nd stage
+                                        second_stage_tender_id = get_2nd_stage_tender_json.json()['data']['stage2TenderID']  # get id of 2nd stage from json of 1st stage
                                         print '2nd stage id: ' + second_stage_tender_id
-                                        get_2nd_stage_info = tender.get_2nd_stage_info(headers_tender, host_kit[0],
-                                                                                       host_kit[1],
-                                                                                       second_stage_tender_id,
-                                                                                       tender_token)
-                                        second_stage_token = get_2nd_stage_info[0].json()['access']['token']
-                                        # add_second_stage_to_site ------
-                                        activate_2nd_stage_json = {
+                                        get_2nd_stage_info = tender.get_2nd_stage_info(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, tender_token)  # get info of 2nd stage (with token)
+                                        second_stage_token = get_2nd_stage_info[0].json()['access']['token']  # get token of 2nd stage from json
+
+                                        get_extended_period_for_2nd_stage = tender.extend_tender_period(host_kit[0], host_kit[1], accelerator, second_stage_tender_id)
+                                        tender.patch_second_stage(headers_tender, get_extended_period_for_2nd_stage, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token)  # ready json 2nd stage
+
+                                        activate_2nd_stage_json = {  # json for activate second stage
                                             "data": {
                                                 "status": "active.tendering"
                                             }
                                         }
-                                        second_stage_new_json = tender.extend_tender_period(host_kit[0], host_kit[1],
-                                                                                            accelerator,
-                                                                                            second_stage_tender_id)
-                                        tender.patch_second_stage(headers_tender, second_stage_new_json, host_kit[0],
-                                                                  host_kit[1], second_stage_tender_id,
-                                                                  second_stage_token)
-                                        tender.activate_2nd_stage(headers_tender, host_kit[0], host_kit[1],
-                                                                  second_stage_tender_id, second_stage_token,
-                                                                  activate_2nd_stage_json)
-                                        bid_competitive = bid.make_bid_competitive(make_bid[1],
-                                                                                   second_stage_tender_id,
-                                                                                   headers_tender, host_kit,
-                                                                                   procurement_method)
+                                        tender.activate_2nd_stage(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token, activate_2nd_stage_json)  # activate 2nd stage request
+
+                                        time.sleep(2)
+                                        bid_competitive = bid.make_bid_competitive(make_bid[1], second_stage_tender_id, headers_tender, host_kit, procurement_method)  # make bids 2nd stage
+
+                                        get_2nd_stage_actual_json = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], second_stage_tender_id))
+                                        t_end_date = datetime.strptime(get_2nd_stage_actual_json.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
+                                        waiting_time = (t_end_date - datetime.now()).seconds
+                                        for remaining in range(waiting_time, 0, -1):
+                                            sys.stdout.write("\r")
+                                            sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                                            sys.stdout.flush()
+                                            time.sleep(1)
+                                        sys.stdout.write("\rCheck tender status            \n")
+                                        attempt_counter = 0
+                                        for attempt in range(30):  # check if 2nd stage is in qualification status
+                                            attempt_counter += 1
+                                            print '{}{}'.format('Check tender for "active.qualification" status. Attempt ', attempt_counter)
+                                            time.sleep(60)
+                                            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                                            if get_t_info.json()['data']['status'] == 'active.qualification':
+                                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                                                response_json['status'] = 'success'
+                                                response_code = 201
+                                                break
+                                            else:
+                                                if attempt_counter < 30:
+
+                                                    continue
+                                                else:
+                                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                                                    response_json['status'] = 'error'
+                                                    response_code = 422
+                                        add_2nd_stage_db = tender.tender_to_db(second_stage_tender_id, get_2nd_stage_actual_json, second_stage_token, procurement_method, get_t_info.json()['data']['status'],
+                                                                               number_of_lots)
+                                        add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id)
+                                        response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
                                         break
                                     else:
                                         if attempt_counter < 10:

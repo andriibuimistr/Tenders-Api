@@ -165,7 +165,7 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
     if added_to_site == 0 or added_to_site is None:
         response = None
         add_count = 1
-        for x in range(5):
+        for x in range(20):
             print "Тендер добавляется на площадку. Попытка " + str(add_count)
             add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
                 company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
