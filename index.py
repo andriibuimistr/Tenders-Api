@@ -216,14 +216,14 @@ def create_tender_function():
         response_code = 0
 
         if received_tender_status == 'active.tendering':
-            check_2nd_stage_qualification_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
             response_json['id'] = tender_id_long
-            if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.tendering':
-                response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+            if get_t_info.json()['data']['status'] == 'active.tendering':
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                 response_json['status'] = 'success'
                 response_code = 201
             else:
-                response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                 response_json['status'] = 'error'
                 response_code = 422
 
@@ -242,9 +242,9 @@ def create_tender_function():
                 attempt_counter += 1
                 print '{}{}'.format('Check "active.pre-qualification" status. Attempt ', attempt_counter)
                 time.sleep(60)
-                check_2nd_stage_qualification_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.pre-qualification':
-                    response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                if get_t_info.json()['data']['status'] == 'active.pre-qualification':
+                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
                     response_json['status'] = 'success'
                     response_code = 201
                     break
@@ -253,7 +253,7 @@ def create_tender_function():
 
                         continue
                     else:
-                        response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
                         response_json['status'] = 'error'
                         response_code = 422
 
@@ -273,9 +273,9 @@ def create_tender_function():
                     attempt_counter += 1
                     print '{}{}'.format('Проверка статуса тендера. Попытка ', attempt_counter)
                     time.sleep(60)
-                    check_2nd_stage_qualification_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                    if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.qualification':
-                        response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                    get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                    if get_t_info.json()['data']['status'] == 'active.qualification':
+                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
                         response_json['status'] = 'success'
                         response_code = 201
                         break
@@ -284,7 +284,7 @@ def create_tender_function():
 
                             continue
                         else:
-                            response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
                             response_json['status'] = 'error'
                             response_code = 422
             elif procurement_method in one_stage_pre_qualification_procedures:
@@ -302,8 +302,8 @@ def create_tender_function():
                     attempt_counter += 1
                     print '{}{}'.format('Проверка статуса тендера (pre). Попытка ', attempt_counter)
                     time.sleep(60)
-                    check_2nd_stage_qualification_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                    if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.pre-qualification':
+                    get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                    if get_t_info.json()['data']['status'] == 'active.pre-qualification':
                         qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
                         prequalification_result = qualification.select_my_bids(
                             qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
@@ -323,10 +323,10 @@ def create_tender_function():
                             attempt_counter += 1
                             print '{}{}'.format('Проверка статуса тендера (q). Попытка ', attempt_counter)
                             time.sleep(90)
-                            check_2nd_stage_qualification_status = requests.get(
+                            get_t_info = requests.get(
                                 "{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                            if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.qualification':
-                                response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                            if get_t_info.json()['data']['status'] == 'active.qualification':
+                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                 response_json['status'] = 'success'
                                 response_code = 201
                                 break
@@ -335,7 +335,7 @@ def create_tender_function():
 
                                     continue
                                 else:
-                                    response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                     response_json['status'] = 'error'
                                     response_code = 422
                         break
@@ -344,7 +344,7 @@ def create_tender_function():
 
                             continue
                         else:
-                            response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
                             response_json['status'] = 'error'
                             response_code = 422
 
@@ -364,8 +364,8 @@ def create_tender_function():
                     attempt_counter += 1
                     print '{}{}'.format('Проверка статуса тендера (pre). Попытка ', attempt_counter)
                     time.sleep(60)
-                    check_2nd_stage_qualification_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                    if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.pre-qualification':
+                    get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                    if get_t_info.json()['data']['status'] == 'active.pre-qualification':
                         qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
                         prequalification_result = qualification.select_my_bids(
                             qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
@@ -386,9 +386,9 @@ def create_tender_function():
                             print '{}{}'.format('Проверка статуса тендера (active.stage2.pending). Попытка ',
                                                 attempt_counter)
                             time.sleep(90)
-                            check_2nd_stage_qualification_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                            if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.stage2.pending':
-                                response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+                            if get_t_info.json()['data']['status'] == 'active.stage2.pending':
+                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                 response_json['status'] = 'success'
                                 response_code = 201
 
@@ -399,10 +399,10 @@ def create_tender_function():
                                     attempt_counter += 1
                                     print '{}{}'.format('Проверка статуса тендера (complete). Попытка ', attempt_counter)
                                     time.sleep(90)
-                                    check_2nd_stage_qualification_status = requests.get(
+                                    get_t_info = requests.get(
                                         "{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-                                    if check_2nd_stage_qualification_status.json()['data']['status'] == 'complete':
-                                        response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                                    if get_t_info.json()['data']['status'] == 'complete':
+                                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                         response_json['status'] = 'success'
                                         response_code = 201
 
@@ -439,10 +439,10 @@ def create_tender_function():
                                             attempt_counter += 1
                                             print '{}{}'.format('Check tender for "active.qualification" status. Attempt ', attempt_counter)
                                             time.sleep(60)
-                                            check_2nd_stage_qualification_status = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], second_stage_tender_id))
-                                            print check_2nd_stage_qualification_status.json()['data']['status']
-                                            if check_2nd_stage_qualification_status.json()['data']['status'] == 'active.qualification':
-                                                response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                                            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], second_stage_tender_id))
+                                            print get_t_info.json()['data']['status']
+                                            if get_t_info.json()['data']['status'] == 'active.qualification':
+                                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                                 response_json['status'] = 'success'
                                                 response_code = 201
                                                 break
@@ -451,10 +451,10 @@ def create_tender_function():
 
                                                     continue
                                                 else:
-                                                    response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                                     response_json['status'] = 'error'
                                                     response_code = 422
-                                        add_2nd_stage_db = tender.tender_to_db(second_stage_tender_id, get_2nd_stage_actual_json, second_stage_token, procurement_method, check_2nd_stage_qualification_status.json()['data']['status'],
+                                        add_2nd_stage_db = tender.tender_to_db(second_stage_tender_id, get_2nd_stage_actual_json, second_stage_token, procurement_method, get_t_info.json()['data']['status'],
                                                                                number_of_lots)
                                         add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id)
                                         response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
@@ -464,7 +464,7 @@ def create_tender_function():
 
                                             continue
                                         else:
-                                            response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                             response_json['status'] = 'error'
                                             response_code = 422
                                 break
@@ -473,7 +473,7 @@ def create_tender_function():
 
                                     continue
                                 else:
-                                    response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                     response_json['status'] = 'error'
                                     response_code = 422
                         break
@@ -482,7 +482,7 @@ def create_tender_function():
 
                             continue
                         else:
-                            response_json['tenderStatus'] = check_2nd_stage_qualification_status.json()['data']['status']
+                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
                             response_json['status'] = 'error'
                             response_code = 422
 
