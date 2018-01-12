@@ -154,20 +154,19 @@ valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
 
 # SELECT PROCUREMENT METHOD
-above_threshold_procurement = [
-    'aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA',
-    'competitiveDialogueEU', 'esco']
+above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
 below_threshold_procurement = ['open_belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
 
-prequalification_procedures = ['aboveThresholdEU', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco',
-                               'competitiveDialogueEU.stage2']
+prequalification_procedures = ['aboveThresholdEU', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco', 'competitiveDialogueEU.stage2']
 
 above_procedures_without_pre_qualification = ['aboveThresholdUA', 'aboveThresholdUA.defense']
 one_stage_pre_qualification_procedures = ['aboveThresholdEU', 'esco']
 
-tender_status_list = ['active.tendering', 'active.pre-qualification', 'active.qualification']
-competitive_procedures = ['competitiveDialogueUA', 'competitiveDialogueEU']
+tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete']
+competitive_procedures = ['competitiveDialogueUA', 'competitiveDialogueEU', 'competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2']
+competitive_procedures_first_stage = ['competitiveDialogueUA', 'competitiveDialogueEU']
+competitive_procedures_second_stage = ['competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2']
 
 
 # ITEMS

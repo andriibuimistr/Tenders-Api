@@ -88,11 +88,8 @@ def tender(number_of_lots, number_of_items, procurement_method, accelerator):
 
 # generate json for tender with lots
 def tender_esco_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator):
-    return u"{}{}{}{}{}{}{}{}".format(
-        '{"data": {', tender_values_esco(number_of_lots), tender_titles(),
-        list_of_lots_esco(number_of_lots, list_of_id_lots),
-        list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features,
-        tender_data(procurement_method, accelerator), '}}')
+    return u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_lots_esco(number_of_lots, list_of_id_lots),
+                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features, tender_data(procurement_method, accelerator), '}}')
 
 
 # generate json for tender esco without lots
@@ -304,12 +301,12 @@ def activate_2nd_stage(headers, host, api_version, new_tender_id, new_token, act
 
 
 # save tender info to DB (SQLA)
-def tender_to_db(tender_id_long, publish_tender_response, tender_token, procurement_method, tender_status,
+def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status,
                  number_of_lots):
     try:
         # Connect to DB
         db = variables.db
-        tender_to_sql = Tenders(None, tender_id_long, publish_tender_response.json()['data']['tenderID'], tender_token,
+        tender_to_sql = Tenders(None, tender_id_long, tender_id_short, tender_token,
                                 procurement_method, None, tender_status, number_of_lots, None, None, None)
         db.session.add(tender_to_sql)
         db.session.commit()  # you need to call commit() method to save your changes to the database

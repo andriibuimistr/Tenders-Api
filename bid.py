@@ -387,25 +387,22 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 bid_token = created_bid[3]
                 bid_id = created_bid[4]
 
-                activate_created_bid = activate_bid(
-                    bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
-                if activate_created_bid[0] == 1:
-                    activate_bid_key = "activate_bid_result"
-                    activate_created_bid_result = {"status_code": 500, "description": str(activate_created_bid[1])}
-                else:
-                    activate_bid_key = "activate_bid_status_code"
-                    activate_created_bid_result = activate_created_bid[1]
-
                 attempts = 0
                 for every_bid in range(5):  # activate bid
+                    activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
+                    if activate_created_bid[0] == 1:
+                        activate_bid_key = "activate_bid_result"
+                        activate_created_bid_result = {"status_code": 500, "description": str(activate_created_bid[1])}
+                    else:
+                        activate_bid_key = "activate_bid_status_code"
+                        activate_created_bid_result = activate_created_bid[1]
                     time.sleep(0.5)
                     if activate_created_bid[1] == 200:
                         break
                     else:
                         attempts += 1
                         print '{}{}'.format('Activating bid: Attempt ', attempts)
-                        activate_bid(
-                            bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
+
                 add_bid_db = bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
                 # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
 
@@ -418,7 +415,7 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
 
                 bids_json.append({"bid_id": bid_id,
                                   "create_bid_status_code": created_bid[1],
-                                  activate_bid_key: activate_created_bid_result,
+                                  # activate_bid_key: activate_created_bid_result,
                                   "add_bid_to_db_status": add_bid_db,
                                   "documents_of_bid": added_to_bid_documents
                                   })
@@ -433,8 +430,14 @@ def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement
         for bid in range(len(list_of_bids)):
             count += 1
             bid_json = list_of_bids[bid]
-            created_bid = create_bid_openua_procedure(
-                count, tender_id, bid_json, headers, host_kit[0], host_kit[1])
+            attempts_create = 0
+            for x in range(5):
+                created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers, host_kit[0], host_kit[1])
+                if created_bid[1] == 201:
+                    break
+                else:
+                    attempts_create += 1
+                    print '{}{}'.format('Publishing bid: Attempt ', attempts_create)
             if procurement_method == 'competitiveDialogueUA':
                 activate_bid_body = {"data": {"status": "active"}}
             else:
@@ -442,8 +445,17 @@ def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement
             bid_location = created_bid[2]
             bid_token = created_bid[3]
             bid_id = created_bid[4]
-            activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body,
-                                                host_kit[0], host_kit[1])
+            identifier = list_of_bids[bid]['data']['tenderers'][0]['identifier']['id']
+            attempts_activate = 0
+            for every_bid in range(5):  # activate bid
+                activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
+                if activate_created_bid[1] == 200:
+                    break
+                else:
+                    attempts_activate += 1
+                    print '{}{}'.format('Activating bid: Attempt ', attempts_activate)
+
+            add_bid_2nd_stage_db = bid_to_db(bid_id, bid_token, identifier, tender_id)
 
 
 
