@@ -58,8 +58,7 @@ def list_of_qualifications(tender_id_long, host, api_version):
 
 
 # approve/cancel qualifications
-def approve_prequalification(qualification_id, prequalification_bid_json, tender_id_long, tender_token,
-                             qualification_bid_id, is_my_bid, host, api_version):
+def approve_prequalification(qualification_id, prequalification_bid_json, tender_id_long, tender_token, qualification_bid_id, is_my_bid, host, api_version):
     try:
         s = requests.Session()
         s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
@@ -74,13 +73,11 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
         print("Approve bid:")
         if resp.status_code == 200:
             print("       status code:  {}".format(resp.status_code))
-            approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id,
-                            "status_code": resp.status_code}
+            approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id, "status_code": resp.status_code}
         else:
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
-            approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id,
-                            "status_code": resp.status_code,
+            approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id, "status_code": resp.status_code,
                             "description": json.loads(resp.content)['errors'][0]['description']}
         return approve_json
     except Exception as e:
@@ -100,12 +97,21 @@ def select_my_bids(qualifications, tender_id_long, tender_token, host, api_versi
         qualification_bid_id = qualifications[x]['bidID']
         if qualification_bid_id in my_bids:
             time.sleep(1)
-            action = approve_prequalification(qualification_id, prequalification_approve_bid_json, tender_id_long,
-                                              tender_token, qualification_bid_id, True, host, api_version)
+            action = approve_prequalification(qualification_id, prequalification_approve_bid_json, tender_id_long, tender_token, qualification_bid_id, True, host, api_version)
         else:
             time.sleep(1)
-            action = approve_prequalification(qualification_id, prequalification_decline_bid_json, tender_id_long,
-                                              tender_token, qualification_bid_id, False, host, api_version)
+            action = approve_prequalification(qualification_id, prequalification_decline_bid_json, tender_id_long, tender_token, qualification_bid_id, False, host, api_version)
+        bids_json.append(action)
+    return bids_json
+
+
+def pass_send_pre_qualification(qualifications, tender_id, tender_token, host, api_version):
+    bids_json = []
+    for x in range(len(qualifications)):
+        qualification_id = qualifications[x]['id']
+        qualification_bid_id = qualifications[x]['bidID']
+        time.sleep(1)
+        action = approve_prequalification(qualification_id, prequalification_approve_bid_json, tender_id, tender_token, qualification_bid_id, True, host, api_version)
         bids_json.append(action)
     return bids_json
 
@@ -116,8 +122,7 @@ def finish_prequalification(tender_id_long, tender_token, host, api_version):
         s = requests.Session()
         s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
         r = requests.Request('PATCH',
-                             "{}/api/{}/tenders/{}?acc_token={}".format(
-                                 host, api_version, tender_id_long, tender_token),
+                             "{}/api/{}/tenders/{}?acc_token={}".format(host, api_version, tender_id_long, tender_token),
                              data=json.dumps(finish_prequalification_json),
                              headers=headers_prequalification,
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))

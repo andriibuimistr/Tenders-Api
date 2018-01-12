@@ -434,6 +434,36 @@ def create_tender_function():
                                             sys.stdout.flush()
                                             time.sleep(1)
                                         sys.stdout.write("\rCheck tender status            \n")
+
+                                        # pass pre-qualification for competitiveDialogueEU
+                                        if procurement_method == 'competitiveDialogueEU':
+                                            for x in range(10):
+                                                attempt_counter += 1
+                                                print '{}{}'.format('Проверка статуса тендера (pre-qualification 2nd stage). Попытка ', attempt_counter)
+                                                time.sleep(60)
+                                                get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], second_stage_tender_id))
+                                                if get_t_info.json()['data']['status'] == 'active.pre-qualification':
+                                                    qualifications = qualification.list_of_qualifications(second_stage_tender_id, host_kit[0], host_kit[1])  # get list of qualifications for tender
+                                                    prequalification_result = qualification.pass_send_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # approve all bids
+                                                    time.sleep(2)
+                                                    finish_prequalification = qualification.finish_prequalification(second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # submit prequalification protocol
+                                                    db.session.remove()
+                                                    break
+                                                else:
+                                                    if attempt_counter < 10:
+                                                        continue
+                                                    else:
+                                                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                                                        response_json['status'] = 'error'
+                                                        response_code = 422
+                                            waiting_time = int(round(7200.0 / accelerator * 60))
+                                            for remaining in range(waiting_time, 0, -1):
+                                                sys.stdout.write("\r")
+                                                sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                                                sys.stdout.flush()
+                                                time.sleep(1)
+                                            sys.stdout.write("\rComplete!            \n")
+
                                         attempt_counter = 0
                                         for attempt in range(30):  # check if 2nd stage is in qualification status
                                             attempt_counter += 1
