@@ -297,8 +297,6 @@ def create_tender_function():
                                         second_stage_tender_id_short = get_t_info.json()['data']['tenderID']  # get tender id short of 2nd stage
                                         procurement_method_2nd_stage = get_t_info.json()['data']['procurementMethodType']
                                         response_json['id'] = second_stage_tender_id_short  # change tender id to 2nd stage tender id for response
-                                        print response_json
-                                        print second_stage_tender_id_short
 
                                         get_extended_period_for_2nd_stage = tender.extend_tender_period(host_kit[0], host_kit[1], accelerator, second_stage_tender_id)
                                         tender.patch_second_stage(headers_tender, get_extended_period_for_2nd_stage, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token)  # ready json 2nd stage
