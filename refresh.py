@@ -323,3 +323,9 @@ def get_list_of_platforms():
              "platform_url": all_platforms[platform].platform_url})
     db.session.remove()
     return platforms_list
+
+
+def get_tender_info(host_kit, tender_id_long):
+    get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+    return get_t_info
+
