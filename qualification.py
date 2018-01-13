@@ -104,7 +104,7 @@ def select_my_bids(qualifications, tender_id_long, tender_token, host, api_versi
     return bids_json
 
 
-def pass_send_pre_qualification(qualifications, tender_id, tender_token, host, api_version):
+def pass_second_pre_qualification(qualifications, tender_id, tender_token, host, api_version):
     bids_json = []
     for x in range(len(qualifications)):
         qualification_id = qualifications[x]['id']

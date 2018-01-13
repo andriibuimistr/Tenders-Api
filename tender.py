@@ -43,9 +43,12 @@ def list_of_lots_esco(number_of_lots, list_of_id_lots):
 def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method):
     list_of_items = []
     for i in range(number_of_lots):
+        item_number = 0
         related_lot_id = list_of_id_lots[i]
-        item = json.loads(u"{}{}{}{}{}".format('{ "relatedLot": "', related_lot_id, '"', variables.item_data(number_of_lots, number_of_items, i, procurement_method), "}"))
-        list_of_items.append(item)
+        for item in range(number_of_items):
+            item_number += 1
+            item = json.loads(u"{}{}{}{}{}".format('{ "relatedLot": "', related_lot_id, '"', variables.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), "}"))
+            list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
     items_list = u"{}{}".format(', "items": ', list_of_items)
     return items_list
@@ -54,8 +57,9 @@ def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, pro
 # generate items for tender without lots
 def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method):
     list_of_items = []
+    item_number = 0
     for i in range(number_of_items):
-        item = json.loads(u"{}{}{}".format('{', variables.item_data(number_of_lots, number_of_items, i, procurement_method), '}'))
+        item = json.loads(u"{}{}{}".format('{', variables.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), '}'))
         list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
     items_list = u"{}{}".format(', "items": ', list_of_items)
@@ -64,8 +68,8 @@ def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method
 
 # generate json for tender with lots
 def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator):
-    return u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots), list_of_items_for_lots(
-        number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features, tender_data(procurement_method, accelerator), '}}')
+    return u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots),
+                                      list_of_items_for_lots(number_of_lots, number_of_items,list_of_id_lots, procurement_method), tender_features, tender_data(procurement_method, accelerator), '}}')
 
 
 # generate json for tender without lots
@@ -102,8 +106,7 @@ def publish_tender(headers, json_tender, host, api_version):
     try:
         s = requests.Session()
         s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('POST',
-                             "{}/api/{}/tenders".format(host, api_version),
+        r = requests.Request('POST', "{}/api/{}/tenders".format(host, api_version),
                              data=json.dumps(json_tender),
                              headers=headers,
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
@@ -134,8 +137,7 @@ def activating_tender(publish_tender_response, headers, host, api_version):
         token = publish_tender_response.json()['access']['token']
         s = requests.Session()
         s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('PATCH',
-                             "{}{}{}".format(tender_location, '?acc_token=', token),
+        r = requests.Request('PATCH', "{}{}{}".format(tender_location, '?acc_token=', token),
                              data=json.dumps(activate_tender),
                              headers=headers,
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
@@ -193,8 +195,7 @@ def get_2nd_stage_info(headers, host, api_version, second_stage_tender_id, tende
     try:
         s = requests.Session()
         s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('PATCH',
-                             "{}/api/{}/tenders/{}/credentials?acc_token={}".format(host, api_version, second_stage_tender_id, tender_token),
+        r = requests.Request('PATCH', "{}/api/{}/tenders/{}/credentials?acc_token={}".format(host, api_version, second_stage_tender_id, tender_token),
                              data=json.dumps('{}'),
                              headers=headers,
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
@@ -232,8 +233,7 @@ def patch_second_stage(headers, new_tender_json, host, api_version, second_stage
     try:
         s = requests.Session()
         s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('PATCH',
-                             "{}/api/{}/tenders/{}?acc_token={}".format(host, api_version, second_stage_tender_id, second_stage_token),
+        r = requests.Request('PATCH', "{}/api/{}/tenders/{}?acc_token={}".format(host, api_version, second_stage_tender_id, second_stage_token),
                              data=json.dumps(new_tender_json),
                              headers=headers,
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))

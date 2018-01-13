@@ -136,6 +136,7 @@ def host_selector(api_version):
         host_headers = 'lb.api-sandbox.openprocurement.org'
     return host, api_version, ds_host, host_headers
 
+
 sandbox = 2
 if sandbox == 2:
     ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
@@ -171,7 +172,7 @@ competitive_procedures_second_stage = ['competitiveDialogueUA.stage2', 'competit
 
 # ITEMS
 # generate item description
-def description_of_item(di_number_of_lots, di_number_of_items):
+def description_of_item(di_number_of_lots, di_number_of_items, item_number):
     description_text = u'"Описание предмета закупки '
     description_item = []
     if di_number_of_lots == 0:
@@ -185,8 +186,7 @@ def description_of_item(di_number_of_lots, di_number_of_items):
         items_count = 0
         for item in range(di_number_of_lots):
             items_count += 1
-            item_description = u"{}{}{}{}{}".format(', "description": ', description_text,
-                                                    u'Лот ', items_count, '"')
+            item_description = u"{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, '"')
             description_item.append(item_description)
         return description_item
 
@@ -225,8 +225,7 @@ def item_id_generator():
 # generate unit
 def unit():
     unit_code = random.choice([['"BX"', u'"ящик"'], ['"D64"', u'"блок"'], ['"E48"', u'"послуга"']])
-    unit_fragment = u"{}{}{}{}{}{}{}".format(', "unit": {"code": ', unit_code[0], ', "name": ', unit_code[1],
-                                             ' }, "quantity": "', random.randint(1, 99999), '"')
+    unit_fragment = u"{}{}{}{}{}{}{}".format(', "unit": {"code": ', unit_code[0], ', "name": ', unit_code[1], ' }, "quantity": "', random.randint(1, 99999), '"')
     return unit_fragment
 
 
@@ -237,17 +236,14 @@ additionalClassifications = ', "additionalClassifications": [ ]'
 
 
 # generate data for item
-def item_data(id_number_of_lots, id_number_of_items, i, procurement_method):
+def item_data(id_number_of_lots, id_number_of_items, i, procurement_method, item_number):
     if procurement_method == 'esco':
-        data_for_item = u'{}{}{}{}{}{}{}'.format(
-            description_of_item(id_number_of_lots, id_number_of_items)[i], classification, additionalClassifications,
-            description_en(), delivery_address_block(),
-            deliveryDate, item_id_generator())
+        data_for_item = u'{}{}{}{}{}{}{}'.format(description_of_item(id_number_of_lots, id_number_of_items, item_number)[i], classification, additionalClassifications, description_en(),
+                                                 delivery_address_block(), deliveryDate, item_id_generator())
     else:
         data_for_item = u'{}{}{}{}{}{}{}{}'.format(
-            description_of_item(id_number_of_lots, id_number_of_items)[i], classification, additionalClassifications,
-            description_en(), delivery_address_block(),
-            deliveryDate, item_id_generator(), unit())
+            description_of_item(id_number_of_lots, id_number_of_items, item_number)[i], classification, additionalClassifications, description_en(), delivery_address_block(), deliveryDate, item_id_generator(),
+            unit())
 
     return data_for_item
 
@@ -337,8 +333,7 @@ def tender_values_esco(tv_number_of_lots):
 def classification():
     classification_scheme = u'"scheme": "ДК021", '
     classification_codes = random.choice([[
-        '"03000000-1"', u'"Сільськогосподарська, фермерська продукція, продукція рибальства, лісівництва та\
-        супутня продукція"'],
+        '"03000000-1"', u'"Сільськогосподарська, фермерська продукція, продукція рибальства, лісівництва та супутня продукція"'],
          ['"09000000-3"', u'"Нафтопродукти, паливо, електроенергія та інші джерела енергії"'],
          ['"14000000-1"', u'"Гірнича продукція, неблагородні метали та супутня продукція"']])
     classification_id = u"{}{}{}{}".format(
@@ -390,9 +385,9 @@ def procuring_entity():
                              "address": {
                                    "countryName": "Україна",
                                    "region": "місто Київ",
-                                   "locality": fake.city(),
-                                   "streetAddress": fake.street_address(),
-                                   "postalCode": fake.postcode()
+                                   "locality": "Київ",
+                                   "streetAddress": "Улица Койкого",
+                                   "postalCode": 12345
                              },
                              "contactPoint": {
                                    "name": fake.name(),

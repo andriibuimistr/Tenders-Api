@@ -207,7 +207,7 @@ def create_tender_function():
             add_documents = document.add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots)
         else:
             add_documents = 'tender was created without documents'''
-        time.sleep(5)
+        time.sleep(2)
         make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, host_kit, 0)  # 0 - documents of bid
 
         print 'Tender id ' + tender_id_long
@@ -349,7 +349,7 @@ def create_tender_function():
                                                         break
                                                     else:
                                                         qualifications = qualification.list_of_qualifications(second_stage_tender_id, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                                                        prequalification_result = qualification.pass_send_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # approve all bids
+                                                        prequalification_result = qualification.pass_second_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # approve all bids
                                                         time.sleep(2)
                                                         finish_prequalification = qualification.finish_prequalification(second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # submit prequalification protocol
                                                         db.session.remove()
@@ -546,7 +546,7 @@ def create_tender_function():
 
 
         #db.session.remove()
-        '''return jsonify({'data': {
+        """return jsonify({'data': {
             "tender": [{
                 "publish_tender": publish_tender_response[1],
                 "activate_tender": activate_tender[2],
@@ -559,7 +559,7 @@ def create_tender_function():
                 "tenderID": tender_id
             }
         }
-        }), 201'''
+        }), 201"""
     elif procurement_method in below_threshold_procurement:
         print "Error. Данный функционал еще не был разработан :)"
         abort(422, "This procurementMethodType wasn't implemented yet")
