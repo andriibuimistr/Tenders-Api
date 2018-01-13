@@ -133,8 +133,7 @@ def add_all_tenders_to_company(company_id, company_platform_host, company_uid):
                 '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
             add_to_site_response = add_to_site.json()
             if 'tid' in add_to_site_response:
-                Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1,
-                                                                                   company_uid=company_uid))
+                Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_uid))
                 db.session.commit()
                 print '\nTender was added to site - ' + tender_id_long
                 tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
@@ -167,13 +166,11 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
         add_count = 1
         for x in range(30):
             print "Тендер добавляется на площадку. Попытка " + str(add_count)
-            add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
-                company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
-                '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+            add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id,
+                                                                 '&acc_token=SUPPPER_SEEECRET_STRIIING'))
             add_to_site_response = add_to_site.json()
             if 'tid' in add_to_site_response:
-                Tenders.query.filter_by(tender_id_long=tender_id_long).update(
-                    dict(added_to_site=1, company_uid=company_id))  # set added to site=1
+                Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
                 db.session.commit()
                 db.session.remove()
                 print '\nTender was added to site - ' + tender_id_long
@@ -204,8 +201,6 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
         return abort(422, 'Tender was added to site before')
 
 
-
-
 # add one tender to company (SQLA)
 def add_one_tender_to_company(company_id, company_platform_host, tender_id_long, company_uid):
     get_tender_data = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
@@ -215,8 +210,7 @@ def add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
     added_to_site = get_tender_data.added_to_site
     if added_to_site == 0 or added_to_site is None:
         add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
-            company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
-            '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+            company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
         add_to_site_response = add_to_site.json()
         if 'tid' in add_to_site_response:
             Tenders.query.filter_by(tender_id_long=tender_id_long).update(
@@ -288,8 +282,7 @@ def add_one_bid_to_company(company_id, company_platform_host, bid_id, company_ui
     db.session.commit()
     if added_to_site == 0 or added_to_site is None:
         add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
-            company_platform_host, '/tender/add-bid-to-company?tid=', tender_id, '&bid=', bid_id, '&token=', bid_token,
-            '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+            company_platform_host, '/tender/add-bid-to-company?tid=', tender_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
         add_to_site_response = add_to_site.json()
         if 'tid' in add_to_site_response:
             Bids.query.filter_by(bid_id=bid_id).update(
@@ -318,9 +311,7 @@ def get_list_of_platforms():
     all_platforms = Platforms.query.all()
     platforms_list = []
     for platform in range(len(all_platforms)):
-        platforms_list.append(
-            {"id": int(all_platforms[platform].id), "platform_name": all_platforms[platform].platform_name,
-             "platform_url": all_platforms[platform].platform_url})
+        platforms_list.append({"id": int(all_platforms[platform].id), "platform_name": all_platforms[platform].platform_name, "platform_url": all_platforms[platform].platform_url})
     db.session.remove()
     return platforms_list
 

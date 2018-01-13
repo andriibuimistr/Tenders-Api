@@ -253,8 +253,7 @@ def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers, host, api_v
     try:
         s = requests.Session()
         s.request('GET', '{}/api/{}/tenders'.format(host, api_version))
-        r = requests.Request('POST',
-                             '{}/api/{}/tenders/{}/bids'.format(host, api_version, tender_id),
+        r = requests.Request('POST', '{}/api/{}/tenders/{}/bids'.format(host, api_version, tender_id),
                              data=json.dumps(bid_json),
                              headers=headers,
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
@@ -390,12 +389,12 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 attempts = 0
                 for every_bid in range(5):  # activate bid
                     activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
-                    if activate_created_bid[0] == 1:
+                    '''if activate_created_bid[0] == 1:
                         activate_bid_key = "activate_bid_result"
                         activate_created_bid_result = {"status_code": 500, "description": str(activate_created_bid[1])}
                     else:
                         activate_bid_key = "activate_bid_status_code"
-                        activate_created_bid_result = activate_created_bid[1]
+                        activate_created_bid_result = activate_created_bid[1]'''
                     time.sleep(0.5)
                     if activate_created_bid[1] == 200:
                         break
@@ -408,8 +407,7 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
 
                 if if_docs == 1:
                     print "Add documents to bid"
-                    added_to_bid_documents = document.add_documents_to_bid_ds(tender_id, bid_id, bid_token,
-                                                                              procurement_method)
+                    added_to_bid_documents = document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, procurement_method)
                 else:
                     added_to_bid_documents = "This bid has no documents"
 
@@ -456,6 +454,3 @@ def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement
                     print '{}{}'.format('Activating bid: Attempt ', attempts_activate)
 
             add_bid_2nd_stage_db = bid_to_db(bid_id, bid_token, identifier, tender_id)
-
-
-

@@ -63,8 +63,7 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
         s = requests.Session()
         s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
         r = requests.Request('PATCH',
-                             "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(
-                                 host, api_version, tender_id_long, qualification_id, tender_token),
+                             "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(host, api_version, tender_id_long, qualification_id, tender_token),
                              data=json.dumps(prequalification_bid_json),
                              headers=headers_prequalification,
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
