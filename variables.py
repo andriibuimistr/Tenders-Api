@@ -373,7 +373,7 @@ def tender_period(accelerator):
 
 def tender_titles():
     tender_random_title = u"{}{}".format(u'Тест ', datetime.now().strftime('%d-%H%M%S"'))
-    tender_title = u'{}{}"'.format(', "title": "', fake.text(100))  # ', "title": "', tender_random_title
+    tender_title = u'{}{}"'.format(', "title": "', fake.text(100)).replace('\n', ' ')  # ', "title": "', tender_random_title
     tender_description = u"{}{}{}".format(', "description": ', u'"Примечания для тендера ', tender_random_title)
     tender_title_en = u"{}{}".format(', "title_en": ', '"Title of tender in english"')
     tender_description_en = u"{}{}".format(', "description_en": ', '""')
