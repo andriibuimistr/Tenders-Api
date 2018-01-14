@@ -137,7 +137,7 @@ def host_selector(api_version):
     return host, api_version, ds_host, host_headers
 
 
-sandbox = 2
+sandbox = 1
 if sandbox == 2:
     ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
     host = "https://api-sandbox.prozorro.openprocurement.net"
@@ -159,34 +159,40 @@ above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThr
 below_threshold_procurement = ['open_belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
 
-prequalification_procedures = ['aboveThresholdEU', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco', 'competitiveDialogueEU.stage2']
 
-above_procedures_without_pre_qualification = ['aboveThresholdUA', 'aboveThresholdUA.defense']
-one_stage_pre_qualification_procedures = ['aboveThresholdEU', 'esco']
+without_pre_qualification_procedures = ['aboveThresholdUA', 'aboveThresholdUA.defense']
+prequalification_procedures = ['aboveThresholdEU', 'esco']
+competitive_procedures = ['competitiveDialogueUA', 'competitiveDialogueEU']
 
-tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete']
-competitive_procedures = ['competitiveDialogueUA', 'competitiveDialogueEU', 'competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2']
 competitive_procedures_first_stage = ['competitiveDialogueUA', 'competitiveDialogueEU']
 competitive_procedures_second_stage = ['competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2']
+
+# list of status
+tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete']
+
+without_pre_qualification_procedures_status = ['active.tendering', 'active.qualification']
+prequalification_procedures_status = ['active.pre-qualification']
+competitive_procedures_status = ['active.tendering.stage2', 'complete']
+competitive_dialogue_eu_status = ['active.pre-qualification.stage2']
 
 
 # ITEMS
 # generate item description
 def description_of_item(di_number_of_lots, di_number_of_items, item_number):
-    description_text = u'"Описание предмета закупки '
+    description_text = u'"Предмет закупки '
     description_item = []
     if di_number_of_lots == 0:
         items_count = 0
         for item in range(di_number_of_items):
             items_count += 1
-            item_description = u"{}{}{}{}".format('"description": ', description_text, items_count, '"')
+            item_description = u"{}{}{}{}{}{}".format('"description": ', description_text, items_count, ' - ', fake.text(100), '"')
             description_item.append(item_description)
         return description_item
     else:
         items_count = 0
         for item in range(di_number_of_lots):
             items_count += 1
-            item_description = u"{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, '"')
+            item_description = u"{}{}{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, ' - ', fake.text(100), '"')
             description_item.append(item_description)
         return description_item
 
@@ -256,12 +262,12 @@ def lot_id_generator():
     return lot_id_generated
 
 
-def title_for_lot():
+def title_for_lot(lot_number):
     lot_title_en = ', "title_en": ""'
-    lot_random_title = u"{}{}".format(u'Лот ', random.randint(1, 99999))
-    lot_title = u"{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"', lot_title_en)
+    lot_random_title = u"{}{}".format(u'Лот ', lot_number)
+    lot_title = u"{}{}{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, ' - ', fake.text(100), '"', lot_title_en)
     lot_description_en = ', "description_en": ""'
-    lot_description_name = u"{}{}{}".format(u'"Описание лота ', lot_random_title, '"')
+    lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(100), '"')
     lot_description_fragment = u"{}{}{}".format(', "description": ', lot_description_name, lot_description_en)
     lot_data = u'{}{}'.format(lot_title, lot_description_fragment)
     return lot_data
@@ -433,3 +439,6 @@ documents_above_procedures = ['aboveThresholdEU', 'esco', 'aboveThresholdUA.defe
                               'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
+
+# index.py data
+create_tender_required_fields = ['procurementMethodType', 'number_of_lots', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']

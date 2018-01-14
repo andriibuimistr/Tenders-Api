@@ -344,7 +344,7 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     bids_json = []
     if bids_quantity == 0:
-        print 'Ставки не были сделаны!'
+        print 'Bids haven\'t been made!'
         return {"description": "tender was created without bids"}
     else:
         count = 0
@@ -422,7 +422,7 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
 
 def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement_method):
     if len(list_of_bids) == 0:
-        print 'Ставки не были сделаны!'
+        print 'Bids haven\'t been made!'
     else:
         count = 0
         for bid in range(len(list_of_bids)):

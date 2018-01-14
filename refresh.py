@@ -53,8 +53,7 @@ def update_tenders_list():
     seconds = last_cron[17:]
     cron.close()
 
-    r = requests.get("{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(
-        host, api_version, year, month, day, hours, minutes, seconds))
+    r = requests.get("{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(host, api_version, year, month, day, hours, minutes - 1, seconds))
     updated_tenders = r.json()['data']
     list_of_updated_tenders = []
     for x in range(len(updated_tenders)):
@@ -165,7 +164,7 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
         response = None
         add_count = 1
         for x in range(30):
-            print "Тендер добавляется на площадку. Попытка " + str(add_count)
+            print "Adding tender to company. Attempt " + str(add_count)
             add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id,
                                                                  '&acc_token=SUPPPER_SEEECRET_STRIIING'))
             add_to_site_response = add_to_site.json()

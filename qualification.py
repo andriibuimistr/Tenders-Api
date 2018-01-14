@@ -85,7 +85,7 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
 
 
 # select my bids
-def select_my_bids(qualifications, tender_id_long, tender_token, host, api_version):
+def pass_pre_qualification(qualifications, tender_id_long, tender_token, host, api_version):
     list_of_my_bids = Bids.query.filter_by(tender_id=tender_id_long).all()
     my_bids = []
     bids_json = []

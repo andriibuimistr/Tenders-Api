@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement,\
-    below_threshold_procurement, limited_procurement, host_selector, prequalification_procedures,\
-    tender_status_list, above_procedures_without_pre_qualification, one_stage_pre_qualification_procedures,\
-    competitive_procedures, competitive_procedures_first_stage, competitive_procedures_second_stage
+from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement, below_threshold_procurement, limited_procurement, host_selector, tender_status_list,\
+    without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, \
+    competitive_procedures_status, create_tender_required_fields
 import tender
 # import document
 import bid
@@ -15,12 +14,8 @@ from flask import Flask, jsonify, request, abort, make_response, render_template
 from flask_httpauth import HTTPBasicAuth
 import re
 import validators
-import requests
 from datetime import datetime
 from flask_cors import CORS, cross_origin
-
-
-create_tender_required_fields = ['procurementMethodType', 'number_of_lots', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
@@ -116,13 +111,13 @@ def create_tender_function():
 
     if type(number_of_lots) != int:
         abort(400, 'Number of lots must be integer')
-    elif 0 > number_of_lots or number_of_lots > 10:
-        abort(422, 'Number of lots must be between 0 and 10')
+    elif 0 > number_of_lots or number_of_lots > 20:
+        abort(422, 'Number of lots must be between 0 and 20')
 
     if type(number_of_items) != int:
         abort(400, 'Number of items must be integer')
-    elif 1 > number_of_items or number_of_items > 10:
-        abort(422, 'Number of items must be between 1 and 10')
+    elif 1 > number_of_items or number_of_items > 20:
+        abort(422, 'Number of items must be between 1 and 20')
 
     '''if type(add_documents) != int:
         abort(400, 'Documents must be integer')
@@ -150,15 +145,25 @@ def create_tender_function():
         abort(400, 'Company ID must be integer')
 
     if received_tender_status not in tender_status_list:
-        return abort(400, 'Incorrect tender status')
-    if received_tender_status == 'active.pre-qualification':
-        if procurement_method not in prequalification_procedures:
-            abort(422, '{} {}'.format(procurement_method, "has no 'pre-qualification' status"))
+        return abort(400, 'Tender status must be one of: {}'.format(tender_status_list))
 
     host_kit = host_selector(api_version)
 
     # check procurement method
     if procurement_method in above_threshold_procurement:
+        # check status for procedure
+        if procurement_method in without_pre_qualification_procedures:
+            if received_tender_status not in without_pre_qualification_procedures_status:
+                return abort(422, "For '{}' status must be one of: {}".format(procurement_method, without_pre_qualification_procedures_status))
+        elif procurement_method in prequalification_procedures:
+            if received_tender_status not in without_pre_qualification_procedures_status + prequalification_procedures_status:
+                return abort(422, "For '{}' status must be one of: {}".format(procurement_method, without_pre_qualification_procedures_status + prequalification_procedures_status))
+        elif procurement_method in competitive_procedures:
+            if procurement_method == 'competitiveDialogueUA':
+                if received_tender_status not in without_pre_qualification_procedures_status + prequalification_procedures_status + competitive_procedures_status:
+                    return abort(422, "For '{}' status must be one of: {}".format(procurement_method, without_pre_qualification_procedures_status + prequalification_procedures_status +
+                                                                                  competitive_procedures_status))
+
         list_of_id_lots = tender.list_of_id_for_lots(number_of_lots)  # get list of id for lots
         # select type of tender (with or without lots)
         if number_of_lots == 0:
@@ -250,7 +255,7 @@ def create_tender_function():
                             response_code = 201
                             break
                         qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                        prequalification_result = qualification.select_my_bids(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
+                        prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
                         time.sleep(2)
                         finish_prequalification = qualification.finish_prequalification(
                             tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
@@ -452,7 +457,7 @@ def create_tender_function():
                                 response_code = 422
 
                 if received_tender_status == 'active.qualification':
-                    if procurement_method in above_procedures_without_pre_qualification:
+                    if procurement_method in without_pre_qualification_procedures:
                         t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
 
                         waiting_time = (t_end_date - datetime.now()).seconds
@@ -481,7 +486,7 @@ def create_tender_function():
                                     response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                     response_json['status'] = 'error'
                                     response_code = 422
-                    elif procurement_method in one_stage_pre_qualification_procedures:
+                    elif procurement_method in prequalification_procedures:
                         t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
 
                         waiting_time = (t_end_date - datetime.now()).seconds
@@ -499,7 +504,7 @@ def create_tender_function():
                             get_t_info = get_tender_info(host_kit, tender_id_long)
                             if get_t_info.json()['data']['status'] == 'active.pre-qualification':
                                 qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                                prequalification_result = qualification.select_my_bids(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
+                                prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
                                 time.sleep(2)
                                 finish_prequalification = qualification.finish_prequalification(tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
                                 db.session.remove()
@@ -539,35 +544,19 @@ def create_tender_function():
                                     response_json['status'] = 'error'
                                     response_code = 422
 
-        add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)
+        add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
         response_json['tender_to_company'] = add_tender_company[0]
 
         return jsonify(response_json), response_code
 
-
-        #db.session.remove()
-        """return jsonify({'data': {
-            "tender": [{
-                "publish_tender": publish_tender_response[1],
-                "activate_tender": activate_tender[2],
-                "add_tender_to_db": add_tender_db[0],
-                # "documents_of_tender": add_documents,
-                "add_tender_company": 0
-            }],
-            "bids": run_create_tender,
-            "new_json": {
-                "tenderID": tender_id
-            }
-        }
-        }), 201"""
-    elif procurement_method in below_threshold_procurement:
+    elif procurement_method in below_threshold_procurement:  # create below threshold procedure
         print "Error. Данный функционал еще не был разработан :)"
         abort(422, "This procurementMethodType wasn't implemented yet")
-    elif procurement_method in limited_procurement:
+    elif procurement_method in limited_procurement:  # create limited procedure
         print "Error. Данный функционал еще не был разработан :)"
         abort(422, "This procurementMethodType wasn't implemented yet")
-    else:
-        abort(400, 'Incorrect procurementMethodType')
+    else:  # incorrect procurementMethodType
+        abort(400, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement))
 
 
 # run synchronization (SQLA)
@@ -610,7 +599,7 @@ def pass_prequalification(tender_id_long):
         abort(500, str(tender_token[1]))
     else:
         qualifications = qualification.list_of_qualifications(tender_id_long)  # get list of qualifications for tender
-        prequalification_result = qualification.select_my_bids(
+        prequalification_result = qualification.pass_pre_qualification(
             qualifications, tender_id_long, tender_token[1])  # approve all my bids
         time.sleep(2)
         finish_prequalification = qualification.finish_prequalification(
