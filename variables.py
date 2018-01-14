@@ -185,14 +185,14 @@ def description_of_item(di_number_of_lots, di_number_of_items, item_number):
         items_count = 0
         for item in range(di_number_of_items):
             items_count += 1
-            item_description = u"{}{}{}{}{}{}".format('"description": ', description_text, items_count, ' - ', fake.text(100), '"')
+            item_description = u"{}{}{}{}{}{}".format('"description": ', description_text, items_count, ' - ', fake.text(300).replace('\n', ' '), '"')
             description_item.append(item_description)
         return description_item
     else:
         items_count = 0
         for item in range(di_number_of_lots):
             items_count += 1
-            item_description = u"{}{}{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, ' - ', fake.text(100), '"')
+            item_description = u"{}{}{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, ' - ', fake.text(300).replace('\n', ' '), '"')
             description_item.append(item_description)
         return description_item
 
@@ -265,9 +265,9 @@ def lot_id_generator():
 def title_for_lot(lot_number):
     lot_title_en = ', "title_en": ""'
     lot_random_title = u"{}{}".format(u'Лот ', lot_number)
-    lot_title = u"{}{}{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, ' - ', fake.text(100), '"', lot_title_en)
+    lot_title = u"{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"', lot_title_en)
     lot_description_en = ', "description_en": ""'
-    lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(100), '"')
+    lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(300).replace('\n', ' '), '"')
     lot_description_fragment = u"{}{}{}".format(', "description": ', lot_description_name, lot_description_en)
     lot_data = u'{}{}'.format(lot_title, lot_description_fragment)
     return lot_data
