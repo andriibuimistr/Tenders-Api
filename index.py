@@ -233,8 +233,6 @@ def create_tender_function():
         else:
             if procurement_method in competitive_procedures:  # qualification for competitive dialogue
                 t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
-                print publish_tender_response[0].json()['data']['tenderPeriod']['endDate']
-                print t_end_date
                 waiting_time = (t_end_date - datetime.now()).seconds
                 for remaining in range(waiting_time, 0, -1):
                     sys.stdout.write("\r")
@@ -427,29 +425,46 @@ def create_tender_function():
                             response_json['status'] = 'error'
                             response_code = 422
             else:
-                if received_tender_status == 'active.pre-qualification':
-                    t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
-                    waiting_time = (t_end_date - datetime.now()).seconds
-                    for remaining in range(waiting_time, 0, -1):
-                        sys.stdout.write("\r")
-                        sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                        sys.stdout.flush()
-                        time.sleep(1)
-                    sys.stdout.write("\rComplete!            \n")
+                t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
+                waiting_time = (t_end_date - datetime.now()).seconds
+                for remaining in range(waiting_time, 0, -1):
+                    sys.stdout.write("\r")
+                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                    sys.stdout.flush()
+                    time.sleep(1)
+                sys.stdout.write("\rCheck tender status            \n")
+
+                # pass pre-qualification for procedure
+                if procurement_method in prequalification_procedures:
                     attempt_counter = 0
-                    for x in range(10):
+                    for x in range(20):
                         attempt_counter += 1
-                        print '{}{}'.format('Check "active.pre-qualification" status. Attempt ', attempt_counter)
-                        time.sleep(60)
+                        print '{}{}'.format('Check tender status (pre-qualification). Attempt ', attempt_counter)
+                        time.sleep(30)
                         get_t_info = get_tender_info(host_kit, tender_id_long)
                         if get_t_info.json()['data']['status'] == 'active.pre-qualification':
-                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                            response_json['status'] = 'success'
-                            response_code = 201
-                            break
-                        else:
-                            if attempt_counter < 10:
+                            if received_tender_status == 'active.pre-qualification':
+                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                                response_json['status'] = 'success'
+                                response_code = 201
+                                break
+                            else:
+                                qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
+                                prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all bids
+                                time.sleep(2)
+                                finish_prequalification = qualification.finish_prequalification(tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
+                                db.session.remove()
 
+                                waiting_time = int(round(7200.0 / accelerator * 60))
+                                for remaining in range(waiting_time, 0, -1):
+                                    sys.stdout.write("\r")
+                                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                                    sys.stdout.flush()
+                                    time.sleep(1)
+                                sys.stdout.write("\rWaiting for qualification status            \n")
+                                break
+                        else:
+                            if attempt_counter < 20:
                                 continue
                             else:
                                 response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -457,92 +472,26 @@ def create_tender_function():
                                 response_code = 422
 
                 if received_tender_status == 'active.qualification':
-                    if procurement_method in without_pre_qualification_procedures:
-                        t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
+                    attempt_counter = 0
+                    for attempt in range(30):  # check if 2nd stage is in qualification status
+                        attempt_counter += 1
+                        print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
+                        time.sleep(60)
+                        get_t_info = get_tender_info(host_kit, tender_id_long)
+                        print get_t_info.json()['data']['status']
+                        if get_t_info.json()['data']['status'] == 'active.qualification':
+                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                            response_json['status'] = 'success'
+                            response_code = 201
+                            break
+                        else:
+                            if attempt_counter < 30:
 
-                        waiting_time = (t_end_date - datetime.now()).seconds
-                        for remaining in range(waiting_time, 0, -1):
-                            sys.stdout.write("\r")
-                            sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                            sys.stdout.flush()
-                            time.sleep(1)
-                        sys.stdout.write("\rComplete!            \n")
-                        attempt_counter = 0
-                        for x in range(10):
-                            attempt_counter += 1
-                            print '{}{}'.format('Check tender status . Attempt ', attempt_counter)
-                            time.sleep(60)
-                            get_t_info = get_tender_info(host_kit, tender_id_long)
-                            if get_t_info.json()['data']['status'] == 'active.qualification':
+                                continue
+                            else:
                                 response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                response_json['status'] = 'success'
-                                response_code = 201
-                                break
-                            else:
-                                if attempt_counter < 10:
-
-                                    continue
-                                else:
-                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                    response_json['status'] = 'error'
-                                    response_code = 422
-                    elif procurement_method in prequalification_procedures:
-                        t_end_date = datetime.strptime(publish_tender_response[0].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
-
-                        waiting_time = (t_end_date - datetime.now()).seconds
-                        for remaining in range(waiting_time, 0, -1):
-                            sys.stdout.write("\r")
-                            sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                            sys.stdout.flush()
-                            time.sleep(1)
-                        sys.stdout.write("\rComplete!            \n")
-                        attempt_counter = 0
-                        for x in range(30):
-                            attempt_counter += 1
-                            print '{}{}'.format('Check tender status (active.pre-qualification). Attempt ', attempt_counter)
-                            time.sleep(30)
-                            get_t_info = get_tender_info(host_kit, tender_id_long)
-                            if get_t_info.json()['data']['status'] == 'active.pre-qualification':
-                                qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                                prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
-                                time.sleep(2)
-                                finish_prequalification = qualification.finish_prequalification(tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
-                                db.session.remove()
-                                waiting_time = int(round(7200.0 / accelerator * 60))
-                                for remaining in range(waiting_time, 0, -1):
-                                    sys.stdout.write("\r")
-                                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                    sys.stdout.flush()
-                                    time.sleep(1)
-                                sys.stdout.write("\rComplete!            \n")
-                                attempt_counter = 0
-                                for y in range(30):
-                                    attempt_counter += 1
-                                    print '{}{}'.format('Check tender status (qualification). Attempt ', attempt_counter)
-                                    time.sleep(30)
-                                    get_t_info = get_tender_info(host_kit, tender_id_long)
-                                    if get_t_info.json()['data']['status'] == 'active.qualification':
-                                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                        response_json['status'] = 'success'
-                                        response_code = 201
-                                        break
-                                    else:
-                                        if attempt_counter < 30:
-
-                                            continue
-                                        else:
-                                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                            response_json['status'] = 'error'
-                                            response_code = 422
-                                break
-                            else:
-                                if attempt_counter < 30:
-
-                                    continue
-                                else:
-                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                    response_json['status'] = 'error'
-                                    response_code = 422
+                                response_json['status'] = 'error'
+                                response_code = 422
 
         add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
         response_json['tender_to_company'] = add_tender_company[0]
