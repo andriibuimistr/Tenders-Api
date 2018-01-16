@@ -140,12 +140,12 @@ def host_selector(api_version):
 sandbox = 1
 if sandbox == 2:
     ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
-    host = "https://api-sandbox.prozorro.openprocurement.net"
-    api_version = "dev"
+    host = 'https://api-sandbox.prozorro.openprocurement.net'
+    api_version = 'dev'
 else:
     ds_host = 'https://upload.docs-sandbox.openprocurement.org/upload'
-    host = "https://lb.api-sandbox.openprocurement.org"
-    api_version = "2.4"
+    host = 'https://lb.api-sandbox.openprocurement.org'
+    api_version = '2.4'
 
 auth_key = key.auth_key
 
