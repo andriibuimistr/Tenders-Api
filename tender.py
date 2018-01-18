@@ -107,59 +107,73 @@ def headers_tender(json_tender, headers_host):
 
 # Publish tender
 def publish_tender(headers, json_tender, host, api_version):
-    try:
-        s = requests.Session()
-        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('POST', "{}/api/{}/tenders".format(host, api_version),
-                             data=json.dumps(json_tender),
-                             headers=headers,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        try:
+            s = requests.Session()
+            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+            r = requests.Request('POST', "{}/api/{}/tenders".format(host, api_version),
+                                 data=json.dumps(json_tender),
+                                 headers=headers,
+                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
 
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        if resp.status_code == 201:
-            print("Publishing tender: Success")
-            print("       status code:  {}".format(resp.status_code))
-            publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
-            return resp, publish_tender_response, resp.status_code
-        else:
-            print("Publishing tender: Error")
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-            return resp, resp.content, resp.status_code
-    except Exception as e:
-        print 'CDB Error'
-        return e, 1
+            prepped = s.prepare_request(r)
+            resp = s.send(prepped)
+            if resp.status_code == 201:
+                print("Publishing tender: Success")
+                print("       status code:  {}".format(resp.status_code))
+                # publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
+                return 0, resp, resp.content, resp.status_code
+            else:
+                print("Publishing tender: Error")
+                print("       status code:  {}".format(resp.status_code))
+                print("       response content:  {}".format(resp.content))
+                print("       headers:           {}".format(resp.headers))
+                if attempts >= 5:
+                    return 0, resp, resp.content, resp.status_code
+        except Exception as e:
+            print 'CDB Error'
+            if attempts < 5:
+                continue
+            else:
+                return 1, 'Publish tender error: ' + str(e)
 
 
 # Activate tender
 def activating_tender(publish_tender_response, headers, host, api_version):
-    try:
-        activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
-        tender_location = publish_tender_response.headers['Location']
-        token = publish_tender_response.json()['access']['token']
-        s = requests.Session()
-        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('PATCH', "{}{}{}".format(tender_location, '?acc_token=', token),
-                             data=json.dumps(activate_tender),
-                             headers=headers,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        if resp.status_code == 200:
-            print("Activating tender: Success")
-            print("       status code:  {}".format(resp.status_code))
-            activate_tender_response = {"status_code": resp.status_code}
-            return 0, resp, activate_tender_response, resp.status_code
-        else:
-            print("Activating tender: Error")
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-        return 0, resp, resp.content, resp.status_code
-    except Exception as e:
-        return 1, e
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        try:
+            activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
+            tender_location = publish_tender_response.headers['Location']
+            token = publish_tender_response.json()['access']['token']
+            s = requests.Session()
+            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+            r = requests.Request('PATCH', "{}{}{}".format(tender_location, '?acc_token=', token),
+                                 data=json.dumps(activate_tender),
+                                 headers=headers,
+                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
+            prepped = s.prepare_request(r)
+            resp = s.send(prepped)
+            if resp.status_code == 200:
+                print("Activating tender: Success")
+                print("       status code:  {}".format(resp.status_code))
+                # activate_tender_response = {"status_code": resp.status_code}
+                return 0, resp, resp.content, resp.status_code
+            else:
+                print("Activating tender: Error")
+                print("       status code:  {}".format(resp.status_code))
+                print("       response content:  {}".format(resp.content))
+                print("       headers:           {}".format(resp.headers))
+                if attempts >= 5:
+                    return 0, resp, resp.content, resp.status_code
+        except Exception as e:
+            if attempts < 5:
+                continue
+            else:
+                return 1, 'Activate tender error: ' + str(e)
 
 
 # Finish first stage

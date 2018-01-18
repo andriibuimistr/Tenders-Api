@@ -51,6 +51,7 @@ def get_tender_token(tender_id_long):
 
 # get list of qualifications for tender (SQLA)
 def list_of_qualifications(tender_id_long, host, api_version):
+    print 'Get list of qualifications'
     tender_json = requests.get("{}/api/{}/tenders/{}".format(host, api_version, tender_id_long))
     response = tender_json.json()
     qualifications = response['data']['qualifications']

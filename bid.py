@@ -373,8 +373,17 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
             list_of_bids_json.append(bid_json)
 
             headers = headers_bid(bid_json, host_kit[3])  # generate headers for bid
-            created_bid = create_bid_openua_procedure(
-                count, tender_id, bid_json, headers, host_kit[0], host_kit[1])  # create bid
+
+            attempts = 0
+            for every_bid in range(5):
+                attempts += 1
+                print '{}{}'.format('Publishing bid: Attempt ', attempts)
+                created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers, host_kit[0], host_kit[1])  # create bid
+                if created_bid[1] == 201:
+                    break
+                else:
+                    continue
+
             if created_bid[0] == 1:
                 print created_bid[1]
                 bids_json.append({"bid_number": count,

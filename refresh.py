@@ -339,3 +339,25 @@ def get_tender_info(host_kit, tender_id_long):
                 return 500, e
 
 
+def get_tender_info2(host_kit, tender_id_long):
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        print 'Get tender info. Attempt {}'.format(attempts)
+        try:
+            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], 'hjntcfj'))
+            if get_t_info.status_code == 200:
+                return get_t_info.status_code, get_t_info
+            else:
+                print get_t_info.content
+                if attempts < 5:
+                    continue
+                else:
+                    return get_t_info.status_code, get_t_info
+        except Exception as e:
+            print 'CDB Error'
+            if attempts < 5:
+                continue
+            else:
+                print 'Exception. Can\'t get tender info'
+                return 500, e
