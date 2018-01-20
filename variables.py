@@ -360,7 +360,7 @@ def description_en():
 
 
 # Generate tender period
-def tender_period(accelerator, procurement_method):
+def tender_period(accelerator, procurement_method, received_tender_status):
     kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
     # tender_start_date
     tender_start_date = datetime.now().strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
@@ -370,7 +370,14 @@ def tender_period(accelerator, procurement_method):
     tender_period_data = u"{}{}{}{}{}{}".format(', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
 
     if procurement_method == 'belowThreshold':
-        tender_start_date = (datetime.now() + timedelta(minutes=3)).strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+        one_day = datetime.now() + timedelta(minutes=int(round(1 * (1440.0 / accelerator))), seconds=10)
+        six_minutes = datetime.now() + timedelta(minutes=int(round(6 * (1440.0 / accelerator))), seconds=10)
+        five_dozens_days = datetime.now() + timedelta(minutes=int(round(60 * (1440.0 / accelerator))), seconds=10)
+        tender_start_date = one_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+        tender_end_date = five_dozens_days.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+        # if received_tender_status == 'active.tendering':
+        if received_tender_status == 'active.qualification':
+            tender_end_date = six_minutes.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
         tender_period_data = u"{}{}{}{}{}{}{}".format(', "tenderPeriod": {"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}, "enquiryPeriod": { "endDate": ', tender_start_date, '}')
     return tender_period_data
 
@@ -419,7 +426,7 @@ def procuring_entity():
     return procuring_entity_block
 
 
-def tender_data(procurement_method, accelerator):
+def tender_data(procurement_method, accelerator, received_tender_status):
     procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
     mode = ', "mode": "test"'
     if procurement_method == 'esco':
@@ -428,7 +435,7 @@ def tender_data(procurement_method, accelerator):
         submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
     procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
     status = ', "status": "draft"'
-    constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(accelerator, procurement_method), procuring_entity(), procurement_method_type, mode, submission_method_details, procurement_method_details, status)
+    constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(accelerator, procurement_method, received_tender_status), procuring_entity(), procurement_method_type, mode, submission_method_details, procurement_method_details, status)
     return constant_tender_data
 
 

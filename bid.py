@@ -3,7 +3,7 @@ from faker import Faker
 import requests
 import document
 from variables import auth_key, valueAddedTaxIncluded, tender_currency,\
-    above_threshold_active_bid_procurements, Bids
+    above_threshold_active_bid_procurements, Bids, below_threshold_procurement
 import json
 import time
 import variables
@@ -232,7 +232,7 @@ def bid_json_esco_simple(user_idf):
 
 # select correct json for bid using procurement method
 def determine_procedure_for_bid(procurement_method):
-    if procurement_method in above_threshold_active_bid_procurements:
+    if procurement_method in above_threshold_active_bid_procurements + below_threshold_procurement:
         activate_bid_body = {"data": {"status": "active"}}
     else:
         activate_bid_body = {"data": {"status": "pending"}}
