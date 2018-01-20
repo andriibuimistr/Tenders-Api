@@ -370,6 +370,8 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 else:
                     bid_json = bid_json_open_procedure_lots(identifier, number_of_lots, list_of_id_lots)
 
+            if procurement_method == 'belowThreshold':
+                del bid_json["data"]["selfEligible"], bid_json["data"]["selfQualified"], bid_json["data"]["subcontractingDetails"]
             list_of_bids_json.append(bid_json)
 
             headers = headers_bid(bid_json, host_kit[3])  # generate headers for bid

@@ -156,7 +156,7 @@ valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
 # SELECT PROCUREMENT METHOD
 above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
-below_threshold_procurement = ['open_belowThreshold']
+below_threshold_procurement = ['belowThreshold']
 limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
 
 
@@ -168,12 +168,13 @@ competitive_procedures_first_stage = ['competitiveDialogueUA', 'competitiveDialo
 competitive_procedures_second_stage = ['competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2']
 
 # list of status
-tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete']
+tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete', 'active.enquiries']
 
 without_pre_qualification_procedures_status = ['active.tendering', 'active.qualification']
 prequalification_procedures_status = ['active.pre-qualification']
 competitive_procedures_status = ['active.tendering.stage2', 'complete']
 competitive_dialogue_eu_status = ['active.pre-qualification.stage2']
+below_threshold_status = ['active.enquiries', 'active.tendering', 'active.qualification']
 
 
 # ITEMS
@@ -185,14 +186,14 @@ def description_of_item(di_number_of_lots, di_number_of_items, item_number):
         items_count = 0
         for item in range(di_number_of_items):
             items_count += 1
-            item_description = u"{}{}{}{}{}{}".format('"description": ', description_text, items_count, ' - ', fake.text(300).replace('\n', ' '), '"')
+            item_description = u"{}{}{}{}{}{}".format('"description": ', description_text, items_count, ' - ', fake.text(200).replace('\n', ' '), '"')
             description_item.append(item_description)
         return description_item
     else:
         items_count = 0
         for item in range(di_number_of_lots):
             items_count += 1
-            item_description = u"{}{}{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, ' - ', fake.text(300).replace('\n', ' '), '"')
+            item_description = u"{}{}{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, ' - ', fake.text(200).replace('\n', ' '), '"')
             description_item.append(item_description)
         return description_item
 
@@ -267,7 +268,7 @@ def title_for_lot(lot_number):
     lot_random_title = u"{}{}".format(u'Лот ', lot_number)
     lot_title = u"{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"', lot_title_en)
     lot_description_en = ', "description_en": ""'
-    lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(300).replace('\n', ' '), '"')
+    lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(200).replace('\n', ' '), '"')
     lot_description_fragment = u"{}{}{}".format(', "description": ', lot_description_name, lot_description_en)
     lot_data = u'{}{}'.format(lot_title, lot_description_fragment)
     return lot_data
@@ -278,10 +279,10 @@ def lot_values():
     lot_value_amount = random.randint(1000, 100000)
     lot_value = u"{}{}{}".format(', "value": {"amount": "', lot_value_amount, '"}')
     # lot minimal step amount
-    minimal_step_amount = lot_value_amount * 0.02
+    minimal_step_amount = '{0:.2f}'.format(lot_value_amount * 0.01)
     minimal_step_fragment = u"{}{}{}".format(', "minimalStep": {"amount": "', minimal_step_amount, '"}')
     # lot guarantee amount
-    lot_guarantee_amount = lot_value_amount * 0.004  # 0.4%
+    lot_guarantee_amount = '{0:.2f}'.format(lot_value_amount * 0.02)
     lot_guarantee = u"{}{}{}".format(', "guarantee": {"amount": "', lot_guarantee_amount, '"}')
     values_of_lot = '{}{}{}'.format(lot_value, lot_guarantee, minimal_step_fragment)
     return values_of_lot, lot_value_amount
@@ -315,7 +316,7 @@ def tender_values(tv_number_of_lots):
                       "currency": tender_currency
                       }
     tender_guarantee = u"{}{}".format(', "guarantee": ', json.dumps(guarantee_json))
-    tender_minimal_step_json = {"amount": 100,
+    tender_minimal_step_json = {"amount": '{0:.2f}'.format(lot_values[1] * 0.01),
                                 "currency": tender_currency,
                                 "valueAddedTaxIncluded": valueAddedTaxIncluded
                                 }
@@ -359,15 +360,18 @@ def description_en():
 
 
 # Generate tender period
-def tender_period(accelerator):
+def tender_period(accelerator, procurement_method):
     kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
     # tender_start_date
     tender_start_date = datetime.now().strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
     # tender_end_date
     date_day = datetime.now() + timedelta(minutes=int(round(31 * (1440.0 / accelerator)) + 1))
     tender_end_date = date_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
-    tender_period_data = u"{}{}{}{}{}{}".format(
-        ', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
+    tender_period_data = u"{}{}{}{}{}{}".format(', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
+
+    if procurement_method == 'belowThreshold':
+        tender_start_date = (datetime.now() + timedelta(minutes=3)).strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+        tender_period_data = u"{}{}{}{}{}{}{}".format(', "tenderPeriod": {"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}, "enquiryPeriod": { "endDate": ', tender_start_date, '}')
     return tender_period_data
 
 
@@ -424,9 +428,7 @@ def tender_data(procurement_method, accelerator):
         submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
     procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
     status = ', "status": "draft"'
-    constant_tender_data = u'{}{}{}{}{}{}{}'.format(
-        tender_period(accelerator), procuring_entity(), procurement_method_type, mode, submission_method_details,
-        procurement_method_details, status)
+    constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(accelerator, procurement_method), procuring_entity(), procurement_method_type, mode, submission_method_details, procurement_method_details, status)
     return constant_tender_data
 
 
