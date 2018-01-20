@@ -291,148 +291,211 @@ def create_tender_function():
                                                     attempt_counter)
                                 time.sleep(20)
                                 get_t_info = get_tender_info(host_kit, tender_id_long)
-                                if get_t_info[1].json()['data']['status'] == 'active.stage2.pending':
-                                    response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                    response_json['status'] = 'success'
-                                    response_code = 201
 
-                                    tender.finish_first_stage(publish_tender_response[1], headers_tender, host_kit[0], host_kit[1])
-                                    attempt_counter = 0
-                                    for y in range(50):  # check for "completed" status of first stage
-                                        attempt_counter += 1
-                                        print '{}{}'.format('Check tender status (complete). Attempt ', attempt_counter)
-                                        time.sleep(20)
-                                        get_t_info = get_tender_info(host_kit, tender_id_long)
-                                        if get_t_info[1].json()['data']['status'] == 'complete':
-                                            if received_tender_status == 'complete':
-                                                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                                response_json['status'] = 'success'
-                                                response_code = 201
-                                                break
-                                            get_t_info = get_tender_info(host_kit, tender_id_long)  # json with id of 2nd stage
-                                            second_stage_tender_id = get_t_info[1].json()['data']['stage2TenderID']  # get id of 2nd stage from json of 1st stage
-                                            print '2nd stage id: ' + second_stage_tender_id
-                                            get_2nd_stage_info = tender.get_2nd_stage_info(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, tender_token)  # get info of 2nd stage (with token)
-                                            second_stage_token = get_2nd_stage_info[0].json()['access']['token']  # get token of 2nd stage from json
+                                if get_t_info[0] == 500:
+                                    response_json['tenderStatus'] = str(get_t_info[1])
+                                    response_code = 500
+                                    if attempt_counter >= 50:
+                                        break
+                                elif get_t_info[0] not in [500, 200]:
+                                    response_json['tenderStatus'] = get_t_info[1].json()
+                                    response_code = 422
+                                    if attempt_counter >= 50:
+                                        break
+                                else:
+                                    if get_t_info[1].json()['data']['status'] == 'active.stage2.pending':
+                                        response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                        response_json['status'] = 'success'
+                                        response_code = 201
 
-                                            get_t_info = get_tender_info(host_kit, second_stage_tender_id)
-                                            second_stage_tender_id_short = get_t_info[1].json()['data']['tenderID']  # get tender id short of 2nd stage
-                                            procurement_method_2nd_stage = get_t_info[1].json()['data']['procurementMethodType']
-                                            response_json['id'] = second_stage_tender_id_short  # change tender id to 2nd stage tender id for response
+                                        tender.finish_first_stage(publish_tender_response[1], headers_tender, host_kit[0], host_kit[1])
+                                        attempt_counter = 0
+                                        for y in range(50):  # check for "completed" status of first stage
+                                            attempt_counter += 1
+                                            print '{}{}'.format('Check tender status (complete). Attempt ', attempt_counter)
+                                            time.sleep(20)
+                                            get_t_info = get_tender_info(host_kit, tender_id_long)
 
-                                            get_extended_period_for_2nd_stage = tender.extend_tender_period(host_kit[0], host_kit[1], accelerator, second_stage_tender_id)
-                                            tender.patch_second_stage(headers_tender, get_extended_period_for_2nd_stage, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token)  # ready json 2nd stage
-                                            add_2nd_stage_db = tender.tender_to_db(second_stage_tender_id, second_stage_tender_id_short, second_stage_token, procurement_method_2nd_stage, get_t_info[1].json()['data']['status'],
-                                                                                   number_of_lots)
-
-                                            activate_2nd_stage_json = {  # json for activate second stage
-                                                "data": {
-                                                    "status": "active.tendering"
-                                                }
-                                            }
-                                            tender.activate_2nd_stage(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token, activate_2nd_stage_json)  # activate 2nd stage request
-
-                                            time.sleep(1)
-                                            if received_tender_status == 'active.tendering.stage2':
-                                                get_t_info = get_tender_info(host_kit, second_stage_tender_id)
-                                                print get_t_info
-                                                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                                response_json['status'] = 'success'
-                                                response_code = 201
-                                                break
-
-                                            time.sleep(2)
-                                            bid_competitive = bid.make_bid_competitive(make_bid[1], second_stage_tender_id, headers_tender, host_kit, procurement_method)  # make bids 2nd stage
-
-                                            get_2nd_stage_actual_json = get_tender_info(host_kit, second_stage_tender_id)
-                                            t_end_date = datetime.strptime(get_2nd_stage_actual_json[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
-                                            waiting_time = (t_end_date - datetime.now()).seconds
-                                            for remaining in range(waiting_time, 0, -1):
-                                                sys.stdout.write("\r")
-                                                sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                                sys.stdout.flush()
-                                                time.sleep(1)
-                                            sys.stdout.write("\rCheck tender status            \n")
-
-                                            # pass pre-qualification for competitiveDialogueEU
-                                            if procurement_method == 'competitiveDialogueEU':
-                                                attempt_counter = 0
-                                                for x in range(20):
-                                                    attempt_counter += 1
-                                                    print '{}{}'.format('Check tender status (pre-qualification 2nd stage). Attempt ', attempt_counter)
-                                                    time.sleep(30)
-                                                    get_t_info = get_tender_info(host_kit, second_stage_tender_id)
-                                                    if get_t_info[1].json()['data']['status'] == 'active.pre-qualification':
-                                                        if received_tender_status == 'active.pre-qualification.stage2':
-                                                            response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                                            response_json['status'] = 'success'
-                                                            response_code = 201
-                                                            break
-                                                        else:
-                                                            qualifications = qualification.list_of_qualifications(second_stage_tender_id, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                                                            prequalification_result = qualification.pass_second_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # approve all bids
-                                                            time.sleep(2)
-                                                            finish_prequalification = qualification.finish_prequalification(second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # submit prequalification protocol
-                                                            db.session.remove()
-
-                                                            waiting_time = int(round(7200.0 / accelerator * 60))
-                                                            for remaining in range(waiting_time, 0, -1):
-                                                                sys.stdout.write("\r")
-                                                                sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                                                sys.stdout.flush()
-                                                                time.sleep(1)
-                                                            sys.stdout.write("\rWaiting for qualification status            \n")
-                                                            break
-                                                    else:
-                                                        if attempt_counter < 20:
-                                                            continue
-                                                        else:
-                                                            response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                                            response_json['status'] = 'error'
-                                                            response_code = 422
-
-                                            if received_tender_status == 'active.qualification':
-                                                attempt_counter = 0
-                                                for attempt in range(30):  # check if 2nd stage is in qualification status
-                                                    attempt_counter += 1
-                                                    print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
-                                                    time.sleep(60)
-                                                    get_t_info = get_tender_info(host_kit, second_stage_tender_id)
-                                                    print get_t_info[1].json()['data']['status']
-                                                    if get_t_info[1].json()['data']['status'] == 'active.qualification':
+                                            if get_t_info[0] == 500:
+                                                response_json['tenderStatus'] = str(get_t_info[1])
+                                                response_code = 500
+                                                if attempt_counter >= 50:
+                                                    break
+                                            elif get_t_info[0] not in [500, 200]:
+                                                response_json['tenderStatus'] = get_t_info[1].json()
+                                                response_code = 422
+                                                if attempt_counter >= 50:
+                                                    break
+                                            else:
+                                                if get_t_info[1].json()['data']['status'] == 'complete':
+                                                    if received_tender_status == 'complete':
                                                         response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
                                                         response_json['status'] = 'success'
                                                         response_code = 201
                                                         break
-                                                    else:
-                                                        if attempt_counter < 30:
 
-                                                            continue
-                                                        else:
-                                                            response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                                            response_json['status'] = 'error'
+                                                    second_stage_tender_id = get_t_info[1].json()['data']['stage2TenderID']  # get id of 2nd stage from json of 1st stage
+                                                    print '2nd stage id: ' + second_stage_tender_id
+                                                    get_2nd_stage_info = tender.get_2nd_stage_info(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, tender_token)  # get info of 2nd stage (with token)
+                                                    second_stage_token = get_2nd_stage_info[0].json()['access']['token']  # get token of 2nd stage from json
+
+                                                    get_t_info = get_tender_info(host_kit, second_stage_tender_id)
+                                                    if get_t_info[0] == 500:
+                                                        response_json['tenderStatus'] = str(get_t_info[1])
+                                                        response_code = 500
+                                                        break
+                                                    elif get_t_info[0] not in [500, 200]:
+                                                        response_json['tenderStatus'] = get_t_info[1].json()
+                                                        response_code = 422
+                                                        break
+                                                    second_stage_tender_id_short = get_t_info[1].json()['data']['tenderID']  # get tender id short of 2nd stage
+                                                    procurement_method_2nd_stage = get_t_info[1].json()['data']['procurementMethodType']
+                                                    response_json['id'] = second_stage_tender_id_short  # change tender id to 2nd stage tender id for response
+
+                                                    get_extended_period_for_2nd_stage = tender.extend_tender_period(host_kit[0], host_kit[1], accelerator, second_stage_tender_id)
+                                                    tender.patch_second_stage(headers_tender, get_extended_period_for_2nd_stage, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token)  # ready json 2nd stage
+                                                    add_2nd_stage_db = tender.tender_to_db(second_stage_tender_id, second_stage_tender_id_short, second_stage_token, procurement_method_2nd_stage, get_t_info[1].json()['data']['status'],
+                                                                                           number_of_lots)
+
+                                                    activate_2nd_stage_json = {  # json for activate second stage
+                                                        "data": {
+                                                            "status": "active.tendering"
+                                                        }
+                                                    }
+                                                    tender.activate_2nd_stage(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token, activate_2nd_stage_json)  # activate 2nd stage request
+
+                                                    time.sleep(1)
+                                                    if received_tender_status == 'active.tendering.stage2':
+                                                        get_t_info = get_tender_info(host_kit, second_stage_tender_id)
+                                                        if get_t_info[0] == 500:
+                                                            response_json['tenderStatus'] = str(get_t_info[1])
+                                                            response_code = 500
+                                                            break
+                                                        elif get_t_info[0] not in [500, 200]:
+                                                            response_json['tenderStatus'] = get_t_info[1].json()
                                                             response_code = 422
+                                                            break
+                                                        print get_t_info
+                                                        response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                                        response_json['status'] = 'success'
+                                                        response_code = 201
+                                                        break
 
-                                            add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id)
-                                            response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
-                                            break
-                                        else:
-                                            if attempt_counter < 50:
+                                                    time.sleep(2)
+                                                    bid_competitive = bid.make_bid_competitive(make_bid[1], second_stage_tender_id, headers_tender, host_kit, procurement_method)  # make bids 2nd stage
 
-                                                continue
-                                            else:
-                                                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                                response_json['status'] = 'error'
-                                                response_code = 422
-                                    break
-                                else:
-                                    if attempt_counter < 50:
+                                                    get_t_info = get_tender_info(host_kit, second_stage_tender_id)
 
-                                        continue
+                                                    if get_t_info[0] == 500:
+                                                        response_json['tenderStatus'] = str(get_t_info[1])
+                                                        response_code = 500
+                                                        break
+                                                    elif get_t_info[0] not in [500, 200]:
+                                                        response_json['tenderStatus'] = get_t_info[1].json()
+                                                        response_code = 422
+                                                        break
+
+                                                    t_end_date = datetime.strptime(get_t_info[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
+                                                    waiting_time = (t_end_date - datetime.now()).seconds
+                                                    for remaining in range(waiting_time, 0, -1):
+                                                        sys.stdout.write("\r")
+                                                        sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                                                        sys.stdout.flush()
+                                                        time.sleep(1)
+                                                    sys.stdout.write("\rCheck tender status            \n")
+
+                                                    # pass pre-qualification for competitiveDialogueEU
+                                                    if procurement_method == 'competitiveDialogueEU':
+                                                        attempt_counter = 0
+                                                        for x in range(20):
+                                                            attempt_counter += 1
+                                                            print '{}{}'.format('Check tender status (pre-qualification 2nd stage). Attempt ', attempt_counter)
+                                                            time.sleep(30)
+                                                            get_t_info = get_tender_info(host_kit, second_stage_tender_id)
+
+                                                            if get_t_info[0] == 500:
+                                                                response_json['tenderStatus'] = str(get_t_info[1])
+                                                                response_code = 500
+                                                                break
+                                                            elif get_t_info[0] not in [500, 200]:
+                                                                response_json['tenderStatus'] = get_t_info[1].json()
+                                                                response_code = 422
+                                                                break
+
+                                                            if get_t_info[1].json()['data']['status'] == 'active.pre-qualification':
+                                                                if received_tender_status == 'active.pre-qualification.stage2':
+                                                                    response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                                                    response_json['status'] = 'success'
+                                                                    response_code = 201
+                                                                    break
+                                                                else:
+                                                                    qualifications = qualification.list_of_qualifications(second_stage_tender_id, host_kit[0], host_kit[1])  # get list of qualifications for tender
+                                                                    prequalification_result = qualification.pass_second_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # approve all bids
+                                                                    time.sleep(2)
+                                                                    finish_prequalification = qualification.finish_prequalification(second_stage_tender_id, second_stage_token, host_kit[0], host_kit[1])  # submit prequalification protocol
+                                                                    db.session.remove()
+
+                                                                    response_code = 200 # change
+
+                                                                    waiting_time = int(round(7200.0 / accelerator * 60))
+                                                                    for remaining in range(waiting_time, 0, -1):
+                                                                        sys.stdout.write("\r")
+                                                                        sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                                                                        sys.stdout.flush()
+                                                                        time.sleep(1)
+                                                                    sys.stdout.write("\rWaiting for qualification status            \n")
+                                                                    break
+                                                            else:
+                                                                if attempt_counter < 20:
+                                                                    continue
+                                                                else:
+                                                                    response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                                                    response_json['status'] = 'error'
+                                                                    response_code = 422
+
+                                                    if response_code in [200, 201]:
+                                                        if received_tender_status == 'active.qualification':
+                                                            attempt_counter = 0
+                                                            for attempt in range(30):  # check if 2nd stage is in qualification status
+                                                                attempt_counter += 1
+                                                                print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
+                                                                time.sleep(60)
+                                                                get_t_info = get_tender_info(host_kit, second_stage_tender_id)
+                                                                print get_t_info[1].json()['data']['status']
+                                                                if get_t_info[1].json()['data']['status'] == 'active.qualification':
+                                                                    response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                                                    response_json['status'] = 'success'
+                                                                    response_code = 201
+                                                                    break
+                                                                else:
+                                                                    if attempt_counter < 30:
+
+                                                                        continue
+                                                                    else:
+                                                                        response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                                                        response_json['status'] = 'error'
+                                                                        response_code = 422
+
+                                                    add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id)
+                                                    response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
+                                                    break
+                                                else:
+                                                    if attempt_counter < 50:
+
+                                                        continue
+                                                    else:
+                                                        response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                                        response_json['status'] = 'error'
+                                                        response_code = 422
+                                        break
                                     else:
-                                        response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
-                                        response_json['status'] = 'error'
-                                        response_code = 422
+                                        if attempt_counter < 50:
+
+                                            continue
+                                        else:
+                                            response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                            response_json['status'] = 'error'
+                                            response_code = 422
                             break
                         else:
                             if attempt_counter < 20:
@@ -527,8 +590,8 @@ def create_tender_function():
                                 response_json['tenderStatus'] = get_t_info[1].json()
                                 response_code = 422
 
-        #add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
-        #response_json['tender_to_company'] = add_tender_company[0]
+        add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
+        response_json['tender_to_company'] = add_tender_company[0]
 
         return jsonify(response_json), response_code
 
