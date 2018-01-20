@@ -168,7 +168,7 @@ def create_tender_function():
             abort(422, "For '{}' status must be one of: {}".format(procurement_method, below_threshold_status))
     elif procurement_method in limited_procurement:  # create limited procedure
         print "Error. Данный функционал еще не был разработан :)"
-        abort(422, "This procurementMethodType wasn't implemented yet")
+        #abort(422, "This procurementMethodType wasn't implemented yet")
     else:  # incorrect procurementMethodType
         abort(400, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement))
 

@@ -4,9 +4,10 @@ import pytz
 import requests
 import variables
 import qualification
+from bid import suppliers_for_limited
 import refresh
 from refresh import get_tender_info, get_tender_info2
-from variables import db, tender_values, tender_features, auth_key, lot_values, tender_data, tender_titles, Tenders, tender_values_esco, lot_values_esco, above_threshold_procurement,\
+from variables import db, tender_values, features, auth_key, lot_values, tender_data, tender_titles, Tenders, tender_values_esco, lot_values_esco, above_threshold_procurement,\
     below_threshold_procurement, limited_procurement, host_selector, tender_status_list, without_pre_qualification_procedures, prequalification_procedures, competitive_procedures,\
     without_pre_qualification_procedures_status, prequalification_procedures_status, competitive_procedures_status
 from datetime import datetime, timedelta
@@ -25,13 +26,15 @@ def list_of_id_for_lots(number_of_lots):
 
 
 # generate list of lots
-def list_of_lots(number_of_lots, list_of_id_lots):
+def list_of_lots(number_of_lots, list_of_id_lots, procurement_method):
     list_of_lots_for_tender = []
     lot_number = 0
     for i in range(number_of_lots):
         lot_number += 1
         lot_id = list_of_id_lots[i]
         one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', variables.title_for_lot(lot_number), lot_values[0], '}'))
+        if procurement_method in limited_procurement:
+            del one_lot['minimalStep'], one_lot['guarantee']
         list_of_lots_for_tender.append(one_lot)
     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
     lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
@@ -88,18 +91,18 @@ def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method
 def tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status):
     if number_of_lots == 0:
         if procurement_method == 'esco':
-            tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method), tender_features,
-                                                   tender_data(procurement_method, accelerator, received_tender_status), '}}')
+            tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
+                                                   features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
         else:
-            tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method), tender_features,
-                                                   tender_data(procurement_method, accelerator, received_tender_status), '}}')
+            tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
+                                                   features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
     else:
         if procurement_method == 'esco':
             tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_lots_esco(number_of_lots, list_of_id_lots),
-                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features, tender_data(procurement_method, accelerator, received_tender_status), '}}')
+                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
         else:
-            tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots),
-                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features, tender_data(procurement_method, accelerator, received_tender_status), '}}')
+            tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots, procurement_method),
+                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
     return tender_json
 
 
@@ -170,7 +173,7 @@ def activating_tender(publish_tender_response, headers, host, api_version, procu
             elif procurement_method in variables.below_threshold_procurement:
                 activate_tender = json.loads('{ "data": { "status": "active.enquiries"}}')
             else:
-                activate_tender = 'LIMITED PROCEDURE ACTIVATING JSON!!!'
+                activate_tender = json.loads('{ "data": { "status": "active"}}')
             tender_location = publish_tender_response.headers['Location']
             token = publish_tender_response.json()['access']['token']
             s = requests.Session()
@@ -353,6 +356,9 @@ def creation_of_tender(tc_request):
     api_version = tc_request['api_version']
     received_tender_status = tc_request['tenderStatus']
 
+    if procurement_method == 'reporting':
+        number_of_lots = 0
+
     host_kit = host_selector(api_version)
     response_json = dict()
 
@@ -389,11 +395,10 @@ def creation_of_tender(tc_request):
         else:
             error_reason = str(activate_tender[2])
         abort(activate_tender[3], error_reason)
-
+    tender_status = activate_tender[1].json()['data']['status']
     tender_id_long = publish_tender_response[1].json()['data']['id']
     tender_id_short = publish_tender_response[1].json()['data']['tenderID']
     tender_token = publish_tender_response[1].json()['access']['token']
-    tender_status = activate_tender[1].json()['data']['status']
 
     # add tender to database
     add_tender_db = tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots)
@@ -870,6 +875,8 @@ def creation_of_tender(tc_request):
                                         response_code = 201
                                         break
                         break
+    elif procurement_method in limited_procurement:
+        add_supplier = suppliers_for_limited(number_of_lots, tender_id_long, tender_token, headers_tender, procurement_method, list_of_id_lots, host_kit)
 
     add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0]

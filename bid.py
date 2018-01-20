@@ -8,6 +8,8 @@ import json
 import time
 import variables
 from random import randint
+import binascii
+import os
 
 
 fake = Faker('uk_UA')
@@ -48,6 +50,103 @@ def values_bid_generator_above():
                                     "valueAddedTaxIncluded": valueAddedTaxIncluded
                                     })))
         return tender_bid_value
+
+
+def supplier_json_limited():
+    tender_value = values_bid_generator_above()
+    suppliers_json_limited = {"data": {
+                                    "date": "2016-01-14T18:07:00.628073+02:00",
+                                    "status": "pending",
+                                    "suppliers": [
+                                      {
+                                        "contactPoint": {
+                                          "telephone": "+380 (432) 21-69-30",
+                                          "name": "Сергій Олексюк",
+                                          "email": "soleksuk@gmail.com"
+                                        },
+                                        "identifier": {
+                                          "scheme": "UA-EDR",
+                                          "legalName": "Державне комунальне підприємство громадського харчування «Школяр»",
+                                          "id": "13313462",
+                                          "uri": "http://sch10.edu.vn.ua/"
+                                        },
+                                        "name": fake.company(),
+                                        "address": {
+                                          "countryName": "Україна",
+                                          "postalCode": "21100",
+                                          "region": "м. Вінниця",
+                                          "streetAddress": "вул. Островського, 33",
+                                          "locality": "м. Вінниця"
+                                        }
+                                      }
+                                    ],
+                                    "id": (binascii.hexlify(os.urandom(16))),
+                                    "value": tender_value
+                                  }
+                               }
+    return suppliers_json_limited
+
+
+def supplier_json_limited_lots(lot_id):
+    tender_value = values_bid_generator_above()
+    suppliers_json_limited = {"data": {
+                                    "date": "2016-01-14T18:07:00.628073+02:00",
+                                    "status": "pending",
+                                    "suppliers": [
+                                      {
+                                        "contactPoint": {
+                                          "telephone": "+380 (432) 21-69-30",
+                                          "name": "Сергій Олексюк",
+                                          "email": "soleksuk@gmail.com"
+                                        },
+                                        "identifier": {
+                                          "scheme": "UA-EDR",
+                                          "legalName": "Державне комунальне підприємство громадського харчування «Школяр»",
+                                          "id": "13313462",
+                                          "uri": "http://sch10.edu.vn.ua/"
+                                        },
+                                        "name": fake.company(),
+                                        "address": {
+                                          "countryName": "Україна",
+                                          "postalCode": "21100",
+                                          "region": "м. Вінниця",
+                                          "streetAddress": "вул. Островського, 33",
+                                          "locality": "м. Вінниця"
+                                        }
+                                      }
+                                    ],
+                                    "id": (binascii.hexlify(os.urandom(16))),
+                                    "value": tender_value,
+                                    "lotID": lot_id
+                                  }
+                              }
+    return suppliers_json_limited
+
+
+def add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json):
+    try:
+        s = requests.Session()
+        s.request('GET', '{}/api/{}/tenders'.format(host_kit[0], host_kit[1]))
+        r = requests.Request('POST', '{}/api/{}/tenders/{}/awards?acc_token={}'.format(host_kit[0], host_kit[1], tender_id, tender_token),
+                             data=json.dumps(limited_supplier_json),
+                             headers=headers,
+                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
+        prepped = s.prepare_request(r)
+        resp = s.send(prepped)
+        if resp.status_code == 201:
+            print('{}: {}'.format('Add supplier ', 'Success'))
+            print("       status code:  {}".format(resp.status_code))
+        else:
+            print('{}: {}'.format('Add supplier ', 'Error'))
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+        bid_location = resp.headers['Location']  # get url of created bid
+        bid_token = resp.json()['access']['token']  # get token of created bid
+        bid_id = resp.json()['data']['id']  # get id of created bid
+        return 0, resp.status_code, bid_location, bid_token, bid_id
+    except Exception as e:
+        return 1, e
 
 
 # generate json for bid (tender with lots)
@@ -465,3 +564,19 @@ def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement
                     print '{}{}'.format('Activating bid: Attempt ', attempts_activate)
 
             add_bid_2nd_stage_db = bid_to_db(bid_id, bid_token, identifier, tender_id)
+
+
+def suppliers_for_limited(number_of_lots, tender_id, tender_token, headers, procurement_method, list_of_id_lots, host_kit):
+    if number_of_lots == 0:
+        limited_supplier_json = supplier_json_limited()
+        add_supplier = add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json)
+    else:
+        for lot_id in range(len(list_of_id_lots)):
+            limited_supplier_json = supplier_json_limited_lots(list_of_id_lots[lot_id])
+            add_supplier = add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json)
+
+
+
+
+
+

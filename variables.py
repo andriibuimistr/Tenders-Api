@@ -157,7 +157,7 @@ valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 # SELECT PROCUREMENT METHOD
 above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
 below_threshold_procurement = ['belowThreshold']
-limited_procurement = ['limited_reporting', 'limited_negotiation', 'limited_negotiation.quick']
+limited_procurement = ['reporting', 'negotiation', 'negotiation.quick']
 
 
 without_pre_qualification_procedures = ['aboveThresholdUA', 'aboveThresholdUA.defense']
@@ -302,7 +302,7 @@ lot_values_esco = lot_values_esco()
 
 # TENDERS
 # tender values
-def tender_values(tv_number_of_lots):
+def tender_values(tv_number_of_lots, procurement_method):
     if tv_number_of_lots == 0:
         tender_value_amount = lot_values[1]
     else:
@@ -321,7 +321,10 @@ def tender_values(tv_number_of_lots):
                                 "valueAddedTaxIncluded": valueAddedTaxIncluded
                                 }
     tender_minimal_step = u"{}{}".format(', "minimalStep": ', json.dumps(tender_minimal_step_json))
-    values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
+    if procurement_method in limited_procurement:
+        values_of_tender = '{}'.format(tender_value)
+    else:
+        values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
     return values_of_tender
 
 
@@ -393,7 +396,12 @@ def tender_titles():
     return tender_title_description
 
 
-tender_features = u"{}{}".format(', "features": ', '[ ]')
+def features(procurement_method):
+    if procurement_method in limited_procurement:
+        tender_features = ''
+    else:
+        tender_features = u"{}{}".format(', "features": ', '[ ]')
+    return tender_features
 
 
 def procuring_entity():
@@ -435,7 +443,15 @@ def tender_data(procurement_method, accelerator, received_tender_status):
         submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
     procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
     status = ', "status": "draft"'
-    constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(accelerator, procurement_method, received_tender_status), procuring_entity(), procurement_method_type, mode, submission_method_details, procurement_method_details, status)
+    limited_cause = u', "cause": "noCompetition", "causeDescription": "Створення закупівлі для переговорної процедури за нагальною потребою"'
+    if procurement_method in limited_procurement:
+        if procurement_method == 'reporting':
+            constant_tender_data = u'{}{}{}{}{}'.format(procuring_entity(), procurement_method_type, mode, procurement_method_details, status)
+        else:
+            constant_tender_data = u'{}{}{}{}{}{}'.format(procuring_entity(), procurement_method_type, mode, procurement_method_details, status, limited_cause)
+    else:
+        constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(accelerator, procurement_method, received_tender_status), procuring_entity(), procurement_method_type, mode, submission_method_details,
+                                                        procurement_method_details, status)
     return constant_tender_data
 
 
