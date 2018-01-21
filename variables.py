@@ -177,7 +177,10 @@ prequalification_procedures_status = ['active.pre-qualification']
 competitive_procedures_status = ['active.tendering.stage2', 'complete']
 competitive_dialogue_eu_status = ['active.pre-qualification.stage2']
 below_threshold_status = ['active.enquiries', 'active.tendering', 'active.qualification']
-limited_status = ['active', 'active.award', 'active.contract']
+limited_status = ['active', 'active.award', 'active.contract', 'complete']
+
+
+kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
 # ITEMS
@@ -367,7 +370,6 @@ def description_en():
 
 # Generate tender period
 def tender_period(accelerator, procurement_method, received_tender_status):
-    kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
     # tender_start_date
     tender_start_date = datetime.now().strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
     # tender_end_date
@@ -470,3 +472,19 @@ documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdU
 
 # index.py data
 create_tender_required_fields = ['procurementMethodType', 'number_of_lots', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
+
+
+# Contracts
+def activate_contract_json(complaint_end_date):
+    contract_end_date = datetime.now() + timedelta(days=120)
+    contract_json = {
+                      "data": {
+                        "period": {
+                          "startDate": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
+                          "endDate": contract_end_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
+                        },
+                        "dateSigned": (complaint_end_date + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
+                        "status": "active"
+                      }
+                    }
+    return contract_json

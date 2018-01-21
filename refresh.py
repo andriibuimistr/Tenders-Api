@@ -5,14 +5,14 @@ from datetime import datetime
 from flask import abort
 import time
 
-tender_byustudio_host = 'http://tender.byustudio.in.ua'
+
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
 
 
 # update tender status in database (SQLA)
 def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
-    get_tender_info = requests.get('{}/api/{}/tenders/{}'.format(host, api_version, tender_id_long))
-    actual_tender_status = get_tender_info.json()['data']['status']
+    get_t_info = requests.get('{}/api/{}/tenders/{}'.format(host, api_version, tender_id_long))
+    actual_tender_status = get_t_info.json()['data']['status']
     if actual_tender_status == tender_status_in_db and actual_tender_status not in invalid_tender_status_list:
         print '{}{}{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status, ' - ',
                                   procurement_method_type)

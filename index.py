@@ -4,17 +4,13 @@ from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_thre
     competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status
 import tender
 # import document
-import bid
-import json
 import qualification
-import time, sys
+import time
 import refresh
-from refresh import get_tender_info
 from flask import Flask, jsonify, request, abort, make_response, render_template
 from flask_httpauth import HTTPBasicAuth
 import re
 import validators
-from datetime import datetime
 from flask_cors import CORS, cross_origin
 
 auth = HTTPBasicAuth()
@@ -170,7 +166,7 @@ def create_tender_function():
         if received_tender_status not in limited_status:
             abort(422, "For '{}' status must be one of: {}".format(procurement_method, limited_status))
     else:  # incorrect procurementMethodType
-        abort(400, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement + below_threshold_procurement + limited_procurement))
+        abort(422, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement + below_threshold_procurement + limited_procurement))
 
     result = tender.creation_of_tender(tc_request)
     return jsonify(result[0]), result[1]

@@ -4,7 +4,7 @@ import pytz
 import requests
 import variables
 import qualification
-from qualification import run_activate_award
+from qualification import run_activate_award, run_activate_contract
 from bid import suppliers_for_limited
 import refresh
 from refresh import get_tender_info, check_if_contract_exists
@@ -12,7 +12,7 @@ from variables import db, tender_values, features, auth_key, lot_values, tender_
     below_threshold_procurement, limited_procurement, host_selector, prequalification_procedures, competitive_procedures, negotiation_procurement
 from datetime import datetime, timedelta
 import time
-from flask import abort, jsonify
+from flask import abort
 import bid
 import sys
 
@@ -556,8 +556,7 @@ def creation_of_tender(tc_request):
                                                     get_extended_period_for_2nd_stage = extend_tender_period(host_kit[0], host_kit[1], accelerator, second_stage_tender_id)
                                                     patch_second_stage(headers_tender, get_extended_period_for_2nd_stage, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token)  # ready json 2nd stage
                                                     add_2nd_stage_db = tender_to_db(second_stage_tender_id, second_stage_tender_id_short, second_stage_token, procurement_method_2nd_stage,
-                                                                                           get_t_info[1].json()['data']['status'],
-                                                                                           number_of_lots)
+                                                                                    get_t_info[1].json()['data']['status'], number_of_lots)
 
                                                     activate_2nd_stage_json = {  # json for activate second stage
                                                         "data": {
@@ -882,6 +881,7 @@ def creation_of_tender(tc_request):
             response_code = 201
         else:
             add_supplier = suppliers_for_limited(number_of_lots, tender_id_long, tender_token, headers_tender, procurement_method, list_of_id_lots, host_kit)
+            time.sleep(3)
 
             get_t_info = get_tender_info(host_kit, tender_id_long)
             if get_t_info[0] == 500:
@@ -899,47 +899,73 @@ def creation_of_tender(tc_request):
                         response_code = 201
                 else:
                     activate_awards = run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method)
-                    if received_tender_status == 'active.contract':
-                        get_t_info = get_tender_info(host_kit, tender_id_long)
-                        if get_t_info[0] == 500:
-                            response_json['tenderStatus'] = str(get_t_info[1])
-                            response_code = 500
-                        elif get_t_info[0] not in [500, 200]:
-                            response_json['tenderStatus'] = get_t_info[1].json()
-                            response_code = 422
+                    time.sleep(3)
+                    get_t_info = get_tender_info(host_kit, tender_id_long)
+                    if get_t_info[0] == 500:
+                        response_json['tenderStatus'] = str(get_t_info[1])
+                        response_code = 500
+                    elif get_t_info[0] not in [500, 200]:
+                        response_json['tenderStatus'] = get_t_info[1].json()
+                        response_code = 422
+                    else:
+                        if procurement_method in negotiation_procurement:
+                            complaint_end_date = datetime.strptime(get_t_info[1].json()['data']['awards'][-1]['complaintPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
+                            waiting_time = (complaint_end_date - datetime.now()).seconds + 5
+                            for remaining in range(waiting_time, 0, -1):
+                                sys.stdout.write("\r")
+                                sys.stdout.write("{:2d} seconds remaining.".format(remaining))
+                                sys.stdout.flush()
+                                time.sleep(1)
+                            sys.stdout.write("\rCheck presence of contracts            \n")
                         else:
-                            if procurement_method in negotiation_procurement:
-                                complaint_end_date = datetime.strptime(get_t_info[1].json()['data']['awards'][-1]['complaintPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
-                                waiting_time = (complaint_end_date - datetime.now()).seconds
-                                for remaining in range(waiting_time, 0, -1):
-                                    sys.stdout.write("\r")
-                                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                    sys.stdout.flush()
-                                    time.sleep(1)
-                                sys.stdout.write("\rCheck presence of contracts            \n")
+                            complaint_end_date = datetime.now()
+                            time.sleep(5)
 
-                            for x in range(10):
-                                print 'Check if contract exists'
-                                get_t_info = get_tender_info(host_kit, tender_id_long)
-                                if get_t_info[0] == 500:
-                                    response_json['tenderStatus'] = str(get_t_info[1])
-                                    response_code = 500
-                                elif get_t_info[0] not in [500, 200]:
-                                    response_json['tenderStatus'] = get_t_info[1].json()
-                                    response_code = 422
-                                else:
-                                    check_if_contract_exist = check_if_contract_exists(get_t_info)
-                                    if check_if_contract_exist == 200:
+                        for x in range(10):
+                            print 'Check if contract exists'
+                            get_t_info = get_tender_info(host_kit, tender_id_long)
+                            if get_t_info[0] == 500:
+                                response_json['tenderStatus'] = str(get_t_info[1])
+                                response_code = 500
+                            elif get_t_info[0] not in [500, 200]:
+                                response_json['tenderStatus'] = get_t_info[1].json()
+                                response_code = 422
+                            else:
+                                check_if_contract_exist = check_if_contract_exists(get_t_info)
+                                if check_if_contract_exist == 200:
+                                    if received_tender_status == 'active.contract':
                                         response_json['tenderStatus'] = 'active.contract'
                                         response_json['status'] = 'success'
                                         response_code = 201
                                         break
                                     else:
-                                        time.sleep(20)
-
-
-
-
+                                        list_of_contracts = get_t_info[1].json()['data']['contracts']
+                                        activate_contracts = run_activate_contract(headers_tender, host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
+                                        if activate_contracts[0] != 200:
+                                            response_json['tenderStatus'] = str(activate_contracts[1])
+                                            response_json['status'] = 'error'
+                                            response_code = activate_contracts[0]
+                                            break
+                                        for x in range(30):
+                                            get_t_info = get_tender_info(host_kit, tender_id_long)
+                                            if get_t_info[0] == 500:
+                                                response_json['tenderStatus'] = str(get_t_info[1])
+                                                response_code = 500
+                                            elif get_t_info[0] not in [500, 200]:
+                                                response_json['tenderStatus'] = get_t_info[1].json()
+                                                response_code = 422
+                                            else:
+                                                if get_t_info[1].json()['data']['status'] == 'complete':
+                                                    response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                                    response_json['status'] = 'success'
+                                                    response_code = 201
+                                                    break
+                                                else:
+                                                    print 'Sleep 10 seconds'
+                                                    time.sleep(10)
+                                        break
+                                else:
+                                    time.sleep(20)
 
     add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0]

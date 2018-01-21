@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from variables import Tenders, Bids
+from variables import Tenders, Bids, activate_contract_json
 import requests
 import key
 import json
 import time
-from refresh import get_tender_info
 
 
 auth_key = key.auth_key
@@ -189,7 +188,39 @@ def activate_award(headers_tender, host_kit, tender_id_long, tender_token, award
             if attempts < 5:
                 continue
             else:
-                return 1, 'Activate tender error: ' + str(e)
+                return 1, 'Activate award error: ' + str(e)
+
+
+def activate_contract(headers_tender, host_kit, tender_id_long, tender_token, json_activate_contract, contract_id):
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        try:
+            s = requests.Session()
+            s.request("GET", "{}/api/{}/tenders".format(host_kit[0], host_kit[1]))
+            r = requests.Request('PATCH', "{}/api/{}/tenders/{}/contracts/{}?acc_token={}".format(host_kit[0], host_kit[1], tender_id_long, contract_id, tender_token),
+                                 data=json.dumps(json_activate_contract),
+                                 headers=headers_tender,
+                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
+            prepped = s.prepare_request(r)
+            resp = s.send(prepped)
+            if resp.status_code == 200:
+                print("Activating contract: Success")
+                print("       status code:  {}".format(resp.status_code))
+                # activate_tender_response = {"status_code": resp.status_code}
+                return resp.status_code, resp.content
+            else:
+                print("Activating contract: Error. Attempt {}".format(attempts))
+                print("       status code:  {}".format(resp.status_code))
+                print("       response content:  {}".format(resp.content))
+                print("       headers:           {}".format(resp.headers))
+                if attempts >= 5:
+                    return resp.status_code, resp.content
+        except Exception as e:
+            if attempts < 5:
+                continue
+            else:
+                return 500, 'Activate contract error: ' + str(e)
 
 
 def run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method):
@@ -198,3 +229,14 @@ def run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, l
         award_id = list_of_awards[award]['id']
         send_activate_award = activate_award(headers_tender, host_kit, tender_id_long, tender_token, activate_award_json, award_id)
 
+
+def run_activate_contract(headers_tender, host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date):
+    json_activate_contract = activate_contract_json(complaint_end_date)
+    for contract in range(len(list_of_contracts)):
+        contract_id = list_of_contracts[contract]['id']
+        send_activate_contract = activate_contract(headers_tender, host_kit, tender_id_long, tender_token, json_activate_contract, contract_id)
+        if send_activate_contract[0] == 500:
+            return send_activate_contract[0], send_activate_contract[1]
+        elif send_activate_contract[0] not in [500, 200]:
+            return send_activate_contract[0], send_activate_contract[1]
+    return 200, 'Success'

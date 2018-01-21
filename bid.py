@@ -83,7 +83,7 @@ def supplier_json_limited():
                                     "id": (binascii.hexlify(os.urandom(16))),
                                     "value": tender_value
                                   }
-                               }
+                              }
     return suppliers_json_limited
 
 
@@ -124,29 +124,34 @@ def supplier_json_limited_lots(lot_id):
 
 
 def add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json):
-    try:
-        s = requests.Session()
-        s.request('GET', '{}/api/{}/tenders'.format(host_kit[0], host_kit[1]))
-        r = requests.Request('POST', '{}/api/{}/tenders/{}/awards?acc_token={}'.format(host_kit[0], host_kit[1], tender_id, tender_token),
-                             data=json.dumps(limited_supplier_json),
-                             headers=headers,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        if resp.status_code == 201:
-            print('{}: {}'.format('Add supplier ', 'Success'))
-            print("       status code:  {}".format(resp.status_code))
-        else:
-            print('{}: {}'.format('Add supplier ', 'Error'))
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-        bid_location = resp.headers['Location']  # get url of created bid
-        bid_token = resp.json()['access']['token']  # get token of created bid
-        bid_id = resp.json()['data']['id']  # get id of created bid
-        return 0, resp.status_code, bid_location, bid_token, bid_id
-    except Exception as e:
-        return 1, e
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        try:
+            s = requests.Session()
+            s.request('GET', '{}/api/{}/tenders'.format(host_kit[0], host_kit[1]))
+            r = requests.Request('POST', '{}/api/{}/tenders/{}/awards?acc_token={}'.format(host_kit[0], host_kit[1], tender_id, tender_token),
+                                 data=json.dumps(limited_supplier_json),
+                                 headers=headers,
+                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
+            prepped = s.prepare_request(r)
+            resp = s.send(prepped)
+            if resp.status_code == 201:
+                print('{}: {}'.format('Add supplier ', 'Success'))
+                print("       status code:  {}".format(resp.status_code))
+                return 0, resp, resp.content, resp.status_code
+            else:
+                print('{}: {}'.format('Add supplier ', 'Error'))
+                print("       status code:  {}".format(resp.status_code))
+                print("       response content:  {}".format(resp.content))
+                print("       headers:           {}".format(resp.headers))
+            if attempts >= 5:
+                return 0, resp, resp.content, resp.status_code
+        except Exception as e:
+            if attempts < 5:
+                continue
+            else:
+                return 1, 'Add supplier error: ' + str(e)
 
 
 # generate json for bid (tender with lots)
