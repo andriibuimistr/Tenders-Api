@@ -167,14 +167,17 @@ competitive_procedures = ['competitiveDialogueUA', 'competitiveDialogueEU']
 competitive_procedures_first_stage = ['competitiveDialogueUA', 'competitiveDialogueEU']
 competitive_procedures_second_stage = ['competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2']
 
+negotiation_procurement = ['negotiation', 'negotiation.quick']
 # list of status
-tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete', 'active.enquiries']
+tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete', 'active.enquiries', 'active', 'active.award',
+                      'active.contract']
 
 without_pre_qualification_procedures_status = ['active.tendering', 'active.qualification']
 prequalification_procedures_status = ['active.pre-qualification']
 competitive_procedures_status = ['active.tendering.stage2', 'complete']
 competitive_dialogue_eu_status = ['active.pre-qualification.stage2']
 below_threshold_status = ['active.enquiries', 'active.tendering', 'active.qualification']
+limited_status = ['active', 'active.award', 'active.contract']
 
 
 # ITEMS

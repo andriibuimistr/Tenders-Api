@@ -315,6 +315,15 @@ def get_list_of_platforms():
     return platforms_list
 
 
+def check_if_contract_exists(get_t_info):
+    try:
+        if get_t_info[1].json()['data']['contracts']:
+            return 200
+    except Exception as e:
+        print e
+        return e
+
+
 def get_tender_info(host_kit, tender_id_long):
     attempts = 0
     for x in range(5):

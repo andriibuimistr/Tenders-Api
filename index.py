@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement, below_threshold_procurement, limited_procurement, host_selector, tender_status_list,\
+from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement, below_threshold_procurement, limited_procurement, tender_status_list,\
     without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, \
-    competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields
+    competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status
 import tender
 # import document
 import bid
@@ -167,10 +167,10 @@ def create_tender_function():
         if received_tender_status not in below_threshold_status:
             abort(422, "For '{}' status must be one of: {}".format(procurement_method, below_threshold_status))
     elif procurement_method in limited_procurement:  # create limited procedure
-        pass
-        #abort(422, "This procurementMethodType wasn't implemented yet")
+        if received_tender_status not in limited_status:
+            abort(422, "For '{}' status must be one of: {}".format(procurement_method, limited_status))
     else:  # incorrect procurementMethodType
-        abort(400, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement))
+        abort(400, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement + below_threshold_procurement + limited_procurement))
 
     result = tender.creation_of_tender(tc_request)
     return jsonify(result[0]), result[1]
