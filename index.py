@@ -9,7 +9,7 @@ import json
 import qualification
 import time, sys
 import refresh
-from refresh import get_tender_info, get_tender_info2
+from refresh import get_tender_info
 from flask import Flask, jsonify, request, abort, make_response, render_template
 from flask_httpauth import HTTPBasicAuth
 import re
@@ -167,7 +167,7 @@ def create_tender_function():
         if received_tender_status not in below_threshold_status:
             abort(422, "For '{}' status must be one of: {}".format(procurement_method, below_threshold_status))
     elif procurement_method in limited_procurement:  # create limited procedure
-        print "Error. Данный функционал еще не был разработан :)"
+        pass
         #abort(422, "This procurementMethodType wasn't implemented yet")
     else:  # incorrect procurementMethodType
         abort(400, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement))

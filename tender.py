@@ -4,9 +4,10 @@ import pytz
 import requests
 import variables
 import qualification
+from qualification import run_activate_award
 from bid import suppliers_for_limited
 import refresh
-from refresh import get_tender_info, get_tender_info2
+from refresh import get_tender_info
 from variables import db, tender_values, features, auth_key, lot_values, tender_data, tender_titles, Tenders, tender_values_esco, lot_values_esco, above_threshold_procurement,\
     below_threshold_procurement, limited_procurement, host_selector, tender_status_list, without_pre_qualification_procedures, prequalification_procedures, competitive_procedures,\
     without_pre_qualification_procedures_status, prequalification_procedures_status, competitive_procedures_status
@@ -877,6 +878,19 @@ def creation_of_tender(tc_request):
                         break
     elif procurement_method in limited_procurement:
         add_supplier = suppliers_for_limited(number_of_lots, tender_id_long, tender_token, headers_tender, procurement_method, list_of_id_lots, host_kit)
+
+        get_t_info = get_tender_info(host_kit, tender_id_long)
+        if get_t_info[0] == 500:
+            response_json['tenderStatus'] = str(get_t_info[1])
+            response_code = 500
+        elif get_t_info[0] not in [500, 200]:
+            response_json['tenderStatus'] = get_t_info[1].json()
+            response_code = 422
+        else:
+            list_of_awards = get_t_info[1].json()['data']['awards']
+            activate_awards = run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method)
+
+
 
     add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0]

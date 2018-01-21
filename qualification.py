@@ -4,6 +4,7 @@ import requests
 import key
 import json
 import time
+from refresh import get_tender_info
 
 
 auth_key = key.auth_key
@@ -38,6 +39,23 @@ finish_prequalification_json = {
     "status": "active.pre-qualification.stand-still"
   }
 }
+
+
+def activate_award_json_select(procurement_method):
+    if procurement_method == 'reporting':
+        activate_award_json_negotiation = {
+            "data": {
+                "status": "active"
+            }
+        }
+    else:
+        activate_award_json_negotiation = {
+                                  "data": {
+                                    "status": "active",
+                                    "qualified": True
+                                  }
+                                }
+    return activate_award_json_negotiation
 
 
 # get tender token from local DB (SQLA)
@@ -140,4 +158,43 @@ def finish_prequalification(tender_id_long, tender_token, host, api_version):
     except Exception as e:
         print e
         return {"status_code": 500, "reason": str(e)}
+
+
+def activate_award(headers_tender, host_kit, tender_id_long, tender_token, award_approve_json, award_id):
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        try:
+            s = requests.Session()
+            s.request("GET", "{}/api/{}/tenders".format(host_kit[0], host_kit[1]))
+            r = requests.Request('PATCH', "{}/api/{}/tenders/{}/awards/{}?acc_token={}".format(host_kit[0], host_kit[1], tender_id_long, award_id, tender_token),
+                                 data=json.dumps(award_approve_json),
+                                 headers=headers_tender,
+                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
+            prepped = s.prepare_request(r)
+            resp = s.send(prepped)
+            if resp.status_code == 200:
+                print("Activating award: Success")
+                print("       status code:  {}".format(resp.status_code))
+                # activate_tender_response = {"status_code": resp.status_code}
+                return 0, resp, resp.content, resp.status_code
+            else:
+                print("Activating award: Error")
+                print("       status code:  {}".format(resp.status_code))
+                print("       response content:  {}".format(resp.content))
+                print("       headers:           {}".format(resp.headers))
+                if attempts >= 5:
+                    return 0, resp, resp.content, resp.status_code
+        except Exception as e:
+            if attempts < 5:
+                continue
+            else:
+                return 1, 'Activate tender error: ' + str(e)
+
+
+def run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method):
+    activate_award_json = activate_award_json_select(procurement_method)
+    for award in range(len(list_of_awards)):
+        award_id = list_of_awards[award]['id']
+        send_activate_award = activate_award(headers_tender, host_kit, tender_id_long, tender_token, activate_award_json, award_id)
 
