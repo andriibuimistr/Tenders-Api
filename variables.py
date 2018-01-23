@@ -484,7 +484,8 @@ def activate_contract_json(complaint_end_date):
                           "endDate": contract_end_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
                         },
                         "dateSigned": (complaint_end_date + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
-                        "status": "active"
+                        "status": "active",
+                        "contractNumber": "N1234567890"
                       }
                     }
     return contract_json
