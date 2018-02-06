@@ -77,29 +77,38 @@ def list_of_qualifications(tender_id_long, host, api_version):
 
 # approve/cancel qualifications
 def approve_prequalification(qualification_id, prequalification_bid_json, tender_id_long, tender_token, qualification_bid_id, is_my_bid, host, api_version):
-    try:
-        s = requests.Session()
-        s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('PATCH',
-                             "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(host, api_version, tender_id_long, qualification_id, tender_token),
-                             data=json.dumps(prequalification_bid_json),
-                             headers=headers_prequalification,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        print("Approve bid:")
-        if resp.status_code == 200:
-            print("       status code:  {}".format(resp.status_code))
-            approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id, "status_code": resp.status_code}
-        else:
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id, "status_code": resp.status_code,
-                            "description": json.loads(resp.content)['errors'][0]['description']}
-        return approve_json
-    except Exception as e:
-        print e
-        return {"bidID": qualification_bid_id, "status_code": 500, "reason": str(e)}
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        try:
+            s = requests.Session()
+            s.request("HEAD", "{}/api/{}/tenders".format(host, api_version))
+            r = requests.Request('PATCH',
+                                 "{}/api/{}/tenders/{}/qualifications/{}?acc_token={}".format(host, api_version, tender_id_long, qualification_id, tender_token),
+                                 data=json.dumps(prequalification_bid_json),
+                                 headers=headers_prequalification,
+                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
+            prepped = s.prepare_request(r)
+            resp = s.send(prepped)
+            print("Approve bid:")
+            if resp.status_code == 200:
+                print("       status code:  {}".format(resp.status_code))
+                approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id, "status_code": resp.status_code}
+                return approve_json
+            else:
+                print("       status code:  {}".format(resp.status_code))
+                print("       response content:  {}".format(resp.content))
+                approve_json = {"isMyBid": is_my_bid, "bidID": qualification_bid_id, "qualificationID": qualification_id, "status_code": resp.status_code,
+                                "description": json.loads(resp.content)['errors'][0]['description']}
+                if attempts >= 5:
+                    return approve_json
+            return approve_json
+        except Exception as e:
+            if attempts < 5:
+                continue
+            else:
+                print e
+                return {"bidID": qualification_bid_id, "status_code": 500, "reason": str(e)}
 
 
 # select my bids
