@@ -102,7 +102,6 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
                                 "description": json.loads(resp.content)['errors'][0]['description']}
                 if attempts >= 5:
                     return approve_json
-            return approve_json
         except Exception as e:
             if attempts < 5:
                 continue
