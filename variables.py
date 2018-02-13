@@ -427,7 +427,7 @@ def procuring_entity():
                                    "name_en": "Name of person in english"
                              },
                              "identifier": {
-                                   "id": "1111111111",
+                                   "id": "00000000",
                                    "scheme": "UA-EDR",
                                    "legalName": "Тестовая организация ООО Тест",
                                    "legalName_en": fake.company()
