@@ -206,7 +206,7 @@ def description_of_item(di_number_of_lots, di_number_of_items, item_number):
 
 # generate delivery address
 def delivery_address_block():
-    delivery_address_json = {"postalCode": fake.postcode(),
+    delivery_address_json = {"postalCode": 00000,
                              "countryName": "Україна",
                              "streetAddress": "Улица",
                              "region": "Дніпропетровська область",
