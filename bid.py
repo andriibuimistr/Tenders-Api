@@ -67,7 +67,7 @@ def supplier_json_limited():
                                         "identifier": {
                                           "scheme": "UA-EDR",
                                           "legalName": "Державне комунальне підприємство громадського харчування «Школяр»",
-                                          "id": "13313462",
+                                          "id": "00037256",
                                           "uri": "http://sch10.edu.vn.ua/"
                                         },
                                         "name": fake.company(),
@@ -102,7 +102,7 @@ def supplier_json_limited_lots(lot_id):
                                         "identifier": {
                                           "scheme": "UA-EDR",
                                           "legalName": "Державне комунальне підприємство громадського харчування «Школяр»",
-                                          "id": "13313462",
+                                          "id": "00037256",
                                           "uri": "http://sch10.edu.vn.ua/"
                                         },
                                         "name": fake.company(),
