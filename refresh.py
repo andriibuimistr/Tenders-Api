@@ -4,10 +4,20 @@ import requests
 from datetime import datetime
 from flask import abort
 import time
+import sys
+from requests.exceptions import ConnectionError
 
 
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
 
+
+def time_counter(waiting_time, message):
+    for remaining in range(waiting_time, 0, -1):
+        sys.stdout.write("\r")
+        sys.stdout.write("{:2d} seconds remaining to {}.".format(remaining, message))
+        sys.stdout.flush()
+        time.sleep(1)
+    sys.stdout.write("\rOk!\n")
 
 # update tender status in database (SQLA)
 def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
@@ -335,17 +345,16 @@ def get_tender_info(host_kit, tender_id_long):
                 return get_t_info.status_code, get_t_info
             else:
                 print get_t_info.content
-                if attempts < 5:
-                    continue
-                else:
-                    return get_t_info.status_code, get_t_info
+                time.sleep(1)
+                if attempts >= 5:
+                    abort(get_t_info.status_code, get_t_info.content)
         except Exception as e:
-            print 'CDB Error'
+            print e
             if attempts < 5:
+                time.sleep(1)
                 continue
             else:
-                print 'Exception. Can\'t get tender info'
-                return 500, e
+                abort(500, 'Get tender info error: ' + str(e))
 
 
 '''def get_tender_info2(host_kit, tender_id_long):

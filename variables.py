@@ -379,13 +379,13 @@ def tender_period(accelerator, procurement_method, received_tender_status):
 
     if procurement_method == 'belowThreshold':
         one_day = datetime.now() + timedelta(minutes=int(round(1 * (1440.0 / accelerator))), seconds=10)
-        six_minutes = datetime.now() + timedelta(minutes=int(round(6 * (1440.0 / accelerator))), seconds=10)
+        six_days = datetime.now() + timedelta(minutes=int(round(6 * (1440.0 / accelerator))), seconds=10)
         five_dozens_days = datetime.now() + timedelta(minutes=int(round(60 * (1440.0 / accelerator))), seconds=10)
         tender_start_date = one_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
         tender_end_date = five_dozens_days.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
         # if received_tender_status == 'active.tendering':
         if received_tender_status == 'active.qualification':
-            tender_end_date = six_minutes.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+            tender_end_date = six_days.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
         tender_period_data = u"{}{}{}{}{}{}{}".format(', "tenderPeriod": {"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}, "enquiryPeriod": { "endDate": ', tender_start_date, '}')
     return tender_period_data
 
