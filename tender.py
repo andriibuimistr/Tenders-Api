@@ -15,6 +15,7 @@ import time
 from flask import abort
 import bid
 import sys
+from requests.exceptions import ConnectionError
 
 
 # generate list of id fot lots
@@ -154,13 +155,15 @@ def publish_tender(headers, json_tender, host, api_version):
                 print("       response content:  {}".format(resp.content))
                 print("       headers:           {}".format(resp.headers))
                 if attempts >= 5:
-                    return 0, resp, resp.content, resp.status_code
-        except Exception as e:
+                    abort(resp.status_code, resp.content)
+        except ConnectionError as e:
             print 'CDB Error'
             if attempts < 5:
                 continue
             else:
-                return 1, 'Publish tender error: ' + str(e)
+                abort(500, 'Publish tender error: ' + str(e))
+        except requests.exceptions.MissingSchema as e:
+            abort(500, 'Publish tender error: ' + str(e))
 
 
 # Activate tender
@@ -196,12 +199,15 @@ def activating_tender(publish_tender_response, headers, host, api_version, procu
                 print("       response content:  {}".format(resp.content))
                 print("       headers:           {}".format(resp.headers))
                 if attempts >= 5:
-                    return 0, resp, resp.content, resp.status_code
-        except Exception as e:
+                    abort(resp.status_code, resp.content)
+        except ConnectionError as e:
+            print 'CDB Error'
             if attempts < 5:
                 continue
             else:
-                return 1, 'Activate tender error: ' + str(e)
+                abort(500, 'Publish tender error: ' + str(e))
+        except requests.exceptions.MissingSchema as e:
+            abort(500, 'Publish tender error: ' + str(e))
 
 
 # Finish first stage
@@ -375,26 +381,26 @@ def creation_of_tender(tc_request):
 
     # run publish tender function
     publish_tender_response = publish_tender(headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
-    if publish_tender_response[0] == 1:
-        abort(500, '{}'.format(publish_tender_response[1]))
-    elif publish_tender_response[3] != 201:
-        if 'application/json' in publish_tender_response[1].headers['Content-Type']:
-            error_reason = publish_tender_response[2]
-        else:
-            error_reason = str(publish_tender_response[2])
-        abort(publish_tender_response[3], error_reason)
+    # if publish_tender_response[0] == 1:
+    #     abort(500, '{}'.format(publish_tender_response[1]))
+    # elif publish_tender_response[3] != 201:
+    #     if 'application/json' in publish_tender_response[1].headers['Content-Type']:
+    #         error_reason = publish_tender_response[2]
+    #     else:
+    #         error_reason = str(publish_tender_response[2])
+    #     abort(publish_tender_response[3], error_reason)
 
     # run activate tender function
     time.sleep(1)
     activate_tender = activating_tender(publish_tender_response[1], headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
-    if activate_tender[0] == 1:
-        abort(500, activate_tender[1])
-    elif activate_tender[3] != 200:
-        if 'application/json' in activate_tender[1].headers['Content-Type']:
-            error_reason = activate_tender[2]
-        else:
-            error_reason = str(activate_tender[2])
-        abort(activate_tender[3], error_reason)
+    # if activate_tender[0] == 1:
+    #     abort(500, activate_tender[1])
+    # elif activate_tender[3] != 200:
+    #     if 'application/json' in activate_tender[1].headers['Content-Type']:
+    #         error_reason = activate_tender[2]
+    #     else:
+    #         error_reason = str(activate_tender[2])
+    #     abort(activate_tender[3], error_reason)
     tender_status = activate_tender[1].json()['data']['status']
     tender_id_long = publish_tender_response[1].json()['data']['id']
     tender_id_short = publish_tender_response[1].json()['data']['tenderID']
