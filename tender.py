@@ -382,26 +382,11 @@ def creation_of_tender(tc_request):
 
     # run publish tender function
     publish_tender_response = publish_tender(headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
-    # if publish_tender_response[0] == 1:
-    #     abort(500, '{}'.format(publish_tender_response[1]))
-    # elif publish_tender_response[3] != 201:
-    #     if 'application/json' in publish_tender_response[1].headers['Content-Type']:
-    #         error_reason = publish_tender_response[2]
-    #     else:
-    #         error_reason = str(publish_tender_response[2])
-    #     abort(publish_tender_response[3], error_reason)
 
     # run activate tender function
     time.sleep(1)
     activate_tender = activating_tender(publish_tender_response[1], headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
-    # if activate_tender[0] == 1:
-    #     abort(500, activate_tender[1])
-    # elif activate_tender[3] != 200:
-    #     if 'application/json' in activate_tender[1].headers['Content-Type']:
-    #         error_reason = activate_tender[2]
-    #     else:
-    #         error_reason = str(activate_tender[2])
-    #     abort(activate_tender[3], error_reason)
+
     tender_status = activate_tender[1].json()['data']['status']
     tender_id_long = publish_tender_response[1].json()['data']['id']
     tender_id_short = publish_tender_response[1].json()['data']['tenderID']
@@ -430,13 +415,7 @@ def creation_of_tender(tc_request):
 
         if received_tender_status == 'active.tendering':
             get_t_info = get_tender_info(host_kit, tender_id_long)
-            # if get_t_info[0] == 500:
-            #     response_json['tenderStatus'] = str(get_t_info[1])
-            #     response_code = 500
-            # elif get_t_info[0] not in [500, 200]:
-            #     response_json['tenderStatus'] = get_t_info[1].json()
-            #     response_code = 422
-            # else:
+
             if get_t_info[1].json()['data']['status'] == 'active.tendering':
                 response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
                 response_json['status'] = 'success'
@@ -449,12 +428,8 @@ def creation_of_tender(tc_request):
             if procurement_method in competitive_procedures:  # qualification for competitive dialogue
                 t_end_date = datetime.strptime(publish_tender_response[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
                 waiting_time = (t_end_date - datetime.now()).seconds
-                for remaining in range(waiting_time, 0, -1):
-                    sys.stdout.write("\r")
-                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                    sys.stdout.flush()
-                    time.sleep(1)
-                sys.stdout.write("\rWaiting for pre-qualification status            \n")
+                time_counter(waiting_time, 'Check tender status (pre-qualification)')
+
                 attempt_counter = 0
                 for x in range(20):  # check "active.pre-qualification" status
                     attempt_counter += 1
@@ -486,12 +461,8 @@ def creation_of_tender(tc_request):
                                 tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
                             db.session.remove()
                             waiting_time = int(round(7200.0 / accelerator * 60))
-                            for remaining in range(waiting_time, 0, -1):
-                                sys.stdout.write("\r")
-                                sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                sys.stdout.flush()
-                                time.sleep(1)
-                            sys.stdout.write("\rComplete!            \n")
+                            time_counter(waiting_time, 'Check tender status (active.stage2.pending)')
+
                             attempt_counter = 0
                             for y in range(50):  # check for "active.stage2.pending" status
                                 attempt_counter += 1
@@ -605,12 +576,7 @@ def creation_of_tender(tc_request):
 
                                                     t_end_date = datetime.strptime(get_t_info[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
                                                     waiting_time = (t_end_date - datetime.now()).seconds
-                                                    for remaining in range(waiting_time, 0, -1):
-                                                        sys.stdout.write("\r")
-                                                        sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                                        sys.stdout.flush()
-                                                        time.sleep(1)
-                                                    sys.stdout.write("\rCheck tender status            \n")
+                                                    time_counter(waiting_time, 'Check tender status')
 
                                                     # pass pre-qualification for competitiveDialogueEU
                                                     if procurement_method == 'competitiveDialogueEU':
@@ -648,12 +614,7 @@ def creation_of_tender(tc_request):
                                                                     response_code = 200  # change
 
                                                                     waiting_time = int(round(7200.0 / accelerator * 60))
-                                                                    for remaining in range(waiting_time, 0, -1):
-                                                                        sys.stdout.write("\r")
-                                                                        sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                                                        sys.stdout.flush()
-                                                                        time.sleep(1)
-                                                                    sys.stdout.write("\rWaiting for qualification status            \n")
+                                                                    time_counter(waiting_time, 'Check qualification status')
                                                                     break
                                                             else:
                                                                 if attempt_counter < 20:
@@ -718,12 +679,7 @@ def creation_of_tender(tc_request):
             else:
                 t_end_date = datetime.strptime(publish_tender_response[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
                 waiting_time = (t_end_date - datetime.now()).seconds
-                for remaining in range(waiting_time, 0, -1):
-                    sys.stdout.write("\r")
-                    sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                    sys.stdout.flush()
-                    time.sleep(1)
-                sys.stdout.write("\rCheck tender status            \n")
+                time_counter(waiting_time, 'Check tender status')
 
                 # pass pre-qualification for procedure
                 if procurement_method in prequalification_procedures:
@@ -757,12 +713,7 @@ def creation_of_tender(tc_request):
                                     response_code = 200  # change
 
                                     waiting_time = int(round(7200.0 / accelerator * 60))
-                                    for remaining in range(waiting_time, 0, -1):
-                                        sys.stdout.write("\r")
-                                        sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                                        sys.stdout.flush()
-                                        time.sleep(1)
-                                    sys.stdout.write("\rWaiting for qualification status            \n")
+                                    time_counter(waiting_time, 'Check qualification status')
                                     break
                             else:
                                 if attempt_counter < 20:
@@ -837,12 +788,6 @@ def creation_of_tender(tc_request):
                     if waiting_time > 3600:
                         abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
                     time_counter(waiting_time, 'Check tender status')
-                    # for remaining in range(waiting_time, 0, -1):
-                    #     sys.stdout.write("\r")
-                    #     sys.stdout.write("{:2d} seconds remaining.".format(remaining))
-                    #     sys.stdout.flush()
-                    #     time.sleep(1)
-                    # sys.stdout.write("\rCheck tender status            \n")
 
                     attempt_counter = 0
                     for x in range(60):
