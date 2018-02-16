@@ -4,7 +4,8 @@ import requests
 import key
 import json
 import time
-
+from flask import abort
+from requests.exceptions import ConnectionError
 
 auth_key = key.auth_key
 
@@ -167,7 +168,7 @@ def finish_prequalification(tender_id_long, tender_token, host, api_version):
         return {"status_code": 500, "reason": str(e)}
 
 
-def activate_award_contract(headers_tender, host_kit, tender_id_long, tender_token, award_approve_json, id_for_activate, type_of):
+def activate_award_contract(headers_tender, host_kit, tender_id_long, tender_token, award_approve_json, id_for_activate, type_of, number):
     if type_of == 'award':
         type_to_activate = 'awards'
     else:
@@ -186,44 +187,43 @@ def activate_award_contract(headers_tender, host_kit, tender_id_long, tender_tok
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
             if resp.status_code == 200:
-                print("Activating {}: Success".format(type_of))
+                print("Activating {} {}: Success".format(type_of, number))
                 print("       status code:  {}".format(resp.status_code))
                 # activate_tender_response = {"status_code": resp.status_code}
                 return resp.status_code, resp.content
             else:
-                print("Activating {}: Error".format(type_of))
+                print("Activating {} {}: Error".format(type_of, number))
                 print("       status code:  {}".format(resp.status_code))
                 print("       response content:  {}".format(resp.content))
                 print("       headers:           {}".format(resp.headers))
+                time.sleep(1)
                 if attempts >= 5:
-                    return resp.status_code, resp.content
-        except Exception as e:
+                    abort(resp.status_code, 'Activate {} error: '.format(type_of) + resp.content)
+        except ConnectionError as e:
+            print 'Connection Error'
             if attempts < 5:
+                time.sleep(1)
                 continue
             else:
-                print 'Activate {} error: {}'.format(type_of, e)
-                return 500, 'Activate {} error: {}'.format(type_of, e)
+                abort(500, 'Activate {} error: {}'.format(type_of, e))
+        except requests.exceptions.MissingSchema as e:
+            abort(500, 'Activate {} error: {}'.format(type_of, e))
 
 
 def run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method):
+    award_number = 0
     activate_award_json = activate_award_json_select(procurement_method)
     for award in range(len(list_of_awards)):
+        award_number += 1
         award_id = list_of_awards[award]['id']
-        send_activate_award = activate_award_contract(headers_tender, host_kit, tender_id_long, tender_token, activate_award_json, award_id, 'award')
-        if send_activate_award[0] == 500:
-            return send_activate_award[0], send_activate_award[1]
-        elif send_activate_award[0] not in [500, 200]:
-            return send_activate_award[0], send_activate_award[1]
-    return 200, 'Success'
+        activate_award_contract(headers_tender, host_kit, tender_id_long, tender_token, activate_award_json, award_id, 'award', award_number)
 
 
 def run_activate_contract(headers_tender, host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date):
+    contract_number = 0
     json_activate_contract = activate_contract_json(complaint_end_date)
     for contract in range(len(list_of_contracts)):
+        contract_number += 1
         contract_id = list_of_contracts[contract]['id']
-        send_activate_contract = activate_award_contract(headers_tender, host_kit, tender_id_long, tender_token, json_activate_contract, contract_id, 'contract')
-        if send_activate_contract[0] == 500:
-            return send_activate_contract[0], send_activate_contract[1]
-        elif send_activate_contract[0] not in [500, 200]:
-            return send_activate_contract[0], send_activate_contract[1]
-    return 200, 'Success'
+        activate_award_contract(headers_tender, host_kit, tender_id_long, tender_token, json_activate_contract, contract_id, 'contract', contract_number)
+

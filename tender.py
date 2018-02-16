@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 import time
 from flask import abort
 import bid
-import sys
+#import sys
 from requests.exceptions import ConnectionError
 
 
@@ -154,11 +154,13 @@ def publish_tender(headers, json_tender, host, api_version):
                 print("       status code:  {}".format(resp.status_code))
                 print("       response content:  {}".format(resp.content))
                 print("       headers:           {}".format(resp.headers))
+                time.sleep(1)
                 if attempts >= 5:
                     abort(resp.status_code, resp.content)
         except ConnectionError as e:
-            print 'CDB Error'
+            print 'Connection Error'
             if attempts < 5:
+                time.sleep(1)
                 continue
             else:
                 abort(500, 'Publish tender error: ' + str(e))
@@ -198,11 +200,13 @@ def activating_tender(publish_tender_response, headers, host, api_version, procu
                 print("       status code:  {}".format(resp.status_code))
                 print("       response content:  {}".format(resp.content))
                 print("       headers:           {}".format(resp.headers))
+                time.sleep(1)
                 if attempts >= 5:
                     abort(resp.status_code, resp.content)
         except ConnectionError as e:
-            print 'CDB Error'
+            print 'Connection Error'
             if attempts < 5:
+                time.sleep(1)
                 continue
             else:
                 abort(500, 'Activate tender error: ' + str(e))
@@ -809,7 +813,7 @@ def creation_of_tender(tc_request):
             response_json['status'] = 'success'
             response_code = 201
         else:
-            add_supplier = suppliers_for_limited(number_of_lots, tender_id_long, tender_token, headers_tender, procurement_method, list_of_id_lots, host_kit)
+            suppliers_for_limited(number_of_lots, tender_id_long, tender_token, headers_tender, procurement_method, list_of_id_lots, host_kit)
             time.sleep(3)
 
             get_t_info = get_tender_info(host_kit, tender_id_long)
@@ -820,7 +824,7 @@ def creation_of_tender(tc_request):
                     response_json['status'] = 'success'
                     response_code = 201
             else:
-                activate_awards = run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method)
+                run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method)
                 time.sleep(3)
                 get_t_info = get_tender_info(host_kit, tender_id_long)
                 if procurement_method in negotiation_procurement:
@@ -843,12 +847,7 @@ def creation_of_tender(tc_request):
                             break
                         else:
                             list_of_contracts = get_t_info[1].json()['data']['contracts']
-                            activate_contracts = run_activate_contract(headers_tender, host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
-                            if activate_contracts[0] != 200:
-                                response_json['tenderStatus'] = str(activate_contracts[1])
-                                response_json['status'] = 'error'
-                                response_code = activate_contracts[0]
-                                break
+                            run_activate_contract(headers_tender, host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
                             for x in range(30):
                                 get_t_info = get_tender_info(host_kit, tender_id_long)
                                 if get_t_info[1].json()['data']['status'] == 'complete':
@@ -863,7 +862,7 @@ def creation_of_tender(tc_request):
                     else:
                         time.sleep(20)
 
-    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
-    response_json['tender_to_company'] = add_tender_company[0]
+    # add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
+    # response_json['tender_to_company'] = add_tender_company[0]
 
     return response_json, response_code

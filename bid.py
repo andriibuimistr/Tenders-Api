@@ -2,14 +2,15 @@
 from faker import Faker
 import requests
 import document
-from variables import auth_key, valueAddedTaxIncluded, tender_currency,\
-    above_threshold_active_bid_procurements, Bids, below_threshold_procurement
+from variables import auth_key, valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, Bids, below_threshold_procurement
 import json
 import time
 import variables
 from random import randint
 import binascii
 import os
+from flask import abort
+from requests.exceptions import ConnectionError
 
 
 fake = Faker('uk_UA')
@@ -123,7 +124,7 @@ def supplier_json_limited_lots(lot_id):
     return suppliers_json_limited
 
 
-def add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json):
+def add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json, supplier_number):
     attempts = 0
     for x in range(5):
         attempts += 1
@@ -137,21 +138,26 @@ def add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_sup
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
             if resp.status_code == 201:
-                print('{}: {}'.format('Add supplier ', 'Success'))
+                print('{}{}: {}'.format('Add supplier ', supplier_number, 'Success'))
                 print("       status code:  {}".format(resp.status_code))
                 return 0, resp, resp.content, resp.status_code
             else:
-                print('{}: {}'.format('Add supplier ', 'Error'))
+                print('{}{}: {}'.format('Add supplier ', supplier_number, 'Error'))
                 print("       status code:  {}".format(resp.status_code))
                 print("       response content:  {}".format(resp.content))
                 print("       headers:           {}".format(resp.headers))
-            if attempts >= 5:
-                return 0, resp, resp.content, resp.status_code
-        except Exception as e:
+                time.sleep(1)
+                if attempts >= 5:
+                    abort(resp.status_code, 'Add supplier error ' + resp.content)
+        except ConnectionError as e:
+            print 'CDB Error'
             if attempts < 5:
+                time.sleep(1)
                 continue
             else:
-                return 1, 'Add supplier error: ' + str(e)
+                abort(500, 'Add supplier error: ' + str(e))
+        except requests.exceptions.MissingSchema as e:
+            abort(500, 'Add supplier error: ' + str(e))
 
 
 # generate json for bid (tender with lots)
@@ -572,13 +578,16 @@ def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement
 
 
 def suppliers_for_limited(number_of_lots, tender_id, tender_token, headers, procurement_method, list_of_id_lots, host_kit):
+    supplier = 0
     if number_of_lots == 0:
+        supplier += 1
         limited_supplier_json = supplier_json_limited()
-        add_supplier = add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json)
+        add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json, supplier)
     else:
         for lot_id in range(len(list_of_id_lots)):
+            supplier += 1
             limited_supplier_json = supplier_json_limited_lots(list_of_id_lots[lot_id])
-            add_supplier = add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json)
+            add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json, supplier)
 
 
 
