@@ -802,7 +802,7 @@ def creation_of_tender(tc_request):
                                 response_json['status'] = 'success'
                                 response_code = 201
                                 break
-                break
+                    break
     elif procurement_method in limited_procurement:
         if received_tender_status == 'active':
             response_json['tenderStatus'] = 'active'
