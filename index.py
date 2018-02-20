@@ -18,6 +18,7 @@ from datetime import datetime
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
+app.secret_key = os.urandom(12)
 CORS(app)
 
 
@@ -632,5 +633,4 @@ def patch_platform(platform_id):
 
 
 if __name__ == '__main__':
-    app.secret_key = os.urandom(12)
     app.run(debug=True, threaded=True)
