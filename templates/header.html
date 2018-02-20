@@ -1,0 +1,39 @@
+<!--<a href="/"><img src="" alt="Whitesquare logo"></a>-->
+<div id="alert" class="response-json"></div>
+<!-- Меню navbar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <!-- Бренд и переключатель, который вызывает меню на мобильных устройствах -->
+    <div class="navbar-header">
+        <!-- Кнопка с полосочками, которая открывает меню на мобильных устройствах -->
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!-- Бренд или логотип фирмы (обычно содержит ссылку на главную страницу) -->
+        <a href="/" class="navbar-brand">TEST.QA</a>
+    </div>
+    <!-- Содержимое меню (коллекция навигационных ссылок, формы и др.) -->
+    <div class="collapse navbar-collapse" id="main-menu" >
+        <!-- Список ссылок, расположенных слева -->
+        <ul class="nav navbar-nav">
+            <!--Элемент с классом active отображает ссылку подсвеченной -->
+            <li><a href="/">Главная<span class="sr-only">(current)</span></a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Тендеры<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="{{ url_for('page_create_tender')}}">Создать тендер</a></li>
+                    <li><a href="#">Опция 3</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Еще...</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Контакты</a></li>
+        </ul>
+        <!-- Список ссылок, расположенный справа -->
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/logout">Выйти</a></li>
+        </ul>
+    </div>
+</nav>

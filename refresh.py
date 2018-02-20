@@ -19,6 +19,7 @@ def time_counter(waiting_time, message):
         time.sleep(1)
     sys.stdout.write("\rOk!\n")
 
+
 # update tender status in database (SQLA)
 def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
     get_t_info = requests.get('{}/api/{}/tenders/{}'.format(host, api_version, tender_id_long))
@@ -106,25 +107,25 @@ def get_tenders_list():
     list_of_tenders = []
     if len(tenders_list) == 0:
         print 'Tenders table is empty'
-        return {"description": "DB is empty"}
+        return 1, {"description": "DB is empty"}
     else:
         print "Get tenders in local DB"
         for tender in range(len(tenders_list)):
-            tender_id = tenders_list[tender].tender_id_long
+            tender_id_long = tenders_list[tender].tender_id_long
             db_tender_status = tenders_list[tender].tender_status
             procurement_method_type = tenders_list[tender].procurementMethodType
             added_to_site = tenders_list[tender].added_to_site
             company_uid = tenders_list[tender].company_uid
 
-            list_of_tenders.append({"tender_id": tender_id, "tender_status": db_tender_status,
-                                    "procurementMethodType": procurement_method_type})
+            # list_of_tenders.append({"tender_id": tender_id, "tender_status": db_tender_status,
+            #                         "procurementMethodType": procurement_method_type})
             if added_to_site == 1:
-                list_of_tenders[tender]['has_company'] = True
-                list_of_tenders[tender]['company_uid'] = company_uid
+                # list_of_tenders[tender]['has_company'] = True
+                tender_company = company_uid
             else:
-                list_of_tenders[tender]['has_company'] = False
-
-        return list_of_tenders
+                tender_company = 0
+            list_of_tenders.append({"id": tender_id_long, "procurement_method_type": procurement_method_type, "tender_status": db_tender_status, "tender_company": tender_company})
+        return 0, list_of_tenders
 
 
 # add all tenders to company (SQLA)
@@ -188,7 +189,7 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
                     'Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
                 print tender_id_site
                 print link_to_tender
-                response = {'status': 'success'}, 201
+                response = {'status': 'success'}, 201, link_to_tender
                 break
             elif 'tender has company' in add_to_site_response['error']:
                 Tenders.query.filter_by(tender_id_long=tender_id_long).update(

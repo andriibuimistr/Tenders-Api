@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+{% include 'head.html' %}
+<body>
+        <div class="login-form">
+            <form action="/login" method="POST">
+                <div>Login</div>
+              <input type="text" name="username" class="form-control auth-input" placeholder="Username" required>
+                <div>Password</div>
+              <input type="password" name="password" class="form-control auth-input" placeholder="Password" required>
+              <input type="submit" class="btn btn-primary auth-button" value="Log in">
+            </form>
+        </div>
+        <div class="version">Tender creator v0.1</div>
+</body>
+</html>

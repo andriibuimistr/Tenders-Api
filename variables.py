@@ -154,11 +154,11 @@ tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB', 'GBP'])
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
 
-# SELECT PROCUREMENT METHOD
+# SELECT PROCUREMENT METHOD ############################################################################################################################
 above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
 below_threshold_procurement = ['belowThreshold']
 limited_procurement = ['reporting', 'negotiation', 'negotiation.quick']
-
+list_of_procurement_types = above_threshold_procurement + below_threshold_procurement + limited_procurement  # list of all procurement types - 1st stage only
 
 without_pre_qualification_procedures = ['aboveThresholdUA', 'aboveThresholdUA.defense']
 prequalification_procedures = ['aboveThresholdEU', 'esco']
@@ -178,7 +178,12 @@ competitive_procedures_status = ['active.tendering.stage2', 'complete']
 competitive_dialogue_eu_status = ['active.pre-qualification.stage2']
 below_threshold_status = ['active.enquiries', 'active.tendering', 'active.qualification']
 limited_status = ['active', 'active.award', 'active.contract', 'complete']
+#################################################################################################################################################################
 
+
+# PLATFORMS AND DATA FOR TENDER CREATION ##################################################################################
+platforms = ['http://tender.byustudio.in.ua', 'http://tender-dev.byustudio.in.ua', 'https://tenders.all.biz']
+list_of_api_versions = ['2.4', 'dev']
 
 kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 

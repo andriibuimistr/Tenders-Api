@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement, below_threshold_procurement, limited_procurement, tender_status_list,\
     without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, \
-    competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status
+    competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status, list_of_procurement_types, list_of_api_versions, platforms
 import tender
 # import document
 import qualification
 import time
 import refresh
-from flask import Flask, jsonify, request, abort, make_response, render_template
+from refresh import get_tenders_list
+from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
 import re
 import validators
+import os
 from flask_cors import CORS, cross_origin
+from datetime import datetime
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
@@ -74,21 +77,83 @@ def custom500(error):
         {'error': '500 Internal Server Error', 'description': error.description}), 500)
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def index(path):
-    return render_template('index.html')
+#############################################################################################
+##########################################################
+
+# actual time for template
+@app.context_processor
+def inject_now():
+    return {'now': datetime.utcnow()}
+
+
+def login_form():
+    return render_template('login.html'), 403
+
+
+def jquery_forbidden():
+    return jsonify({"status": "error", "description": "You are not logged in"}), 403
+
+
+def redirect_url(default='main'):
+    return request.args.get('next') or request.referrer or url_for(default)
+
+
+@app.route('/login', methods=['POST'])
+def do_login():
+    if request.form['username'] == 'admin' and request.form['password'] == 'password':
+        session['logged_in'] = True
+        return redirect(redirect_url())
+    else:
+        return redirect(redirect_url())
+
+
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return redirect(url_for('main'))
+
+
+# main page
+@app.route("/")
+def main():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        return render_template('index.html', list_of_tenders=0, list_of_types=list_of_procurement_types)  # get_tenders_list()
+
+
+# template for tender creation page
+@app.route("/tenders/create-tender")
+def page_create_tender():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        return render_template('create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=platforms, statuses=tender_status_list)
+
+##############################################################################################################################################
+######################################################################################
+
+# @app.route('/', defaults={'path': ''})
+# @app.route('/<path:path>')
+# def index(path):
+#     return render_template('index.html')
 
 
 # create tender
 @app.route('/api/tenders', methods=['POST'])
 @cross_origin(resources=r'/api/*')
 def create_tender_function():
-    if not request.json:
+    if not session.get('logged_in'):
+        return jquery_forbidden()
+    if not request.form:
         abort(400)
-    if 'data' not in request.json:  # check if data is in json
-        abort(400, 'Data was not found in request')
-    tc_request = request.json['data']
+    # if 'data' not in request.json:  # check if data is in json
+    #     abort(400, 'Data was not found in request')
+    tc_request = request.form
+    a = []
+    for x in tc_request:
+        a.append(x)
+        print a
     for field in range(len(create_tender_required_fields)):
         if create_tender_required_fields[field] not in tc_request:
             abort(400, "Field '{}' is required. List of required fields: {}".format(create_tender_required_fields[field], create_tender_required_fields))
@@ -101,18 +166,18 @@ def create_tender_function():
     number_of_bids = tc_request["number_of_bids"]
     accelerator = tc_request["accelerator"]
     company_id = tc_request['company_id']
-    # platform_host = tc_request['platform_host']
-    # api_version = tc_request['api_version']
     received_tender_status = tc_request['tenderStatus']
+    api_version = tc_request['api_version']
+    platform_host = tc_request['platform_host']
 
-    if type(number_of_lots) != int:
+    if str(number_of_lots).isdigit() is False:
         abort(400, 'Number of lots must be integer')
-    elif 0 > number_of_lots or number_of_lots > 20:
+    elif 0 > int(number_of_lots) or int(number_of_lots) > 20:
         abort(422, 'Number of lots must be between 0 and 20')
 
-    if type(number_of_items) != int:
+    if str(number_of_items).isdigit() is False:
         abort(400, 'Number of items must be integer')
-    elif 1 > number_of_items or number_of_items > 20:
+    elif 1 > int(number_of_items) or int(number_of_items) > 20:
         abort(422, 'Number of items must be between 1 and 20')
 
     '''if type(add_documents) != int:
@@ -125,21 +190,27 @@ def create_tender_function():
     elif 0 > documents_of_bid or documents_of_bid > 1:
         abort(422, 'Documents of bid must be 0 or 1')'''
 
-    if type(number_of_bids) != int:
+    if str(number_of_bids).isdigit() is False:
         abort(400, 'Number of bids must be integer')
-    elif 0 > number_of_bids or number_of_bids > 10:
+    elif 0 > int(number_of_bids) or int(number_of_bids) > 10:
         abort(422, 'Number of bids must be between 0 and 10')
 
-    if type(accelerator) != int:
+    if str(accelerator).isdigit() is False:
         abort(400, 'Accelerator must be integer')
-    elif 1 > accelerator or accelerator > 30000:
+    elif 1 > int(accelerator) or int(accelerator) > 30000:
         abort(422, 'Accelerator must be between 1 and 30000')
 
-    if type(company_id) != int:
+    if str(company_id).isdigit() is False:
         abort(400, 'Company ID must be integer')
+    if int(company_id) == 0:
+        abort(422, 'Company id can\'t be 0')
 
     if received_tender_status not in tender_status_list:
-        return abort(400, 'Tender status must be one of: {}'.format(tender_status_list))
+        return abort(422, 'Tender status must be one of: {}'.format(tender_status_list))
+    if api_version not in list_of_api_versions:
+        return abort(422, 'API version must be one of: {}'.format(list_of_api_versions))
+    if platform_host not in platforms:
+        return abort(422, 'Platform must be one of: {}'.format(platforms))
 
     # check procurement method
     if procurement_method in above_threshold_procurement:
@@ -168,6 +239,15 @@ def create_tender_function():
     else:  # incorrect procurementMethodType
         abort(422, 'procurementMethodType must be one of: {}'.format(above_threshold_procurement + below_threshold_procurement + limited_procurement))
 
+    tc_request = {"procurementMethodType": procurement_method,
+                  "number_of_lots": int(number_of_lots),
+                  "number_of_items": int(number_of_items),
+                  "number_of_bids": int(number_of_bids),
+                  "accelerator": int(accelerator),
+                  "company_id": int(company_id),
+                  "platform_host": platform_host,
+                  "api_version": api_version,
+                  "tenderStatus": received_tender_status}
     result = tender.creation_of_tender(tc_request)
     return jsonify(result[0]), result[1]
 
@@ -552,4 +632,5 @@ def patch_platform(platform_id):
 
 
 if __name__ == '__main__':
+    app.secret_key = os.urandom(12)
     app.run(debug=True, threaded=True)
