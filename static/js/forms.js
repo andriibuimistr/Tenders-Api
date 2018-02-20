@@ -78,6 +78,7 @@ $(function() {
         $.ajax({
             url: '/api/tenders',
             dataType : 'json',
+            crossDomain: true,
             data: form.serialize(),
             type: 'POST',
             success: function(data) {
