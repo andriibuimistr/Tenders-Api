@@ -101,7 +101,7 @@ def redirect_url(default='main'):
 
 @app.route('/login', methods=['POST'])
 def do_login():
-    if request.form['username'] == 'admin' and request.form['password'] == 'password':
+    if request.form['username'] == 'admin' and request.form['password'] == '123456abc':
         session['logged_in'] = True
         return redirect(redirect_url())
     else:

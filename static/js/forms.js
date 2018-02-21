@@ -90,9 +90,14 @@ $(function() {
             error: function (jqXHR) {
                 //$("#created_tender_json").html(JSON.parse(jqXHR.responseText));
                 //alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+				var error_description = JSON.parse(jqXHR.responseText).description
+				var error_type = JSON.parse(jqXHR.responseText).error
                 $('#' + request_id).addClass('response-content-error');
                 $('#' + request_id).empty();
-                $('#' + request_id).append('<button class="delete-alert" type="button">x</button>' + jsonPrettyPrint.toHtml(JSON.parse(jqXHR.responseText)));
+                $('#' + request_id).append('<button class="delete-alert" type="button">x</button>' + //jsonPrettyPrint.toHtml(JSON.parse(jqXHR.responseText)));
+				'<div class="alert-response-status">' + error_type + '</div>' +
+				'<div class="alert-response-description">' + error_description + '</div>'
+				);
                 //$('#createTender').removeAttr("disabled");
             }
         });
