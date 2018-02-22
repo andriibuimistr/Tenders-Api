@@ -185,10 +185,10 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long):
                 db.session.remove()
                 print '\nTender was added to site - ' + tender_id_long
                 tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
-                link_to_tender = '{}{}{}{}'.format(
-                    'Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+                link_to_tender_print = '{}{}{}{}'.format('Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+                link_to_tender = '{}{}{}'.format(company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
                 print tender_id_site
-                print link_to_tender
+                print link_to_tender_print
                 response = {'status': 'success'}, 201, link_to_tender
                 break
             elif 'tender has company' in add_to_site_response['error']:

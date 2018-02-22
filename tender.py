@@ -863,6 +863,6 @@ def creation_of_tender(tc_request):
                         time.sleep(20)
 
     add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
-    response_json['tender_to_company'] = add_tender_company[0]
+    response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2]
 
     return response_json, response_code

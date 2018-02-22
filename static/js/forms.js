@@ -73,18 +73,37 @@ $(function() {
         var request_id = randomString(32);
         var procedure = $("#create-tender select[name=procurementMethodType]").val();
         var expected_status = $("#create-tender select[name=tenderStatus]").val();
-        var json_for_wait = {"Procedure": procedure, "Expected_Tender_Status": expected_status, "Request_Status": "Waiting for response"};
-        $('#created_tender_json').prepend('<div class="response-content" id="' + request_id + '">' + jsonPrettyPrint.toHtml(json_for_wait) + '</div>');
+        var html_for_wait = '<div class="alert-response-status">Waiting for response</div>' +
+                            '<div class="alert-response-description">' +
+                                '<div class="wait-procedure-type"><span>Procedure: </span>' + procedure + '</div>' +
+                                '<div class="wait-tender-status"><span>Expected Tender Status: </span>' + expected_status + '</div>' +
+                            '</div>'
+                            ;
+        $('#created_tender_json').prepend('<div class="response-content response-content-waiting" id="' + request_id + '">' + html_for_wait + '</div>');
         $.ajax({
             url: '/api/tenders',
             dataType : 'json',
             crossDomain: true,
             data: form.serialize(),
             type: 'POST',
-            success: function(data) {
-                $('#' + request_id).addClass('response-content-success');
+            success: function(data, textStatus, xhr) {
+                var operation_status = data.status;
+                var tender_status = data.tenderStatus;
+                var tender_to_company_status = data.tender_to_company[0].status;
+                var tender_id = data.id;
+                var tender_link = data.tender_to_company[1];
+                $('#' + request_id).addClass('response-content-success').toggleClass( "response-content-waiting" );
                 $('#' + request_id).empty();
-                $('#' + request_id).prepend('<button class="delete-alert" type="button">x</button>' + jsonPrettyPrint.toHtml(data));
+                $('#' + request_id).prepend('<button class="delete-alert" type="button">x</button>' +
+                                            '<div class="alert-response-status">' + xhr.status + ' ' + textStatus + '</div>' +
+                                            '<div class="alert-response-description">' +
+                                                '<div class="id-of-tender"><span>Tender ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
+                                                '<div class="actual-tender-status"><span>Tender status: </span>' + tender_status + '</div>' +
+                                                '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
+                                                '<div class="tender-to-company-status"><span>Add to company status: </span>' + tender_to_company_status + '</div>' +
+                                            '</div>'
+                //jsonPrettyPrint.toHtml(data)
+                                            );
                 //$('#createTender').removeAttr("disabled");
             },
             error: function (jqXHR) {
@@ -92,7 +111,7 @@ $(function() {
                 //alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
 				var error_description = JSON.parse(jqXHR.responseText).description
 				var error_type = JSON.parse(jqXHR.responseText).error
-                $('#' + request_id).addClass('response-content-error');
+                $('#' + request_id).addClass('response-content-error').toggleClass( "response-content-waiting" );
                 $('#' + request_id).empty();
                 $('#' + request_id).append('<button class="delete-alert" type="button">x</button>' + //jsonPrettyPrint.toHtml(JSON.parse(jqXHR.responseText)));
 				'<div class="alert-response-status">' + error_type + '</div>' +
@@ -139,13 +158,6 @@ $(function() {
 
 
 //Delete alert in "console"
-
-$(function() {
-    $('.delete-alert').click(function() {
-        console.log('45614515');
-    });
-});
-
 $(document).on("click",".delete-alert", function(){
     $(this).closest('div').remove();
 });

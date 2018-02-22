@@ -404,17 +404,25 @@ footer {
     border: 1px solid #f5f5f5;
     margin-bottom: 5px;
 	border-radius: 2px;
+	color: #000;
 }
 
 .response-content-success {
     background: #e2ffe6;
+    border: 1px solid #009219;
 }
 
 .response-content-error {
     background: #FFF7F7;
 	border: 1px solid #FF6264;
+	color: #c30000;
 }
 
+.response-content-waiting {
+    background: #eaeaea80;
+    border: 1px solid #a2a2a2;
+    color: #000000;
+}
 
 /*Alerts*/
 #alert {
@@ -438,7 +446,6 @@ footer {
 	font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 	padding: 5px;
 	font-size: 12px;
-	text-transform: capitalize;
 }
 .alert-green {
 	border: 1px solid #5cb85c !important;
@@ -453,7 +460,7 @@ footer {
 	color: #d83c3c;
 }
 
-.alert-response-status {
+.response-content-error .alert-response-status {
 	display: block;
 	background-color: #FF6264;
 	font-size: 12px;
@@ -462,15 +469,35 @@ footer {
 	height: 20px;
 }
 
+.response-content-success .alert-response-status {
+	display: block;
+	background-color: #009219;
+	font-size: 12px;
+	color: #fff;
+	padding: 2px 3px 2px 8px;
+	height: 20px;
+}
+
+.response-content-waiting .alert-response-status {
+    display: block;
+    background-color: #a2a2a2;
+    font-size: 12px;
+    color: #fff;
+    padding: 2px 3px 2px 8px;
+    height: 20px;
+}
+
+.alert-response-status {
+    text-transform: capitalize;
+}
 
 .alert-response-description {
 	padding: 5px 8px;
-	font-weight: bold;
 	font-size: 12px;
 }
 
 
-.delete-alert {
+.response-content-error .delete-alert {
     border: none;
     background: transparent;
     color: #ffaeae;
@@ -481,8 +508,46 @@ footer {
 	margin-top: -3px;
 }
 
-.delete-alert:hover {
+.response-content-error .delete-alert:hover {
     color: #ffe8e8;
+}
+
+.response-content-success .delete-alert {
+    border: none;
+    background: transparent;
+    color: #3cce00;
+    font-size: 16px !important;
+    font-weight: bold;
+	display: block;
+	float: right;
+	margin-top: -3px;
+}
+
+.response-content-success .delete-alert:hover {
+    color: #e2ffe6;
+
+}
+
+.alert-response-description span {
+    font-weight: bold;
+}
+
+.response-content-success .alert-response-description span {
+    color: #0f8400;
+
+}
+
+.response-content-waiting .alert-response-description span {
+    color: #000;
+}
+
+.id-of-tender {
+    font-weight: bold;
+    color: #4799ff;
+}
+
+.id-of-tender span {
+    color: #000;
 }
 
 @media screen and ( max-width: 700px){

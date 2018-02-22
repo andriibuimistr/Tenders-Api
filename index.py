@@ -151,10 +151,6 @@ def create_tender_function():
     # if 'data' not in request.json:  # check if data is in json
     #     abort(400, 'Data was not found in request')
     tc_request = request.form
-    a = []
-    for x in tc_request:
-        a.append(x)
-        print a
     for field in range(len(create_tender_required_fields)):
         if create_tender_required_fields[field] not in tc_request:
             abort(400, "Field '{}' is required. List of required fields: {}".format(create_tender_required_fields[field], create_tender_required_fields))
