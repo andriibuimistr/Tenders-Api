@@ -401,6 +401,9 @@ def creation_of_tender(tc_request):
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
 
+    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
+    response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2]
+
     ''''# add documents to tender
     if add_documents == 1:
         add_documents = document.add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots)
@@ -861,8 +864,5 @@ def creation_of_tender(tc_request):
                             break
                     else:
                         time.sleep(20)
-
-    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
-    response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2]
 
     return response_json, response_code

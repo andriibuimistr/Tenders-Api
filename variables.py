@@ -178,6 +178,9 @@ competitive_procedures_status = ['active.tendering.stage2', 'complete']
 competitive_dialogue_eu_status = ['active.pre-qualification.stage2']
 below_threshold_status = ['active.enquiries', 'active.tendering', 'active.qualification']
 limited_status = ['active', 'active.award', 'active.contract', 'complete']
+
+statuses_with_high_acceleration = ['active.tendering', 'complete', 'active.enquiries', 'active', 'active.award', 'active.contract']
+statuses_negotiation_with_high_acceleration = ['active', 'active.award']
 #################################################################################################################################################################
 
 
