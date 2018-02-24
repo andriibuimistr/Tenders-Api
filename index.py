@@ -2,7 +2,7 @@
 from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_threshold_procurement, below_threshold_procurement, limited_procurement, tender_status_list,\
     without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, \
     competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status, list_of_procurement_types, list_of_api_versions, platforms,\
-    statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration
+    statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration, Users
 import tender
 # import document
 import qualification
@@ -19,7 +19,7 @@ from datetime import datetime
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
-app.secret_key = os.urandom(12)
+app.secret_key = os.urandom(32)
 CORS(app)
 
 
@@ -93,7 +93,7 @@ def login_form():
 
 
 def jquery_forbidden():
-    return jsonify({"status": "error", "description": "You are not logged in"}), 403
+    return abort(403, "You are not logged in")
 
 
 def redirect_url(default='main'):
@@ -102,11 +102,20 @@ def redirect_url(default='main'):
 
 @app.route('/login', methods=['POST'])
 def do_login():
-    if request.form['username'] == 'admin' and request.form['password'] == '123456abc':
-        session['logged_in'] = True
+    get_list_of_users = Users.query.all()
+    list_of_users = []
+    for user in range(len(get_list_of_users)):
+        list_of_users.append(get_list_of_users[user].user_login)
+    if request.form['username'] not in list_of_users:
         return redirect(redirect_url())
     else:
-        return redirect(redirect_url())
+        user_id = Users.query.filter_by(user_login=request.form['username']).first().id
+        if request.form['password'] == Users.query.filter_by(id=user_id).first().user_password:
+            session['logged_in'] = True
+            session['username'] = request.form['username']
+            return redirect(redirect_url())
+        else:
+            return redirect(redirect_url())
 
 
 @app.route("/logout")
@@ -121,7 +130,8 @@ def main():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return render_template('index.html', list_of_tenders=0, list_of_types=list_of_procurement_types)  # get_tenders_list()
+        user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
+        return render_template('index.html', list_of_tenders=0, list_of_types=list_of_procurement_types, user_role_id=user_role_id)  # get_tenders_list()
 
 
 # template for tender creation page
@@ -130,7 +140,8 @@ def page_create_tender():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return render_template('create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=platforms, statuses=tender_status_list)
+        user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
+        return render_template('create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=platforms, statuses=tender_status_list, user_role_id=user_role_id)
 
 ##############################################################################################################################################
 ######################################################################################

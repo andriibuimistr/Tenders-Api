@@ -119,6 +119,22 @@ class Roles(db.Model):
         self.role_name = role_name
 
 
+class Users(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    user_login = db.Column(db.String(255))
+    user_password = db.Column(db.String(255))
+    user_role_id = db.Column(db.Integer)
+
+    def __init__(self, id, user_login, user_password, user_role_id):
+        self.id = id
+        self.user_login = user_login
+        self.user_password = user_password
+        self.user_role_id = user_role_id
+
+
+
+
 # ########################################### GLOBAL VARIABLES ############################
 fake = Faker('uk_UA')
 
