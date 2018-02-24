@@ -1,0 +1,28 @@
+{% if list_of_tender_bids|length != 0 %}
+    {% for bid in list_of_tender_bids %}
+    <div class="tender_info col-lg-15 col-md-23 col-sm-48 col-xs-48">
+        <div class="bid-id-short">{{ bid.id }}</div>
+        <div class="bid-user-identifier">{{ bid.user_identifier }}</div>
+        <div class="bid-company">
+            <div class="company-uid col-lg-19 col-md-19 col-sm-19 col-xs-19">Company UID:</div>
+            {% if bid.has_company == True %}
+            <div class="company-uid-number col-lg-29 col-md-29 col-sm-29 col-xs-29">{{ bid.company_uid }}</div>
+            {%else%}
+            <form class="form-add-company" id="bid-{{bid.id}}" action="" method="post" role="form">
+            <div class="col-lg-29 col-md-29 col-sm-29 col-xs-29 bid-to-company-input">
+            <div class="input-group input-group-sm">
+             <input type="text" name="company-id" class="form-control bid-company-input" placeholder="Company UID" maxlength="2">
+             <span class="input-group-btn">
+                <button class="btn btn-primary bid-company-button" form="bid-{{bid.id}}" type="button">Add</button>
+             </span>
+            </div>
+            </div>
+            </form>
+
+            {%endif%}
+        </div>
+    </div>
+    {% endfor %}
+{%else%}
+    <div>Tender has no bids</div>
+{%endif%}

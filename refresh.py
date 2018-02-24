@@ -112,6 +112,7 @@ def get_tenders_list():
         print "Get tenders in local DB"
         for tender in range(len(tenders_list)):
             tender_id_long = tenders_list[tender].tender_id_long
+            tender_id_short = tenders_list[tender].tender_id_short
             db_tender_status = tenders_list[tender].tender_status
             procurement_method_type = tenders_list[tender].procurementMethodType
             added_to_site = tenders_list[tender].added_to_site
@@ -124,7 +125,7 @@ def get_tenders_list():
                 tender_company = company_uid
             else:
                 tender_company = 0
-            list_of_tenders.append({"id": tender_id_long, "procurement_method_type": procurement_method_type, "tender_status": db_tender_status, "tender_company": tender_company})
+            list_of_tenders.append({"id": tender_id_long, 'short_id': tender_id_short, "procurement_method_type": procurement_method_type, "tender_status": db_tender_status, "tender_company": tender_company})
         return 0, list_of_tenders
 
 

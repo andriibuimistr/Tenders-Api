@@ -284,7 +284,7 @@ footer {
 	font-weight: bold;	
 }
 
-.tender-to-company-input {
+.tender-to-company-input, .bid-to-company-input {
 	padding: 0 !important;
 }
 
@@ -308,7 +308,7 @@ footer {
 .tender-status {
 	margin-bottom: 5px;
 }
-.tender-company-input, .tender-company-button {
+.tender-company-input, .tender-company-button, .bid-company-input, .bid-company-button {
 	height: 24px !important;
 	padding: 2px 10px !important;
 }
@@ -341,6 +341,9 @@ footer {
     font-size: 15px;
 }
 
+.list-bids-of-tender {
+    padding: 3px !important;
+}
 .clear-alerts-button {
     float: right;
     padding-top: 5px;

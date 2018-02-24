@@ -162,3 +162,34 @@ $(document).on("click",".delete-alert", function(){
     $(this).closest('div').remove();
 });
 
+
+//Get list of bids for tender
+$(function() {
+    $('#get-tender-bids-button').click(function() {
+        $(this).prop('disabled', true);
+        var form = $("#get-tender-bids-form");
+        var bid_id = $("#get-tender-bids-form input[name=tender_id]").val();
+        $.ajax({
+            url: '/api/tenders/' + bid_id + '/bids',
+            crossDomain: true,
+            type: 'GET',
+            success: function(data, textStatus, xhr) {
+                $('#list-of-bids').empty();
+                $('#list-of-bids').append(data);
+                $('#get-tender-bids-button').removeAttr("disabled");
+                //jsonPrettyPrint.toHtml(data)
+
+                //$('#createTender').removeAttr("disabled");
+            },
+            error: function (jqXHR) {
+                //$("#created_tender_json").html(JSON.parse(jqXHR.responseText));
+                //alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+				var error_description = JSON.parse(jqXHR.responseText).description
+				var error_type = JSON.parse(jqXHR.responseText).error
+                $('#list-of-bids').empty();
+                $('#list-of-bids').append(jqXHR.responseText); //jsonPrettyPrint.toHtml(JSON.parse(jqXHR.responseText)));
+                $('#get-tender-bids-button').removeAttr("disabled");
+            }
+        });
+    });
+});
