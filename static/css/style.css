@@ -327,8 +327,18 @@ footer {
 .panel-created-tender-json {
 	padding: 0 !important;
 }
-.panel-created-tender {
+.panel-created-tender, .block-bids-of-tender {
 	margin: 6px 0 !important;
+}
+
+.block-bids-of-tender {
+    border: 1px solid #CCC;
+}
+
+.block-bids-of-tender-title {
+    padding: 3px 6px !important;
+    font-weight: bold;
+    font-size: 15px;
 }
 
 .clear-alerts-button {

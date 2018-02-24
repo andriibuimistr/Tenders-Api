@@ -315,7 +315,7 @@ def update_list_of_tenders():
 @app.route('/api/tenders', methods=['GET'])
 def get_list_of_tenders():
     list_of_tenders = refresh.get_tenders_list()
-    return jsonify({"data": {"tenders": list_of_tenders}})
+    return jsonify({"data": {"tenders": list_of_tenders[1]}})
 
 
 # ########################## PREQUALIFICATIONS ###################################
@@ -518,32 +518,35 @@ def get_list_of_companies():
 # show all bids of tender (SQLA)
 @app.route('/api/tenders/<tender_id_long>/bids', methods=['GET'])
 @auth.login_required
-def show_bids_of_tender(tender_id_long):
-    list_of_tenders = Tenders.query.all()  # 'SELECT tender_id_long FROM tenders'???
-    list_tid = []
-    for tid in range(len(list_of_tenders)):
-        list_tid.append(list_of_tenders[tid].tender_id_long)
-    if tender_id_long not in list_tid:
-        abort(404, 'Tender id was not found in database')
+def get_bids_of_one_tender(tender_id_long):
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        list_of_tenders = Tenders.query.all()  # 'SELECT tender_id_long FROM tenders'???
+        list_tid = []
+        for tid in range(len(list_of_tenders)):
+            list_tid.append(list_of_tenders[tid].tender_id_long)
+        if tender_id_long not in list_tid:
+            abort(404, 'Tender id was not found in database')
 
-    get_bids_of_tender = Bids.query.filter_by(tender_id=tender_id_long).all()
-    list_of_tender_bids = []
-    for every_bid in range(len(get_bids_of_tender)):
-        bid_id = get_bids_of_tender[every_bid].bid_id
-        bid_token = get_bids_of_tender[every_bid].bid_token
-        user_identifier = get_bids_of_tender[every_bid].user_identifier
-        company_uid = get_bids_of_tender[every_bid].company_uid
-        added_to_site = get_bids_of_tender[every_bid].added_to_site
+        get_bids_of_tender = Bids.query.filter_by(tender_id=tender_id_long).all()
+        list_of_tender_bids = []
+        for every_bid in range(len(get_bids_of_tender)):
+            bid_id = get_bids_of_tender[every_bid].bid_id
+            bid_token = get_bids_of_tender[every_bid].bid_token
+            user_identifier = get_bids_of_tender[every_bid].user_identifier
+            company_uid = get_bids_of_tender[every_bid].company_uid
+            added_to_site = get_bids_of_tender[every_bid].added_to_site
 
-        list_of_tender_bids.append({"bid_id": bid_id, "bid_token": bid_token,
-                                    "user_identifier": user_identifier, "has company": added_to_site})
-        if added_to_site == 1:
-            list_of_tender_bids[every_bid]['company uid'] = company_uid
-            list_of_tender_bids[every_bid]['has company'] = True
-        else:
-            list_of_tender_bids[every_bid]['has company'] = False
-    db.session.remove()
-    return jsonify({"data": list_of_tender_bids})
+            list_of_tender_bids.append({"bid_id": bid_id, "bid_token": bid_token,
+                                        "user_identifier": user_identifier, "has company": added_to_site})
+            if added_to_site == 1:
+                list_of_tender_bids[every_bid]['company uid'] = company_uid
+                list_of_tender_bids[every_bid]['has company'] = True
+            else:
+                list_of_tender_bids[every_bid]['has company'] = False
+        db.session.remove()
+        return render_template('modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids)
 
 
 # add one bid to company (SQLA)
