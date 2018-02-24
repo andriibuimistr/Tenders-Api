@@ -5,6 +5,7 @@ from variables import Companies, Platforms, Roles, Tenders, Bids, db, above_thre
     statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration, Users
 import tender
 # import document
+from datetime import timedelta
 import qualification
 import time
 import refresh
@@ -14,6 +15,8 @@ from flask_httpauth import HTTPBasicAuth
 import re
 import validators
 import os
+import flask
+import flask_login
 from flask_cors import CORS, cross_origin
 from datetime import datetime
 
@@ -88,6 +91,20 @@ def inject_now():
     return {'now': datetime.utcnow()}
 
 
+def get_user_role():
+    user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
+    db.session.remove()
+    return user_role_id
+
+
+@app.before_request
+def before_request():
+    flask.session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=120)
+    flask.session.modified = True
+    flask.g.user = flask_login.current_user
+
+
 def login_form():
     return render_template('login.html'), 403
 
@@ -130,8 +147,9 @@ def main():
     if not session.get('logged_in'):
         return login_form()
     else:
-        user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
-        return render_template('index.html', list_of_tenders=0, list_of_types=list_of_procurement_types, user_role_id=user_role_id)  # get_tenders_list()
+        content = render_template('main_page.html', list_of_tenders=0, list_of_types=list_of_procurement_types)
+        # user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
+        return render_template('index.html', user_role_id=get_user_role(), content=content)
 
 
 # template for tender creation page
@@ -140,8 +158,21 @@ def page_create_tender():
     if not session.get('logged_in'):
         return login_form()
     else:
-        user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
-        return render_template('create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=platforms, statuses=tender_status_list, user_role_id=user_role_id)
+        # user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
+        content = render_template('tenders/create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=platforms,
+                                  statuses=tender_status_list)
+        return render_template('index.html', user_role_id=get_user_role(), content=content)
+
+
+# template for work with tender bids
+@app.route("/tenders/bids")
+def page_tender_bids():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        content = render_template('tenders/tender_bids.html')
+        # user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
+        return render_template('index.html', user_role_id=get_user_role(), content=content)
 
 ##############################################################################################################################################
 ######################################################################################

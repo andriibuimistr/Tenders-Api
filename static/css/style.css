@@ -337,11 +337,12 @@ footer {
 }
 
 
-.create-tender-form {
+/*FORMS*/
+.main-form {
 	padding: 6px;
 	border: 1px solid #CCC;
 }
-.create-tender-form-inputs {
+.create-tender-form-inputs, .get-tender-bids-inputs {
 	display: inline-block;
 	height: auto;
 }
@@ -351,6 +352,19 @@ footer {
 .create-tender-form-inputs label {
 	margin-left: 3px;
 }
+
+.get-tender-bids-inputs {
+    width:100%;
+}
+
+.get-tender-bids {
+    padding: 3px;
+}
+
+.get-bids-tender-id, .get-bids-submit-button {
+    margin-top: 3px;
+}
+
 #created_tender_json {
 	min-height: 30px;
 	background-color: #FFFFFF !important;

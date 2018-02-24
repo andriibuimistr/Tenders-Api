@@ -1,22 +1,9 @@
-<!doctype html>
-<html>
-{% include 'head.html' %}
-<body>
-	<header>
-    {% include 'header.html' %}
-    </header>
-    <div class="wrapper container">
-
-<!--Главный контейнер-->
-        <div class="row main_container">
-        <!--Левая колонка-->
-        	<section class="col-lg-35 col-md-48 col-sm-48 col-xs-48 main_column">
-                <div class="heading main_title">
+<div class="heading main_title">
                     <h1>Создание закупки</h1>
                 </div>
                 <div class="section_content">
-                    <div class="create-tender-form">
-                        <form class="form-create-tender" id="create-tender" action="" method="post" role="form">
+                    <div class="create-tender-form main-form">
+                        <form class="form-create-tender" id="create-tender" role="form">
                         <div class="create-tender-form-inputs">
                             <div class="procurement-method-type col-lg-15 col-md-48 col-sm-48 col-xs-48">
                             <select name="procurementMethodType" class="form-control" size="1">
@@ -91,14 +78,3 @@
                       </div>
                     </div>
                 </div>
-            </section>
-            <!--Правая колонка-->
-			{% include 'sidebar.html' %}
-		</div>
-    </div>
-    <footer>
-    {% include 'footer.html' %}
-    </footer>
-    <div id="scrollup"><img alt="Прокрутить вверх" src="../static/images/design/up.png"></div>
-</body>
-</html>

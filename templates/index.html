@@ -11,52 +11,7 @@
         <div class="row main_container">
         <!--Левая колонка-->
         	<section class="col-lg-35 col-md-48 col-sm-48 col-xs-48 main_column">
-                <div class="heading main_title">
-                    <h1>Главная страница</h1>
-                </div>
-                <div class="section_content">
-                    <div><h4>Список закупок</h4></div>
-					{% if list_of_tenders[0] == 0 %}
-					{% for tender in list_of_tenders[1][::-1] %}
-                    <div class="tender_info col-lg-15 col-md-23 col-sm-48 col-xs-48">
-        				<div class="tender-id">{{ tender.id }}</div>
-						<div class="tender-procurement-method-type">{{ tender.procurement_method_type }}</div>
-						{% if tender.tender_status == 'active.qualification' %}
-						<div class="tender-status label label-success">{{ tender.tender_status }}</div>
-						{% elif tender.tender_status == 'active.pre-qualification' %}
-						<div class="tender-status label label-info">{{ tender.tender_status }}</div>
-						{% elif tender.tender_status == 'active.awarded' %}
-						<div class="tender-status label label-warning">{{ tender.tender_status }}</div>
-						{% else%}
-						<div class="tender-status label label-default">{{ tender.tender_status }}</div>
-						{%endif%}
-						<div class="tender-company">
-							<div class="company-uid col-lg-19 col-md-19 col-sm-19 col-xs-19">Company UID:</div>
-							{% if tender.tender_company != 0 %}
-							<div class="company-uid-number col-lg-29 col-md-29 col-sm-29 col-xs-29">{{ tender.tender_company }}</div>
-							{%else%}
-							<form class="form-add-company" id="{{tender.id}}" action="" method="post" role="form">
-							<div class="col-lg-29 col-md-29 col-sm-29 col-xs-29 tender-to-company-input">
-							<div class="input-group input-group-sm">
-							 <input type="text" name="company-id" class="form-control tender-company-input" placeholder="Company UID" maxlength="2">
-							 <span class="input-group-btn">
-								<button class="btn btn-primary tender-company-button" form="{{tender.id}}" type="button">Add</button>
-							 </span>
-							</div>
-							</div>
-						 	</form>
-
-							{%endif%}
-						</div>
-					</div>
-					{% endfor %}
-					{% else %}
-					<div class="exception col-lg-48 col-md-48 col-sm-48 col-xs-48">
-						<!--<h2>Something went wrong: </h2> {{ list_of_tenders[1] }}-->
-						<h2>Данный функционал был временно отключен</h2>
-					</div>
-					{%endif%}
-                </div>
+                {{ content|safe }}
             </section>
             <!--Правая колонка-->
 			{% include 'sidebar.html' %}
