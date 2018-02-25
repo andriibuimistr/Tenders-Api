@@ -272,12 +272,16 @@ footer {
 	margin-left: 0 !important;
 }
 
-/*Tender info*/
-.tender_info, .company_info {
+/*Tender, Bid info*/
+.tender_info, .company_info, .bid_info {
 	padding: 5px 4px !important;
 	margin: 0 3px 8px 3px;
 	border: 1px solid #CCC;
 	box-sizing: content-box;
+}
+
+.bid_info {
+    height: 116px;
 }
 
 .tender-id {
@@ -295,13 +299,13 @@ footer {
 }
 
 
-.company-uid {
+.bid-company-id {
 	padding: 0 !important;
 	margin-top: 2px;
 	font-weight: bold;
 }
 
-.company-uid-number {
+.company-id-number {
 	margin-top: 2px;
 }
 
@@ -313,6 +317,32 @@ footer {
 	padding: 2px 10px !important;
 }
 
+.bid-platform-select {
+    margin: 3px 0;
+    border-radius: 3px !important;
+}
+
+.bid-platform-label {
+    font-weight: bold;
+    width: 100%;
+}
+
+.bid-company-inputs {
+    padding: 0 !important;
+}
+
+.bid-company-identifier span {
+    font-weight: bold;
+}
+
+.bid-platform {
+    padding: 0 !important;
+}
+
+
+.bid-platform span {
+    width: 100%;
+}
 /*Create tender*/
 
 .json-key    {

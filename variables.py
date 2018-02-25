@@ -19,8 +19,8 @@ password = 'python'
 d_base = 'carrosde_tenders'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/{}'.format(user, password, db_host, d_base)
-app.config['SQLALCHEMY_POOL_RECYCLE'] = 90
-app.config['SQLALCHEMY_POOL_TIMEOUT'] = 50
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 30
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 60
 
 db = SQLAlchemy(app)
 
@@ -79,20 +79,20 @@ class Bids(db.Model):
     bid_token = db.Column(db.String(255))
     tender_id = db.Column(db.String(255))
     bid_status = db.Column(db.String(255))
-    bid_platform_id = db.Column(db.Integer)
-    company_uid = db.Column(db.Integer)
+    bid_platform = db.Column(db.String(255))
+    company_id = db.Column(db.Integer)
     added_to_site = db.Column(db.Integer)
     user_identifier = db.Column(db.String(255))
 
-    def __init__(self, id, bid_id, bid_token, tender_id, bid_status, bid_platform_id,
-                 company_uid, added_to_site, user_identifier):
+    def __init__(self, id, bid_id, bid_token, tender_id, bid_status, bid_platform,
+                 company_id, added_to_site, user_identifier):
         self.id = id
         self.bid_id = bid_id
         self.bid_token = bid_token
         self.tender_id = tender_id
         self.bid_status = bid_status
-        self.bid_platform_id = bid_platform_id
-        self.company_uid = company_uid
+        self.bid_platform_id = bid_platform
+        self.company_uid = company_id
         self.added_to_site = added_to_site
         self.user_identifier = user_identifier
 

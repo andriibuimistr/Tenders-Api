@@ -284,7 +284,7 @@ def get_list_of_companies():
 
 # ################################### BIDS ############################
 # add one bid to company (SQLA)
-def add_one_bid_to_company(company_id, company_platform_host, bid_id, company_uid):
+def add_one_bid_to_company(company_platform_host, company_id, bid_id):
     get_bid_data = Bids.query.filter_by(bid_id=bid_id).first()
     bid_id = get_bid_data.bid_id
     bid_token = get_bid_data.bid_token
@@ -295,17 +295,17 @@ def add_one_bid_to_company(company_id, company_platform_host, bid_id, company_ui
         add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
             company_platform_host, '/tender/add-bid-to-company?tid=', tender_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
         add_to_site_response = add_to_site.json()
-        if 'tid' in add_to_site_response:
+        print add_to_site_response
+        if 'tid' in add_to_site_response and add_to_site.status_code == 200:
             Bids.query.filter_by(bid_id=bid_id).update(
-                dict(added_to_site=1, company_uid=company_uid))  # set added to site=1
+                dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
             db.session.commit()
             print '\nBid was added to company - ' + bid_id
             bid_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
             print bid_id_site
             return {'status': 'success'}, 201
         elif 'Bid exist' in add_to_site_response['error']:
-            Bids.query.filter_by(bid_id=bid_id).update(
-                dict(added_to_site=1, company_uid=company_uid))  # set added to site=1
+            Bids.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
             db.session.commit()
             print 'Bid has company'
             return abort(422, 'Bid has company')

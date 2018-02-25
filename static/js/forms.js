@@ -44,6 +44,33 @@ $(function() {
 });
 
 
+//Add bid to company
+$(document).on("click",".bid-company-button", function() {
+        $(this).prop('disabled', true);
+        var bid  = $(this).closest("form").attr('id');
+		var form = $(this).closest("form");
+		var parent_div = $(this).closest(".bid-company");
+        $.ajax({
+            url: '/api/tenders/bids/' + bid + '/company',
+            data: $(this).closest('form').serialize(),
+            type: 'PATCH',
+            success: function(data) {
+                form.remove();
+                parent_div.append(data);
+                $('.bid-company-button').removeAttr("disabled");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                $('.bid-company-button').removeAttr("disabled");
+            }
+        });
+    });
+
+
+$(document).on("click",".delete-alert", function(){
+    $(this).closest('div').remove();
+});
+
 //Create tender
 $(function() {
     var jsonPrettyPrint = {

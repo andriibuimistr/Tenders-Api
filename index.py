@@ -534,19 +534,20 @@ def get_bids_of_one_tender(tender_id_short):
         for every_bid in range(len(get_bids_of_tender)):
             bid_id = get_bids_of_tender[every_bid].bid_id
             bid_token = get_bids_of_tender[every_bid].bid_token
+            bid_platform = get_bids_of_tender[every_bid].bid_platform
             user_identifier = get_bids_of_tender[every_bid].user_identifier
-            company_uid = get_bids_of_tender[every_bid].company_uid
+            company_id = get_bids_of_tender[every_bid].company_id
             added_to_site = get_bids_of_tender[every_bid].added_to_site
 
             list_of_tender_bids.append({"id": bid_id, "bid_token": bid_token,
-                                        "user_identifier": user_identifier, "has company": added_to_site})
+                                        "user_identifier": user_identifier, "has_company": added_to_site, "bid_platform": bid_platform})
             if added_to_site == 1:
-                list_of_tender_bids[every_bid]['company_uid'] = company_uid
+                list_of_tender_bids[every_bid]['company_id'] = company_id
                 list_of_tender_bids[every_bid]['has_company'] = True
             else:
                 list_of_tender_bids[every_bid]['has_company'] = False
         db.session.remove()
-        return render_template('modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids)
+        return render_template('modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids, platforms=platforms)
 
 
 # add one bid to company (SQLA)
@@ -559,35 +560,27 @@ def add_bid_to_company(bid_id):
     if bid_id not in list_bid:
         abort(404, 'Bid id was not found in database')
 
-    if not request.json:  # check if json exists
-        abort(400, 'JSON was not found in request')
-    if 'data' not in request.json:  # check if data is in json
-        abort(400, 'Data was not found in request')
-    bid_to_company_request = request.json['data']
-    if 'company_uid' not in bid_to_company_request:  # check if company_id is in json
+    if not request.form:
+        abort(400)
+    bid_to_company_data = request.form
+
+    if 'company-id' not in bid_to_company_data:  # check if company_id is in json
         abort(400, 'Company UID was not found in request')
-    company_uid = bid_to_company_request['company_uid']
-    if type(company_uid) != int:
+
+    if str(request.form['company-id']).isdigit() is False:
         abort(400, 'Company UID must be integer')
 
-    get_list_of_company_uid = Companies.query.all()  # "SELECT id FROM companies"???
-    list_of_uid = []
-    for uid in range(len(get_list_of_company_uid)):
-        list_of_uid.append(int(get_list_of_company_uid[uid].id))
-    if company_uid not in list_of_uid:
-        abort(422, 'Company was not found in database')
-    get_company_id = Companies.query.filter_by(id=company_uid).first()
-    company_id = get_company_id.company_id
-    platform_id = get_company_id.platform_id
-    company_role_id = get_company_id.company_role_id
-    if company_role_id != 2:
-        abort(422, 'Company role must be Seller (2)')
-    get_platform_url = Platforms.query.filter_by(id=platform_id).first()
-    company_platform_host = get_platform_url.platform_url
-    add_bid_company = refresh.add_one_bid_to_company(company_id, company_platform_host, bid_id, company_uid)
+    if int(request.form['company-id']) == 0:
+        abort(422, 'Company id can\'t be 0')
+
+    company_id = request.form['company-id']
+
+    company_platform_host = request.form['platform_host']
+    add_bid_company = refresh.add_one_bid_to_company(company_platform_host, company_id, bid_id)
+    db.session.commit()
     db.session.remove()
     if add_bid_company[1] == 201:
-        return jsonify(add_bid_company[0]), 201
+        return render_template('includes/bid_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
     else:
         return jsonify(add_bid_company)
 

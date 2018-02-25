@@ -1,21 +1,35 @@
 {% if list_of_tender_bids|length != 0 %}
     {% for bid in list_of_tender_bids %}
-    <div class="tender_info col-lg-15 col-md-23 col-sm-48 col-xs-48">
+    <div class="bid_info col-lg-15 col-md-23 col-sm-48 col-xs-48">
         <div class="bid-id-short">{{ bid.id }}</div>
-        <div class="bid-user-identifier">{{ bid.user_identifier }}</div>
-        <div class="bid-company">
-            <div class="company-uid col-lg-19 col-md-19 col-sm-19 col-xs-19">Company UID:</div>
+        <div class="bid-company-identifier"><span>Company identifier: </span>{{ bid.user_identifier }}</div>
+            <div class="bid-company">
+            <div class="bid-company-id col-lg-17 col-md-17 col-sm-17 col-xs-17">Company ID:</div>
             {% if bid.has_company == True %}
-            <div class="company-uid-number col-lg-29 col-md-29 col-sm-29 col-xs-29">{{ bid.company_uid }}</div>
-            {%else%}
-            <form class="form-add-company" id="bid-{{bid.id}}" action="" method="post" role="form">
-            <div class="col-lg-29 col-md-29 col-sm-29 col-xs-29 bid-to-company-input">
-            <div class="input-group input-group-sm">
-             <input type="text" name="company-id" class="form-control bid-company-input" placeholder="Company UID" maxlength="2">
-             <span class="input-group-btn">
-                <button class="btn btn-primary bid-company-button" form="bid-{{bid.id}}" type="button">Add</button>
-             </span>
+                <div class="company-id-number col-lg-29 col-md-29 col-sm-29 col-xs-29">{{ bid.company_id }}</div>
+                <div class="bid-platform col-lg-48 col-md-48 col-sm-48 col-xs-48">
+                    <div class="bid-platform-label">
+                        Platform:
+                    </div>
+                    <div><a href="{{ bid.bid_platform }}" target="_blank">{{ bid.bid_platform }}</a></div>
+                </div>
             </div>
+            {%else%}
+            <form class="form-add-company" id="{{bid.id}}" action="" method="post" role="form">
+            <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48 bid-to-company-input">
+                <div class="bid-company-inputs col-lg-48 col-md-48 col-sm-48 col-xs-48">
+                    <select name="platform_host" class="form-control bid-platform-select bid-company-input col-lg-48 col-md-48 col-sm-48 col-xs-48" size="1">
+                        {% for platform in platforms %}
+                            <option value="{{platform}}">{{platform}}</option>
+                        {%endfor%}
+                    </select>
+                    <div class="input-group input-group-sm">
+                        <input type="text" name="company-id" class="form-control bid-company-input" placeholder="Company ID" maxlength="4">
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary bid-company-button" form="{{bid.id}}" type="button">Add</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             </form>
 
