@@ -67,9 +67,27 @@ $(document).on("click",".bid-company-button", function() {
     });
 
 
-$(document).on("click",".delete-alert", function(){
-    $(this).closest('div').remove();
+//Add new platform
+$(function() {
+    $('.add-platform-button').click(function() {
+        $(this).prop('disabled', true);
+		var form = $(this).closest("form");
+        $.ajax({
+            url: '/api/tenders/platforms',
+            data: $(this).closest('form').serialize(),
+            type: 'POST',
+            success: function(data) {
+                $('#admin-list-of-platforms').append(data);
+                $('.add-platform-button').removeAttr("disabled");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                $('.add-platform-button').removeAttr("disabled");
+            }
+        });
+    });
 });
+
 
 //Create tender
 $(function() {

@@ -109,7 +109,7 @@ def login_form():
     return render_template('login.html'), 403
 
 
-def jquery_forbidden():
+def jquery_forbidden_login():
     return abort(403, "You are not logged in")
 
 
@@ -158,8 +158,7 @@ def page_create_tender():
     if not session.get('logged_in'):
         return login_form()
     else:
-        # user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
-        content = render_template('tenders/create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=platforms,
+        content = render_template('tenders/create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=refresh.get_list_of_platforms(1),
                                   statuses=tender_status_list)
         return render_template('index.html', user_role_id=get_user_role(), content=content)
 
@@ -188,7 +187,7 @@ def page_tender_bids():
 @cross_origin(resources=r'/api/*')
 def create_tender_function():
     if not session.get('logged_in'):
-        return jquery_forbidden()
+        return jquery_forbidden_login()
     if not request.form:
         abort(400)
     # if 'data' not in request.json:  # check if data is in json
@@ -519,7 +518,7 @@ def get_list_of_companies():
 @app.route('/api/tenders/<tender_id_short>/bids', methods=['GET'])
 def get_bids_of_one_tender(tender_id_short):
     if not session.get('logged_in'):
-        return jquery_forbidden()
+        return jquery_forbidden_login()
     else:
         list_of_tenders = Tenders.query.all()  # 'SELECT tender_id_long FROM tenders'???
         list_tid = []
@@ -547,81 +546,84 @@ def get_bids_of_one_tender(tender_id_short):
             else:
                 list_of_tender_bids[every_bid]['has_company'] = False
         db.session.remove()
-        return render_template('modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids, platforms=platforms)
+        return render_template('modules/tender_modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids, platforms=refresh.get_list_of_platforms(1))
 
 
 # add one bid to company (SQLA)
 @app.route('/api/tenders/bids/<bid_id>/company', methods=['PATCH'])
 def add_bid_to_company(bid_id):
-    list_of_bids = Bids.query.all()  # 'SELECT tender_id_long FROM tenders'???
-    list_bid = []
-    for tid in range(len(list_of_bids)):
-        list_bid.append(list_of_bids[tid].bid_id)
-    if bid_id not in list_bid:
-        abort(404, 'Bid id was not found in database')
-
-    if not request.form:
-        abort(400)
-    bid_to_company_data = request.form
-
-    if 'company-id' not in bid_to_company_data:  # check if company_id is in json
-        abort(400, 'Company UID was not found in request')
-
-    if str(request.form['company-id']).isdigit() is False:
-        abort(400, 'Company UID must be integer')
-
-    if int(request.form['company-id']) == 0:
-        abort(422, 'Company id can\'t be 0')
-
-    company_id = request.form['company-id']
-
-    company_platform_host = request.form['platform_host']
-    add_bid_company = refresh.add_one_bid_to_company(company_platform_host, company_id, bid_id)
-    db.session.commit()
-    db.session.remove()
-    if add_bid_company[1] == 201:
-        return render_template('includes/bid_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
+    if not session.get('logged_in'):
+        return abort(401)
     else:
-        return jsonify(add_bid_company)
+        list_of_bids = Bids.query.all()
+        list_bid = []
+        for tid in range(len(list_of_bids)):
+            list_bid.append(list_of_bids[tid].bid_id)
+        if bid_id not in list_bid:
+            abort(404, 'Bid id was not found in database')
+
+        if not request.form:
+            abort(400)
+        bid_to_company_data = request.form
+
+        if 'company-id' not in bid_to_company_data:
+            abort(400, 'Company UID was not found in request')
+
+        if str(request.form['company-id']).isdigit() is False:
+            abort(400, 'Company UID must be integer')
+
+        if int(request.form['company-id']) == 0:
+            abort(422, 'Company id can\'t be 0')
+
+        company_id = request.form['company-id']
+
+        company_platform_host = request.form['platform_host']
+        add_bid_company = refresh.add_one_bid_to_company(company_platform_host, company_id, bid_id)
+        db.session.commit()
+        db.session.remove()
+        if add_bid_company[1] == 201:
+            return render_template('includes/bid_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
+        else:
+            return jsonify(add_bid_company)
 
 
-# get list of platforms
-@app.route('/api/tenders/platforms', methods=['GET'])
-@auth.login_required
-def get_list_of_platforms():
-    list_platforms = refresh.get_list_of_platforms()
-    return jsonify({"data": {"platforms": list_platforms}})
+# # get list of platforms
+# @app.route('/api/tenders/platforms', methods=['GET'])
+# @auth.login_required
+# def get_list_of_platforms():
+#     list_platforms = refresh.get_list_of_platforms()
+#     return jsonify({"data": {"platforms": list_platforms}})
 
 
 # create new platform
-@app.route('/api/tenders/platforms', methods=['POST'])
-@auth.login_required
-def add_new_platform():
-    if not request.json:  # check if json exists
-        abort(400, 'JSON was not found in request')
-    if 'data' not in request.json:  # check if data is in json
-        abort(400, 'Data was not found in request')
-    cp_request = request.json['data']
-    if 'platform_name' not in cp_request or 'platform_url' not in cp_request:
-        abort(400, "Can not find one or more parameters.")
-    platform_name = cp_request['platform_name']
-    platform_url = cp_request['platform_url']
-    if platform_url[-1:] == '/':
-        platform_url = platform_url[:-1]
-
-    platforms_url_list = Platforms.query.all()
-    list_platform_url = []
-    for url in range(len(platforms_url_list)):
-        list_platform_url.append(platforms_url_list[url].platform_url)
-    if platform_url in list_platform_url:
-        abort(422, 'URL exists in database')
-    if validators.url(platform_url) is not True:
-        abort(400, 'URL is invalid')
-    new_platform = Platforms(id=None, platform_name=platform_name, platform_url=platform_url)
-    db.session.add(new_platform)
-    db.session.commit()
-    db.session.remove()
-    return jsonify({"status": "success"}), 201
+# @app.route('/api/tenders/platforms', methods=['POST'])
+# @auth.login_required
+# def add_new_platform():
+#     if not request.json:  # check if json exists
+#         abort(400, 'JSON was not found in request')
+#     if 'data' not in request.json:  # check if data is in json
+#         abort(400, 'Data was not found in request')
+#     cp_request = request.json['data']
+#     if 'platform_name' not in cp_request or 'platform_url' not in cp_request:
+#         abort(400, "Can not find one or more parameters.")
+#     platform_name = cp_request['platform_name']
+#     platform_url = cp_request['platform_url']
+#     if platform_url[-1:] == '/':
+#         platform_url = platform_url[:-1]
+#
+#     platforms_url_list = Platforms.query.all()
+#     list_platform_url = []
+#     for url in range(len(platforms_url_list)):
+#         list_platform_url.append(platforms_url_list[url].platform_url)
+#     if platform_url in list_platform_url:
+#         abort(422, 'URL exists in database')
+#     if validators.url(platform_url) is not True:
+#         abort(400, 'URL is invalid')
+#     new_platform = Platforms(id=None, platform_name=platform_name, platform_url=platform_url)
+#     db.session.add(new_platform)
+#     db.session.commit()
+#     db.session.remove()
+#     return jsonify({"status": "success"}), 201
 
 
 # change existing platform
@@ -672,6 +674,42 @@ def patch_platform(platform_id):
     db.session.remove()
     return jsonify({"status": "success"}), 200
 
+
+# ##################################################################################### ADMIN ##############################################################
+@app.route('/admin/platforms', methods=['GET'])
+def page_admin_platforms():
+    if not session.get('logged_in'):
+        return login_form()
+    elif get_user_role() != 1:
+        return abort(403, 'U r not allowed to access this page')
+    else:
+        content = render_template('admin/platforms.html', platforms=refresh.get_list_of_platforms(False), platform_roles=refresh.get_list_of_platform_roles())
+        return render_template('index.html', user_role_id=get_user_role(), content=content)
+
+
+# Add platform (with jquery)
+@app.route('/api/tenders/platforms', methods=['POST'])
+def jquery_add_platform():
+    if not session.get('logged_in'):
+        return abort(401)
+    elif get_user_role() != 1:
+        return abort(403, 'U r not allowed to perform this action')
+    else:
+        new_platform_data = request.form
+        if len(request.form['platform-name']) == 0:
+            return abort(400, 'Platform name can\'t be empty')
+        if len(request.form['platform-url']) == 0:
+            return abort(400, 'Platform url can\'t be empty')
+        platform_to_sql = Platforms(None, new_platform_data['platform-name'], new_platform_data['platform-url'], int(new_platform_data['platform_role']))
+        db.session.add(platform_to_sql)
+        last_id = Platforms.query.order_by(Platforms.id.desc()).first().id
+        newly_added_platform_data = Platforms.query.filter_by(id=last_id)
+        db.session.commit()
+        db.session.remove()
+        return render_template('includes/newly_added_platform_info.inc.html', platform=newly_added_platform_data, platform_roles=refresh.get_list_of_platform_roles())
+
+
+# ##########################################################################################################################################################
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

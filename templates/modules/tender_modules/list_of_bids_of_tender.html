@@ -19,8 +19,8 @@
             <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48 bid-to-company-input">
                 <div class="bid-company-inputs col-lg-48 col-md-48 col-sm-48 col-xs-48">
                     <select name="platform_host" class="form-control bid-platform-select bid-company-input col-lg-48 col-md-48 col-sm-48 col-xs-48" size="1">
-                        {% for platform in platforms %}
-                            <option value="{{platform}}">{{platform}}</option>
+                        {% for platform in range(platforms|length) %}
+                            <option value="{{ platforms[platform].platform_url }}">{{ platforms[platform].platform_name }}</option>
                         {%endfor%}
                     </select>
                     <div class="input-group input-group-sm">

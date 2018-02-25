@@ -1,0 +1,42 @@
+<div class="heading main_title">
+    <h1>Управление площадками</h1>
+</div>
+<div class="section_content">
+    <H4>Список площадок</H4>
+    <div class="list-of-platforms" id="admin-list-of-platforms">
+        {% if platforms|length == 0 %}
+            <div>List of platforms is empty</div>
+        {% else %}
+            {% for platform in range(platforms|length) %}
+                <div class="platform-info">
+                    <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">{{ platforms[platform].id }}</div>
+                    <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">{{ platforms[platform].platform_name }}</div>
+                    <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10"><a href="{{ platforms[platform].platform_url }}" target="_blank">{{ platforms[platform].platform_url }}</a></div>
+                    <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">{{ platform_roles[platforms[platform].platform_role] }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="add-platform">
+        <div class="add-platform-form main-form">
+            <form class="form-add-platform" id="add-platform-form" action="" role="form">
+                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3"></div>
+                <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">
+                    <input type="text" name="platform-name" class="form-control input-sm" placeholder="Platform name">
+                </div>
+                <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">
+                    <input type="text" name="platform-url" class="form-control input-sm" placeholder="Platform url">
+                </div>
+                <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">
+                    <select name="platform_role" class="form-control input-sm" size="1">
+                        {% for role in range(platform_roles|length) %}
+                            <option value="{{ role +1 }}">{{ platform_roles[role + 1] }}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+
+                <button class="btn btn-primary btn-sm add-platform-button" form="add-platform-form" type="button">Add</button>
+            </form>
+        </div>
+    </div>
+</div>

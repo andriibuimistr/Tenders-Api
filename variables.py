@@ -102,11 +102,23 @@ class Platforms(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     platform_name = db.Column(db.String(255))
     platform_url = db.Column(db.String(255))
+    platform_role = db.Column(db.Integer)
 
-    def __init__(self, id, platform_name, platform_url):
+    def __init__(self, id, platform_name, platform_url, platform_role):
         self.id = id
         self.platform_name = platform_name
         self.platform_url = platform_url
+        self.platform_role = platform_role
+
+
+class PlatformRoles(db.Model):
+    __tablename__ = 'platform_roles'
+    id = db.Column(db.Integer, primary_key=True)
+    platform_role_name = db.Column(db.String(255))
+
+    def __init__(self, id, platform_role_name):
+        self.id = id
+        self.platform_role_name = platform_role_name
 
 
 class Roles(db.Model):
@@ -131,8 +143,6 @@ class Users(db.Model):
         self.user_login = user_login
         self.user_password = user_password
         self.user_role_id = user_role_id
-
-
 
 
 # ########################################### GLOBAL VARIABLES ############################

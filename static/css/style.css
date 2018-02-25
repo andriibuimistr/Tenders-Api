@@ -644,3 +644,13 @@ footer {
     color: #CCC;
     font-size: 12px;
 }
+
+
+/*ADMIN PLATFORMS*/
+.platform-info {
+    padding: 3px;
+    border: 1px solid #CCC;
+    display: inline-block;
+    width: 100%;
+}
+

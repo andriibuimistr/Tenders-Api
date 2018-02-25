@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Tenders, db, host, api_version, Bids, Platforms, Roles
+from variables import Companies, Tenders, db, host, api_version, Bids, Platforms, Roles, PlatformRoles
 import requests
 from datetime import datetime
 from flask import abort
@@ -318,13 +318,24 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id):
 
 
 # get list of companies (SQLA)
-def get_list_of_platforms():
-    all_platforms = Platforms.query.all()
-    platforms_list = []
-    for platform in range(len(all_platforms)):
-        platforms_list.append({"id": int(all_platforms[platform].id), "platform_name": all_platforms[platform].platform_name, "platform_url": all_platforms[platform].platform_url})
+def get_list_of_platforms(platform_role):
+    if platform_role:
+        platforms_list = Platforms.query.filter_by(platform_role=platform_role).all()
+    else:
+        platforms_list = Platforms.query.all()
     db.session.remove()
     return platforms_list
+
+
+# get list of companies (SQLA)
+def get_list_of_platform_roles():
+    platform_roles = PlatformRoles.query.all()
+    db.session.remove()
+    roles_dict = dict()
+    for platform_role in range(len(platform_roles)):
+        roles_dict[platform_roles[platform_role].id] = platform_roles[platform_role].platform_role_name
+    print roles_dict
+    return roles_dict
 
 
 def check_if_contract_exists(get_t_info):
@@ -358,26 +369,3 @@ def get_tender_info(host_kit, tender_id_long):
             else:
                 abort(500, 'Get tender info error: ' + str(e))
 
-
-'''def get_tender_info2(host_kit, tender_id_long):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        print 'Get tender info. Attempt {}'.format(attempts)
-        try:
-            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], '111'))
-            if get_t_info.status_code == 200:
-                return get_t_info.status_code, get_t_info
-            else:
-                print get_t_info.content
-                if attempts < 5:
-                    continue
-                else:
-                    return get_t_info.status_code, get_t_info
-        except Exception as e:
-            print 'CDB Error'
-            if attempts < 5:
-                continue
-            else:
-                print 'Exception. Can\'t get tender info'
-                return 500, e'''
