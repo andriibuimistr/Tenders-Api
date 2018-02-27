@@ -656,6 +656,7 @@ def creation_of_tender(tc_request):
 
                                                     add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id)
                                                     response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
+                                                    response_json['tender_to_company'] = add_2nd_stage_to_company[0], add_2nd_stage_to_company[2]
                                                     break
                                                 else:
                                                     if attempt_counter < 50:
