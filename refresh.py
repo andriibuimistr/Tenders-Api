@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Tenders, db, host, api_version, Bids, Platforms, Roles, PlatformRoles
+from variables import Companies, Tenders, db, host, api_version, Bids, Platforms, Roles, PlatformRoles, Users
 import requests
 from datetime import datetime
 from flask import abort
@@ -334,8 +334,25 @@ def get_list_of_platform_roles():
     roles_dict = dict()
     for platform_role in range(len(platform_roles)):
         roles_dict[platform_roles[platform_role].id] = platform_roles[platform_role].platform_role_name
-    print roles_dict
     return roles_dict
+
+
+# get list of users
+def get_list_of_users():
+    users_list = Users.query.all()
+    db.session.remove()
+    return users_list
+
+
+# get list of user roles
+def get_list_of_user_roles():
+    user_roles = Roles.query.all()
+    db.session.remove()
+    roles_dict = dict()
+    for user_role in range(len(user_roles)):
+        roles_dict[user_roles[user_role].id] = user_roles[user_role].role_name
+    return roles_dict
+
 
 
 def check_if_contract_exists(get_t_info):

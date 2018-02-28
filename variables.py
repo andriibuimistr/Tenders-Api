@@ -137,12 +137,16 @@ class Users(db.Model):
     user_login = db.Column(db.String(255))
     user_password = db.Column(db.String(255))
     user_role_id = db.Column(db.Integer)
+    active = db.Column(db.Integer)
+    super_user = db.Column(db.Integer)
 
-    def __init__(self, id, user_login, user_password, user_role_id):
+    def __init__(self, id, user_login, user_password, user_role_id, active, super_user):
         self.id = id
         self.user_login = user_login
         self.user_password = user_password
         self.user_role_id = user_role_id
+        self.active = active
+        self.super_user = super_user
 
 
 # ########################################### GLOBAL VARIABLES ############################

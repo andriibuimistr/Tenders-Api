@@ -709,6 +709,17 @@ def jquery_add_platform():
         return render_template('includes/newly_added_platform_info.inc.html', platform=newly_added_platform_data, platform_roles=refresh.get_list_of_platform_roles())
 
 
+@app.route('/admin/users', methods=['GET'])
+def page_admin_users():
+    if not session.get('logged_in'):
+        return login_form()
+    elif get_user_role() != 1:
+        return abort(403, 'U r not allowed to access this page')
+    else:
+        content = render_template('admin/users.html', users=refresh.get_list_of_users(), user_roles=refresh.get_list_of_user_roles())
+        return render_template('index.html', user_role_id=get_user_role(), content=content)
+
+
 # ##########################################################################################################################################################
 
 if __name__ == '__main__':

@@ -646,11 +646,20 @@ footer {
 }
 
 
-/*ADMIN PLATFORMS*/
+/*ADMIN PAGES*/
 .platform-info {
     padding: 3px;
     border: 1px solid #CCC;
     display: inline-block;
     width: 100%;
 }
+
+.user-info {
+    padding: 3px;
+    border: 1px solid #CCC;
+    display: inline-block;
+    width: 100%;
+}
+
+
 
