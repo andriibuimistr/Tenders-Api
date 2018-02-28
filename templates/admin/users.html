@@ -1,0 +1,49 @@
+<div class="heading main_title">
+    <h1>Управление пользователями</h1>
+</div>
+<div class="section_content">
+    <H4>Список пользователей</H4>
+    <div class="list-of-users" id="admin-list-of-users">
+        {% if users|length == 0 %}
+            <div>List of users is empty</div>
+        {% else %}
+            {% for user in range(users|length) %}
+                <div class="user-info">
+                    <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">{{ users[user].id }}</div>
+                    <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">{{ users[user].user_login }}</div>
+                    <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">{{ users[user].user_password }}</div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">{{ users[user].active }}</div>
+                    <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">{{ user_roles[users[user].user_role_id] }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class="add-user">
+        <div class="add-user-form main-form">
+            <form class="form-add-user" id="add-user-form" action="" role="form">
+                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3"></div>
+                <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">
+                    <input type="text" name="user-name" class="form-control input-sm" placeholder="User name">
+                </div>
+                <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">
+                    <input type="text" name="user-password" class="form-control input-sm" placeholder="User password">
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <select name="user_status" class="form-control input-sm" size="1">
+                            <option value="1">active</option>
+                            <option value="0">blocked</option>
+                    </select>
+                </div>
+                <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">
+                    <select name="user_role" class="form-control input-sm" size="1">
+                        {% for role in range(user_roles|length) %}
+                            <option value="{{ role +1 }}">{{ user_roles[role + 1] }}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+
+                <button class="btn btn-primary btn-sm add-user-button" form="add-user-form" type="button">Add</button>
+            </form>
+        </div>
+    </div>
+</div>
