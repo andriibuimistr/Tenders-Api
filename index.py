@@ -127,7 +127,8 @@ def do_login():
         return redirect(redirect_url())
     else:
         user_id = Users.query.filter_by(user_login=request.form['username']).first().id
-        if request.form['password'] == Users.query.filter_by(id=user_id).first().user_password:
+        if request.form['password'] == Users.query.filter_by(id=user_id).first().user_password and Users.query.filter_by(id=user_id).first().active != 0:
+            db.session.remove()
             session['logged_in'] = True
             session['username'] = request.form['username']
             return redirect(redirect_url())
@@ -688,7 +689,7 @@ def page_admin_platforms():
 
 
 # Add platform (with jquery)
-@app.route('/api/tenders/platforms', methods=['POST'])
+@app.route('/backend/jquery/add_platform', methods=['POST'])
 def jquery_add_platform():
     if not session.get('logged_in'):
         return abort(401)
@@ -718,6 +719,39 @@ def page_admin_users():
     else:
         content = render_template('admin/users.html', users=refresh.get_list_of_users(), user_roles=refresh.get_list_of_user_roles())
         return render_template('index.html', user_role_id=get_user_role(), content=content)
+
+
+# Add platform (with jquery)
+@app.route('/backend/jquery/add_user', methods=['POST'])
+def jquery_add_user():
+    if not session.get('logged_in'):
+        return abort(401)
+    elif get_user_role() != 1:
+        return abort(403, 'U r not allowed to perform this action')
+    else:
+        new_user_data = request.form
+        if len(request.form['user-name']) < 4:
+            return abort(400, 'User name length can\'t be less than 4')
+        if ' ' in request.form['user-name']:
+            return abort(422, 'U can\'t use spaces in username')
+        if len(request.form['user-password']) < 4:
+            return abort(400, 'User password length can\'t be less than 4')
+        if ' ' in request.form['user-password']:
+            return abort(422, 'U can\'t use spaces in password')
+        all_users = refresh.get_list_of_users()
+        list_login = []
+        for x in range(len(all_users)):
+            list_login.append(all_users[x].user_login)
+        if request.form['user-name'] in list_login:
+            return abort(422, 'We have this login yet')
+
+        user_to_sql = Users(None, new_user_data['user-name'], new_user_data['user-password'], new_user_data['user_role'], int(new_user_data['user_status']), None)
+        db.session.add(user_to_sql)
+        last_id = Users.query.order_by(Users.id.desc()).first().id
+        newly_added_user_data = Users.query.filter_by(id=last_id)
+        db.session.commit()
+        db.session.remove()
+        return render_template('includes/newly_added_user_info.inc.html', user=newly_added_user_data, user_roles=refresh.get_list_of_user_roles())
 
 
 # ##########################################################################################################################################################

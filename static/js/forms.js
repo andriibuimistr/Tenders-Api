@@ -67,27 +67,6 @@ $(document).on("click",".bid-company-button", function() {
     });
 
 
-//Add new platform
-$(function() {
-    $('.add-platform-button').click(function() {
-        $(this).prop('disabled', true);
-		var form = $(this).closest("form");
-        $.ajax({
-            url: '/api/tenders/platforms',
-            data: $(this).closest('form').serialize(),
-            type: 'POST',
-            success: function(data) {
-                $('#admin-list-of-platforms').append(data);
-                $('.add-platform-button').removeAttr("disabled");
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
-                $('.add-platform-button').removeAttr("disabled");
-            }
-        });
-    });
-});
-
 
 //Create tender
 $(function() {
@@ -234,6 +213,51 @@ $(function() {
                 $('#list-of-bids').empty();
                 $('#list-of-bids').append(jqXHR.responseText); //jsonPrettyPrint.toHtml(JSON.parse(jqXHR.responseText)));
                 $('#get-tender-bids-button').removeAttr("disabled");
+            }
+        });
+    });
+});
+
+
+//ADMIN
+
+//Add new platform
+$(function() {
+    $('.add-platform-button').click(function() {
+        $(this).prop('disabled', true);
+		var form = $(this).closest("form");
+        $.ajax({
+            url: '/backend/jquery/add_platform',
+            data: $(this).closest('form').serialize(),
+            type: 'POST',
+            success: function(data) {
+                $('#admin-list-of-platforms').append(data);
+                $('.add-platform-button').removeAttr("disabled");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                $('.add-platform-button').removeAttr("disabled");
+            }
+        });
+    });
+});
+
+//Add new user
+$(function() {
+    $('.add-user-button').click(function() {
+        $(this).prop('disabled', true);
+		var form = $(this).closest("form");
+        $.ajax({
+            url: '/backend/jquery/add_user',
+            data: $(this).closest('form').serialize(),
+            type: 'POST',
+            success: function(data) {
+                $('#admin-list-of-users').append(data);
+                $('.add-user-button').removeAttr("disabled");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                $('.add-user-button').removeAttr("disabled");
             }
         });
     });
