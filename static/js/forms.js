@@ -246,7 +246,6 @@ $(function() {
 $(function() {
     $('.add-user-button').click(function() {
         $(this).prop('disabled', true);
-		var form = $(this).closest("form");
         $.ajax({
             url: '/backend/jquery/add_user',
             data: $(this).closest('form').serialize(),
@@ -262,3 +261,23 @@ $(function() {
         });
     });
 });
+
+//Delete platform
+$(document).on("click",".platform-action-delete", function() {
+        if(confirm("Are you sure you want to delete this?")){
+            var id = $(this).attr('id');
+            $.ajax({
+                url: '/backend/jquery/platforms/' + id,
+                type: 'DELETE',
+                success: function() {
+                    $('#platform-id-' + id).remove();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+        else {
+            return false;
+        }
+        });

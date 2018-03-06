@@ -754,7 +754,27 @@ def jquery_add_user():
         return render_template('includes/newly_added_user_info.inc.html', user=newly_added_user_data, user_roles=refresh.get_list_of_user_roles())
 
 
+# Delete platform (with jquery)
+@app.route('/backend/jquery/platforms/<platform_id>', methods=['DELETE'])
+def jquery_delete_platform(platform_id):
+    if not session.get('logged_in'):
+        return abort(401)
+    elif get_user_role() != 1:
+        return abort(403, 'U r not allowed to perform this action')
+    else:
+        existing_platforms_id = []
+        list_of_platforms_id_db = refresh.get_list_of_platforms(False)
+        for x in range(len(list_of_platforms_id_db)):
+            existing_platforms_id.append(str(list_of_platforms_id_db[x].id))
+        if platform_id not in existing_platforms_id:
+            return abort(404, 'Platform does not exist')
+
+        Platforms.query.filter_by(id=platform_id).delete()
+        db.session.commit()
+        db.session.remove()
+        return jsonify({"status": "Success"}), 200
 # ##########################################################################################################################################################
+
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)

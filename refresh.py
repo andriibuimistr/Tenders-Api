@@ -319,7 +319,7 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id):
 
 # get list of companies (SQLA)
 def get_list_of_platforms(platform_role):
-    if platform_role:
+    if platform_role:  # if platform role is passed to function
         platforms_list = Platforms.query.filter_by(platform_role=platform_role).all()
     else:
         platforms_list = Platforms.query.all()

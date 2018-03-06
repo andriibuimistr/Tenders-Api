@@ -1,6 +1,9 @@
-<div class="platform-info">
+<div class="platform-info" id="platform-id-{{ platform[0].id }}">
     <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">{{ platform[0].id }}</div>
     <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">{{ platform[0].platform_name }}</div>
     <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10"><a href="{{ platform[0].platform_url }}" target="_blank">{{ platform[0].platform_url }}</a></div>
     <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">{{ platform_roles[platform[0].platform_role] }}</div>
+    <div class="platform-actions col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="platform-action-delete" id="{{ platform[0].id }}"></div>
+    </div>
 </div>

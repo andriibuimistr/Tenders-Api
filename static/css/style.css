@@ -654,6 +654,10 @@ footer {
     width: 100%;
 }
 
+.platform-actions {
+    padding: 2px;
+}
+
 .user-info {
     padding: 3px;
     border: 1px solid #CCC;
@@ -661,5 +665,16 @@ footer {
     width: 100%;
 }
 
+/*Actions icons*/
+.platform-action-delete {
+    background-image: url("../images/icons/delete_icon.png");
+    height: 16px;
+    width: 16px;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+}
 
-
+.platform-action-delete:hover {
+    opacity: 1;
+    cursor: pointer;
+}
