@@ -323,11 +323,10 @@ def activate_2nd_stage(headers, host, api_version, new_tender_id, new_token, act
 
 
 # save tender info to DB (SQLA)
-def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status,
-                 number_of_lots):
+def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots, creator_id, api_version):
     try:
         # Connect to DB
-        tender_to_sql = Tenders(None, tender_id_long, tender_id_short, tender_token, procurement_method, None, tender_status, number_of_lots, None, None, None)
+        tender_to_sql = Tenders(None, tender_id_long, tender_id_short, tender_token, procurement_method, None, tender_status, number_of_lots, None, None, None, creator_id, api_version)
         db.session.add(tender_to_sql)
         db.session.commit()
         print "Tender was added to local database"
@@ -348,6 +347,7 @@ def creation_of_tender(tc_request):
     platform_host = tc_request['platform_host']
     api_version = tc_request['api_version']
     received_tender_status = tc_request['tenderStatus']
+    user_id = tc_request['user_id']
 
     if procurement_method == 'reporting':
         number_of_lots = 0
@@ -379,7 +379,7 @@ def creation_of_tender(tc_request):
     tender_token = publish_tender_response[1].json()['access']['token']
 
     # add tender to database
-    add_tender_db = tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots)
+    add_tender_db = tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots, user_id, api_version)
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
 
@@ -523,7 +523,7 @@ def creation_of_tender(tc_request):
                                                     get_extended_period_for_2nd_stage = extend_tender_period(host_kit[0], host_kit[1], accelerator, second_stage_tender_id)
                                                     patch_second_stage(headers_tender, get_extended_period_for_2nd_stage, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token)  # ready json 2nd stage
                                                     add_2nd_stage_db = tender_to_db(second_stage_tender_id, second_stage_tender_id_short, second_stage_token, procurement_method_2nd_stage,
-                                                                                    get_t_info[1].json()['data']['status'], number_of_lots)
+                                                                                    get_t_info[1].json()['data']['status'], number_of_lots, user_id, api_version)
 
                                                     activate_2nd_stage_json = {  # json for activate second stage
                                                         "data": {

@@ -100,6 +100,12 @@ def get_user_role():
     return user_role_id
 
 
+def get_user_id():
+    user_id = Users.query.filter_by(user_login=session['username']).first().id
+    db.session.remove()
+    return user_id
+
+
 @app.before_request
 def before_request():
     flask.session.permanent = True
@@ -134,6 +140,7 @@ def do_login():
             db.session.remove()
             session['logged_in'] = True
             session['username'] = request.form['username']
+            session['user_id'] = user_id
             return redirect(redirect_url())
         else:
             return redirect(redirect_url())
@@ -297,7 +304,8 @@ def create_tender_function():
                   "company_id": int(company_id),
                   "platform_host": platform_host,
                   "api_version": api_version,
-                  "tenderStatus": received_tender_status}
+                  "tenderStatus": received_tender_status,
+                  "user_id": session['user_id']}
     result = tender.creation_of_tender(tc_request)
     return jsonify(result[0]), result[1]
 

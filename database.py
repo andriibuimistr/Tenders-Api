@@ -44,9 +44,11 @@ class Tenders(db.Model):
     tender_platform_id = db.Column(db.Integer)
     company_uid = db.Column(db.Integer)
     added_to_site = db.Column(db.Integer)
+    creator_id = db.Column(db.Integer)
+    api_version = db.Column(db.String(255))
 
     def __init__(self, id, tender_id_long, tender_id_short, tender_token, procurementMethodType, related_tender_id,
-                 tender_status, n_lots, tender_platform_id, company_uid, added_to_site):
+                 tender_status, n_lots, tender_platform_id, company_uid, added_to_site, creator_id, api_version):
         self.id = id
         self.tender_id_long = tender_id_long
         self.tender_id_short = tender_id_short
@@ -58,6 +60,8 @@ class Tenders(db.Model):
         self.tender_platform_id = tender_platform_id
         self.company_uid = company_uid
         self.added_to_site = added_to_site
+        self.creator_id = creator_id
+        self.api_version = api_version
 
 
 class Bids(db.Model):
