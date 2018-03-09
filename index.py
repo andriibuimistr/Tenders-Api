@@ -19,6 +19,8 @@ import flask
 import flask_login
 from flask_cors import CORS, cross_origin
 from datetime import datetime
+from admin import jquery_requests
+from admin.pages import AdminPages
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
@@ -588,45 +590,6 @@ def add_bid_to_company(bid_id):
             return jsonify(add_bid_company)
 
 
-# # get list of platforms
-# @app.route('/api/tenders/platforms', methods=['GET'])
-# @auth.login_required
-# def get_list_of_platforms():
-#     list_platforms = refresh.get_list_of_platforms()
-#     return jsonify({"data": {"platforms": list_platforms}})
-
-
-# create new platform
-# @app.route('/api/tenders/platforms', methods=['POST'])
-# @auth.login_required
-# def add_new_platform():
-#     if not request.json:  # check if json exists
-#         abort(400, 'JSON was not found in request')
-#     if 'data' not in request.json:  # check if data is in json
-#         abort(400, 'Data was not found in request')
-#     cp_request = request.json['data']
-#     if 'platform_name' not in cp_request or 'platform_url' not in cp_request:
-#         abort(400, "Can not find one or more parameters.")
-#     platform_name = cp_request['platform_name']
-#     platform_url = cp_request['platform_url']
-#     if platform_url[-1:] == '/':
-#         platform_url = platform_url[:-1]
-#
-#     platforms_url_list = Platforms.query.all()
-#     list_platform_url = []
-#     for url in range(len(platforms_url_list)):
-#         list_platform_url.append(platforms_url_list[url].platform_url)
-#     if platform_url in list_platform_url:
-#         abort(422, 'URL exists in database')
-#     if validators.url(platform_url) is not True:
-#         abort(400, 'URL is invalid')
-#     new_platform = Platforms(id=None, platform_name=platform_name, platform_url=platform_url)
-#     db.session.add(new_platform)
-#     db.session.commit()
-#     db.session.remove()
-#     return jsonify({"status": "success"}), 201
-
-
 # change existing platform
 @app.route('/api/tenders/platforms/<platform_id>', methods=['PATCH'])
 @auth.login_required
@@ -677,103 +640,63 @@ def patch_platform(platform_id):
 
 
 # ##################################################################################### ADMIN ##############################################################
-@app.route('/admin/platforms', methods=['GET'])
-def page_admin_platforms():
+
+def check_if_admin():
     if not session.get('logged_in'):
         return login_form()
     elif get_user_role() != 1:
         return abort(403, 'U r not allowed to access this page')
     else:
-        content = render_template('admin/platforms.html', platforms=refresh.get_list_of_platforms(False), platform_roles=refresh.get_list_of_platform_roles())
-        return render_template('index.html', user_role_id=get_user_role(), content=content)
+        return True
+
+
+def check_if_admin_jquery():
+    if not session.get('logged_in'):
+        return abort(401)
+    elif get_user_role() != 1:
+        return abort(403, 'U r not allowed to access this page')
+    else:
+        return True
+
+
+@app.route('/admin/<page>', methods=['GET'])
+def admin_pages(page):
+    if check_if_admin() is not True:
+        return check_if_admin()
+    if page == 'platforms':
+        return AdminPages(1).page_admin_platforms()
+    elif page == 'users':
+        return AdminPages(1).page_admin_users()
+    else:
+        return abort(404)
 
 
 # Add platform (with jquery)
 @app.route('/backend/jquery/add_platform', methods=['POST'])
 def jquery_add_platform():
     if not session.get('logged_in'):
-        return abort(401)
-    elif get_user_role() != 1:
-        return abort(403, 'U r not allowed to perform this action')
+        return check_if_admin_jquery()
     else:
-        new_platform_data = request.form
-        if len(request.form['platform-name']) == 0:
-            return abort(400, 'Platform name can\'t be empty')
-        if len(request.form['platform-url']) == 0:
-            return abort(400, 'Platform url can\'t be empty')
-        platform_to_sql = Platforms(None, new_platform_data['platform-name'], new_platform_data['platform-url'], int(new_platform_data['platform_role']))
-        db.session.add(platform_to_sql)
-        last_id = Platforms.query.order_by(Platforms.id.desc()).first().id
-        newly_added_platform_data = Platforms.query.filter_by(id=last_id)
-        db.session.commit()
-        db.session.remove()
-        return render_template('includes/newly_added_platform_info.inc.html', platform=newly_added_platform_data, platform_roles=refresh.get_list_of_platform_roles())
-
-
-@app.route('/admin/users', methods=['GET'])
-def page_admin_users():
-    if not session.get('logged_in'):
-        return login_form()
-    elif get_user_role() != 1:
-        return abort(403, 'U r not allowed to access this page')
-    else:
-        content = render_template('admin/users.html', users=refresh.get_list_of_users(), user_roles=refresh.get_list_of_user_roles())
-        return render_template('index.html', user_role_id=get_user_role(), content=content)
+        return jquery_requests.add_platform(request)
 
 
 # Add platform (with jquery)
 @app.route('/backend/jquery/add_user', methods=['POST'])
 def jquery_add_user():
-    if not session.get('logged_in'):
-        return abort(401)
-    elif get_user_role() != 1:
-        return abort(403, 'U r not allowed to perform this action')
+    if check_if_admin() is not True:
+        return check_if_admin_jquery()
     else:
-        new_user_data = request.form
-        if len(request.form['user-name']) < 4:
-            return abort(400, 'User name length can\'t be less than 4')
-        if ' ' in request.form['user-name']:
-            return abort(422, 'U can\'t use spaces in username')
-        if len(request.form['user-password']) < 4:
-            return abort(400, 'User password length can\'t be less than 4')
-        if ' ' in request.form['user-password']:
-            return abort(422, 'U can\'t use spaces in password')
-        all_users = refresh.get_list_of_users()
-        list_login = []
-        for x in range(len(all_users)):
-            list_login.append(all_users[x].user_login)
-        if request.form['user-name'] in list_login:
-            return abort(422, 'We have this login yet')
-
-        user_to_sql = Users(None, new_user_data['user-name'], new_user_data['user-password'], new_user_data['user_role'], int(new_user_data['user_status']), None)
-        db.session.add(user_to_sql)
-        last_id = Users.query.order_by(Users.id.desc()).first().id
-        newly_added_user_data = Users.query.filter_by(id=last_id)
-        db.session.commit()
-        db.session.remove()
-        return render_template('includes/newly_added_user_info.inc.html', user=newly_added_user_data, user_roles=refresh.get_list_of_user_roles())
+        return jquery_requests.add_user(request)
 
 
 # Delete platform (with jquery)
 @app.route('/backend/jquery/platforms/<platform_id>', methods=['DELETE'])
 def jquery_delete_platform(platform_id):
     if not session.get('logged_in'):
-        return abort(401)
-    elif get_user_role() != 1:
-        return abort(403, 'U r not allowed to perform this action')
+        return check_if_admin_jquery()
     else:
-        existing_platforms_id = []
-        list_of_platforms_id_db = refresh.get_list_of_platforms(False)
-        for x in range(len(list_of_platforms_id_db)):
-            existing_platforms_id.append(str(list_of_platforms_id_db[x].id))
-        if platform_id not in existing_platforms_id:
-            return abort(404, 'Platform does not exist')
-
-        Platforms.query.filter_by(id=platform_id).delete()
-        db.session.commit()
-        db.session.remove()
-        return jsonify({"status": "Success"}), 200
-# ##########################################################################################################################################################
+        return jquery_requests.delete_platform(platform_id)
+# ############################################################## ADMIN END #############################################################################
 
 
 if __name__ == '__main__':
