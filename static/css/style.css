@@ -665,6 +665,16 @@ footer {
     width: 100%;
 }
 
+.tender-info {
+    padding: 3px;
+    border: 1px solid #CCC;
+    display: inline-block;
+    width: 100%;
+}
+
+.tender-info div span {
+    font-weight: bold;
+}
 /*Actions icons*/
 .platform-action-delete {
     background-image: url("../images/icons/delete_icon.png");

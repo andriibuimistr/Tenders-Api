@@ -14,3 +14,7 @@ class AdminPages:
     def page_admin_users(self):  # generate page with list of users for admin
         content = render_template('admin/users.html', users=refresh.get_list_of_users(), user_roles=refresh.get_list_of_user_roles())
         return render_template('index.html', user_role_id=self.user_role_id, content=content)
+
+    def page_admin_tenders(self):  # generate page with list of users for admin
+        content = render_template('admin/tenders.html', tenders=refresh.get_list_of_tenders())
+        return render_template('index.html', user_role_id=self.user_role_id, content=content)

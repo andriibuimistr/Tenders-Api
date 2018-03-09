@@ -1,0 +1,30 @@
+<div class="heading main_title">
+    <h1>Управление закупками</h1>
+</div>
+<div class="section_content">
+    <H4>Список тендеров</H4>
+    <div class="list-of-tenders" id="admin-list-of-tenders">
+        {% if tenders|length == 0 %}
+            <div>List of tenders is empty</div>
+        {% else %}
+            {% for tender in range(tenders|length) %}
+                <div class="tender-info">
+                    <div class="col-lg-40 col-md-40 col-sm-40 col-xs-40">
+                        <div class="col-lg-5 col-md-5 col-sm-48 col-xs-48"><span>№: </span>{{ tender + 1 }}</div>
+                        <div class="col-lg-23 col-md-23 col-sm-48 col-xs-48"><span>UAID: </span>{{ tenders[tender].tender_id_short }}</div>
+                        <div class="col-lg-15 col-md-15 col-sm-48 col-xs-48"><span>Creator: </span>{{ tenders[tender].creator_id }}</div>
+                        <div class="col-lg-28 col-md-28 col-sm-48 col-xs-48"><span>ID in CDB: </span>{{ tenders[tender].tender_id_long }}</div>
+                        <div class="col-lg-9 col-md-9 col-sm-48 col-xs-48"><span>API Version: </span>{{ tenders[tender].api_version }}</div>
+                        <!--<div class="col-lg-48 col-md-48 col-sm-48 col-xs-48"><span>Token: </span>{{ tenders[tender].tender_token }}</div>-->
+                        <div class="col-lg-28 col-md-28 col-sm-48 col-xs-48"><span>procurementMethodType: </span>{{ tenders[tender].procurementMethodType }}</div>
+                        <div class="col-lg-20 col-md-20 col-sm-48 col-xs-48"><span>Status: </span>{{ tenders[tender].tender_status }}</div>
+                        <div class="col-lg-9 col-md-9 col-sm-48 col-xs-48"><span>Lots: </span>{{ tenders[tender].n_lots }}</div>
+                        <div class="col-lg-8 col-md-8 col-sm-48 col-xs-48"><span>ID: </span>{{ tenders[tender].id }}</div>
+                        <div class="col-lg-11 col-md-11 col-sm-48 col-xs-48"><span>Company ID: </span>{{ tenders[tender].company_uid }}</div>
+                        <div class="col-lg-20 col-md-20 col-sm-48 col-xs-48"><span>Added to site: </span>{{ tenders[tender].added_to_site }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

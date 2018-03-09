@@ -10,7 +10,7 @@ from datetime import timedelta
 import qualification
 import time
 import refresh
-from refresh import get_tenders_list
+# from refresh import get_tenders_list
 from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
 import re
@@ -322,11 +322,11 @@ def update_list_of_tenders():
         return jsonify({"status": "error", "description": str(update_tenders[1])})
 
 
-# get list of all tenders in local database (SQLA)
-@app.route('/api/tenders', methods=['GET'])
-def get_list_of_tenders():
-    list_of_tenders = refresh.get_tenders_list()
-    return jsonify({"data": {"tenders": list_of_tenders[1]}})
+# # get list of all tenders in local database (SQLA)
+# @app.route('/api/tenders', methods=['GET'])
+# def get_list_of_tenders():
+#     list_of_tenders = refresh.get_tenders_list()
+#     return jsonify({"data": {"tenders": list_of_tenders[1]}})
 
 
 # ########################## PREQUALIFICATIONS ###################################
@@ -678,6 +678,8 @@ def admin_pages(page):
         return AdminPages(1).page_admin_platforms()
     elif page == 'users':
         return AdminPages(1).page_admin_users()
+    elif page == 'tenders':
+        return AdminPages(1).page_admin_tenders()
     else:
         return abort(404)
 
