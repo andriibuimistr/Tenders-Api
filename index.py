@@ -322,11 +322,11 @@ def get_list_of_tenders():
 
 # ########################## PREQUALIFICATIONS ###################################
 # get list of tenders in prequalification status (SQLA)
-@app.route('/api/tenders/prequalification', methods=['GET'])
-def get_list_tenders_prequalification_status():
-    list_tenders_preq = refresh.get_tenders_prequalification_status()
-    db.session.remove()
-    return jsonify(list_tenders_preq)
+# @app.route('/api/tenders/prequalification', methods=['GET'])
+# def get_list_tenders_prequalification_status():
+#     list_tenders_preq = refresh.get_tenders_prequalification_status()
+#     db.session.remove()
+#     return jsonify(list_tenders_preq)
 
 
 # pass prequalification for indicated tender
@@ -351,173 +351,173 @@ def pass_prequalification(tender_id_long):
                                  "submit protocol": finish_prequalification}})
 
 
-# add all tenders to company (SQLA)
-@app.route('/api/tenders/company', methods=['POST'])
-@auth.login_required
-def all_tenders_to_company():
-    if not request.json:  # check if json exists
-        abort(400, 'JSON was not found in request')
-    if 'data' not in request.json:  # check if data is in json
-        abort(400, 'Data was not found in request')
-    tenders_to_company_request = request.json['data']
-    if 'company_uid' not in tenders_to_company_request:  # check if company_id is in json
-        abort(400, 'Company UID was not found in request')
-    company_uid = tenders_to_company_request['company_uid']
-    if type(company_uid) != int:
-        abort(400, 'Company UID must be integer')
-    get_list_of_company_uid = Companies.query.all()
-    list_of_uid = []
-    for uid in range(len(get_list_of_company_uid)):
-        list_of_uid.append(get_list_of_company_uid[uid].id)
-    if company_uid in list_of_uid:
-        get_company_id = Companies.query.filter_by(id=company_uid).first()
-        company_id = get_company_id.company_id
-        platform_id = get_company_id.platform_id
-        company_role_id = get_company_id.company_role_id
-        if company_role_id != 1:
-            abort(422, 'Company role must be Buyer (1)')
-        get_platform_url = Platforms.query.filter_by(id=platform_id).first()
-        company_platform_host = get_platform_url.platform_url
-        add_tenders_to_company = refresh.add_all_tenders_to_company(company_id, company_platform_host, company_uid)
-        if add_tenders_to_company == 0:
-            response_code = 200
-        else:
-            response_code = 201
-        success_message = '{}{}'.format(add_tenders_to_company, ' tenders were added to company')
-        db.session.remove()
-        return jsonify({"status": "success", "description": success_message}), response_code
-    else:
-        error_no_uid = '{}{}{}'.format('Company with UID ', company_uid, ' was not found in database')
-        print error_no_uid
-        db.session.remove()
-        return jsonify({"status": "error", "description": error_no_uid})
+# # add all tenders to company (SQLA)
+# @app.route('/api/tenders/company', methods=['POST'])
+# @auth.login_required
+# def all_tenders_to_company():
+#     if not request.json:  # check if json exists
+#         abort(400, 'JSON was not found in request')
+#     if 'data' not in request.json:  # check if data is in json
+#         abort(400, 'Data was not found in request')
+#     tenders_to_company_request = request.json['data']
+#     if 'company_uid' not in tenders_to_company_request:  # check if company_id is in json
+#         abort(400, 'Company UID was not found in request')
+#     company_uid = tenders_to_company_request['company_uid']
+#     if type(company_uid) != int:
+#         abort(400, 'Company UID must be integer')
+#     get_list_of_company_uid = Companies.query.all()
+#     list_of_uid = []
+#     for uid in range(len(get_list_of_company_uid)):
+#         list_of_uid.append(get_list_of_company_uid[uid].id)
+#     if company_uid in list_of_uid:
+#         get_company_id = Companies.query.filter_by(id=company_uid).first()
+#         company_id = get_company_id.company_id
+#         platform_id = get_company_id.platform_id
+#         company_role_id = get_company_id.company_role_id
+#         if company_role_id != 1:
+#             abort(422, 'Company role must be Buyer (1)')
+#         get_platform_url = Platforms.query.filter_by(id=platform_id).first()
+#         company_platform_host = get_platform_url.platform_url
+#         add_tenders_to_company = refresh.add_all_tenders_to_company(company_id, company_platform_host, company_uid)
+#         if add_tenders_to_company == 0:
+#             response_code = 200
+#         else:
+#             response_code = 201
+#         success_message = '{}{}'.format(add_tenders_to_company, ' tenders were added to company')
+#         db.session.remove()
+#         return jsonify({"status": "success", "description": success_message}), response_code
+#     else:
+#         error_no_uid = '{}{}{}'.format('Company with UID ', company_uid, ' was not found in database')
+#         print error_no_uid
+#         db.session.remove()
+#         return jsonify({"status": "error", "description": error_no_uid})
 
 
-# add one tender to company (SQLA)
-@app.route('/api/tenders/<tender_id_long>/company', methods=['POST'])
-@auth.login_required
-def add_tender_to_company(tender_id_long):
-    list_of_tenders = Tenders.query.all()
-    db.session.remove()
-    list_tid = []
-    for tid in range(len(list_of_tenders)):
-        list_tid.append(list_of_tenders[tid].tender_id_long)
-    if tender_id_long not in list_tid:
-        abort(404, 'Tender id was not found in database')
+# # add one tender to company (SQLA)
+# @app.route('/api/tenders/<tender_id_long>/company', methods=['POST'])
+# @auth.login_required
+# def add_tender_to_company(tender_id_long):
+#     list_of_tenders = Tenders.query.all()
+#     db.session.remove()
+#     list_tid = []
+#     for tid in range(len(list_of_tenders)):
+#         list_tid.append(list_of_tenders[tid].tender_id_long)
+#     if tender_id_long not in list_tid:
+#         abort(404, 'Tender id was not found in database')
+#
+#     if not request.json:  # check if json exists
+#         abort(400, 'JSON was not found in request')
+#     if 'data' not in request.json:  # check if data is in json
+#         abort(400, 'Data was not found in request')
+#     tender_to_company_request = request.json['data']
+#     if 'company_uid' not in tender_to_company_request:  # check if company_id is in json
+#         abort(400, 'Company UID was not found in request')
+#     company_uid = tender_to_company_request['company_uid']
+#     if type(company_uid) != int:
+#         abort(400, 'Company UID must be integer')
+#
+#     get_list_of_company_uid = Companies.query.all()
+#     db.session.remove()
+#     list_of_uid = []
+#     for uid in range(len(get_list_of_company_uid)):
+#         list_of_uid.append(int(get_list_of_company_uid[uid].id))
+#     if company_uid not in list_of_uid:
+#         abort(422, 'Company was not found in database')
+#     get_company_id = Companies.query.filter_by(id=company_uid).first()
+#     db.session.remove()
+#     company_id = get_company_id.company_id
+#     platform_id = get_company_id.platform_id
+#     company_role_id = get_company_id.company_role_id
+#     if company_role_id != 1:
+#         abort(422, 'Company role must be Buyer (1)')
+#     get_platform_url = Platforms.query.filter_by(id=platform_id).first()
+#     db.session.remove()
+#     company_platform_host = get_platform_url.platform_url
+#     add_tender_company = refresh.add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
+#                                                            company_uid)
+#     db.session.remove()
+#     if add_tender_company[1] == 201:
+#         return jsonify(add_tender_company[0]), 201
+#     else:
+#         return jsonify(add_tender_company[0]), 422
 
-    if not request.json:  # check if json exists
-        abort(400, 'JSON was not found in request')
-    if 'data' not in request.json:  # check if data is in json
-        abort(400, 'Data was not found in request')
-    tender_to_company_request = request.json['data']
-    if 'company_uid' not in tender_to_company_request:  # check if company_id is in json
-        abort(400, 'Company UID was not found in request')
-    company_uid = tender_to_company_request['company_uid']
-    if type(company_uid) != int:
-        abort(400, 'Company UID must be integer')
 
-    get_list_of_company_uid = Companies.query.all()
-    db.session.remove()
-    list_of_uid = []
-    for uid in range(len(get_list_of_company_uid)):
-        list_of_uid.append(int(get_list_of_company_uid[uid].id))
-    if company_uid not in list_of_uid:
-        abort(422, 'Company was not found in database')
-    get_company_id = Companies.query.filter_by(id=company_uid).first()
-    db.session.remove()
-    company_id = get_company_id.company_id
-    platform_id = get_company_id.platform_id
-    company_role_id = get_company_id.company_role_id
-    if company_role_id != 1:
-        abort(422, 'Company role must be Buyer (1)')
-    get_platform_url = Platforms.query.filter_by(id=platform_id).first()
-    db.session.remove()
-    company_platform_host = get_platform_url.platform_url
-    add_tender_company = refresh.add_one_tender_to_company(company_id, company_platform_host, tender_id_long,
-                                                           company_uid)
-    db.session.remove()
-    if add_tender_company[1] == 201:
-        return jsonify(add_tender_company[0]), 201
-    else:
-        return jsonify(add_tender_company[0]), 422
-
-
-# Add new company to database (SQLA)
-@app.route('/api/tenders/companies', methods=['POST'])
-@auth.login_required
-def create_company():
-    if not request.json:  # check if json exists
-        abort(400, 'JSON was not found in request')
-    if 'data' not in request.json:  # check if data is in json
-        abort(400, 'Data was not found in request')
-    cc_request = request.json['data']
-    if 'company_email' not in cc_request or 'company_id' not in cc_request \
-            or 'company_role_id' not in cc_request or 'platform_id' not in cc_request or 'company_identifier'\
-            not in cc_request:
-        abort(400, "Can not find one or more parameters.")
-    company_email = cc_request['company_email']
-    company_id = cc_request['company_id']
-    company_role_id = cc_request['company_role_id']
-    platform_id = cc_request['platform_id']
-    company_identifier = cc_request['company_identifier']
-
-    if type(company_id) != int:
-        abort(400, 'Company ID must be integer')
-    if type(company_role_id) != int:
-        abort(400, 'Company Role ID must be integer')
-    if company_identifier.isdigit():
-        if len(company_identifier) not in [8, 10]:
-            abort(422, 'Company Identifier must be 8 or 10 characters long')
-    else:
-        abort(400, 'Company Identifier must be numeric')
-    if type(platform_id) != int:
-        abort(400, 'Platform ID must be integer')
-
-    # check if role exists in database
-    check_company_role_id = Roles.query.all()
-    list_roles = []
-    for rid in range(len(check_company_role_id)):
-        list_roles.append(int(check_company_role_id[rid].id))
-    if company_role_id not in list_roles:
-        abort(422, 'Role wasn\'t found in database')
-
-    # check if platform id exists in database
-    check_platform_id = Platforms.query.all()
-    list_platforms_id = []
-    for pid in range(len(check_platform_id)):
-        list_platforms_id.append(int(check_platform_id[pid].id))
-    if platform_id not in list_platforms_id:
-        abort(422, 'Platform ID wasn\'t found in database')
-    if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", company_email):
-        abort(400, 'Email address is invalid')
-
-    # check company_id platform_id combinations
-    get_companies_list = Companies.query.all()
-    combinations = []
-    for combination in range(len(get_companies_list)):
-        combinations.append(
-            [int(get_companies_list[combination].company_id), int(get_companies_list[combination].platform_id)])
-    if [company_id, platform_id] in combinations:
-        abort(422, "Company with this ID was added to this platform before")
-
-    add_company = Companies(None, company_email, company_id, company_role_id, platform_id, company_identifier)
-    db.session.add(add_company)
-    db.session.commit()
-    uid = Companies.query.filter_by(company_id=company_id, platform_id=platform_id).first().id
-    db.session.remove()
-    return jsonify({'status': 'success', 'id': int('{}'.format(uid))})  # return json
+# # Add new company to database (SQLA)
+# @app.route('/api/tenders/companies', methods=['POST'])
+# @auth.login_required
+# def create_company():
+#     if not request.json:  # check if json exists
+#         abort(400, 'JSON was not found in request')
+#     if 'data' not in request.json:  # check if data is in json
+#         abort(400, 'Data was not found in request')
+#     cc_request = request.json['data']
+#     if 'company_email' not in cc_request or 'company_id' not in cc_request \
+#             or 'company_role_id' not in cc_request or 'platform_id' not in cc_request or 'company_identifier'\
+#             not in cc_request:
+#         abort(400, "Can not find one or more parameters.")
+#     company_email = cc_request['company_email']
+#     company_id = cc_request['company_id']
+#     company_role_id = cc_request['company_role_id']
+#     platform_id = cc_request['platform_id']
+#     company_identifier = cc_request['company_identifier']
+#
+#     if type(company_id) != int:
+#         abort(400, 'Company ID must be integer')
+#     if type(company_role_id) != int:
+#         abort(400, 'Company Role ID must be integer')
+#     if company_identifier.isdigit():
+#         if len(company_identifier) not in [8, 10]:
+#             abort(422, 'Company Identifier must be 8 or 10 characters long')
+#     else:
+#         abort(400, 'Company Identifier must be numeric')
+#     if type(platform_id) != int:
+#         abort(400, 'Platform ID must be integer')
+#
+#     # check if role exists in database
+#     check_company_role_id = Roles.query.all()
+#     list_roles = []
+#     for rid in range(len(check_company_role_id)):
+#         list_roles.append(int(check_company_role_id[rid].id))
+#     if company_role_id not in list_roles:
+#         abort(422, 'Role wasn\'t found in database')
+#
+#     # check if platform id exists in database
+#     check_platform_id = Platforms.query.all()
+#     list_platforms_id = []
+#     for pid in range(len(check_platform_id)):
+#         list_platforms_id.append(int(check_platform_id[pid].id))
+#     if platform_id not in list_platforms_id:
+#         abort(422, 'Platform ID wasn\'t found in database')
+#     if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", company_email):
+#         abort(400, 'Email address is invalid')
+#
+#     # check company_id platform_id combinations
+#     get_companies_list = Companies.query.all()
+#     combinations = []
+#     for combination in range(len(get_companies_list)):
+#         combinations.append(
+#             [int(get_companies_list[combination].company_id), int(get_companies_list[combination].platform_id)])
+#     if [company_id, platform_id] in combinations:
+#         abort(422, "Company with this ID was added to this platform before")
+#
+#     add_company = Companies(None, company_email, company_id, company_role_id, platform_id, company_identifier)
+#     db.session.add(add_company)
+#     db.session.commit()
+#     uid = Companies.query.filter_by(company_id=company_id, platform_id=platform_id).first().id
+#     db.session.remove()
+#     return jsonify({'status': 'success', 'id': int('{}'.format(uid))})  # return json
 
 
 # get list of companies in database (SQLA)
-@app.route('/api/tenders/companies', methods=['GET'])
-@auth.login_required
-def get_list_of_companies():
-    list_companies = refresh.get_list_of_companies()
-    return jsonify({"data": {"companies": list_companies}})
+# @app.route('/api/tenders/companies', methods=['GET'])
+# @auth.login_required
+# def get_list_of_companies():
+#     list_companies = refresh.get_list_of_companies()
+#     return jsonify({"data": {"companies": list_companies}})
 
 
 # ##################################### BIDS #############################################
-# show all bids of tender (SQLA)
+# show all bids of tender
 @app.route('/api/tenders/<tender_id_short>/bids', methods=['GET'])
 def get_bids_of_one_tender(tender_id_short):
     if not session.get('logged_in'):
@@ -552,7 +552,7 @@ def get_bids_of_one_tender(tender_id_short):
         return render_template('modules/tender_modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids, platforms=refresh.get_list_of_platforms(1))
 
 
-# add one bid to company (SQLA)
+# add one bid to company
 @app.route('/api/tenders/bids/<bid_id>/company', methods=['PATCH'])
 def add_bid_to_company(bid_id):
     if not session.get('logged_in'):
@@ -588,6 +588,8 @@ def add_bid_to_company(bid_id):
             return render_template('includes/bid_company_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
         else:
             return jsonify(add_bid_company)
+
+# ################################################################ BIDS END ################################################################################
 
 
 # change existing platform
@@ -641,7 +643,7 @@ def patch_platform(platform_id):
 
 # ##################################################################################### ADMIN ##############################################################
 
-def check_if_admin():
+def check_if_admin():  # check if user is admin before generate a page
     if not session.get('logged_in'):
         return login_form()
     elif get_user_role() != 1:
@@ -650,7 +652,7 @@ def check_if_admin():
         return True
 
 
-def check_if_admin_jquery():
+def check_if_admin_jquery():  # check if user is admin before accept jquery request
     if not session.get('logged_in'):
         return abort(401)
     elif get_user_role() != 1:
@@ -659,7 +661,7 @@ def check_if_admin_jquery():
         return True
 
 
-@app.route('/admin/<page>', methods=['GET'])
+@app.route('/admin/<page>', methods=['GET'])  # generate page for admin
 def admin_pages(page):
     if check_if_admin() is not True:
         return check_if_admin()
@@ -680,7 +682,7 @@ def jquery_add_platform():
         return jquery_requests.add_platform(request)
 
 
-# Add platform (with jquery)
+# Add user (with jquery)
 @app.route('/backend/jquery/add_user', methods=['POST'])
 def jquery_add_user():
     if check_if_admin() is not True:
