@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from variables import Companies, Tenders, db, host, api_version, Bids, Platforms, Roles, PlatformRoles, Users
+from variables import host, api_version
+from database import db, Companies, Tenders, Bids, Platforms, PlatformRoles, Roles, Users
 import requests
 from datetime import datetime
 from flask import abort

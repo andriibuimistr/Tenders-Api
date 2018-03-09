@@ -1,4 +1,4 @@
-from variables import Platforms, Users, db
+from database import db, Platforms, Users
 from flask import render_template, abort, jsonify
 import validators
 import refresh

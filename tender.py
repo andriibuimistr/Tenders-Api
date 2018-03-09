@@ -8,13 +8,13 @@ from qualification import run_activate_award, run_activate_contract
 from bid import suppliers_for_limited
 import refresh
 from refresh import get_tender_info, check_if_contract_exists, time_counter
-from variables import db, tender_values, features, auth_key, lot_values, tender_data, tender_titles, Tenders, tender_values_esco, lot_values_esco, above_threshold_procurement,\
+from variables import tender_values, features, auth_key, lot_values, tender_data, tender_titles, tender_values_esco, lot_values_esco, above_threshold_procurement,\
     below_threshold_procurement, limited_procurement, host_selector, prequalification_procedures, competitive_procedures, negotiation_procurement
+from database import db, Tenders
 from datetime import datetime, timedelta
 import time
 from flask import abort
 import bid
-#import sys
 from requests.exceptions import ConnectionError
 
 
@@ -42,6 +42,7 @@ def list_of_lots(number_of_lots, list_of_id_lots, procurement_method):
     return lots_list
 
 
+# generate list of lots for esco procedure
 def list_of_lots_esco(number_of_lots, list_of_id_lots):
     list_of_lots_for_tender = []
     lot_number = 0
@@ -328,7 +329,7 @@ def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_meth
         # Connect to DB
         tender_to_sql = Tenders(None, tender_id_long, tender_id_short, tender_token, procurement_method, None, tender_status, number_of_lots, None, None, None)
         db.session.add(tender_to_sql)
-        db.session.commit()  # you need to call commit() method to save your changes to the database
+        db.session.commit()
         print "Tender was added to local database"
         return {"status": "success"}, 0
     except Exception as e:
@@ -355,7 +356,6 @@ def creation_of_tender(tc_request):
     response_json = dict()
 
     list_of_id_lots = list_of_id_for_lots(number_of_lots)  # get list of id for lots
-    # select type of tender (with or without lots)
 
     if procurement_method == 'belowThreshold' and received_tender_status == 'active.qualification':
         if accelerator > 1440:
