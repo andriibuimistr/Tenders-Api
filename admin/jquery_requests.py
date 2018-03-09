@@ -1,4 +1,4 @@
-from database import db, Platforms, Users
+from database import db, Platforms, Users, Tenders
 from flask import render_template, abort, jsonify
 import validators
 import refresh
@@ -69,6 +69,20 @@ def delete_platform(platform_id):
         return abort(404, 'Platform does not exist')
 
     Platforms.query.filter_by(id=platform_id).delete()
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "Success"}), 200
+
+
+def delete_tender(tender_id):
+    existing_tenders_id = []
+    list_of_tenders_id_db = refresh.get_list_of_tenders()
+    for x in range(len(list_of_tenders_id_db)):
+        existing_tenders_id.append(str(list_of_tenders_id_db[x].id))
+    if tender_id not in existing_tenders_id:
+        return abort(404, 'Tender does not exist')
+
+    Tenders.query.filter_by(id=tender_id).delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200

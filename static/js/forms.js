@@ -280,4 +280,24 @@ $(document).on("click",".platform-action-delete", function() {
         else {
             return false;
         }
-        });
+});
+
+//Delete tender
+$(document).on("click",".tender-action-delete", function() {
+        if(confirm("Are you sure you want to delete this?")){
+            var id = $(this).attr('id');
+            $.ajax({
+                url: '/backend/jquery/tenders/' + id,
+                type: 'DELETE',
+                success: function() {
+                    $('#tender-id-' + id).remove();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+        else {
+            return false;
+        }
+});

@@ -709,6 +709,15 @@ def jquery_delete_platform(platform_id):
         return check_if_admin_jquery()
     else:
         return jquery_requests.delete_platform(platform_id)
+
+
+# Delete tender (with jquery)
+@app.route('/backend/jquery/tenders/<tender_id>', methods=['DELETE'])
+def jquery_delete_tender(tender_id):
+    if not session.get('logged_in'):
+        return check_if_admin_jquery()
+    else:
+        return jquery_requests.delete_tender(tender_id)
 # ############################################################## ADMIN END #############################################################################
 
 

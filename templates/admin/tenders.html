@@ -8,7 +8,7 @@
             <div>List of tenders is empty</div>
         {% else %}
             {% for tender in range(tenders|length) %}
-                <div class="tender-info">
+                <div class="tender-info" id="tender-id-{{ tenders[tender].id }}">
                     <div class="col-lg-40 col-md-40 col-sm-40 col-xs-40">
                         <div class="col-lg-5 col-md-5 col-sm-48 col-xs-48"><span>№: </span>{{ tender + 1 }}</div>
                         <div class="col-lg-23 col-md-23 col-sm-48 col-xs-48"><span>UAID: </span>{{ tenders[tender].tender_id_short }}</div>
@@ -22,6 +22,9 @@
                         <div class="col-lg-8 col-md-8 col-sm-48 col-xs-48"><span>ID: </span>{{ tenders[tender].id }}</div>
                         <div class="col-lg-11 col-md-11 col-sm-48 col-xs-48"><span>Company ID: </span>{{ tenders[tender].company_uid }}</div>
                         <div class="col-lg-20 col-md-20 col-sm-48 col-xs-48"><span>Added to site: </span>{{ tenders[tender].added_to_site }}</div>
+                    </div>
+                    <div class="tender-actions col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                        <div class="tender-action-delete" id="{{ tenders[tender].id }}"></div>
                     </div>
                 </div>
             {% endfor %}
