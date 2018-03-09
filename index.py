@@ -585,7 +585,7 @@ def add_bid_to_company(bid_id):
         db.session.commit()
         db.session.remove()
         if add_bid_company[1] == 201:
-            return render_template('includes/bid_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
+            return render_template('includes/bid_company_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
         else:
             return jsonify(add_bid_company)
 
