@@ -82,13 +82,7 @@ def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method
     return items_list
 
 
-# generate json for tender with lots
-'''def tender_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator):
-    return u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots),
-                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features, tender_data(procurement_method, accelerator), '}}')'''
-
-
-# generate json for tender without lots
+# generate json for tender
 def tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status):
     if number_of_lots == 0:
         if procurement_method == 'esco':
@@ -106,18 +100,6 @@ def tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method,
                                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(
                     procurement_method, accelerator, received_tender_status), '}}')
     return tender_json
-
-
-'''# generate json for tender with lots
-def tender_esco_with_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator):
-    return u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_lots_esco(number_of_lots, list_of_id_lots),
-                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), tender_features, tender_data(procurement_method, accelerator), '}}')'''
-
-
-'''# generate json for tender esco without lots
-def tender_esco(number_of_lots, number_of_items, procurement_method, accelerator):
-    return u"{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method), tender_features,
-                                    tender_data(procurement_method, accelerator), '}}')'''
 
 
 # generate headers for create tender
