@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+{% include 'head.html' %}
+<body>
+	<header>
+    {% include 'header.html' %}
+    </header>
+    <div class="wrapper container container_json_viewer">
+
+<!--Главный контейнер-->
+        <div class="row main_container">
+        <!--Левая колонка-->
+        	<section class="col-lg-48 col-md-48 col-sm-48 col-xs-48 main_column">
+                <div class="heading main_title">
+                    <h1>JSON Viewer</h1>
+                </div>
+                <div class="section_content">
+                    <H4>Input JSON</H4>
+                    <div class="json-viewer">
+                        <form class="form-view-json" id="form-view-json" role="form">
+                            <textarea name="raw-json" id="raw_json_input" class="form-control" placeholder="Paste your JSON here"></textarea>
+                            <button class="btn btn-success render-json-button" id="render_json" type="button">View JSON</button>
+                        </form>
+                        <H4>Output JSON</H4>
+                        <pre id="json_output">Rendered JSON will appear here</pre>
+                    </div>
+
+                </div>
+            </section>
+		</div>
+    </div>
+    <footer>
+    {% include 'footer.html' %}
+    </footer>
+    <div id="scrollup"><img alt="Прокрутить вверх" src="../static/images/design/up.png"></div>
+    <script type='text/javascript' src='../static/js/jquery.json-viewer.js'></script>
+    <link rel="stylesheet" href="../static/css/jquery.json-viewer.css">
+</body>
+</html>

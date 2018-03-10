@@ -3,7 +3,7 @@ from variables import above_threshold_procurement, below_threshold_procurement, 
     without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, \
     competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status, list_of_procurement_types, list_of_api_versions, platforms,\
     statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration
-from database import db, Companies, Tenders, Bids, Platforms, Roles, Users
+from database import db, Tenders, Bids, Platforms, Users
 import tender
 # import document
 from datetime import timedelta
@@ -13,7 +13,7 @@ import refresh
 # from refresh import get_tenders_list
 from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
-import re
+# import re
 import validators
 import os
 import flask
@@ -680,6 +680,8 @@ def admin_pages(page):
         return AdminPages(1).page_admin_users()
     elif page == 'tenders':
         return AdminPages(1).page_admin_tenders()
+    elif page == 'json-viewer':
+        return AdminPages(1).page_admin_json_viewer()
     else:
         return abort(404)
 

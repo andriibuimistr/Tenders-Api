@@ -18,3 +18,6 @@ class AdminPages:
     def page_admin_tenders(self):  # generate page with list of users for admin
         content = render_template('admin/tenders.html', tenders=refresh.get_list_of_tenders())
         return render_template('index.html', user_role_id=self.user_role_id, content=content)
+
+    def page_admin_json_viewer(self):
+        return render_template('admin/json-viewer.html', user_role_id=self.user_role_id)

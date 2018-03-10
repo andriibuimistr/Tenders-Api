@@ -688,3 +688,29 @@ footer {
     opacity: 1;
     cursor: pointer;
 }
+
+/*JSON Viewer*/
+.json-viewer pre {
+    padding-left: 20px !important;
+}
+
+.form-view-json {
+    min-height: 100px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#raw_json_input {
+    min-height: 100px;
+    min-width: 100%;
+    max-width: 100%;
+}
+
+.render-json-button {
+    margin-top: 10px;
+    float: none;
+}
+
+.container_json_viewer {
+    width: 90% !important;
+}

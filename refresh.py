@@ -6,7 +6,7 @@ from datetime import datetime
 from flask import abort
 import time
 import sys
-from requests.exceptions import ConnectionError
+# from requests.exceptions import ConnectionError
 
 
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
@@ -391,4 +391,3 @@ def get_tender_info(host_kit, tender_id_long):
                 continue
             else:
                 abort(500, 'Get tender info error: ' + str(e))
-

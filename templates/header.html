@@ -25,9 +25,8 @@
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="{{ url_for('page_create_tender')}}">Создать тендер</a></li>
                     <li><a href="{{ url_for('page_tender_bids')}}">Ставки</a></li>
-                    <li><a href="#">Опция 3</a></li>
                     <li class="divider"></li>
-                    <li><a href="#">Еще...</a></li>
+                    <li><a href="#">...</a></li>
                 </ul>
             </li>
             <!--<li><a href="#">Контакты</a></li>-->
@@ -39,7 +38,7 @@
                     <li><a href="{{ url_for('admin_pages', page='users') }}">Пользователи</a></li>
                     <li><a href="{{ url_for('admin_pages', page='tenders') }}">Закупки</a></li>
                     <li class="divider"></li>
-                    <li><a href="#">Еще...Еще</a></li>
+                    <li><a href="{{ url_for('admin_pages', page='json-viewer') }}">JSON-Viewer</a></li>
                 </ul>
             </li>
             {% endif %}

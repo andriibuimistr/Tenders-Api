@@ -301,3 +301,27 @@ $(document).on("click",".tender-action-delete", function() {
             return false;
         }
 });
+
+//Render JSON
+$(function() {
+    $('#render_json').click(function() {        
+        if(testJSON($('#raw_json_input').val()) === true){
+			var raw_json = jQuery.parseJSON($('#raw_json_input').val());
+			$("#json_output").jsonViewer(raw_json);
+		}
+		else {
+			alert('Invalid JSON');
+		}
+    });
+});
+
+//Test if is JSON
+function testJSON(input){
+    try{
+        JSON.parse(input);
+        return true;
+    }
+    catch (error){
+        return false;
+    }
+}
