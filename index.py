@@ -757,7 +757,7 @@ def page_create_auction():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return AuctionPages(False).page_create_auction()
+        return AuctionPages(1).page_create_auction()
 
 
 

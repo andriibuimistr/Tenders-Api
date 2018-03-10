@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import render_template
 import refresh
-from additional_data import auction_procurement_method_types, cdb_versions, auction_status_to_create
+from auction_additional_data import auction_procurement_method_types, cdb_versions, auction_status_to_create
 
 
 class AuctionPages:

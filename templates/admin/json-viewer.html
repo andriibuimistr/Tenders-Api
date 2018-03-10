@@ -36,7 +36,7 @@
                                 <div class="api-version col-lg-6 col-md-12 col-sm-48 col-xs-48">
                                     <select name="api_version" class="form-control" size="1">
                                     {% for version in api_versions %}
-                                        <option value="{{version}}">{{version}}</option>
+                                        <option value="{{api_versions[version]}}">{{version}}</option>
                                     {%endfor%}
                                     </select>
                                 </div>

@@ -3,6 +3,7 @@ from flask import render_template, abort, jsonify
 import validators
 import refresh
 import data_for_tender
+from auctions import data_for_requests, auction_additional_data
 
 
 def add_platform(request):
@@ -90,6 +91,12 @@ def delete_tender(tender_id):
 
 
 def get_tender_json_from_cdb(tender_id, api_version):
-    host_kit = data_for_tender.host_selector(api_version)
-    tender_json = refresh.get_tender_info(host_kit, tender_id)[1].json()
-    return tender_json
+    if api_version in data_for_tender.list_of_api_versions:
+        host_kit = data_for_tender.host_selector(api_version)
+        entity_json = refresh.get_tender_info(host_kit, tender_id)[1].json()
+    elif api_version in auction_additional_data.cdb_versions:
+        host_data = data_for_requests.host_selector(int(api_version))
+        entity_json = refresh.get_auction_info(host_data, tender_id)[1].json()
+    else:
+        entity_json = {"status": "error", "description": "unknown cdb version"}
+    return entity_json
