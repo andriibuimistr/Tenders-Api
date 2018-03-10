@@ -418,7 +418,7 @@ footer {
 	margin-top: 6px;
 	padding-left: 3px;
 }
-.procurement-method-type select, .api-version select, .platform-host select, .tender-status select {
+.procurement-method-type select, .api-version select, .platform-host select, .tender-status select, .cdb-version select {
 	height: 34px !important;
 }
 

@@ -5,6 +5,7 @@ from data_for_tender import above_threshold_procurement, below_threshold_procure
     statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration
 from database import db, Tenders, Bids, Platforms, Users
 import tender
+from auctions import auction
 # import document
 from datetime import timedelta
 import qualification
@@ -22,6 +23,7 @@ from flask_cors import CORS, cross_origin
 from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
+from auctions.pages import AuctionPages
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
@@ -730,6 +732,34 @@ def jquery_get_tender_json(tender_id, api_version):
     else:
         return jsonify(jquery_requests.get_tender_json_from_cdb(tender_id, api_version)), 200
 # ############################################################## ADMIN END #############################################################################
+
+
+# ############################################################## AUCTIONS ##############################################################################
+# ############################### JQUERY REQUESTS #####################################
+# create auction
+@app.route('/api/auctions', methods=['POST'])
+@cross_origin(resources=r'/api/*')
+def create_auction_function():
+    if not session.get('logged_in'):
+        return jquery_forbidden_login()
+    if not request.form:
+        abort(400)
+
+    ac_request = request.form
+    result = auction.create_auction(ac_request)
+    return jsonify(result[0]), result[1]
+
+
+# ############################## PAGES ##################################################
+# template for auction creation page
+@app.route("/auctions/create-auction")
+def page_create_auction():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        return AuctionPages(False).page_create_auction()
+
+
 
 
 if __name__ == '__main__':

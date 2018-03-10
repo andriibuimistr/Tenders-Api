@@ -87,7 +87,13 @@ def activate_auction(publish_auction_response, headers, host):
             abort(500, 'Activate auction error: ' + str(e))
 
 
-def create_auction(cdb_version, procurement_method_type, number_of_items, accelerator):
+def create_auction(ac_request):
+    print ac_request
+    cdb_version = int(ac_request['cdb_version'])
+    procurement_method_type = ac_request['procurementMethodType']
+    number_of_items = int(ac_request['number_of_items'])
+    accelerator = int(ac_request['accelerator'])
+
     host_data = host_selector(1)
     json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator)
     # pprint(json_auction)
@@ -96,7 +102,19 @@ def create_auction(cdb_version, procurement_method_type, number_of_items, accele
 
     time.sleep(1)
     activate_auction_response = activate_auction(publish_auction_response[1], headers_auction, host_data[0])
-    print activate_auction_response[1].json()
+
+    auction_status = activate_auction_response[1].json()['data']['status']
+    auction_id_long = publish_auction_response[1].json()['data']['id']
+    auction_id_short = publish_auction_response[1].json()['data']['auctionID']
+    auction_token = publish_auction_response[1].json()['access']['token']
 
 
-create_auction(1, 'dgfFinancialAssets', 2, 720)
+    response_json = dict()
+    response_json['tender_to_company'] = {'status': '???'}, 'link'
+    response_json['id'] = auction_id_short
+    response_json['status'] = 'error!!!'
+    response_json['auctionStatus'] = 'get status!!!'
+    response_code = 201
+    return response_json, response_code
+
+

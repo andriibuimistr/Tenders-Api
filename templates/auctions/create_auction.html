@@ -1,0 +1,74 @@
+<div class="heading main_title">
+                    <h1>Создание аукциона</h1>
+                </div>
+                <div class="section_content">
+                    <div class="create-tender-form main-form">
+                        <form class="form-create-tender" id="create-tender" role="form">
+                        <div class="create-tender-form-inputs">
+                            <div class="procurement-method-type col-lg-15 col-md-48 col-sm-48 col-xs-48">
+                            <select name="procurementMethodType" class="form-control" size="1">
+                                {% for type in list_of_types %}
+                              <option value="{{type}}">{{type}}</option>
+                                {%endfor%}
+                            </select>
+                            </div>
+                            <div class="number-of-lots col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="number_of_lots" class="form-control" placeholder="Number of lots" maxlength="2" disabled>
+                            </div>
+                            <div class="number-of-items col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="number_of_items" class="form-control" placeholder="Number of items" maxlength="2">
+                            </div>
+                            <div class="number-of-bids col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="number_of_bids" class="form-control" placeholder="Number of bids" maxlength="2">
+                            </div>
+                            <div class="cdb-version col-lg-6 col-md-48 col-sm-48 col-xs-48">
+                                <select name="cdb_version" class="form-control" size="1">
+                                    {% for version in cdb_versions %}
+                                  <option value="{{version}}">{{version}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="accelerator col-lg-8 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="accelerator" class="form-control" placeholder="Accelerator" maxlength="5">
+                            </div>
+                            <div class="company_id col-lg-7 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="company_id" class="form-control" placeholder="Company id" maxlength="4">
+                            </div>
+                            <div class="platform-host col-lg-18 col-md-48 col-sm-48 col-xs-48">
+                                <select name="platform_host" class="form-control" size="1">
+                                    {% for platform in range(platforms|length) %}
+                                  <option value="{{platforms[platform].platform_url}}">{{platforms[platform].platform_name}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="tender-status col-lg-15 col-md-48 col-sm-48 col-xs-48">
+                                <select name="tenderStatus" class="form-control" size="1">
+                                    {% for status in statuses %}
+                                  <option value="{{status}}">{{status}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                        </div>
+                            <div class="create-tender-button-div">
+                                <button class="btn btn-success create-tender-button" id="createAuction" type="button">Create auction</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel panel-default panel-created-tender">
+                      <!-- Default panel contents -->
+                      <div class="panel-heading response-json-header">
+                          <div class="response-json-title">
+                              Response
+                          </div>
+                          <div class="clear-alerts-button">
+                              <button class="btn btn-warning btn-xs" id="clear-createTender-response" type="button">Delete alerts</button>
+                          </div>
+                      </div>
+                      <div class="panel-body panel-created-tender-json">
+                        <div id="created_tender_json" class="response-json"></div>
+                          <div class="response-json-bottom">
+
+                          </div>
+                      </div>
+                    </div>
+                </div>
