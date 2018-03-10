@@ -40,7 +40,7 @@ else:
 auth_key = key.auth_key
 
 
-tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB', 'GBP'])
+tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
 valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
 
@@ -104,7 +104,7 @@ def description_of_item(di_number_of_lots, di_number_of_items, item_number):
 
 # generate delivery address
 def delivery_address_block():
-    delivery_address_json = {"postalCode": 00000,
+    delivery_address_json = {"postalCode": "00000",
                              "countryName": "Україна",
                              "streetAddress": "Улица",
                              "region": "Дніпропетровська область",
@@ -168,10 +168,10 @@ def lot_id_generator():
 
 
 def title_for_lot(lot_number):
-    lot_title_en = ', "title_en": ""'
+    lot_title_en = ', "title_en": "Title of lot in English"'
     lot_random_title = u"{}{}".format(u'Лот ', lot_number)
     lot_title = u"{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"', lot_title_en)
-    lot_description_en = ', "description_en": ""'
+    lot_description_en = ', "description_en": "Description of lot in English"'
     lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(200).replace('\n', ' '), '"')
     lot_description_fragment = u"{}{}{}".format(', "description": ', lot_description_name, lot_description_en)
     lot_data = u'{}{}'.format(lot_title, lot_description_fragment)
@@ -315,7 +315,7 @@ def procuring_entity():
                                    "region": "місто Київ",
                                    "locality": "Київ",
                                    "streetAddress": "Улица Койкого",
-                                   "postalCode": 12345
+                                   "postalCode": "12345"
                              },
                              "contactPoint": {
                                    "name": fake.name(),

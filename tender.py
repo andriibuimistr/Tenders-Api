@@ -2,13 +2,13 @@
 import json
 import pytz
 import requests
-import variables
+import data_for_tender
 import qualification
 from qualification import run_activate_award, run_activate_contract
 from bid import suppliers_for_limited
 import refresh
 from refresh import get_tender_info, check_if_contract_exists, time_counter
-from variables import tender_values, features, auth_key, lot_values, tender_data, tender_titles, tender_values_esco, lot_values_esco, above_threshold_procurement,\
+from data_for_tender import tender_values, features, auth_key, lot_values, tender_data, tender_titles, tender_values_esco, lot_values_esco, above_threshold_procurement,\
     below_threshold_procurement, limited_procurement, host_selector, prequalification_procedures, competitive_procedures, negotiation_procurement
 from database import db, Tenders
 from datetime import datetime, timedelta
@@ -22,7 +22,7 @@ from requests.exceptions import ConnectionError
 def list_of_id_for_lots(number_of_lots):
     list_of_lot_id = []
     for x in range(number_of_lots):
-        list_of_lot_id.append(variables.lot_id_generator())
+        list_of_lot_id.append(data_for_tender.lot_id_generator())
     return list_of_lot_id
 
 
@@ -33,7 +33,7 @@ def list_of_lots(number_of_lots, list_of_id_lots, procurement_method):
     for i in range(number_of_lots):
         lot_number += 1
         lot_id = list_of_id_lots[i]
-        one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', variables.title_for_lot(lot_number), lot_values[0], '}'))
+        one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values[0], '}'))
         if procurement_method in limited_procurement:
             del one_lot['minimalStep'], one_lot['guarantee']
         list_of_lots_for_tender.append(one_lot)
@@ -49,7 +49,7 @@ def list_of_lots_esco(number_of_lots, list_of_id_lots):
     for i in range(number_of_lots):
         lot_number += 1
         lot_id = list_of_id_lots[i]
-        one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', variables.title_for_lot(lot_number), lot_values_esco, '}'))
+        one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values_esco, '}'))
         list_of_lots_for_tender.append(one_lot)
     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
     lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
@@ -64,7 +64,7 @@ def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, pro
         related_lot_id = list_of_id_lots[i]
         for item in range(number_of_items):
             item_number += 1
-            item = json.loads(u"{}{}{}{}{}".format('{ "relatedLot": "', related_lot_id, '"', variables.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), "}"))
+            item = json.loads(u"{}{}{}{}{}".format('{ "relatedLot": "', related_lot_id, '"', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), "}"))
             list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
     items_list = u"{}{}".format(', "items": ', list_of_items)
@@ -76,7 +76,7 @@ def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method
     list_of_items = []
     item_number = 0
     for i in range(number_of_items):
-        item = json.loads(u"{}{}{}".format('{', variables.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), '}'))
+        item = json.loads(u"{}{}{}".format('{', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), '}'))
         list_of_items.append(item)
     list_of_items = json.dumps(list_of_items)
     items_list = u"{}{}".format(', "items": ', list_of_items)
@@ -157,9 +157,9 @@ def activating_tender(publish_tender_response, headers, host, api_version, procu
     for x in range(5):
         attempts += 1
         try:
-            if procurement_method in variables.above_threshold_procurement:
+            if procurement_method in data_for_tender.above_threshold_procurement:
                 activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
-            elif procurement_method in variables.below_threshold_procurement:
+            elif procurement_method in data_for_tender.below_threshold_procurement:
                 activate_tender = json.loads('{ "data": { "status": "active.enquiries"}}')
             else:
                 activate_tender = json.loads('{ "data": { "status": "active"}}')

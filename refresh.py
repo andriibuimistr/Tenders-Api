@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import host, api_version
+from data_for_tender import host, api_version
 from database import db, Companies, Tenders, Bids, Platforms, PlatformRoles, Roles, Users
 import requests
 from datetime import datetime

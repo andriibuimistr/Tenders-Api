@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import host, api_version, ds_host, documents_above_procedures, documents_above_non_financial,\
+from data_for_tender import host, api_version, ds_host, documents_above_procedures, documents_above_non_financial,\
     documents_above_non_confidential
 import requests
 import os

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import activate_contract_json
+from data_for_tender import activate_contract_json
 from database import Tenders, Bids
 import requests
 import key

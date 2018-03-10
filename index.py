@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from variables import above_threshold_procurement, below_threshold_procurement, limited_procurement, tender_status_list,\
+from data_for_tender import above_threshold_procurement, below_threshold_procurement, limited_procurement, tender_status_list,\
     without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, \
     competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status, list_of_procurement_types, list_of_api_versions, platforms,\
     statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration

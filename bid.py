@@ -4,11 +4,11 @@ import requests
 
 import database
 import document
-from variables import auth_key, valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, below_threshold_procurement
+from data_for_tender import auth_key, valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, below_threshold_procurement
 from database import Bids, db
 import json
 import time
-import variables
+import data_for_tender
 from random import randint
 import binascii
 import os
