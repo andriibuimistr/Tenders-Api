@@ -1,5 +1,6 @@
 import refresh
 from flask import render_template
+from data_for_tender import list_of_api_versions
 
 
 class AdminPages:
@@ -20,4 +21,4 @@ class AdminPages:
         return render_template('index.html', user_role_id=self.user_role_id, content=content)
 
     def page_admin_json_viewer(self):
-        return render_template('admin/json-viewer.html', user_role_id=self.user_role_id)
+        return render_template('admin/json-viewer.html', user_role_id=self.user_role_id, api_versions=list_of_api_versions)

@@ -2,6 +2,7 @@ from database import db, Platforms, Users, Tenders
 from flask import render_template, abort, jsonify
 import validators
 import refresh
+import data_for_tender
 
 
 def add_platform(request):
@@ -86,3 +87,9 @@ def delete_tender(tender_id):
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
+
+
+def get_tender_json_from_cdb(tender_id, api_version):
+    host_kit = data_for_tender.host_selector(api_version)
+    tender_json = refresh.get_tender_info(host_kit, tender_id)[1].json()
+    return tender_json

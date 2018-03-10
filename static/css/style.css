@@ -714,3 +714,16 @@ footer {
 .container_json_viewer {
     width: 90% !important;
 }
+
+.json_viewer_labels {
+    text-align: center;
+}
+
+.empty-div {
+    height: 34px;
+    padding: 6px; 12px;
+}
+
+.form-view-json div {
+    margin-bottom: 5px;
+}

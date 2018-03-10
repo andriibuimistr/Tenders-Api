@@ -17,10 +17,33 @@
                 <div class="section_content">
                     <H4>Input JSON</H4>
                     <div class="json-viewer">
-                        <form class="form-view-json" id="form-view-json" role="form">
-                            <textarea name="raw-json" id="raw_json_input" class="form-control" placeholder="Paste your JSON here"></textarea>
-                            <button class="btn btn-success render-json-button" id="render_json" type="button">View JSON</button>
-                        </form>
+                        <div class="json_viewer_labels">
+                            <label><input type="radio" name="colorCheckbox" value="insert" checked> Insert JSON</label>
+                            <label><input type="radio" name="colorCheckbox" value="get"> Get JSON from CDB</label>
+                        </div>
+                        <div class="json_source json-insert">
+                            <form class="form-view-json" id="form-view-json-insert" role="form">
+                                <textarea name="raw-json" id="raw_json_input" class="form-control" placeholder="Paste your JSON here"></textarea>
+                                <button class="btn btn-success render-json-button" id="render_json_insert" type="button">View JSON</button>
+                            </form>
+                        </div>
+                        <div class="json_source json-get">
+                            <form class="form-view-json" id="form-view-json-get" role="form">
+                                <div class="empty-div col-lg-15 col-md-48 col-sm-48 col-xs-48"></div>
+                                <div class="get-json-tender-id-long col-lg-12 col-md-36 col-sm-48 col-xs-48">
+                                    <input type="text" name="tender_id_long" class="form-control" placeholder="Tender ID" maxlength="32">
+                                </div>
+                                <div class="api-version col-lg-6 col-md-12 col-sm-48 col-xs-48">
+                                    <select name="api_version" class="form-control" size="1">
+                                    {% for version in api_versions %}
+                                        <option value="{{version}}">{{version}}</option>
+                                    {%endfor%}
+                                    </select>
+                                </div>
+                                <div class="empty-div col-lg-15 col-md-48 col-sm-48 col-xs-48"></div>
+                                <button class="btn btn-success render-json-button" id="render_json_get" type="button">Get JSON</button>
+                            </form>
+                        </div>
                         <H4>Output JSON</H4>
                         <pre id="json_output">Rendered JSON will appear here</pre>
                     </div>

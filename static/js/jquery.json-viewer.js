@@ -146,3 +146,13 @@
     });
   };
 })(jQuery);
+
+
+//My code
+//Radio button for json viewer
+function selectForm() {
+  $("div.json_source").hide();
+  $("div.json-" + $("input:checked").val()).show();
+}
+selectForm();
+$("input").click(function(){selectForm()});

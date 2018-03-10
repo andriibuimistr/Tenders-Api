@@ -689,7 +689,7 @@ def admin_pages(page):
 # Add platform (with jquery)
 @app.route('/backend/jquery/add_platform', methods=['POST'])
 def jquery_add_platform():
-    if not session.get('logged_in'):
+    if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
     else:
         return jquery_requests.add_platform(request)
@@ -698,7 +698,7 @@ def jquery_add_platform():
 # Add user (with jquery)
 @app.route('/backend/jquery/add_user', methods=['POST'])
 def jquery_add_user():
-    if check_if_admin() is not True:
+    if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
     else:
         return jquery_requests.add_user(request)
@@ -707,7 +707,7 @@ def jquery_add_user():
 # Delete platform (with jquery)
 @app.route('/backend/jquery/platforms/<platform_id>', methods=['DELETE'])
 def jquery_delete_platform(platform_id):
-    if not session.get('logged_in'):
+    if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
     else:
         return jquery_requests.delete_platform(platform_id)
@@ -716,10 +716,19 @@ def jquery_delete_platform(platform_id):
 # Delete tender (with jquery)
 @app.route('/backend/jquery/tenders/<tender_id>', methods=['DELETE'])
 def jquery_delete_tender(tender_id):
-    if not session.get('logged_in'):
+    if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
     else:
         return jquery_requests.delete_tender(tender_id)
+
+
+# Get JSON of tender from CDB (with jquery)
+@app.route('/backend/jquery/get_tender_json/<tender_id>/<api_version>', methods=['GET'])
+def jquery_get_tender_json(tender_id, api_version):
+    if check_if_admin_jquery() is not True:
+        return check_if_admin_jquery()
+    else:
+        return jsonify(jquery_requests.get_tender_json_from_cdb(tender_id, api_version)), 200
 # ############################################################## ADMIN END #############################################################################
 
 
