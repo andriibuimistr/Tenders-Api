@@ -6,6 +6,7 @@ import requests
 import time
 import json
 from flask import abort
+from pprint import pprint
 
 
 # Publish auction
@@ -86,15 +87,16 @@ def activate_auction(publish_auction_response, headers, host):
             abort(500, 'Activate auction error: ' + str(e))
 
 
-def create_auction(cdb_version, procurement_method_type):
+def create_auction(cdb_version, procurement_method_type, number_of_items, accelerator):
     host_data = host_selector(1)
-    json_auction = generate_auction_json(procurement_method_type)
+    json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator)
+    # pprint(json_auction)
     headers_auction = headers_request(json_auction, host_data[1], cdb_version)
     publish_auction_response = publish_auction(headers_auction, json_auction, host_data[0])  # publish auction in draft status
 
     time.sleep(1)
     activate_auction_response = activate_auction(publish_auction_response[1], headers_auction, host_data[0])
-    print activate_auction_response[1]
+    print activate_auction_response[1].json()
 
 
-create_auction(1, 'dgfFinancialAssets')
+create_auction(1, 'dgfFinancialAssets', 2, 720)
