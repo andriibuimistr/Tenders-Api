@@ -5,7 +5,7 @@ import requests
 import database
 import document
 from data_for_tender import auth_key, valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, below_threshold_procurement
-from database import Bids, db
+from database import BidsTender, db
 import json
 import time
 import data_for_tender
@@ -444,7 +444,7 @@ def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body, hos
 
 # add bid info to DB (SQLA)
 def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
-    bid_to_sql = Bids(None, bid_id, bid_token, tender_id, None, None, None, None, u_identifier)
+    bid_to_sql = BidsTender(None, bid_id, bid_token, tender_id, None, None, None, None, u_identifier)
     db.session.add(bid_to_sql)
     db.session.commit()  # you need to call commit() method to save your changes to the database
     print 'Add bid to local database'

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from data_for_tender import activate_contract_json
-from database import Tenders, Bids
+from database import Tenders, BidsTender
 import requests
 import key
 import json
@@ -114,7 +114,7 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
 
 # select my bids
 def pass_pre_qualification(qualifications, tender_id_long, tender_token, host, api_version):
-    list_of_my_bids = Bids.query.filter_by(tender_id=tender_id_long).all()
+    list_of_my_bids = BidsTender.query.filter_by(tender_id=tender_id_long).all()
     my_bids = []
     bids_json = []
     for x in range(len(list_of_my_bids)):  # select bid_id of every bid

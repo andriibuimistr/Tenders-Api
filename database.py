@@ -64,7 +64,7 @@ class Tenders(db.Model):
         self.api_version = api_version
 
 
-class Bids(db.Model):
+class BidsTender(db.Model):
     __tablename__ = 'bids'
     id = db.Column(db.Integer, primary_key=True)
     bid_id = db.Column(db.String(255))
@@ -87,6 +87,39 @@ class Bids(db.Model):
         self.company_uid = company_id
         self.added_to_site = added_to_site
         self.user_identifier = user_identifier
+
+
+class Auctions(db.Model):
+    __tablename__ = 'tenders'
+    id = db.Column(db.Integer, primary_key=True)
+    auction_id_long = db.Column(db.String(255))
+    auction_id_short = db.Column(db.String(255))
+    auction_token = db.Column(db.String(255))
+    procurementMethodType = db.Column(db.String(255))
+    related_auction_id = db.Column(db.String(255))
+    auction_status = db.Column(db.String(255))
+    n_lots = db.Column(db.Integer)
+    auction_platform_id = db.Column(db.Integer)
+    company_uid = db.Column(db.Integer)
+    added_to_site = db.Column(db.Integer)
+    creator_id = db.Column(db.Integer)
+    cdb_version = db.Column(db.String(255))
+
+    def __init__(self, id, auction_id_long, auction_id_short, auction_token, procurementMethodType, related_auction_id,
+                 auction_status, n_lots, auction_platform_id, company_uid, added_to_site, creator_id, cdb_version):
+        self.id = id
+        self.auction_id_long = auction_id_long
+        self.auction_id_short = auction_id_short
+        self.auction_token = auction_token
+        self.procurementMethodType = procurementMethodType
+        self.related_auction_id = related_auction_id
+        self.auction_status = auction_status
+        self.n_lots = n_lots
+        self.auction_platform_id = auction_platform_id
+        self.company_uid = company_uid
+        self.added_to_site = added_to_site
+        self.creator_id = creator_id
+        self.cdb_version = cdb_version
 
 
 class Platforms(db.Model):

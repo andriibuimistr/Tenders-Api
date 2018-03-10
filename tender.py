@@ -383,7 +383,7 @@ def creation_of_tender(tc_request):
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
 
-    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long)  # add first stage to company
+    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long, 'tender')  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2]
 
     ''''# add documents to tender
@@ -636,7 +636,7 @@ def creation_of_tender(tc_request):
                                                                         response_json['status'] = 'error'
                                                                         response_code = 422
 
-                                                    add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id)
+                                                    add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id, 'tender')
                                                     response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
                                                     response_json['tender_to_company'] = add_2nd_stage_to_company[0], add_2nd_stage_to_company[2]
                                                     break

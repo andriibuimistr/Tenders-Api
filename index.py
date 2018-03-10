@@ -3,7 +3,7 @@ from data_for_tender import above_threshold_procurement, below_threshold_procure
     without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, \
     competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, create_tender_required_fields, limited_status, list_of_procurement_types, list_of_api_versions, platforms,\
     statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration
-from database import db, Tenders, Bids, Platforms, Users
+from database import db, Tenders, BidsTender, Platforms, Users
 import tender
 from auctions import auction
 # import document
@@ -542,7 +542,7 @@ def get_bids_of_one_tender(tender_id_short):
             abort(404, 'Tender id was not found in database')  # ####################### add render template
 
         tender_id_long = Tenders.query.filter_by(tender_id_short=tender_id_short).first().tender_id_long
-        get_bids_of_tender = Bids.query.filter_by(tender_id=tender_id_long).all()
+        get_bids_of_tender = BidsTender.query.filter_by(tender_id=tender_id_long).all()
         list_of_tender_bids = []
         for every_bid in range(len(get_bids_of_tender)):
             bid_id = get_bids_of_tender[every_bid].bid_id
@@ -569,7 +569,7 @@ def add_bid_to_company(bid_id):
     if not session.get('logged_in'):
         return abort(401)
     else:
-        list_of_bids = Bids.query.all()
+        list_of_bids = BidsTender.query.all()
         list_bid = []
         for tid in range(len(list_of_bids)):
             list_bid.append(list_of_bids[tid].bid_id)
