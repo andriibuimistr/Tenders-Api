@@ -746,7 +746,7 @@ def create_auction_function():
         abort(400)
 
     ac_request = request.form
-    result = auction.create_auction(ac_request)
+    result = auction.create_auction(ac_request, session)
     return jsonify(result[0]), result[1]
 
 

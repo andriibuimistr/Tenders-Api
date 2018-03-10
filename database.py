@@ -90,7 +90,7 @@ class BidsTender(db.Model):
 
 
 class Auctions(db.Model):
-    __tablename__ = 'tenders'
+    __tablename__ = 'auctions'
     id = db.Column(db.Integer, primary_key=True)
     auction_id_long = db.Column(db.String(255))
     auction_id_short = db.Column(db.String(255))

@@ -24,7 +24,7 @@
                             <div class="cdb-version col-lg-6 col-md-48 col-sm-48 col-xs-48">
                                 <select name="cdb_version" class="form-control" size="1">
                                     {% for version in cdb_versions %}
-                                  <option value="{{version}}">{{version}}</option>
+                                  <option value="{{version}}">CDB {{version}}</option>
                                     {%endfor%}
                                 </select>
                             </div>
@@ -42,7 +42,7 @@
                                 </select>
                             </div>
                             <div class="tender-status col-lg-15 col-md-48 col-sm-48 col-xs-48">
-                                <select name="tenderStatus" class="form-control" size="1">
+                                <select name="auctionStatus" class="form-control" size="1">
                                     {% for status in statuses %}
                                   <option value="{{status}}">{{status}}</option>
                                     {%endfor%}

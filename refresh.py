@@ -168,30 +168,43 @@ def update_tenders_list():
 
 # add one tender company (SQLA) ##############################################
 def add_one_tender_company(company_id, company_platform_host, tender_id_long, entity):
-    get_tender_data = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
-    db.session.remove()
-    tender_id_long = get_tender_data.tender_id_long
-    tender_token = get_tender_data.tender_token
-    added_to_site = get_tender_data.added_to_site
+    if entity == 'tender':
+        get_tender_data = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
+        db.session.remove()
+        tender_id_long = get_tender_data.tender_id_long
+        tender_token = get_tender_data.tender_token
+        added_to_site = get_tender_data.added_to_site
+    else:
+        get_tender_data = Auctions.query.filter_by(auction_id_long=tender_id_long).first()
+        db.session.remove()
+        tender_id_long = get_tender_data.auction_id_long
+        tender_token = get_tender_data.auction_token
+        added_to_site = get_tender_data.added_to_site
+
     if added_to_site == 0 or added_to_site is None:
         response = None
         add_count = 1
         for x in range(30):
-            print "Adding tender to company. Attempt " + str(add_count)
-            add_to_site = requests.get('{}/{}{}{}{}{}{}{}{}'.format(company_platform_host, entity, '/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id,
-                                                                    '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+            print "Adding {} to company. Attempt {}".format(entity, add_count)
+            add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id,
+                                                                 '&acc_token=SUPPPER_SEEECRET_STRIIING'))
             add_to_site_response = add_to_site.json()
+            if type(add_to_site_response) == int and entity == 'auction':
+                Auctions.query.filter_by(auction_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
+                db.session.commit()
+                db.session.remove()
+                print '\nAuction was added to site - ' + tender_id_long
+                link_to_tender = '{}{}'.format(company_platform_host, '/buyer/tender/view/')
+                response = {'status': 'success'}, 201, link_to_tender
+                break
             if 'tid' in add_to_site_response:
-                if entity == 'tender':
-                    Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
-                elif entity == 'auction':
-                    Auctions.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
+                Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
                 db.session.commit()
                 db.session.remove()
                 print '\nTender was added to site - ' + tender_id_long
                 tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
-                link_to_tender_print = '{}{}{}{}{}{}'.format('Link: ', company_platform_host, '/buyer/', entity, '/view/', add_to_site_response['tid'])
-                link_to_tender = '{}{}{}{}{}'.format(company_platform_host, '/buyer/', entity, '/view/', add_to_site_response['tid'])
+                link_to_tender_print = '{}{}{}{}'.format('Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+                link_to_tender = '{}{}{}'.format(company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
                 print tender_id_site
                 print link_to_tender_print
                 response = {'status': 'success'}, 201, link_to_tender
@@ -200,7 +213,7 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long, en
                 if entity == 'tender':
                     Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
                 elif entity == 'auction':
-                    Auctions.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
+                    Auctions.query.filter_by(auction_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
                 db.session.commit()
                 db.session.remove()
                 print 'Tender has company'
@@ -215,7 +228,7 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long, en
         return response
     else:
         print '{} {}{}'.format(entity, tender_id_long, ' was added to company before')
-        return abort(422, 'Tender was added to site before')
+        return abort(422, '{} was added to site before'.format(entity))
 
 
 # # add one tender to company (SQLA)
@@ -396,3 +409,26 @@ def get_tender_info(host_kit, tender_id_long):
                 continue
             else:
                 abort(500, 'Get tender info error: ' + str(e))
+
+
+# ################################################################################### AUCTIONS #####################################
+def get_auction_info(host_kit, auction_id_long):
+    attempts = 0
+    for x in range(5):
+        attempts += 1
+        try:
+            get_t_info = requests.get("{}/{}".format(host_kit[0], auction_id_long))
+            if get_t_info.status_code == 200:
+                return get_t_info.status_code, get_t_info
+            else:
+                print get_t_info.content
+                time.sleep(1)
+                if attempts >= 5:
+                    abort(get_t_info.status_code, get_t_info.content)
+        except Exception as e:
+            print e
+            if attempts < 5:
+                time.sleep(1)
+                continue
+            else:
+                abort(500, 'Get auction info error: ' + str(e))

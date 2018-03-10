@@ -6,6 +6,9 @@ import requests
 import time
 import json
 from flask import abort
+from database import db, Auctions
+import refresh
+from refresh import get_auction_info
 from pprint import pprint
 
 
@@ -87,12 +90,27 @@ def activate_auction(publish_auction_response, headers, host):
             abort(500, 'Activate auction error: ' + str(e))
 
 
-def create_auction(ac_request):
-    print ac_request
+# save auction info to DB (SQLA)
+def auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method, auction_status, creator_id, cdb_version):
+    try:
+        # Connect to DB
+        auction_to_sql = Auctions(None, auction_id_long, auction_id_short, auction_token, procurement_method, None, auction_status, None, None, None, None, creator_id, cdb_version)
+        db.session.add(auction_to_sql)
+        db.session.commit()
+        print "Auction was added to local database"
+        return {"status": "success"}, 0
+    except Exception as e:
+        return e, 1
+
+
+def create_auction(ac_request, session):
     cdb_version = int(ac_request['cdb_version'])
     procurement_method_type = ac_request['procurementMethodType']
     number_of_items = int(ac_request['number_of_items'])
     accelerator = int(ac_request['accelerator'])
+    company_id = int(ac_request['company_id'])
+    platform_host = ac_request['platform_host']
+    received_auction_status = ac_request['auctionStatus']
 
     host_data = host_selector(1)
     json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator)
@@ -108,13 +126,31 @@ def create_auction(ac_request):
     auction_id_short = publish_auction_response[1].json()['data']['auctionID']
     auction_token = publish_auction_response[1].json()['access']['token']
 
+    add_auction_db = auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method_type, auction_status, session['user_id'], cdb_version)
+    if add_auction_db[1] == 1:
+        abort(500, '{}'.format(add_auction_db[0]))
 
+    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')
+
+    # Response JSON data
     response_json = dict()
-    response_json['tender_to_company'] = {'status': '???'}, 'link'
+    response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2] + auction_id_short
     response_json['id'] = auction_id_short
-    response_json['status'] = 'error!!!'
-    response_json['auctionStatus'] = 'get status!!!'
-    response_code = 201
+    response_json['status'] = 'error'
+    response_code = 0
+    response_json['auctionStatus'] = 'undefined'
+
+    if received_auction_status == 'active.tendering':
+        get_t_info = get_auction_info(host_data, auction_id_long)
+
+        if get_t_info[1].json()['data']['status'] == 'active.tendering':
+            response_json['auctionStatus'] = get_t_info[1].json()['data']['status']
+            response_json['status'] = 'success'
+            response_code = 201
+        else:
+            response_json['auctionStatus'] = get_t_info[1].json()['data']['status']
+            response_code = 422
+
     return response_json, response_code
 
 

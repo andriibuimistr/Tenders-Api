@@ -355,11 +355,11 @@ $(function() {
         var form = $("#create-tender");
         var request_id = randomString(32);
         var procedure = $("#create-tender select[name=procurementMethodType]").val();
-        var expected_status = $("#create-tender select[name=tenderStatus]").val();
+        var expected_status = $("#create-tender select[name=auctionStatus]").val();
         var html_for_wait = '<div class="alert-response-status">Waiting for response</div>' +
                             '<div class="alert-response-description">' +
                                 '<div class="wait-procedure-type"><span>Procedure: </span>' + procedure + '</div>' +
-                                '<div class="wait-tender-status"><span>Expected Tender Status: </span>' + expected_status + '</div>' +
+                                '<div class="wait-tender-status"><span>Expected Auction Status: </span>' + expected_status + '</div>' +
                             '</div>'
                             ;
         $('#created_tender_json').prepend('<div class="response-content response-content-waiting" id="' + request_id + '">' + html_for_wait + '</div>');
@@ -380,8 +380,8 @@ $(function() {
                 $('#' + request_id).prepend('<button class="delete-alert" type="button">x</button>' +
                                             '<div class="alert-response-status">' + xhr.status + ' ' + textStatus + '</div>' +
                                             '<div class="alert-response-description">' +
-                                                '<div class="id-of-tender"><span>Tender ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
-                                                '<div class="actual-tender-status"><span>Tender status: </span>' + tender_status + '</div>' +
+                                                '<div class="id-of-tender"><span>Auction ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
+                                                '<div class="actual-tender-status"><span>Auction status: </span>' + tender_status + '</div>' +
                                                 '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
                                                 '<div class="tender-to-company-status"><span>Add to company status: </span>' + tender_to_company_status + '</div>' +
                                             '</div>'
