@@ -421,6 +421,13 @@ def get_tender_info(host_kit, tender_id_long):
                 abort(500, 'Get tender info error: ' + str(e))
 
 
+def get_time_difference(host_kit):
+    lt = int(time.mktime(datetime.utcnow().timetuple()))
+    r = requests.head(host_kit[0])
+    st = int(time.mktime(datetime.strptime(r.headers['Date'][-24:-4], "%d %b %Y %H:%M:%S").timetuple()))
+    return st - lt
+
+
 # ################################################################################### AUCTIONS #####################################
 def get_auction_info(host_kit, auction_id_long):
     attempts = 0

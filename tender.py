@@ -771,7 +771,7 @@ def creation_of_tender(tc_request, user_id):
                         response_code = 201
                         break
                     t_end_date = datetime.strptime(publish_tender_response[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
-                    waiting_time = (t_end_date - datetime.now()).seconds
+                    waiting_time = (t_end_date.second - datetime.now().second)
                     if waiting_time > 3600:
                         abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
                     time_counter(waiting_time, 'Check tender status')
@@ -812,7 +812,8 @@ def creation_of_tender(tc_request, user_id):
                 get_t_info = get_tender_info(host_kit, tender_id_long)
                 if procurement_method in negotiation_procurement:
                     complaint_end_date = datetime.strptime(get_t_info[1].json()['data']['awards'][-1]['complaintPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
-                    waiting_time = (complaint_end_date - datetime.now()).seconds + 5
+                    diff = refresh.get_time_difference(host_kit)
+                    waiting_time = ((complaint_end_date - timedelta(seconds=diff)) - datetime.now()).seconds + 5
                     if waiting_time > 3600:
                         abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
                     time_counter(waiting_time, 'Check presence of contract')
