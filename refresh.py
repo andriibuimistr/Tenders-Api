@@ -336,7 +336,7 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id):
         return abort(422, 'Bid was added to company before')
 
 
-# get list of companies (SQLA)
+# get list of platform (SQLA)
 def get_list_of_platforms(platform_role):
     if platform_role:  # if platform role is passed to function
         platforms_list = Platforms.query.filter_by(platform_role=platform_role).all()
@@ -346,7 +346,7 @@ def get_list_of_platforms(platform_role):
     return platforms_list
 
 
-# get list of companies (SQLA)
+# get list of platform roles
 def get_list_of_platform_roles():
     platform_roles = PlatformRoles.query.all()
     db.session.remove()
@@ -354,6 +354,16 @@ def get_list_of_platform_roles():
     for platform_role in range(len(platform_roles)):
         roles_dict[platform_roles[platform_role].id] = platform_roles[platform_role].platform_role_name
     return roles_dict
+
+
+# get list of platform URLs
+def get_list_of_platform_urls(platform_role):
+    platforms = Platforms.query.filter_by(platform_role=platform_role).all()
+    db.session.remove()
+    urls_list = []
+    for number in range(len(platforms)):
+        urls_list.append(platforms[number].platform_url)
+    return urls_list
 
 
 # get list of users

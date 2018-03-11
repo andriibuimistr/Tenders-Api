@@ -335,19 +335,16 @@ def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_meth
         return e, 1
 
 
-def creation_of_tender(tc_request):
+def creation_of_tender(tc_request, user_id):
     procurement_method = tc_request["procurementMethodType"]
-    number_of_lots = tc_request["number_of_lots"]
-    number_of_items = tc_request["number_of_items"]
-    # add_documents = tc_request["documents"]
-    # documents_of_bid = tc_request["documents_bid"]
-    number_of_bids = tc_request["number_of_bids"]
-    accelerator = tc_request["accelerator"]
-    company_id = tc_request['company_id']
+    number_of_lots = int(tc_request["number_of_lots"])
+    number_of_items = int(tc_request["number_of_items"])
+    number_of_bids = int(tc_request["number_of_bids"])
+    accelerator = int(tc_request["accelerator"])
+    company_id = int(tc_request['company_id'])
     platform_host = tc_request['platform_host']
     api_version = tc_request['api_version']
     received_tender_status = tc_request['tenderStatus']
-    user_id = tc_request['user_id']
 
     if procurement_method == 'reporting':
         number_of_lots = 0
@@ -816,6 +813,8 @@ def creation_of_tender(tc_request):
                 if procurement_method in negotiation_procurement:
                     complaint_end_date = datetime.strptime(get_t_info[1].json()['data']['awards'][-1]['complaintPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
                     waiting_time = (complaint_end_date - datetime.now()).seconds + 5
+                    if waiting_time > 3600:
+                        abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
                     time_counter(waiting_time, 'Check presence of contract')
                 else:
                     complaint_end_date = datetime.now()

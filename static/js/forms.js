@@ -9,18 +9,6 @@ var randomString = function(length) {
 }
 
 
-//Convert form data to json
-function ConvertFormToJSON(form){
-    var array = jQuery(form).serializeArray();
-    var json = {};
-
-    jQuery.each(array, function() {
-        json[this.name] = this.value || '';
-    });
-
-    return json;
-}
-
 //Add tender to company
 $(function() {
     $('.tender-company-button').click(function() {
