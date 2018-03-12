@@ -43,7 +43,7 @@ def generate_id_for_item():
     return binascii.hexlify(os.urandom(16))
 
 
-def generate_items_for_auction(number_of_items):
+def generate_items_for_auction(number_of_items, rent):
     items = []
     count = 0
     for item in range(number_of_items):
@@ -51,74 +51,81 @@ def generate_items_for_auction(number_of_items):
         item_json = {
                         "description": "Предмет {} {}".format(count, fake.text(100).replace('\n', ' ')),
                         "classification": {
-                            "scheme": "CAV",
-                            "description": "Права вимоги за кредитними договорами",
-                            "id": "07000000-9"
+                            "scheme": "CPV",
+                            "description": "Сільськогосподарські культури, продукція товарного садівництва та рослинництва",
+                            "id": "03110000-5"
                         },
                         "address": {
-                            "postalCode": "04655",
+                            "postalCode": "00000",
                             "countryName": "Україна",
-                            "streetAddress": "вулиця Редьчинська, 30",
+                            "streetAddress": "ул. Койкого 325",
                             "region": "місто Київ",
-                            "locality": "Київ"
+                            "locality": "Киев"
                         },
                         "id": generate_id_for_item(),
                         "unit": {
-                            "code": "E48",
-                            "name": "послуга"
+                            "code": "MTK",
+                            "name": "метри квадратні"
                         },
                         "quantity": randint(1, 1000)
                     }
+        if rent is True:
+            item_json["contractPeriod"] = {
+                                            "startDate": "2017-07-01T00:00:00+03:00",
+                                            "endDate": "2017-07-08T00:00:00+03:00"
+                                        }
+            item_json["additionalClassifications"] = [
+                                                        {
+                                                            "scheme": "CPVS",
+                                                            "id": "PA01-7",
+                                                            "description": "Оренда"
+                                                        }
+                                                     ]
+
         items.append(item_json)
     return items
 
 
-def generate_auction_json(procurement_method_type, number_of_items, accelerator):
+def generate_auction_json(procurement_method_type, number_of_items, accelerator, minNumberOfQualifiedBids, rent):
     values = auction_value()
     auction_data = {"data": {
                         "procurementMethod": "open",
                         "submissionMethod": "electronicAuction",
-                        "dgfDecisionDate": dgf_decision_date(1),
-                        "procurementMethodType": procurement_method_type,
-                        "dgfDecisionID": "ID-123-456-789-0",
                         "description": fake.text(200).replace('\n', ' '),
                         "title": fake.text(100).replace('\n', ' '),
                         "tenderAttempts": randint(1, 8),
-                        "auctionPeriod": {
-                            "startDate": auction_period_start_date(accelerator),
-                        },
                         "guarantee": values[1],
-                        "status": "draft",
                         "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
-                        "title_en": "[TESTING] Title in English",
+                        "procurementMethodType": procurement_method_type,
                         "dgfID": "N-1234567890",
-                        "submissionMethodDetails": "quick(mode:no-auction)",
-                        "items": generate_items_for_auction(number_of_items),
+                        "submissionMethodDetails": "quick",
+                        "items": generate_items_for_auction(number_of_items, rent),
                         "value": values[0],
                         "minimalStep": values[2],
-                        "mode": "test",
-                        "title_ru": "[ТЕСТИРОВАНИЕ] Заголовок на русском",
+                        "awardCriteria": "highestCost",
                         "procuringEntity": {
                             "contactPoint": {
-                                "telephone": "+38(000)044-45-80",
-                                "name": "Гоголь Микола Васильович",
+                                "telephone": "+38(222)222-22-22",
+                                "name": "Иващенко Василь Петрович",
                                 "email": "test@test.test"
                             },
                             "identifier": {
                                 "scheme": "UA-EDR",
-                                "id": "12345680",
-                                "legalName": "Тестовый организатор \"Банк Ликвидатор\""
+                                "id": "12364861",
+                                "legalName": "Тестовый \"Замовник Тест\" 2"
                             },
-                            "name": "Тестовый организатор \"Банк Ликвидатор\"",
-                            "kind": "general",
+                            "name": "Тестовый \"Замовник Тест\" 2",
+                            "kind": "other",
                             "address": {
-                                "postalCode": "00000",
+                                "postalCode": "12358",
                                 "countryName": "Україна",
-                                "streetAddress": "ул. Койкого 325",
-                                "region": "місто Київ",
-                                "locality": "Киев"
+                                "streetAddress": "Адрес",
+                                "region": "Тернопільська область",
+                                "locality": "Тернополь"
                             }
                         }
                     }
                     }
+    if rent is True:
+        auction_data["minNumberOfQualifiedBids"] = minNumberOfQualifiedBids,
     return auction_data

@@ -6,6 +6,7 @@ from datetime import datetime
 from flask import abort
 import time
 import sys
+from requests.exceptions import ConnectionError
 # from requests.exceptions import ConnectionError
 
 
@@ -186,45 +187,61 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long, en
         add_count = 1
         for x in range(30):
             print "Adding {} to company. Attempt {}".format(entity, add_count)
-            add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id,
-                                                                 '&acc_token=SUPPPER_SEEECRET_STRIIING'))
-            add_to_site_response = add_to_site.json()
-            if type(add_to_site_response) == int and entity == 'auction':
-                Auctions.query.filter_by(auction_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
-                db.session.commit()
-                db.session.remove()
-                print '\nAuction was added to site - ' + tender_id_long
-                link_to_tender = '{}{}'.format(company_platform_host, '/buyer/tender/view/')
-                response = {'status': 'success'}, 201, link_to_tender
-                break
-            if 'tid' in add_to_site_response:
-                Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
-                db.session.commit()
-                db.session.remove()
-                print '\nTender was added to site - ' + tender_id_long
-                tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
-                link_to_tender_print = '{}{}{}{}'.format('Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
-                link_to_tender = '{}{}{}'.format(company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
-                print tender_id_site
-                print link_to_tender_print
-                response = {'status': 'success'}, 201, link_to_tender
-                break
-            elif 'tender has company' in add_to_site_response['error']:
-                if entity == 'tender':
-                    Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
-                elif entity == 'auction':
-                    Auctions.query.filter_by(auction_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
-                db.session.commit()
-                db.session.remove()
-                print 'Tender has company'
-                response = {'status': 'error', 'description': 'Tender has company'}, 422
-                break
-            else:
-                print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
-                response = {'status': 'error', 'description': add_to_site_response}, 422
+            try:
                 add_count += 1
-                time.sleep(20)
-                continue
+                add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id,
+                                                                     '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+                add_to_site_response = add_to_site.json()
+                if type(add_to_site_response) == int and entity == 'auction':
+                    Auctions.query.filter_by(auction_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
+                    db.session.commit()
+                    db.session.remove()
+                    print '\nAuction was added to site - ' + tender_id_long
+                    link_to_tender = '{}{}'.format(company_platform_host, '/buyer/tender/view/')
+                    response = {'status': 'success'}, 201, link_to_tender
+                    break
+                if 'tid' in add_to_site_response:
+                    Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
+                    db.session.commit()
+                    db.session.remove()
+                    print '\nTender was added to site - ' + tender_id_long
+                    tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
+                    link_to_tender_print = '{}{}{}{}'.format('Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+                    link_to_tender = '{}{}{}'.format(company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
+                    print tender_id_site
+                    print link_to_tender_print
+                    response = {'status': 'success'}, 201, link_to_tender
+                    break
+                elif 'tender has company' in add_to_site_response['error']:
+                    if entity == 'tender':
+                        Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
+                    elif entity == 'auction':
+                        Auctions.query.filter_by(auction_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_id))
+                    db.session.commit()
+                    db.session.remove()
+                    print 'Tender has company'
+                    response = {'status': 'error', 'description': 'Tender has company'}, 422
+                    break
+                else:
+                    print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
+                    response = {'status': 'error', 'description': add_to_site_response}, 422
+                    time.sleep(20)
+                    continue
+            except ConnectionError as e:
+                print 'Connection Error'
+                if add_count < 31:
+                    time.sleep(1)
+                    continue
+                else:
+                    abort(500, 'Publish auction error: ' + str(e))
+            except requests.exceptions.MissingSchema as e:
+                abort(500, 'Publish auction error: ' + str(e))
+            except Exception as e:
+                if add_count < 31:
+                    time.sleep(1)
+                    continue
+                else:
+                    abort(500, 'Publish auction error: ' + str(e))
         return response
     else:
         print '{} {}{}'.format(entity, tender_id_long, ' was added to company before')
