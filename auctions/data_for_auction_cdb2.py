@@ -20,6 +20,12 @@ def auction_period_start_date(accelerator):
     return (datetime.now() + timedelta(minutes=10*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))  # standard period is 10 minutes if accelerator == 1440
 
 
+def contract_period():
+    start_date = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+    end_date = (datetime.now() + timedelta(days=90)).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+    return start_date, end_date
+
+
 def auction_value():
     generated_value = randint(1000, 10000)
     value = {
@@ -70,9 +76,10 @@ def generate_items_for_auction(number_of_items, rent):
                         "quantity": randint(1, 1000)
                     }
         if rent is True:
+            period = contract_period()
             item_json["contractPeriod"] = {
-                                            "startDate": "2017-07-01T00:00:00+03:00",
-                                            "endDate": "2017-07-08T00:00:00+03:00"
+                                            "startDate": period[0],
+                                            "endDate": period[1]
                                         }
             item_json["additionalClassifications"] = [
                                                         {
@@ -86,23 +93,26 @@ def generate_items_for_auction(number_of_items, rent):
     return items
 
 
-def generate_auction_json(procurement_method_type, number_of_items, accelerator, minNumberOfQualifiedBids, rent):
+def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifiedBids, rent):
     values = auction_value()
     auction_data = {"data": {
                         "procurementMethod": "open",
                         "submissionMethod": "electronicAuction",
                         "description": fake.text(200).replace('\n', ' '),
                         "title": fake.text(100).replace('\n', ' '),
-                        "tenderAttempts": randint(1, 8),
+                        "tenderAttempts": randint(1, 4),
                         "guarantee": values[1],
                         "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
-                        "procurementMethodType": procurement_method_type,
+                        "procurementMethodType": "dgfOtherAssets",
                         "dgfID": "N-1234567890",
                         "submissionMethodDetails": "quick",
                         "items": generate_items_for_auction(number_of_items, rent),
                         "value": values[0],
                         "minimalStep": values[2],
                         "awardCriteria": "highestCost",
+                        "auctionPeriod": {
+                            "startDate": auction_period_start_date(accelerator),
+                        },
                         "procuringEntity": {
                             "contactPoint": {
                                 "telephone": "+38(222)222-22-22",
@@ -127,5 +137,5 @@ def generate_auction_json(procurement_method_type, number_of_items, accelerator,
                     }
                     }
     if rent is True:
-        auction_data["minNumberOfQualifiedBids"] = minNumberOfQualifiedBids,
+        auction_data["data"]["minNumberOfQualifiedBids"] = minNumberOfQualifiedBids
     return auction_data

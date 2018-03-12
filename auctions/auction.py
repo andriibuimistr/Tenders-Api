@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from data_for_requests import headers_request, host_selector
 from data_for_auction_cdb1 import generate_auction_json
+from data_for_auction_cdb2 import generate_auction_json_cdb_2
 from requests.exceptions import ConnectionError
 import requests
 import time
@@ -104,7 +105,6 @@ def auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_
 
 
 def create_auction(ac_request, session):
-
     auction_validators.validator_create_auction(ac_request)  # validator of request data
     cdb_version = int(ac_request['cdb_version'])
     procurement_method_type = ac_request['procurementMethodType']
@@ -114,8 +114,21 @@ def create_auction(ac_request, session):
     platform_host = ac_request['platform_host']
     received_auction_status = ac_request['auctionStatus']
 
+    rent = False
+    if 'rent' in ac_request:
+        if ac_request['rent'] == '1':
+            rent = True
+
+    minNumberOfQualifiedBids = 2
+    if 'minNumberOfQualifiedBids' in ac_request:
+        if ac_request['minNumberOfQualifiedBids'] == '1':
+            minNumberOfQualifiedBids = 1
+
     host_data = host_selector(cdb_version)
-    json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator)
+    if cdb_version == 1:
+        json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator)
+    else:
+        json_auction = generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifiedBids, rent)
 
     headers_auction = headers_request(json_auction, host_data[1], cdb_version)
     publish_auction_response = publish_auction(headers_auction, json_auction, host_data[0])  # publish auction in draft status
@@ -127,14 +140,15 @@ def create_auction(ac_request, session):
     auction_id_long = publish_auction_response[1].json()['data']['id']
     auction_id_short = publish_auction_response[1].json()['data']['auctionID']
     auction_token = publish_auction_response[1].json()['access']['token']
+    print auction_id_long
 
     auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method_type, auction_status, session['user_id'], cdb_version)  # add auction data to database
 
-    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')
+    add_auction_to_company = {"status": "error"}, '#', '#'  # refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')
 
     # Initial 'Response JSON' data
     response_json = dict()
-    response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2] + auction_id_short
+    response_json['tender_to_company'] = add_auction_to_company[0], add_auction_to_company[2] + auction_id_short
     response_json['id'] = auction_id_short
     response_json['status'] = 'error'
     response_code = 0

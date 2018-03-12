@@ -16,10 +16,10 @@ def host_selector(cdb_number):
 # generate headers for create auction
 def headers_request(json_auction, headers_host, cdb_number):
     if cdb_number == 1:
-        auth_key = key_cdb1
+        authorization = "Basic {}".format(key_cdb1)
     else:
-        auth_key = key_cdb2
-    headers = {"Authorization": "Basic {}".format(auth_key),
+        authorization = "Bearer {}".format(key_cdb2)
+    headers = {"Authorization": authorization,
                "Content-Length": "{}".format(len(json.dumps(json_auction))),
                "Content-Type": "application/json",
                "Host": headers_host}

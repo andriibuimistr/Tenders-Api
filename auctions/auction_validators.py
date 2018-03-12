@@ -39,6 +39,14 @@ def validator_create_auction(data):
     if data['platform_host'] not in list_of_platform_urls:
         abort(422, 'Platform must be one of: {}'.format(list_of_platform_urls))
 
+    if 'rent' in data:
+        if data['rent'] != '1':
+            abort(422, 'Rent value must de "1" or empty')
+
+    if 'minNumberOfQualifiedBids' in data:
+        if data['minNumberOfQualifiedBids'] != '1':
+            abort(422, 'minNumberOfQualifiedBids value must de "1" or empty')
+
     if data['procurementMethodType'] not in auction_procurement_method_types:
         abort(422, 'procurementMethodType must be one of: {}'.format(auction_procurement_method_types))
 
