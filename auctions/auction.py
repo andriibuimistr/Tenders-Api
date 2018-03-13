@@ -105,14 +105,24 @@ def auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_
 
 
 def create_auction(ac_request, session):
+
     auction_validators.validator_create_auction(ac_request)  # validator of request data
     cdb_version = int(ac_request['cdb_version'])
-    procurement_method_type = ac_request['procurementMethodType']
     number_of_items = int(ac_request['number_of_items'])
     accelerator = int(ac_request['accelerator'])
     company_id = int(ac_request['company_id'])
     platform_host = ac_request['platform_host']
     received_auction_status = ac_request['auctionStatus']
+
+    if 'procurementMethodType' not in ac_request:
+        procurementMethodType = 'dgfOtherAssets'
+    else:
+        procurementMethodType = ac_request['procurementMethodType']
+
+    if 'steps' not in ac_request:
+        steps = 0
+    else:
+        steps = ac_request['steps']
 
     rent = False
     if 'rent' in ac_request:
@@ -126,7 +136,7 @@ def create_auction(ac_request, session):
 
     host_data = host_selector(cdb_version)
     if cdb_version == 1:
-        json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator)
+        json_auction = generate_auction_json(procurementMethodType, number_of_items, accelerator, steps)
     else:
         json_auction = generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifiedBids, rent)
 
@@ -142,7 +152,7 @@ def create_auction(ac_request, session):
     auction_token = publish_auction_response[1].json()['access']['token']
     print auction_id_long
 
-    auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method_type, auction_status, session['user_id'], cdb_version)  # add auction data to database
+    auction_to_db(auction_id_long, auction_id_short, auction_token, procurementMethodType, auction_status, session['user_id'], cdb_version)  # add auction data to database
 
     add_auction_to_company = {"status": "error"}, '#', '#'  # refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')
 

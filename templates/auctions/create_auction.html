@@ -6,14 +6,18 @@
                         <form class="form-create-tender" id="create-tender" role="form">
                         <div class="create-tender-form-inputs">
                             <div class="procurement-method-type col-lg-15 col-md-48 col-sm-48 col-xs-48">
-                            <select name="procurementMethodType" class="form-control" size="1">
+                            <select name="procurementMethodType" class="form-control" id="procurementMethodType" size="1">
                                 {% for type in list_of_types %}
                               <option value="{{type}}">{{type}}</option>
                                 {%endfor%}
                             </select>
                             </div>
-                            <div class="number-of-lots col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="number_of_lots" class="form-control" placeholder="Number of lots" maxlength="2" disabled>
+                            <div class="steps col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <select name="steps" class="form-control" id="steps" size="1">
+                                    {% for step in steps %}
+                                        <option value="{{step}}">{{step}}</option>
+                                    {%endfor%}
+                                </select>
                             </div>
                             <div class="number-of-items col-lg-9 col-md-48 col-sm-48 col-xs-48">
                                 <input type="text" name="number_of_items" class="form-control" placeholder="Number of items" maxlength="2">
@@ -22,7 +26,7 @@
                                 <input type="text" name="number_of_bids" class="form-control" placeholder="Number of bids" maxlength="2">
                             </div>
                             <div class="cdb-version col-lg-6 col-md-48 col-sm-48 col-xs-48">
-                                <select name="cdb_version" class="form-control" size="1">
+                                <select name="cdb_version" class="form-control" id="cdb_version" size="1">
                                     {% for version in cdb_versions %}
                                   <option value="{{version}}">CDB {{version}}</option>
                                     {%endfor%}
@@ -49,10 +53,10 @@
                                 </select>
                             </div>
                             <label class="checkbox-inline">
-                                <input type="checkbox" name="minNumberOfQualifiedBids" value="1"> minNumberOfQualifiedBids = 1<br>
+                                <input type="checkbox" name="rent" id="rent" value="1"> Rent<br>
                             </label>
                             <label class="checkbox-inline">
-                                <input type="checkbox" name="rent" value="1"> Rent<br>
+                                <input type="checkbox" name="minNumberOfQualifiedBids" id="minNumberOfQualifiedBids" value="1"> One bid<br>
                             </label>
                         </div>
                             <div class="create-tender-button-div">

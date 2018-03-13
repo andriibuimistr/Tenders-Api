@@ -379,7 +379,7 @@ def create_auction_function():
     if not session.get('logged_in'):
         return jquery_forbidden_login()
     if not request.form:
-        abort(400)
+        abort(400, 'Form wasn\'t submitted')
     result = auction.create_auction(request.form, session)
     return jsonify(result[0])
 

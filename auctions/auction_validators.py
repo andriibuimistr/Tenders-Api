@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from auction_additional_data import create_auction_required_fields, auction_status_to_create, cdb_versions, auction_procurement_method_types
+from auction_additional_data import create_auction_required_fields, auction_status_to_create, cdb_versions, auction_procurement_method_types, dgf_insider_steps
 from flask import abort
 import refresh
 
@@ -8,6 +8,9 @@ def validator_create_auction(data):
     for field in range(len(create_auction_required_fields)):
         if create_auction_required_fields[field] not in data:
             abort(400, "Field '{}' is required. List of required fields: {}".format(create_auction_required_fields[field], create_auction_required_fields))
+
+    if 'procurementMethodType' not in data and data['cdb_version'] != '2':
+        abort(400, 'procurementMethodType is required')
 
     if str(data['number_of_items']).isdigit() is False:
         abort(400, 'Number of items must be integer')
@@ -35,6 +38,15 @@ def validator_create_auction(data):
     if data['cdb_version'] not in cdb_versions:
         abort(422, 'API version must be one of: {}'.format(cdb_versions))
 
+    if data['cdb_version'] == '1':
+        if data['procurementMethodType'] == 'dgfInsider':
+            if 'steps' not in data:
+                abort(400, "Steps value wasn\'t found in request")
+            if str(data['steps']).isdigit() is False:
+                abort(400, 'Steps value must be integer')
+            if int(data["steps"]) not in dgf_insider_steps:
+                abort(422, 'Steps value must be between one of {}'.format(dgf_insider_steps))
+
     list_of_platform_urls = refresh.get_list_of_platform_urls(2)
     if data['platform_host'] not in list_of_platform_urls:
         abort(422, 'Platform must be one of: {}'.format(list_of_platform_urls))
@@ -46,9 +58,6 @@ def validator_create_auction(data):
     if 'minNumberOfQualifiedBids' in data:
         if data['minNumberOfQualifiedBids'] != '1':
             abort(422, 'minNumberOfQualifiedBids value must de "1" or empty')
-
-    if data['procurementMethodType'] not in auction_procurement_method_types:
-        abort(422, 'procurementMethodType must be one of: {}'.format(auction_procurement_method_types))
 
     if int(data['accelerator']) < 30:
         if data['auctionStatus'] != 'active.tendering':

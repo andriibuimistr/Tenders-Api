@@ -388,3 +388,37 @@ $(function() {
         });
     });
 });
+
+
+//Disable unnecessary forms on auction creation page
+$(function() {
+    var disable_select = function () {
+        if ($("#cdb_version").val() === '2') {
+            $("#procurementMethodType").prop('disabled', 'disabled').val('dgfOtherAssets');  // Disable procurementMethodType select for cdb2
+			$("#steps").prop('disabled', 'disabled').val('80');
+            $("#rent").prop('disabled', false);
+			$('#rent').change(function(){
+				   $("#minNumberOfQualifiedBids").prop("disabled", !$(this).is(':checked'));
+				   $("#minNumberOfQualifiedBids").prop('checked', false, !$(this).is(':checked'));
+				});
+        }
+        else {
+            $("#procurementMethodType").prop('disabled', false);
+            $("#minNumberOfQualifiedBids").prop('disabled', 'disabled').prop('checked', false);
+            $("#rent").prop('disabled', 'disabled').prop('checked', false);
+			var disable_steps = function (){
+				        if ($("#procurementMethodType").val() === 'dgfInsider') {
+							$("#steps").prop('disabled', false);
+						}
+						else {
+							$("#steps").prop('disabled', 'disabled').val('80');
+						}
+			};
+			$(disable_steps);
+			$("#procurementMethodType").change(disable_steps);
+        }
+      };
+      $(disable_select);
+      $("#cdb_version").change(disable_select);
+});
+

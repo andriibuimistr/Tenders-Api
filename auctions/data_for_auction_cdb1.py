@@ -73,7 +73,7 @@ def generate_items_for_auction(number_of_items):
     return items
 
 
-def generate_auction_json(procurement_method_type, number_of_items, accelerator):
+def generate_auction_json(procurement_method_type, number_of_items, accelerator, steps):
     values = auction_value()
     auction_data = {"data": {
                         "procurementMethod": "open",
@@ -121,4 +121,9 @@ def generate_auction_json(procurement_method_type, number_of_items, accelerator)
                         }
                     }
                     }
+    if procurement_method_type == 'dgfInsider':
+        auction_data['data']['auctionParameters'] = {
+                                                        "dutchSteps": steps,
+                                                        "type": "insider"
+                                                    }
     return auction_data
