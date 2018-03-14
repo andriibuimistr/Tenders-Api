@@ -361,8 +361,6 @@ def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers, host, api_v
         if resp.status_code == 201:
             print('{}{}: {}'.format('Publishing bid ', n_bid, 'Success'))
             print("       status code:  {}".format(resp.status_code))
-            print resp.headers
-            print resp.content
         else:
             print('{}{}: {}'.format('Publishing bid ', n_bid, 'Error'))
             print("       status code:  {}".format(resp.status_code))
