@@ -6,11 +6,12 @@ from random import randint
 import json
 import time
 from flask import abort
+from database import db, BidsAuction
 
 fake = Faker('uk_UA')
 
 
-def json_for_bid_auction(procurementMethodType):
+def json_for_bid_auction(procurementMethodType, identifier):
     json_bid = {"data": {
                     "status": "draft",
                     "qualified": True,
@@ -27,7 +28,7 @@ def json_for_bid_auction(procurementMethodType):
                         },
                         "identifier": {
                           "scheme": "UA-EDR",
-                          "id": "00137256",
+                          "id": identifier,
                           "uri": "http://site.site"
                         },
                         "name": fake.company(),
@@ -64,6 +65,7 @@ def make_bid_auction(headers, host, auction_id, bid_json, bid_number):
     attempts = 0
     for x in range(5):
         attempts += 1
+        print '{}{}'.format('Publishing bid: Attempt ', attempts)
         try:
             s = requests.Session()
             s.request('HEAD', '{}'.format(host))
@@ -104,6 +106,7 @@ def activate_bid(headers, host, mb_response, json_bid_active, bid_number):
     attempts = 0
     for x in range(5):
         attempts += 1
+        print '{}{}'.format('Activating bid: Attempt ', attempts)
         try:
             s = requests.Session()
             s.request("HEAD", "{}".format(host))
@@ -137,17 +140,25 @@ def activate_bid(headers, host, mb_response, json_bid_active, bid_number):
             abort(500, 'Activate bid error: ' + str(e))
 
 
+# add bid info to DB (SQLA)
+def bid_to_db(bid_id, bid_token, u_identifier, auction_id):
+    bid_to_sql = BidsAuction(None, bid_id, bid_token, auction_id, None, None, None, None, u_identifier)
+    db.session.add(bid_to_sql)
+    db.session.commit()  # you need to call commit() method to save your changes to the database
+    print 'Add auction bid to local database'
+    return "success"
+
+
 def create_bids(headers, host, auction_id, procurementMethodType, number_of_bids):
     if number_of_bids == 0:
         print 'Bids haven\'t been made!'
     else:
         count = 0
-        for bid in range(len(number_of_bids)):
+        for bid in range(number_of_bids):
             count += 1
-            print '{}{}'.format('Publishing bid: Attempt ', count)
-            make_bid = make_bid_auction(headers, host, auction_id, json_for_bid_auction(procurementMethodType), count)
-            print '{}{}'.format('Activating bid: Attempt ', count)
+            identifier = "00137256"
+            make_bid = make_bid_auction(headers, host, auction_id, json_for_bid_auction(procurementMethodType, identifier), count)
             activate_bid(headers, host, make_bid[1], activate_bid_json, count)
-            # add_bid_db
+            add_bid_db = bid_to_db(make_bid[1].json()['data']['id'], make_bid[1].json()['access']['token'], identifier, auction_id)
 
 

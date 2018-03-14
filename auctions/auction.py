@@ -114,7 +114,7 @@ def create_auction(ac_request, session):
     company_id = int(ac_request['company_id'])
     platform_host = ac_request['platform_host']
     received_auction_status = ac_request['auctionStatus']
-    number_of_bids = ac_request['number_of_bids']
+    number_of_bids = int(ac_request['number_of_bids'])
 
     if 'procurementMethodType' not in ac_request:
         procurementMethodType = 'dgfOtherAssets'

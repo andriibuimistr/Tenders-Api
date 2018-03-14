@@ -122,6 +122,31 @@ class Auctions(db.Model):
         self.cdb_version = cdb_version
 
 
+class BidsAuction(db.Model):
+    __tablename__ = 'bids_auction'
+    id = db.Column(db.Integer, primary_key=True)
+    bid_id = db.Column(db.String(255))
+    bid_token = db.Column(db.String(255))
+    auction_id = db.Column(db.String(255))
+    bid_status = db.Column(db.String(255))
+    bid_platform = db.Column(db.String(255))
+    company_id = db.Column(db.Integer)
+    added_to_site = db.Column(db.Integer)
+    user_identifier = db.Column(db.String(255))
+
+    def __init__(self, id, bid_id, bid_token, auction_id, bid_status, bid_platform,
+                 company_id, added_to_site, user_identifier):
+        self.id = id
+        self.bid_id = bid_id
+        self.bid_token = bid_token
+        self.auction_id = auction_id
+        self.bid_status = bid_status
+        self.bid_platform_id = bid_platform
+        self.company_uid = company_id
+        self.added_to_site = added_to_site
+        self.user_identifier = user_identifier
+
+
 class Platforms(db.Model):
     __tablename__ = 'platforms'
     id = db.Column(db.Integer, primary_key=True)
