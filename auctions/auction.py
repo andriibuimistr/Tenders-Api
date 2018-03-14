@@ -154,7 +154,7 @@ def create_auction(ac_request, session):
 
     auction_to_db(auction_id_long, auction_id_short, auction_token, procurementMethodType, auction_status, session['user_id'], cdb_version)  # add auction data to database
 
-    add_auction_to_company = {"status": "error"}, '#', '#'  # refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')
+    add_auction_to_company = refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')
 
     # Initial 'Response JSON' data
     response_json = dict()
