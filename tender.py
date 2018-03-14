@@ -130,7 +130,6 @@ def publish_tender(headers, json_tender, host, api_version):
             if resp.status_code == 201:
                 print("Publishing tender: Success")
                 print("       status code:  {}".format(resp.status_code))
-                # publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
                 return 0, resp, resp.content, resp.status_code
             else:
                 print("Publishing tender: Error")

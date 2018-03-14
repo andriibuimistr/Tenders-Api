@@ -11,6 +11,7 @@ from database import db, Auctions
 import refresh
 from refresh import get_auction_info
 import auction_validators
+from auction_bid import create_bids
 
 
 # Publish auction
@@ -113,6 +114,7 @@ def create_auction(ac_request, session):
     company_id = int(ac_request['company_id'])
     platform_host = ac_request['platform_host']
     received_auction_status = ac_request['auctionStatus']
+    number_of_bids = ac_request['number_of_bids']
 
     if 'procurementMethodType' not in ac_request:
         procurementMethodType = 'dgfOtherAssets'
@@ -153,6 +155,8 @@ def create_auction(ac_request, session):
     print auction_id_long
 
     auction_to_db(auction_id_long, auction_id_short, auction_token, procurementMethodType, auction_status, session['user_id'], cdb_version)  # add auction data to database
+
+    create_bids(headers_auction, host_data[0], auction_id_long, procurementMethodType, number_of_bids)
 
     add_auction_to_company = refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')
 

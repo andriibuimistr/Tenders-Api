@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from faker import Faker
 import requests
-
-import database
 import document
 from data_for_tender import auth_key, valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, below_threshold_procurement
 from database import BidsTender, db
 import json
 import time
-import data_for_tender
 from random import randint
 import binascii
 import os
@@ -17,17 +14,6 @@ from requests.exceptions import ConnectionError
 
 
 fake = Faker('uk_UA')
-
-
-# number of bids input
-def number_of_bids():
-    number_of_bids_input = (raw_input('Количество ставок (от 1 до 10, 0 - не делать ставки)')).decode('utf-8')
-    while number_of_bids_input.isdigit() is not True or int(number_of_bids_input) > 10:
-        number_of_bids_input = raw_input(
-            'Введите правильное значение :) (от 1 до 10, 0 - не делать ставки)').decode('utf-8')
-    else:
-        number_of_bids_input = int(number_of_bids_input)
-    return number_of_bids_input
 
 
 # generate value for lots
@@ -375,6 +361,8 @@ def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers, host, api_v
         if resp.status_code == 201:
             print('{}{}: {}'.format('Publishing bid ', n_bid, 'Success'))
             print("       status code:  {}".format(resp.status_code))
+            print resp.headers
+            print resp.content
         else:
             print('{}{}: {}'.format('Publishing bid ', n_bid, 'Error'))
             print("       status code:  {}".format(resp.status_code))
@@ -512,12 +500,6 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 attempts = 0
                 for every_bid in range(5):  # activate bid
                     activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
-                    '''if activate_created_bid[0] == 1:
-                        activate_bid_key = "activate_bid_result"
-                        activate_created_bid_result = {"status_code": 500, "description": str(activate_created_bid[1])}
-                    else:
-                        activate_bid_key = "activate_bid_status_code"
-                        activate_created_bid_result = activate_created_bid[1]'''
                     time.sleep(0.5)
                     if activate_created_bid[1] == 200:
                         break
