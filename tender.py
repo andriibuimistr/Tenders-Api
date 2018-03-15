@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import time
 from flask import abort
 import bid
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, HTTPError
 
 
 # generate list of id fot lots
@@ -127,18 +127,19 @@ def publish_tender(headers, json_tender, host, api_version):
 
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 201:
                 print("Publishing tender: Success")
                 print("       status code:  {}".format(resp.status_code))
                 return 0, resp, resp.content, resp.status_code
-            else:
+        except HTTPError as error:
                 print("Publishing tender: Error")
                 print("       status code:  {}".format(resp.status_code))
                 print("       response content:  {}".format(resp.content))
                 print("       headers:           {}".format(resp.headers))
                 time.sleep(1)
                 if attempts >= 5:
-                    abort(resp.status_code, resp.content)
+                    abort(error.response.status_code, error.message)
         except ConnectionError as e:
             print 'Connection Error'
             if attempts < 5:
@@ -174,19 +175,19 @@ def activating_tender(publish_tender_response, headers, host, api_version, procu
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 200:
                 print("Activating tender: Success")
                 print("       status code:  {}".format(resp.status_code))
-                # activate_tender_response = {"status_code": resp.status_code}
                 return 0, resp, resp.content, resp.status_code
-            else:
-                print("Activating tender: Error")
-                print("       status code:  {}".format(resp.status_code))
-                print("       response content:  {}".format(resp.content))
-                print("       headers:           {}".format(resp.headers))
-                time.sleep(1)
-                if attempts >= 5:
-                    abort(resp.status_code, resp.content)
+        except HTTPError as error:
+            print("Activating tender: Error")
+            print("       status code:  {}".format(resp.status_code))
+            print("       response content:  {}".format(resp.content))
+            print("       headers:           {}".format(resp.headers))
+            time.sleep(1)
+            if attempts >= 5:
+                abort(error.response.status_code, error.message)
         except ConnectionError as e:
             print 'Connection Error'
             if attempts < 5:
