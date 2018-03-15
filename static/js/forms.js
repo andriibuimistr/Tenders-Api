@@ -394,7 +394,9 @@ $(function() {
 $(function() {
     var disable_select = function () {
         if ($("#cdb_version").val() === '2') {
-            $("#procurementMethodType").prop('disabled', 'disabled').val('dgfOtherAssets');  // Disable procurementMethodType select for cdb2
+            $("#procurementMethodType").val('dgfOtherAssets');  // Disable procurementMethodType select for cdb2
+			$('#procurementMethodType option[value="dgfFinancialAssets"]').prop('disabled', 'disabled');
+			$('#procurementMethodType option[value="dgfInsider"]').prop('disabled', 'disabled');
 			$("#steps").prop('disabled', 'disabled').val('80');
             $("#rent").prop('disabled', false);
 			$('#rent').change(function(){
@@ -403,7 +405,8 @@ $(function() {
 				});
         }
         else {
-            $("#procurementMethodType").prop('disabled', false);
+            $('#procurementMethodType option[value="dgfFinancialAssets"]').prop('disabled', false);
+            $('#procurementMethodType option[value="dgfInsider"]').prop('disabled', false);
             $("#minNumberOfQualifiedBids").prop('disabled', 'disabled').prop('checked', false);
             $("#rent").prop('disabled', 'disabled').prop('checked', false);
 			var disable_steps = function (){
