@@ -148,6 +148,8 @@ def publish_tender(headers, json_tender, host, api_version):
                 abort(500, 'Publish tender error: ' + str(e))
         except requests.exceptions.MissingSchema as e:
             abort(500, 'Publish tender error: ' + str(e))
+        except Exception as e:
+            abort(500, 'Publish tender error: ' + str(e))
 
 
 # Activate tender
@@ -194,6 +196,8 @@ def activating_tender(publish_tender_response, headers, host, api_version, procu
                 abort(500, 'Activate tender error: ' + str(e))
         except requests.exceptions.MissingSchema as e:
             abort(500, 'Activate tender error: ' + str(e))
+        except Exception as e:
+            abort(500, 'Publish tender error: ' + str(e))
 
 
 # Finish first stage
