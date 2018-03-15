@@ -92,6 +92,7 @@ def approve_prequalification(qualification_id, prequalification_bid_json, tender
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             print("Approve bid:")
             if resp.status_code == 200:
                 print("       status code:  {}".format(resp.status_code))
@@ -155,6 +156,7 @@ def finish_prequalification(tender_id_long, tender_token, host, api_version):
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
+        resp.raise_for_status()
         print("Finish prequalification:")
         if resp.status_code == 200:
             print("       status code:  {}".format(resp.status_code))
@@ -187,6 +189,7 @@ def activate_award_contract(headers_tender, host_kit, tender_id_long, tender_tok
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 200:
                 print("Activating {} {}: Success".format(type_of, number))
                 print("       status code:  {}".format(resp.status_code))

@@ -219,6 +219,7 @@ def finish_first_stage(publish_tender_response, headers, host, api_version):
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
+        resp.raise_for_status()
         if resp.status_code == 200:
             print("Finish first stage: Success")
             print("       status code:  {}".format(resp.status_code))
@@ -245,6 +246,7 @@ def get_2nd_stage_info(headers, host, api_version, second_stage_tender_id, tende
 
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
+        resp.raise_for_status()
         if resp.status_code == 200:
             print("Get 2nd stage json: Success")
             print("       status code:  {}".format(resp.status_code))
@@ -262,6 +264,7 @@ def get_2nd_stage_info(headers, host, api_version, second_stage_tender_id, tende
         return e, 1
 
 
+# ????????????????????????????????????????????????????? Get tender info
 def extend_tender_period(host, api_version, accelerator, second_stage_tender_id):
     tender_draft = requests.get("{}/api/{}/tenders/{}".format(host, api_version, second_stage_tender_id))
     new_tender_json = tender_draft.json()
@@ -283,6 +286,7 @@ def patch_second_stage(headers, new_tender_json, host, api_version, second_stage
 
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
+        resp.raise_for_status()
         if resp.status_code == 200:
             print("Patch 2nd stage: Success")
             print("       status code:  {}".format(resp.status_code))
@@ -310,6 +314,7 @@ def activate_2nd_stage(headers, host, api_version, new_tender_id, new_token, act
 
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
+        resp.raise_for_status()
         if resp.status_code == 200:
             print("Activate 2nd stage: Success")
             print("       status code:  {}".format(resp.status_code))

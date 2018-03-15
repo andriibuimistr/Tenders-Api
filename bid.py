@@ -126,6 +126,7 @@ def add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_sup
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 201:
                 print('{}{}: {}'.format('Add supplier ', supplier_number, 'Success'))
                 print("       status code:  {}".format(resp.status_code))
@@ -358,6 +359,7 @@ def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers, host, api_v
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
+        resp.raise_for_status()
         if resp.status_code == 201:
             print('{}{}: {}'.format('Publishing bid ', n_bid, 'Success'))
             print("       status code:  {}".format(resp.status_code))
@@ -386,6 +388,7 @@ def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body, hos
                              cookies=requests.utils.dict_from_cookiejar(s.cookies))
         prepped = s.prepare_request(r)
         resp = s.send(prepped)
+        resp.raise_for_status()
         if resp.status_code == 200:
             print('{}{}: {}'.format('Activating bid ', n_bid,  'Success'))
             print("       status code:  {}".format(resp.status_code))

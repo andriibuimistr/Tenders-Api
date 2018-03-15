@@ -75,6 +75,7 @@ def make_bid_auction(headers, host, auction_id, bid_json, bid_number):
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 201:
                 print('{}{}: {}'.format('Publishing bid ', bid_number, 'Success'))
                 print("       status code:  {}".format(resp.status_code))
@@ -117,6 +118,7 @@ def activate_bid(headers, host, mb_response, json_bid_active, bid_number):
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 200:
                 print('{}{}: {}'.format('Activating bid ', bid_number,  'Success'))
                 print("       status code:  {}".format(resp.status_code))

@@ -29,6 +29,7 @@ def publish_auction(headers, json_auction, host):
 
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 201:
                 print("Publishing auction: Success")
                 print("       status code:  {}".format(resp.status_code))
@@ -69,6 +70,7 @@ def activate_auction(publish_auction_response, headers, host):
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
+            resp.raise_for_status()
             if resp.status_code == 200:
                 print("Activating auction: Success")
                 print("       status code:  {}".format(resp.status_code))
