@@ -817,8 +817,8 @@ def creation_of_tender(tc_request, user_id):
                 response_code = 422
 
         else:
-            get_t_info = get_tender_info(host_kit, tender_id_long)
-            enquiry_end_date = datetime.strptime(get_t_info[1].json()['data']['enquiryPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender enquiries end date
+            get_t_info = tender.get_tender_info(tender_id_long)
+            enquiry_end_date = datetime.strptime(get_t_info.json()['data']['enquiryPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender enquiries end date
             waiting_time = (enquiry_end_date - datetime.now()).seconds
             time_counter(waiting_time, 'Check tender status')
 
@@ -827,12 +827,12 @@ def creation_of_tender(tc_request, user_id):
                 attempt_counter += 1
                 print '{}{}'.format('Check tender status (active.tendering). Attempt ', attempt_counter)
                 time.sleep(20)
-                get_t_info = get_tender_info(host_kit, tender_id_long)
+                get_t_info = tender.get_tender_info(tender_id_long)
 
-                if get_t_info[1].json()['data']['status'] == 'active.tendering':
+                if get_t_info.json()['data']['status'] == 'active.tendering':
                     make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, host_kit, 0)  # 0 - documents of bid
                     if received_tender_status == 'active.tendering':
-                        response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
                         response_json['status'] = 'success'
                         response_code = 201
                         break
@@ -847,11 +847,11 @@ def creation_of_tender(tc_request, user_id):
                         attempt_counter += 1
                         print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
                         time.sleep(20)
-                        get_t_info = get_tender_info(host_kit, tender_id_long)
+                        get_t_info = tender.get_tender_info(tender_id_long)
 
-                        if get_t_info[1].json()['data']['status'] == 'active.qualification':
+                        if get_t_info.json()['data']['status'] == 'active.qualification':
                             if received_tender_status == 'active.qualification':
-                                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                 response_json['status'] = 'success'
                                 response_code = 201
                                 break
