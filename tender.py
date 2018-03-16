@@ -865,8 +865,8 @@ def creation_of_tender(tc_request, user_id):
             suppliers_for_limited(number_of_lots, tender_id_long, tender_token, headers_tender, procurement_method, list_of_id_lots, host_kit)
             time.sleep(3)
 
-            get_t_info = get_tender_info(host_kit, tender_id_long)
-            list_of_awards = get_t_info[1].json()['data']['awards']
+            get_t_info = tender.get_tender_info(tender_id_long)
+            list_of_awards = get_t_info.json()['data']['awards']
             if received_tender_status == 'active.award':
                 if len(list_of_awards) > 0:
                     response_json['tenderStatus'] = 'active.award'
@@ -875,9 +875,9 @@ def creation_of_tender(tc_request, user_id):
             else:
                 run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method)
                 time.sleep(3)
-                get_t_info = get_tender_info(host_kit, tender_id_long)
+                get_t_info = tender.get_tender_info(tender_id_long)
                 if procurement_method in negotiation_procurement:
-                    complaint_end_date = datetime.strptime(get_t_info[1].json()['data']['awards'][-1]['complaintPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
+                    complaint_end_date = datetime.strptime(get_t_info.json()['data']['awards'][-1]['complaintPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
                     diff = refresh.get_time_difference(host_kit)
                     waiting_time = ((complaint_end_date - timedelta(seconds=diff)) - datetime.now()).seconds + 5
                     if waiting_time > 3600:
@@ -889,7 +889,7 @@ def creation_of_tender(tc_request, user_id):
 
                 for x in range(10):
                     print 'Check if contract exists'
-                    get_t_info = get_tender_info(host_kit, tender_id_long)
+                    get_t_info = tender.get_tender_info(tender_id_long)
                     check_if_contract_exist = check_if_contract_exists(get_t_info)
                     if check_if_contract_exist == 200:
                         if received_tender_status == 'active.contract':
@@ -898,12 +898,12 @@ def creation_of_tender(tc_request, user_id):
                             response_code = 201
                             break
                         else:
-                            list_of_contracts = get_t_info[1].json()['data']['contracts']
+                            list_of_contracts = get_t_info.json()['data']['contracts']
                             run_activate_contract(headers_tender, host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
                             for x in range(30):
-                                get_t_info = get_tender_info(host_kit, tender_id_long)
-                                if get_t_info[1].json()['data']['status'] == 'complete':
-                                    response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                                get_t_info = tender.get_tender_info(tender_id_long)
+                                if get_t_info.json()['data']['status'] == 'complete':
+                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                     response_json['status'] = 'success'
                                     response_code = 201
                                     break

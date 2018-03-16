@@ -408,7 +408,7 @@ def get_list_of_tenders():
 
 def check_if_contract_exists(get_t_info):
     try:
-        if get_t_info[1].json()['data']['contracts']:
+        if get_t_info.json()['data']['contracts']:
             return 200
     except Exception as e:
         print e
