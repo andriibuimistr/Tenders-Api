@@ -16,6 +16,7 @@ import time
 from flask import abort
 import bid
 from requests.exceptions import ConnectionError, HTTPError
+from tenders.tender_requests import TenderRequests
 
 
 # generate list of id fot lots
@@ -84,7 +85,7 @@ def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method
 
 
 # generate json for tender
-def tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status):
+def json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status):
     if number_of_lots == 0:
         if procurement_method == 'esco':
             tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
@@ -418,21 +419,24 @@ def creation_of_tender(tc_request, user_id):
             accelerator = 1440
             print '!accelerator = 1440'
 
-    json_tender = json.loads(tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status))  # get json for create tender
+    json_tender = json.loads(json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status))  # get json for create tender
 
     headers_tender = headers_request(json_tender, host_kit[3])  # get headers for tender
 
     # run publish tender function
-    publish_tender_response = publish_tender(headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
+    # publish_tender_response = publish_tender(headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
+
+    tender = TenderRequests(api_version)
+    t_publish = tender.publish_tender(json_tender)
 
     # run activate tender function
     time.sleep(1)
-    activate_tender = activating_tender(publish_tender_response[1], headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
+    activate_tender = activating_tender(t_publish, headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
 
     tender_status = activate_tender[1].json()['data']['status']
-    tender_id_long = publish_tender_response[1].json()['data']['id']
-    tender_id_short = publish_tender_response[1].json()['data']['tenderID']
-    tender_token = publish_tender_response[1].json()['access']['token']
+    tender_id_long = t_publish.json()['data']['id']
+    tender_id_short = t_publish.json()['data']['tenderID']
+    tender_token = t_publish.json()['access']['token']
 
     # add tender to database
     add_tender_db = tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots, user_id, api_version)
@@ -471,7 +475,7 @@ def creation_of_tender(tc_request, user_id):
 
         else:
             if procurement_method in competitive_procedures:  # qualification for competitive dialogue
-                t_end_date = datetime.strptime(publish_tender_response[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
+                t_end_date = datetime.strptime(t_publish.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
                 waiting_time = (t_end_date - datetime.now()).seconds
                 time_counter(waiting_time, 'Check tender status (pre-qualification)')
 
@@ -532,7 +536,7 @@ def creation_of_tender(tc_request, user_id):
                                         response_json['status'] = 'success'
                                         response_code = 201
 
-                                        finish_first_stage(publish_tender_response[1], headers_tender, host_kit[0], host_kit[1])
+                                        finish_first_stage(t_publish, headers_tender, host_kit[0], host_kit[1])
                                         attempt_counter = 0
                                         for y in range(50):  # check for "completed" status of first stage
                                             attempt_counter += 1
@@ -723,7 +727,7 @@ def creation_of_tender(tc_request, user_id):
                                 response_json['status'] = 'error'
                                 response_code = 422
             else:
-                t_end_date = datetime.strptime(publish_tender_response[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
+                t_end_date = datetime.strptime(t_publish.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
                 waiting_time = (t_end_date - datetime.now()).seconds
                 time_counter(waiting_time, 'Check tender status')
 
@@ -829,7 +833,7 @@ def creation_of_tender(tc_request, user_id):
                         response_json['status'] = 'success'
                         response_code = 201
                         break
-                    t_end_date = datetime.strptime(publish_tender_response[1].json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
+                    t_end_date = datetime.strptime(t_publish.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
                     waiting_time = (t_end_date.second - datetime.now().second)
                     if waiting_time > 3600:
                         abort(400, "Waiting time is too long: {} seconds".format(waiting_time))

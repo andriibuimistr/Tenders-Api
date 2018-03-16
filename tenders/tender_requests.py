@@ -8,15 +8,16 @@ import time
 
 
 # Send request to cdb
-def tenders_request_to_cdb(headers, host, endpoint, method, json_auction, request_name):
+def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
     attempts = 0
     for x in range(5):
+        print '!!!Request'
         attempts += 1
         try:
             s = requests.Session()
             s.request("HEAD", "{}".format(host))
             r = requests.Request(method, "{}{}".format(host, endpoint),
-                                 data=json.dumps(json_auction),
+                                 data=json.dumps(json_request),
                                  headers=headers,
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
@@ -43,6 +44,8 @@ def tenders_request_to_cdb(headers, host, endpoint, method, json_auction, reques
                 abort(500, '{} error: {}'.format(request_name, e))
         except requests.exceptions.MissingSchema as e:
             abort(500, '{} error: {}'.format(request_name, e))
+        except Exception as e:
+            abort(500, '{} error: {}'.format(request_name, e))
 
 
 class TenderRequests:
@@ -50,3 +53,6 @@ class TenderRequests:
     def __init__(self, cdb):
         self.cdb = cdb
         self.host = host_selector(cdb)
+
+    def publish_tender(self, json_tender):
+        return request_to_cdb(headers_request(self.cdb, json_tender), self.host, '', 'POST', json_tender, 'Publish tender')

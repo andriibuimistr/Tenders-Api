@@ -8,7 +8,7 @@ import time
 
 
 # Send request to cdb
-def request_to_cdb(headers, host, endpoint, method, json_auction, request_name):
+def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
     attempts = 0
     for x in range(5):
         attempts += 1
@@ -16,7 +16,7 @@ def request_to_cdb(headers, host, endpoint, method, json_auction, request_name):
             s = requests.Session()
             s.request("HEAD", "{}".format(host))
             r = requests.Request(method, "{}{}".format(host, endpoint),
-                                 data=json.dumps(json_auction),
+                                 data=json.dumps(json_request),
                                  headers=headers,
                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
             prepped = s.prepare_request(r)
@@ -42,6 +42,8 @@ def request_to_cdb(headers, host, endpoint, method, json_auction, request_name):
             else:
                 abort(500, '{} error: {}'.format(request_name, e))
         except requests.exceptions.MissingSchema as e:
+            abort(500, '{} error: {}'.format(request_name, e))
+        except Exception as e:
             abort(500, '{} error: {}'.format(request_name, e))
 
 
