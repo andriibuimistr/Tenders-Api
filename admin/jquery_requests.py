@@ -3,7 +3,7 @@ from flask import render_template, abort, jsonify
 import validators
 import refresh
 import data_for_tender
-from auctions import data_for_requests, auction_additional_data
+from auctions import auction_data_for_requests, auction_additional_data
 
 
 def add_platform(request):
@@ -95,7 +95,7 @@ def get_tender_json_from_cdb(tender_id, api_version):
         host_kit = data_for_tender.host_selector(api_version)
         entity_json = refresh.get_tender_info(host_kit, tender_id)[1].json()
     elif api_version in auction_additional_data.cdb_versions:
-        host_data = data_for_requests.host_selector(int(api_version))
+        host_data = auction_data_for_requests.host_selector(int(api_version))
         entity_json = refresh.get_auction_info(host_data, tender_id)[1].json()
     else:
         entity_json = {"status": "error", "description": "unknown cdb version"}

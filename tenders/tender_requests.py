@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from auction_data_for_requests import headers_request, host_selector, json_status_active_tendering, json_status_active
+from tender_data_for_requests import headers_request, host_selector, json_status_active_tendering, json_status_active
 from flask import abort
 import json
 import requests
@@ -8,7 +8,7 @@ import time
 
 
 # Send request to cdb
-def request_to_cdb(headers, host, endpoint, method, json_auction, request_name):
+def tenders_request_to_cdb(headers, host, endpoint, method, json_auction, request_name):
     attempts = 0
     for x in range(5):
         attempts += 1
@@ -45,20 +45,8 @@ def request_to_cdb(headers, host, endpoint, method, json_auction, request_name):
             abort(500, '{} error: {}'.format(request_name, e))
 
 
-class AuctionRequests:
+class TenderRequests:
 
     def __init__(self, cdb):
         self.cdb = cdb
         self.host = host_selector(cdb)
-
-    def publish_auction(self, json_auction):
-        return request_to_cdb(headers_request(self.cdb, json_auction), self.host, '', 'POST', json_auction, 'Publish auction')
-
-    def activate_auction(self, auction_id_long, token):
-        return request_to_cdb(headers_request(self.cdb, json_status_active_tendering), self.host, '/{}?acc_token={}'.format(auction_id_long, token), 'PATCH', json_status_active_tendering, 'Activate auction')
-
-    def make_bid_auction(self, auction_id_long, json_bid):
-        return request_to_cdb(headers_request(self.cdb, json_bid), self.host, '/{}/bids'.format(auction_id_long), 'POST', json_bid, 'Publish auction bid')
-
-    def activate_auction_bid(self, auction_id_long, bid_id, bid_token):
-        return request_to_cdb(headers_request(self.cdb, json_status_active), self.host, '/{}/bids/{}?acc_token={}'.format(auction_id_long, bid_id, bid_token), 'PATCH', json_status_active, 'Activate auction bid')
