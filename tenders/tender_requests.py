@@ -59,3 +59,6 @@ class TenderRequests:
 
     def activate_tender(self, tender_id_long, token):
         return request_to_cdb(headers_request(self.cdb, json_status_active_tendering), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_status_active_tendering, 'Activate tender')
+
+    def get_tender_info(self, tender_id_long):
+        return request_to_cdb(None, self.host, '/{}'.format(tender_id_long), 'GET', None, 'Get tender info')

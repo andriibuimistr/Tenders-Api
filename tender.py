@@ -114,92 +114,92 @@ def headers_request(json_tender, headers_host):
 
 
 # Publish tender
-def publish_tender(headers, json_tender, host, api_version):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            s = requests.Session()
-            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-            r = requests.Request('POST', "{}/api/{}/tenders".format(host, api_version),
-                                 data=json.dumps(json_tender),
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
-
-            prepped = s.prepare_request(r)
-            resp = s.send(prepped)
-            resp.raise_for_status()
-            if resp.status_code == 201:
-                print("Publishing tender: Success")
-                print("       status code:  {}".format(resp.status_code))
-                return 0, resp, resp.content, resp.status_code
-        except HTTPError as error:
-                print("Publishing tender: Error")
-                print("       status code:  {}".format(resp.status_code))
-                print("       response content:  {}".format(resp.content))
-                print("       headers:           {}".format(resp.headers))
-                time.sleep(1)
-                if attempts >= 5:
-                    abort(error.response.status_code, error.message)
-        except ConnectionError as e:
-            print 'Connection Error'
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Publish tender error: ' + str(e))
-        except requests.exceptions.MissingSchema as e:
-            abort(500, 'Publish tender error: ' + str(e))
-        except Exception as e:
-            abort(500, 'Publish tender error: ' + str(e))
-
-
-# Activate tender
-def activating_tender(publish_tender_response, headers, host, api_version, procurement_method):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            if procurement_method in data_for_tender.above_threshold_procurement:
-                activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
-            elif procurement_method in data_for_tender.below_threshold_procurement:
-                activate_tender = json.loads('{ "data": { "status": "active.enquiries"}}')
-            else:
-                activate_tender = json.loads('{ "data": { "status": "active"}}')
-            tender_location = publish_tender_response.headers['Location']
-            token = publish_tender_response.json()['access']['token']
-            s = requests.Session()
-            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-            r = requests.Request('PATCH', "{}{}{}".format(tender_location, '?acc_token=', token),
-                                 data=json.dumps(activate_tender),
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
-            prepped = s.prepare_request(r)
-            resp = s.send(prepped)
-            resp.raise_for_status()
-            if resp.status_code == 200:
-                print("Activating tender: Success")
-                print("       status code:  {}".format(resp.status_code))
-                return 0, resp, resp.content, resp.status_code
-        except HTTPError as error:
-            print("Activating tender: Error")
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-            time.sleep(1)
-            if attempts >= 5:
-                abort(error.response.status_code, error.message)
-        except ConnectionError as e:
-            print 'Connection Error'
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Activate tender error: ' + str(e))
-        except requests.exceptions.MissingSchema as e:
-            abort(500, 'Activate tender error: ' + str(e))
-        except Exception as e:
-            abort(500, 'Activate tender error: ' + str(e))
+# def publish_tender(headers, json_tender, host, api_version):
+#     attempts = 0
+#     for x in range(5):
+#         attempts += 1
+#         try:
+#             s = requests.Session()
+#             s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+#             r = requests.Request('POST', "{}/api/{}/tenders".format(host, api_version),
+#                                  data=json.dumps(json_tender),
+#                                  headers=headers,
+#                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
+#
+#             prepped = s.prepare_request(r)
+#             resp = s.send(prepped)
+#             resp.raise_for_status()
+#             if resp.status_code == 201:
+#                 print("Publishing tender: Success")
+#                 print("       status code:  {}".format(resp.status_code))
+#                 return 0, resp, resp.content, resp.status_code
+#         except HTTPError as error:
+#                 print("Publishing tender: Error")
+#                 print("       status code:  {}".format(resp.status_code))
+#                 print("       response content:  {}".format(resp.content))
+#                 print("       headers:           {}".format(resp.headers))
+#                 time.sleep(1)
+#                 if attempts >= 5:
+#                     abort(error.response.status_code, error.message)
+#         except ConnectionError as e:
+#             print 'Connection Error'
+#             if attempts < 5:
+#                 time.sleep(1)
+#                 continue
+#             else:
+#                 abort(500, 'Publish tender error: ' + str(e))
+#         except requests.exceptions.MissingSchema as e:
+#             abort(500, 'Publish tender error: ' + str(e))
+#         except Exception as e:
+#             abort(500, 'Publish tender error: ' + str(e))
+#
+#
+# # Activate tender
+# def activating_tender(publish_tender_response, headers, host, api_version, procurement_method):
+#     attempts = 0
+#     for x in range(5):
+#         attempts += 1
+#         try:
+#             if procurement_method in data_for_tender.above_threshold_procurement:
+#                 activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
+#             elif procurement_method in data_for_tender.below_threshold_procurement:
+#                 activate_tender = json.loads('{ "data": { "status": "active.enquiries"}}')
+#             else:
+#                 activate_tender = json.loads('{ "data": { "status": "active"}}')
+#             tender_location = publish_tender_response.headers['Location']
+#             token = publish_tender_response.json()['access']['token']
+#             s = requests.Session()
+#             s.request("GET", "{}/api/{}/tenders".format(host, api_version))
+#             r = requests.Request('PATCH', "{}{}{}".format(tender_location, '?acc_token=', token),
+#                                  data=json.dumps(activate_tender),
+#                                  headers=headers,
+#                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
+#             prepped = s.prepare_request(r)
+#             resp = s.send(prepped)
+#             resp.raise_for_status()
+#             if resp.status_code == 200:
+#                 print("Activating tender: Success")
+#                 print("       status code:  {}".format(resp.status_code))
+#                 return 0, resp, resp.content, resp.status_code
+#         except HTTPError as error:
+#             print("Activating tender: Error")
+#             print("       status code:  {}".format(resp.status_code))
+#             print("       response content:  {}".format(resp.content))
+#             print("       headers:           {}".format(resp.headers))
+#             time.sleep(1)
+#             if attempts >= 5:
+#                 abort(error.response.status_code, error.message)
+#         except ConnectionError as e:
+#             print 'Connection Error'
+#             if attempts < 5:
+#                 time.sleep(1)
+#                 continue
+#             else:
+#                 abort(500, 'Activate tender error: ' + str(e))
+#         except requests.exceptions.MissingSchema as e:
+#             abort(500, 'Activate tender error: ' + str(e))
+#         except Exception as e:
+#             abort(500, 'Activate tender error: ' + str(e))
 
 
 # Finish first stage
@@ -446,8 +446,8 @@ def creation_of_tender(tc_request, user_id):
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
 
-    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long, 'tender')  # add first stage to company
-    response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2]
+    # add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long, 'tender')  # add first stage to company
+    # response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2]
 
     ''''# add documents to tender
     if add_documents == 1:
@@ -466,14 +466,14 @@ def creation_of_tender(tc_request, user_id):
         make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, host_kit, 0)  # 0 - documents of bid
 
         if received_tender_status == 'active.tendering':
-            get_t_info = get_tender_info(host_kit, tender_id_long)
+            get_t_info = tender.get_tender_info(tender_id_long)
 
-            if get_t_info[1].json()['data']['status'] == 'active.tendering':
-                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+            if get_t_info.json()['data']['status'] == 'active.tendering':
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                 response_json['status'] = 'success'
                 response_code = 201
             else:
-                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                 response_code = 422
 
         else:
