@@ -113,54 +113,6 @@ def headers_request(json_tender, headers_host):
     return headers
 
 
-# Finish first stage
-def finish_first_stage(publish_tender_response, headers, host, api_version):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            finish_stage_one = {
-                                  "data": {
-                                    "status": "active.stage2.waiting"
-                                  }
-                                }
-            tender_location = publish_tender_response.headers['Location']
-            token = publish_tender_response.json()['access']['token']
-            s = requests.Session()
-            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-            r = requests.Request('PATCH', "{}{}{}".format(tender_location, '?acc_token=', token),
-                                 data=json.dumps(finish_stage_one),
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
-            prepped = s.prepare_request(r)
-            resp = s.send(prepped)
-            resp.raise_for_status()
-            if resp.status_code == 200:
-                print("Finish first stage: Success")
-                print("       status code:  {}".format(resp.status_code))
-                activate_tender_response = {"status_code": resp.status_code}
-                return 0, resp, activate_tender_response, resp.status_code
-        except HTTPError as error:
-            print("Finish first stage: Error")
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-            time.sleep(1)
-            if attempts >= 5:
-                abort(error.response.status_code, error.message)
-        except ConnectionError as e:
-            print 'Connection Error'
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Finish first stage error: ' + str(e))
-        except requests.exceptions.MissingSchema as e:
-            abort(500, 'Finish first stage error: ' + str(e))
-        except Exception as e:
-            abort(500, 'Finish first stage error: ' + str(e))
-
-
 def get_2nd_stage_info(headers, host, api_version, second_stage_tender_id, tender_token):
     attempts = 0
     for x in range(5):
@@ -416,7 +368,8 @@ def creation_of_tender(tc_request, user_id):
                                 response_json['status'] = 'success'
                                 response_code = 201
 
-                                finish_first_stage(t_publish, headers_tender, host_kit[0], host_kit[1])
+                                tender.finish_first_stage(tender_id_long, tender_token)  # Finish first stage
+
                                 attempt_counter = 0
                                 for y in range(50):  # check for "completed" status of first stage
                                     attempt_counter += 1

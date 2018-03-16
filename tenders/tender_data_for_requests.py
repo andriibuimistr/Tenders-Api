@@ -25,16 +25,16 @@ def headers_request(cdb_version, json_data):
     return headers
 
 
-json_status_active_tendering = {
-                            "data": {
-                                "status": "active.tendering"
-                            }
-                        }
-
 json_status_active = {"data": {
                              "status": "active"
                              }
                       }
+
+json_finish_first_stage = {
+                            "data": {
+                                "status": "active.stage2.waiting"
+                              }
+                            }
 
 
 def json_activate_tender(procurement_method):

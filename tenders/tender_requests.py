@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tender_data_for_requests import headers_request, host_selector, json_status_active_tendering, json_activate_tender
+from tender_data_for_requests import headers_request, host_selector, json_activate_tender, json_finish_first_stage
 from flask import abort
 import json
 import requests
@@ -60,7 +60,11 @@ class TenderRequests:
         return request_to_cdb(headers_request(self.cdb, json_tender), self.host, '', 'POST', json_tender, 'Publish tender')
 
     def activate_tender(self, tender_id_long, token, procurement_method):
-        return request_to_cdb(headers_request(self.cdb, json_status_active_tendering), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_activate_tender(procurement_method), 'Activate tender')
+        json_tender_activation = json_activate_tender(procurement_method)
+        return request_to_cdb(headers_request(self.cdb, json_tender_activation), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_tender_activation, 'Activate tender')
 
     def get_tender_info(self, tender_id_long):
         return request_to_cdb(None, self.host, '/{}'.format(tender_id_long), 'GET', None, 'Get tender info')
+
+    def finish_first_stage(self, tender_id_long, token):
+        return request_to_cdb(headers_request(self.cdb, json_finish_first_stage), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_finish_first_stage, 'Finish first stage')
