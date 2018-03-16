@@ -415,27 +415,27 @@ def check_if_contract_exists(get_t_info):
         return e
 
 
-def get_tender_info(host_kit, tender_id_long):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        # print 'Get tender info. Attempt {}'.format(attempts)
-        try:
-            get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-            if get_t_info.status_code == 200:
-                return get_t_info.status_code, get_t_info
-            else:
-                print get_t_info.content
-                time.sleep(1)
-                if attempts >= 5:
-                    abort(get_t_info.status_code, get_t_info.content)
-        except Exception as e:
-            print e
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Get tender info error: ' + str(e))
+# def get_tender_info(host_kit, tender_id_long):
+#     attempts = 0
+#     for x in range(5):
+#         attempts += 1
+#         # print 'Get tender info. Attempt {}'.format(attempts)
+#         try:
+#             get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
+#             if get_t_info.status_code == 200:
+#                 return get_t_info.status_code, get_t_info
+#             else:
+#                 print get_t_info.content
+#                 time.sleep(1)
+#                 if attempts >= 5:
+#                     abort(get_t_info.status_code, get_t_info.content)
+#         except Exception as e:
+#             print e
+#             if attempts < 5:
+#                 time.sleep(1)
+#                 continue
+#             else:
+#                 abort(500, 'Get tender info error: ' + str(e))
 
 
 def get_time_difference(host_kit):
