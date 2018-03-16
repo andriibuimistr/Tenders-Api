@@ -435,7 +435,8 @@ def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body, hos
 def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
     bid_to_sql = BidsTender(None, bid_id, bid_token, tender_id, None, None, None, None, u_identifier)
     db.session.add(bid_to_sql)
-    db.session.commit()  # you need to call commit() method to save your changes to the database
+    db.session.commit()
+    db.session.remove()
     print 'Add bid to local database'
     return "success"
 

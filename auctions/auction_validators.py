@@ -9,8 +9,10 @@ def validator_create_auction(data):
         if create_auction_required_fields[field] not in data:
             abort(400, "Field '{}' is required. List of required fields: {}".format(create_auction_required_fields[field], create_auction_required_fields))
 
-    if 'procurementMethodType' not in data and data['cdb_version'] != '2':
+    if 'procurementMethodType' not in data:
         abort(400, 'procurementMethodType is required')
+    if data['procurementMethodType'] not in auction_procurement_method_types:
+        abort(400, 'procurementMethodType must be one of {}'.format(auction_procurement_method_types))
 
     if str(data['number_of_items']).isdigit() is False:
         abort(400, 'Number of items must be integer')
@@ -51,10 +53,6 @@ def validator_create_auction(data):
     if data['platform_host'] not in list_of_platform_urls:
         abort(422, 'Platform must be one of: {}'.format(list_of_platform_urls))
 
-    if 'rent' in data:
-        if data['rent'] != '1':
-            abort(422, 'Rent value must de "1" or empty')
-
     if 'minNumberOfQualifiedBids' in data:
         if data['minNumberOfQualifiedBids'] != '1':
             abort(422, 'minNumberOfQualifiedBids value must de "1" or empty')
@@ -63,4 +61,23 @@ def validator_create_auction(data):
         if data['auctionStatus'] != 'active.tendering':
             abort(422, 'Accelerator value can be less than 30 for "active.tendering" status only')
 
-    return True
+    valid_data = dict()
+
+    valid_data['min_number_of_qualified_bids'] = 2
+    if 'minNumberOfQualifiedBids' in data:
+        if data['minNumberOfQualifiedBids'] == '1':
+            valid_data['min_number_of_qualified_bids'] = 1
+
+    for field in data:
+        valid_data[field] = data[field]
+
+    if 'steps' not in data:
+        valid_data['steps'] = 0
+    else:
+        valid_data['steps'] = int(data['steps'])
+
+        valid_data['rent'] = False
+    if 'rent' in data:
+        valid_data['rent'] = True
+
+    return valid_data

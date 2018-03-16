@@ -451,7 +451,7 @@ def get_auction_info(host_kit, auction_id_long):
     for x in range(5):
         attempts += 1
         try:
-            get_t_info = requests.get("{}/{}".format(host_kit[0], auction_id_long))
+            get_t_info = requests.get("{}/{}".format(host_kit, auction_id_long))
             if get_t_info.status_code == 200:
                 return get_t_info.status_code, get_t_info
             else:

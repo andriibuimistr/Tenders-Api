@@ -140,6 +140,7 @@ def do_login():
             session['logged_in'] = True
             session['username'] = request.form['username']
             session['user_id'] = user_id
+            session['user_role'] = get_user_role()
             return redirect(redirect_url())
         else:
             return redirect(redirect_url())
@@ -293,7 +294,7 @@ def add_bid_to_company(bid_id):
 def check_if_admin():  # check if user is admin before generate a page
     if not session.get('logged_in'):
         return login_form()
-    elif get_user_role() != 1:
+    elif session['user_role'] != 1:
         return abort(403, 'U r not allowed to access this page')
     else:
         return True
@@ -302,7 +303,7 @@ def check_if_admin():  # check if user is admin before generate a page
 def check_if_admin_jquery():  # check if user is admin before accept jquery request
     if not session.get('logged_in'):
         return abort(401)
-    elif get_user_role() != 1:
+    elif session['user_role'] != 1:
         return abort(403, 'U r not allowed to access this page')
     else:
         return True
@@ -312,14 +313,15 @@ def check_if_admin_jquery():  # check if user is admin before accept jquery requ
 def admin_pages(page):
     if check_if_admin() is not True:
         return check_if_admin()
+    admin_page = AdminPages(session['user_role'])
     if page == 'platforms':
-        return AdminPages(1).page_admin_platforms()
+        return admin_page.page_admin_platforms()
     elif page == 'users':
-        return AdminPages(1).page_admin_users()
+        return admin_page.page_admin_users()
     elif page == 'tenders':
-        return AdminPages(1).page_admin_tenders()
+        return admin_page.page_admin_tenders()
     elif page == 'json-viewer':
-        return AdminPages(1).page_admin_json_viewer()
+        return admin_page.page_admin_json_viewer()
     else:
         return abort(404)
 
@@ -360,7 +362,7 @@ def jquery_delete_tender(tender_id):
         return jquery_requests.delete_tender(tender_id)
 
 
-# Get JSON of tender from CDB (with jquery)
+# Get JSON of tender from CDB (with jquery) for json viewer
 @app.route('/backend/jquery/get_tender_json/<tender_id>/<api_version>', methods=['GET'])
 def jquery_get_tender_json(tender_id, api_version):
     if check_if_admin_jquery() is not True:
