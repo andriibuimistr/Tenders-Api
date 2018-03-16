@@ -423,20 +423,23 @@ def creation_of_tender(tc_request, user_id):
 
     headers_tender = headers_request(json_tender, host_kit[3])  # get headers for tender
 
-    # run publish tender function
-    # publish_tender_response = publish_tender(headers_tender, json_tender, host_kit[0], host_kit[1])  # publish tender in draft status
-
     tender = TenderRequests(api_version)
     t_publish = tender.publish_tender(json_tender)
 
+    tender_id_long = t_publish.json()['data']['id']
+    tender_token = t_publish.json()['access']['token']
+    tender_id_short = t_publish.json()['data']['tenderID']
+
     # run activate tender function
     time.sleep(1)
-    activate_tender = activating_tender(t_publish, headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
+    # activate_tender = activating_tender(t_publish, headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
+    t_activate = tender.activate_tender(tender_id_long, tender_token)
+    tender_status = t_activate.json()['data']['status']
 
-    tender_status = activate_tender[1].json()['data']['status']
-    tender_id_long = t_publish.json()['data']['id']
-    tender_id_short = t_publish.json()['data']['tenderID']
-    tender_token = t_publish.json()['access']['token']
+    # tender_status = activate_tender[1].json()['data']['status']
+    # tender_id_long = t_publish.json()['data']['id']
+    # tender_id_short = t_publish.json()['data']['tenderID']
+    # tender_token = t_publish.json()['access']['token']
 
     # add tender to database
     add_tender_db = tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots, user_id, api_version)
