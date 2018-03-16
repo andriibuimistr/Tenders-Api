@@ -113,95 +113,6 @@ def headers_request(json_tender, headers_host):
     return headers
 
 
-# Publish tender
-# def publish_tender(headers, json_tender, host, api_version):
-#     attempts = 0
-#     for x in range(5):
-#         attempts += 1
-#         try:
-#             s = requests.Session()
-#             s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-#             r = requests.Request('POST', "{}/api/{}/tenders".format(host, api_version),
-#                                  data=json.dumps(json_tender),
-#                                  headers=headers,
-#                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
-#
-#             prepped = s.prepare_request(r)
-#             resp = s.send(prepped)
-#             resp.raise_for_status()
-#             if resp.status_code == 201:
-#                 print("Publishing tender: Success")
-#                 print("       status code:  {}".format(resp.status_code))
-#                 return 0, resp, resp.content, resp.status_code
-#         except HTTPError as error:
-#                 print("Publishing tender: Error")
-#                 print("       status code:  {}".format(resp.status_code))
-#                 print("       response content:  {}".format(resp.content))
-#                 print("       headers:           {}".format(resp.headers))
-#                 time.sleep(1)
-#                 if attempts >= 5:
-#                     abort(error.response.status_code, error.message)
-#         except ConnectionError as e:
-#             print 'Connection Error'
-#             if attempts < 5:
-#                 time.sleep(1)
-#                 continue
-#             else:
-#                 abort(500, 'Publish tender error: ' + str(e))
-#         except requests.exceptions.MissingSchema as e:
-#             abort(500, 'Publish tender error: ' + str(e))
-#         except Exception as e:
-#             abort(500, 'Publish tender error: ' + str(e))
-#
-#
-# # Activate tender
-# def activating_tender(publish_tender_response, headers, host, api_version, procurement_method):
-#     attempts = 0
-#     for x in range(5):
-#         attempts += 1
-#         try:
-#             if procurement_method in data_for_tender.above_threshold_procurement:
-#                 activate_tender = json.loads('{ "data": { "status": "active.tendering"}}')
-#             elif procurement_method in data_for_tender.below_threshold_procurement:
-#                 activate_tender = json.loads('{ "data": { "status": "active.enquiries"}}')
-#             else:
-#                 activate_tender = json.loads('{ "data": { "status": "active"}}')
-#             tender_location = publish_tender_response.headers['Location']
-#             token = publish_tender_response.json()['access']['token']
-#             s = requests.Session()
-#             s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-#             r = requests.Request('PATCH', "{}{}{}".format(tender_location, '?acc_token=', token),
-#                                  data=json.dumps(activate_tender),
-#                                  headers=headers,
-#                                  cookies=requests.utils.dict_from_cookiejar(s.cookies))
-#             prepped = s.prepare_request(r)
-#             resp = s.send(prepped)
-#             resp.raise_for_status()
-#             if resp.status_code == 200:
-#                 print("Activating tender: Success")
-#                 print("       status code:  {}".format(resp.status_code))
-#                 return 0, resp, resp.content, resp.status_code
-#         except HTTPError as error:
-#             print("Activating tender: Error")
-#             print("       status code:  {}".format(resp.status_code))
-#             print("       response content:  {}".format(resp.content))
-#             print("       headers:           {}".format(resp.headers))
-#             time.sleep(1)
-#             if attempts >= 5:
-#                 abort(error.response.status_code, error.message)
-#         except ConnectionError as e:
-#             print 'Connection Error'
-#             if attempts < 5:
-#                 time.sleep(1)
-#                 continue
-#             else:
-#                 abort(500, 'Activate tender error: ' + str(e))
-#         except requests.exceptions.MissingSchema as e:
-#             abort(500, 'Activate tender error: ' + str(e))
-#         except Exception as e:
-#             abort(500, 'Activate tender error: ' + str(e))
-
-
 # Finish first stage
 def finish_first_stage(publish_tender_response, headers, host, api_version):
     attempts = 0
@@ -414,11 +325,6 @@ def creation_of_tender(tc_request, user_id):
 
     list_of_id_lots = list_of_id_for_lots(number_of_lots)  # get list of id for lots
 
-    if procurement_method == 'belowThreshold' and received_tender_status == 'active.qualification':
-        if accelerator > 1440:
-            accelerator = 1440
-            print '!accelerator = 1440'
-
     json_tender = json.loads(json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status))  # get json for create tender
 
     headers_tender = headers_request(json_tender, host_kit[3])  # get headers for tender
@@ -430,16 +336,9 @@ def creation_of_tender(tc_request, user_id):
     tender_token = t_publish.json()['access']['token']
     tender_id_short = t_publish.json()['data']['tenderID']
 
-    # run activate tender function
     time.sleep(1)
-    # activate_tender = activating_tender(t_publish, headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
     t_activate = tender.activate_tender(tender_id_long, tender_token, procurement_method)
     tender_status = t_activate.json()['data']['status']
-
-    # tender_status = activate_tender[1].json()['data']['status']
-    # tender_id_long = t_publish.json()['data']['id']
-    # tender_id_short = t_publish.json()['data']['tenderID']
-    # tender_token = t_publish.json()['access']['token']
 
     # add tender to database
     add_tender_db = tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots, user_id, api_version)
@@ -489,17 +388,6 @@ def creation_of_tender(tc_request, user_id):
                     time.sleep(30)
                     get_t_info = tender.get_tender_info(tender_id_long)
 
-                    # if get_t_info[0] == 500:
-                    #     response_json['tenderStatus'] = str(get_t_info[1])
-                    #     response_code = 500
-                    #     if attempt_counter >= 20:
-                    #         break
-                    # elif get_t_info[0] not in [500, 200]:
-                    #     response_json['tenderStatus'] = get_t_info[1].json()
-                    #     response_code = 422
-                    #     if attempt_counter >= 20:
-                    #         break
-                    # else:
                     if get_t_info.json()['data']['status'] == 'active.pre-qualification':
                         if received_tender_status == 'active.pre-qualification':
                             response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -523,17 +411,6 @@ def creation_of_tender(tc_request, user_id):
                             time.sleep(20)
                             get_t_info = tender.get_tender_info(tender_id_long)
 
-                            # if get_t_info[0] == 500:
-                            #     response_json['tenderStatus'] = str(get_t_info[1])
-                            #     response_code = 500
-                            #     if attempt_counter >= 50:
-                            #         break
-                            # elif get_t_info[0] not in [500, 200]:
-                            #     response_json['tenderStatus'] = get_t_info[1].json()
-                            #     response_code = 422
-                            #     if attempt_counter >= 50:
-                            #         break
-                            # else:
                             if get_t_info.json()['data']['status'] == 'active.stage2.pending':
                                 response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                 response_json['status'] = 'success'
@@ -547,17 +424,6 @@ def creation_of_tender(tc_request, user_id):
                                     time.sleep(20)
                                     get_t_info = tender.get_tender_info(tender_id_long)
 
-                                    # if get_t_info[0] == 500:
-                                    #     response_json['tenderStatus'] = str(get_t_info[1])
-                                    #     response_code = 500
-                                    #     if attempt_counter >= 50:
-                                    #         break
-                                    # elif get_t_info[0] not in [500, 200]:
-                                    #     response_json['tenderStatus'] = get_t_info[1].json()
-                                    #     response_code = 422
-                                    #     if attempt_counter >= 50:
-                                    #         break
-                                    # else:
                                     if get_t_info.json()['data']['status'] == 'complete':
                                         if received_tender_status == 'complete':
                                             response_json['tenderStatus'] = get_t_info.json()['data']['status']
@@ -754,8 +620,7 @@ def creation_of_tender(tc_request, user_id):
                 response_json['status'] = 'success'
                 response_code = 201
             else:
-                response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                response_code = 422
+                abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
 
         else:
             get_t_info = tender.get_tender_info(tender_id_long)
@@ -780,7 +645,7 @@ def creation_of_tender(tc_request, user_id):
                     t_end_date = datetime.strptime(t_publish.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
                     waiting_time = (t_end_date.second - datetime.now().second)
                     if waiting_time > 3600:
-                        abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
+                        abort(422, "Waiting time is too long: {} seconds".format(waiting_time))
                     time_counter(waiting_time, 'Check tender status')
 
                     attempt_counter = 0

@@ -53,6 +53,13 @@ def validator_create_tender(data):
     elif 1 > int(accelerator) or int(accelerator) > 30000:
         abort(422, 'Accelerator must be between 1 and 30000')
 
+    if procurement_method == 'belowThreshold':
+        if int(accelerator) > 14400:
+            abort(422, 'For belowThreshold accelerator value can\'t be bigger than 14400')
+        if received_tender_status == 'active.qualification':
+            if int(accelerator) > 1440:
+                abort(422, 'For belowThreshold procedure in "active.qualification" accelerator value can\'t be bigger than 1440')
+
     if str(company_id).isdigit() is False:
         abort(400, 'Company ID must be integer')
     if int(company_id) == 0:
