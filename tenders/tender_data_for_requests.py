@@ -1,5 +1,6 @@
 from key import auth_key
 import json
+import data_for_tender
 
 
 # Select host for CDB
@@ -34,3 +35,25 @@ json_status_active = {"data": {
                              "status": "active"
                              }
                       }
+
+
+def json_activate_tender(procurement_method):
+    if procurement_method in data_for_tender.above_threshold_procurement:
+        activate_tender_json = {
+            "data": {
+                "status": "active.tendering"
+            }
+        }
+    elif procurement_method in data_for_tender.below_threshold_procurement:
+        activate_tender_json = {
+            "data": {
+                "status": "active.enquiries"
+            }
+        }
+    else:
+        activate_tender_json = {
+            "data": {
+                "status": "active"
+            }
+        }
+    return activate_tender_json

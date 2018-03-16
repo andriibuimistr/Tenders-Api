@@ -433,7 +433,7 @@ def creation_of_tender(tc_request, user_id):
     # run activate tender function
     time.sleep(1)
     # activate_tender = activating_tender(t_publish, headers_tender, host_kit[0], host_kit[1], procurement_method)  # activate tender
-    t_activate = tender.activate_tender(tender_id_long, tender_token)
+    t_activate = tender.activate_tender(tender_id_long, tender_token, procurement_method)
     tender_status = t_activate.json()['data']['status']
 
     # tender_status = activate_tender[1].json()['data']['status']
@@ -806,14 +806,14 @@ def creation_of_tender(tc_request, user_id):
 
     elif procurement_method in below_threshold_procurement:
         if received_tender_status == 'active.enquiries':
-            get_t_info = get_tender_info(host_kit, tender_id_long)
+            get_t_info = tender.get_tender_info(tender_id_long)
 
-            if get_t_info[1].json()['data']['status'] == 'active.enquiries':
-                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+            if get_t_info.json()['data']['status'] == 'active.enquiries':
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                 response_json['status'] = 'success'
                 response_code = 201
             else:
-                response_json['tenderStatus'] = get_t_info[1].json()['data']['status']
+                response_json['tenderStatus'] = get_t_info.json()['data']['status']
                 response_code = 422
 
         else:
