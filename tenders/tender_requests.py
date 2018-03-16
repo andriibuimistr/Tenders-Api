@@ -36,15 +36,17 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
             if attempts >= 5:
                 abort(error.response.status_code, resp.content)
         except ConnectionError as e:
-            print 'Connection Error'
+            print 'Connection Exception'
             if attempts < 5:
                 time.sleep(1)
                 continue
             else:
-                abort(500, '{} error: {}'.format(request_name, e))
+                abort(503, '{} error: {}'.format(request_name, e))
         except requests.exceptions.MissingSchema as e:
+            print 'MissingSchema Exception'
             abort(500, '{} error: {}'.format(request_name, e))
         except Exception as e:
+            print 'General Exception'
             abort(500, '{} error: {}'.format(request_name, e))
 
 

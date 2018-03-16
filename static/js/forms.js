@@ -99,6 +99,7 @@ $(function() {
             data: form.serialize(),
             type: 'POST',
             success: function(data, textStatus, xhr) {
+                console.log(data)
                 var operation_status = data.status;
                 var tender_status = data.tenderStatus;
                 var tender_to_company_status = data.tender_to_company[0].status;
@@ -110,6 +111,7 @@ $(function() {
                                             '<div class="alert-response-status">' + xhr.status + ' ' + textStatus + '</div>' +
                                             '<div class="alert-response-description">' +
                                                 '<div class="id-of-tender"><span>Tender ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
+                                                '<div class="actual-tender-status"><span>procurementMethodType: </span>' + procedure + '</div>' +
                                                 '<div class="actual-tender-status"><span>Tender status: </span>' + tender_status + '</div>' +
                                                 '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
                                                 '<div class="tender-to-company-status"><span>Add to company status: </span>' + tender_to_company_status + '</div>' +
