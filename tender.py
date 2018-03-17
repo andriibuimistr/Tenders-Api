@@ -15,7 +15,6 @@ from datetime import datetime, timedelta
 import time
 from flask import abort
 import bid
-from requests.exceptions import ConnectionError, HTTPError
 from tenders.tender_requests import TenderRequests
 
 
@@ -113,47 +112,6 @@ def headers_request(json_tender, headers_host):
     return headers
 
 
-def get_2nd_stage_info(headers, host, api_version, second_stage_tender_id, tender_token):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            s = requests.Session()
-            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-            r = requests.Request('PATCH', "{}/api/{}/tenders/{}/credentials?acc_token={}".format(host, api_version, second_stage_tender_id, tender_token),
-                                 data=json.dumps('{}'),
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
-
-            prepped = s.prepare_request(r)
-            resp = s.send(prepped)
-            resp.raise_for_status()
-            if resp.status_code == 200:
-                print("Get 2nd stage json: Success")
-                print("       status code:  {}".format(resp.status_code))
-                # print("  token 2-nd stage:  {}".format(resp.json()['access']['token']))
-                publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
-                return resp, publish_tender_response, resp.status_code
-        except HTTPError as error:
-            print("Get 2nd stage json: Error")
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-            time.sleep(1)
-            if attempts >= 5:
-                abort(error.response.status_code, error.message)
-        except ConnectionError as e:
-            print 'Connection Error'
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Get 2nd stage json error: ' + str(e))
-        except Exception as e:
-            print e
-            return e, 1
-
-
 # ????????????????????????????????????????????????????? Get tender info
 def extend_tender_period(host, api_version, accelerator, second_stage_tender_id):
     tender_draft = requests.get("{}/api/{}/tenders/{}".format(host, api_version, second_stage_tender_id))
@@ -162,87 +120,6 @@ def extend_tender_period(host, api_version, accelerator, second_stage_tender_id)
     new_tender_json['data']['tenderPeriod']['endDate'] = str(
         datetime.now() + timedelta(minutes=int(round(11 * (1440.0 / accelerator)) + 1))) + kiev_now
     return new_tender_json
-
-
-# Patch second stage
-def patch_second_stage(headers, new_tender_json, host, api_version, second_stage_tender_id, second_stage_token):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            s = requests.Session()
-            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-            r = requests.Request('PATCH', "{}/api/{}/tenders/{}?acc_token={}".format(host, api_version, second_stage_tender_id, second_stage_token),
-                                 data=json.dumps(new_tender_json),
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
-
-            prepped = s.prepare_request(r)
-            resp = s.send(prepped)
-            resp.raise_for_status()
-            if resp.status_code == 200:
-                print("Patch 2nd stage: Success")
-                print("       status code:  {}".format(resp.status_code))
-                publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
-                return resp, publish_tender_response, resp.status_code
-        except HTTPError as error:
-            print("Patch 2nd stage: Error")
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-            time.sleep(1)
-            if attempts >= 5:
-                abort(error.response.status_code, error.message)
-        except ConnectionError as e:
-            print 'Connection Error'
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Patch 2nd stage: ' + str(e))
-        except Exception as e:
-            print str(e)
-            return e, 1
-
-
-def activate_2nd_stage(headers, host, api_version, new_tender_id, new_token, activate_2nd_stage_json):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            s = requests.Session()
-            s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-            r = requests.Request('PATCH', "{}/api/{}/tenders/{}?acc_token={}".format(host, api_version, new_tender_id, new_token),
-                                 data=json.dumps(activate_2nd_stage_json),
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
-
-            prepped = s.prepare_request(r)
-            resp = s.send(prepped)
-            resp.raise_for_status()
-            if resp.status_code == 200:
-                print("Activate 2nd stage: Success")
-                print("       status code:  {}".format(resp.status_code))
-                print("  token 2-nd stage:  {}".format(resp.json()['access']['token']))
-                publish_tender_response = {"status_code": resp.status_code, "id": resp.json()['data']['id']}
-                return resp, publish_tender_response, resp.status_code
-        except HTTPError as error:
-            print("Activate 2nd stage: Error")
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-            time.sleep(1)
-            if attempts >= 5:
-                abort(error.response.status_code, error.message)
-        except ConnectionError as e:
-            print 'Connection Error'
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Activate 2nd stage error: ' + str(e))
-        except Exception as e:
-            return e, 1
 
 
 # save tender info to DB (SQLA)
@@ -298,7 +175,7 @@ def creation_of_tender(tc_request, user_id):
         abort(500, '{}'.format(add_tender_db[0]))
 
     add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long, 'tender')  # add first stage to company
-    response_json['tender_to_company'] = add_tender_company[0], add_tender_company[2]
+    response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', tender_id_short)
 
     ''''# add documents to tender
     if add_documents == 1:
@@ -347,10 +224,10 @@ def creation_of_tender(tc_request, user_id):
                             response_code = 201
                             break
                         qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                        prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all my bids
+                        prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[1])  # approve all my bids
+
                         time.sleep(2)
-                        finish_prequalification = qualification.finish_prequalification(
-                            tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
+                        tender.finish_prequalification(tender_id_long, tender_token)
                         db.session.remove()
                         waiting_time = int(round(7200.0 / accelerator * 60))
                         time_counter(waiting_time, 'Check tender status (active.stage2.pending)')
@@ -386,8 +263,8 @@ def creation_of_tender(tc_request, user_id):
 
                                         second_stage_tender_id = get_t_info.json()['data']['stage2TenderID']  # get id of 2nd stage from json of 1st stage
                                         print '2nd stage id: ' + second_stage_tender_id
-                                        get_info_2nd_stage = get_2nd_stage_info(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, tender_token)  # get info of 2nd stage (with token)
-                                        second_stage_token = get_info_2nd_stage[0].json()['access']['token']  # get token of 2nd stage from json
+                                        get_info_2nd_stage = tender.get_2nd_stage_info(second_stage_tender_id, tender_token)
+                                        second_stage_token = get_info_2nd_stage.json()['access']['token']  # get token of 2nd stage from json
 
                                         get_t_info = tender.get_tender_info(second_stage_tender_id)
 
@@ -396,16 +273,11 @@ def creation_of_tender(tc_request, user_id):
                                         response_json['id'] = second_stage_tender_id_short  # change tender id to 2nd stage tender id for response
 
                                         get_extended_period_for_2nd_stage = extend_tender_period(host_kit[0], host_kit[1], accelerator, second_stage_tender_id)
-                                        patch_second_stage(headers_tender, get_extended_period_for_2nd_stage, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token)  # ready json 2nd stage
+                                        tender.patch_second_stage(second_stage_tender_id, second_stage_token, get_extended_period_for_2nd_stage)
                                         add_2nd_stage_db = tender_to_db(second_stage_tender_id, second_stage_tender_id_short, second_stage_token, procurement_method_2nd_stage,
                                                                         get_t_info.json()['data']['status'], number_of_lots, user_id, api_version)
 
-                                        activate_2nd_stage_json = {  # json for activate second stage
-                                            "data": {
-                                                "status": "active.tendering"
-                                            }
-                                        }
-                                        activate_2nd_stage(headers_tender, host_kit[0], host_kit[1], second_stage_tender_id, second_stage_token, activate_2nd_stage_json)  # activate 2nd stage request
+                                        tender.activate_2nd_stage(second_stage_tender_id, second_stage_token, procurement_method)
 
                                         time.sleep(1)
                                         if received_tender_status == 'active.tendering.stage2':
@@ -442,11 +314,10 @@ def creation_of_tender(tc_request, user_id):
                                                         break
                                                     else:
                                                         qualifications = qualification.list_of_qualifications(second_stage_tender_id, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                                                        prequalification_result = qualification.pass_second_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, host_kit[0],
-                                                                                                                              host_kit[1])  # approve all bids
+                                                        prequalification_result = qualification.pass_second_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, host_kit[1])  # approve all bids
                                                         time.sleep(2)
-                                                        finish_prequalification = qualification.finish_prequalification(second_stage_tender_id, second_stage_token, host_kit[0],
-                                                                                                                        host_kit[1])  # submit prequalification protocol
+
+                                                        tender.finish_prequalification(second_stage_tender_id, second_stage_token)
                                                         db.session.remove()
 
                                                         response_code = 200  # change
@@ -483,7 +354,7 @@ def creation_of_tender(tc_request, user_id):
 
                                         add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id, 'tender')
                                         response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
-                                        response_json['tender_to_company'] = add_2nd_stage_to_company[0], add_2nd_stage_to_company[2]
+                                        response_json['tender_to_company'] = add_2nd_stage_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', second_stage_tender_id_short)
                                         break
                                     else:
                                         if attempt_counter < 50:
@@ -527,9 +398,9 @@ def creation_of_tender(tc_request, user_id):
                                 break
                             else:
                                 qualifications = qualification.list_of_qualifications(tender_id_long, host_kit[0], host_kit[1])  # get list of qualifications for tender
-                                prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[0], host_kit[1])  # approve all bids
+                                prequalification_result = qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, host_kit[1])  # approve all bids
                                 time.sleep(2)
-                                finish_prequalification = qualification.finish_prequalification(tender_id_long, tender_token, host_kit[0], host_kit[1])  # submit prequalification protocol
+                                tender.finish_prequalification(tender_id_long, tender_token)
                                 db.session.remove()
 
                                 response_code = 200  # change
@@ -632,7 +503,7 @@ def creation_of_tender(tc_request, user_id):
                     response_json['status'] = 'success'
                     response_code = 201
             else:
-                run_activate_award(headers_tender, host_kit, tender_id_long, tender_token, list_of_awards, procurement_method)
+                run_activate_award(host_kit, tender_id_long, tender_token, list_of_awards, procurement_method)
                 time.sleep(3)
                 get_t_info = tender.get_tender_info(tender_id_long)
                 if procurement_method in negotiation_procurement:
@@ -658,7 +529,7 @@ def creation_of_tender(tc_request, user_id):
                             break
                         else:
                             list_of_contracts = get_t_info.json()['data']['contracts']
-                            run_activate_contract(headers_tender, host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
+                            run_activate_contract(host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
                             for x in range(30):
                                 get_t_info = tender.get_tender_info(tender_id_long)
                                 if get_t_info.json()['data']['status'] == 'complete':

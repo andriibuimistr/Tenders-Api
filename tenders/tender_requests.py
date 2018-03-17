@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tender_data_for_requests import headers_request, host_selector, json_activate_tender, json_finish_first_stage
+from tender_data_for_requests import headers_request, host_selector, json_activate_tender, json_finish_first_stage, json_finish_pq
 from flask import abort
 import json
 import requests
@@ -68,3 +68,22 @@ class TenderRequests:
 
     def finish_first_stage(self, tender_id_long, token):
         return request_to_cdb(headers_request(self.cdb, json_finish_first_stage), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_finish_first_stage, 'Finish first stage')
+
+    def patch_second_stage(self, tender_id_long, token, json_patch_2nd_stage):
+        return request_to_cdb(headers_request(self.cdb, json_patch_2nd_stage), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH',  json_patch_2nd_stage, 'Patch 2nd stage')
+
+    def activate_2nd_stage(self, tender_id_long, token, procurement_method):
+        json_tender_activation = json_activate_tender(procurement_method)
+        return request_to_cdb(headers_request(self.cdb, json_tender_activation), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_tender_activation, 'Activate 2nd stage')
+
+    def get_2nd_stage_info(self, tender_id_long, token):
+        return request_to_cdb(headers_request(self.cdb, None), self.host, '/{}/credentials?acc_token={}'.format(tender_id_long, token), 'PATCH', None, 'Get 2nd stage info')
+
+    def approve_prequalification(self, tender_id_long, qualification_id, token, json_pq):
+        return request_to_cdb(headers_request(self.cdb, json_pq), self.host, '/{}/qualifications/{}?acc_token={}'.format(tender_id_long, qualification_id, token), 'PATCH', json_pq, 'Approve prequalification')
+
+    def finish_prequalification(self, tender_id_long, token):
+        return request_to_cdb(headers_request(self.cdb, json_finish_pq), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_finish_pq, 'Finish prequalification')
+
+    def activate_award_contract(self, tender_id_long, entity, entity_id, token, activation_json, count):
+        request_to_cdb(headers_request(self.cdb, activation_json), self.host, '/{}/{}/{}?acc_token={}'.format(tender_id_long, entity, entity_id, token), 'PATCH', activation_json, 'Activate {} {}'.format(entity, count))
