@@ -7,7 +7,6 @@ from flask import abort
 import time
 import sys
 from requests.exceptions import ConnectionError
-# from requests.exceptions import ConnectionError
 
 
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
@@ -102,71 +101,6 @@ def update_tenders_list():
         return 1, e
 
 
-# # get list of all tenders (SQLA)
-# def get_tenders_list():
-#     tenders_list = Tenders.query.all()
-#     db.session.remove()
-#     list_of_tenders = []
-#     if len(tenders_list) == 0:
-#         print 'Tenders table is empty'
-#         return 1, {"description": "DB is empty"}
-#     else:
-#         print "Get tenders in local DB"
-#         for tender in range(len(tenders_list)):
-#             tender_id_long = tenders_list[tender].tender_id_long
-#             tender_id_short = tenders_list[tender].tender_id_short
-#             db_tender_status = tenders_list[tender].tender_status
-#             procurement_method_type = tenders_list[tender].procurementMethodType
-#             added_to_site = tenders_list[tender].added_to_site
-#             company_uid = tenders_list[tender].company_uid
-#
-#             # list_of_tenders.append({"tender_id": tender_id, "tender_status": db_tender_status,
-#             #                         "procurementMethodType": procurement_method_type})
-#             if added_to_site == 1:
-#                 # list_of_tenders[tender]['has_company'] = True
-#                 tender_company = company_uid
-#             else:
-#                 tender_company = 0
-#             list_of_tenders.append({"id": tender_id_long, 'short_id': tender_id_short, "procurement_method_type": procurement_method_type, "tender_status": db_tender_status, "tender_company": tender_company})
-#         return 0, list_of_tenders
-
-
-# # add all tenders to company (SQLA)
-# def add_all_tenders_to_company(company_id, company_platform_host, company_uid):
-#     print '\nAdd tenders to site'
-#     tenders_actual_list = Tenders.query.all()
-#     count = 0
-#     for every_tender in range(len(tenders_actual_list)):
-#         tender_id_long = tenders_actual_list[every_tender].tender_id_long
-#         tender_token = tenders_actual_list[every_tender].tender_token
-#         added_to_site = tenders_actual_list[every_tender].added_to_site
-#         if added_to_site == 0 or added_to_site is None:
-#             add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
-#                 company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token,
-#                 '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
-#             add_to_site_response = add_to_site.json()
-#             if 'tid' in add_to_site_response:
-#                 Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1, company_uid=company_uid))
-#                 db.session.commit()
-#                 print '\nTender was added to site - ' + tender_id_long
-#                 tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
-#                 link_to_tender = '{}{}{}{}'.format(
-#                     'Link: ', company_platform_host, 'buyer/tender/view/', add_to_site_response['tid'])
-#                 print tender_id_site
-#                 print link_to_tender
-#                 count += 1
-#             elif 'tender has company' in add_to_site_response['error']:
-#                 Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(added_to_site=1,
-#                                                                                    company_uid=company_uid))
-#                 db.session.commit()
-#                 print 'Tender has company'
-#             else:
-#                 print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
-#         else:
-#             print '{}{}{}'.format('Tender ', tender_id_long, ' was added to site before', )
-#     return count
-
-
 # add one tender company (SQLA) ##############################################
 def add_one_tender_company(company_id, company_platform_host, tender_id_long, entity):
     if entity == 'tender':
@@ -246,44 +180,6 @@ def add_one_tender_company(company_id, company_platform_host, tender_id_long, en
     else:
         print '{} {}{}'.format(entity, tender_id_long, ' was added to company before')
         return abort(422, '{} was added to site before'.format(entity))
-
-
-# # add one tender to company (SQLA)
-# def add_one_tender_to_company(company_id, company_platform_host, tender_id_long, company_uid):
-#     get_tender_data = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
-#     db.session.remove()
-#     tender_id_long = get_tender_data.tender_id_long
-#     tender_token = get_tender_data.tender_token
-#     added_to_site = get_tender_data.added_to_site
-#     if added_to_site == 0 or added_to_site is None:
-#         add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(
-#             company_platform_host, '/tender/add-tender-to-company?tid=', tender_id_long, '&token=', tender_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
-#         add_to_site_response = add_to_site.json()
-#         if 'tid' in add_to_site_response:
-#             Tenders.query.filter_by(tender_id_long=tender_id_long).update(
-#                 dict(added_to_site=1, company_uid=company_uid))  # set added to site=1
-#             db.session.commit()
-#             db.session.remove()
-#             print '\nTender was added to site - ' + tender_id_long
-#             tender_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
-#             link_to_tender = '{}{}{}{}'.format(
-#                 'Link: ', company_platform_host, '/buyer/tender/view/', add_to_site_response['tid'])
-#             print tender_id_site
-#             print link_to_tender
-#             return {'status': 'success'}, 201
-#         elif 'tender has company' in add_to_site_response['error']:
-#             Tenders.query.filter_by(tender_id_long=tender_id_long).update(
-#                 dict(added_to_site=1, company_uid=company_uid))  # set added to site=1
-#             db.session.commit()
-#             db.session.remove()
-#             print 'Tender has company'
-#             return {'status': 'error', 'description': 'Tender has company'}, 422
-#         else:
-#             print '{}{}{}'.format(tender_id_long, ' - ', add_to_site_response)
-#             return {'status': 'error', 'description': add_to_site_response}, 422
-#     else:
-#         print '{}{}{}'.format('Tender ', tender_id_long, ' was added to company before')
-#         return abort(422, 'Tender was added to site before')
 
 
 # list of tenders in prequalification status (SQLA)
@@ -427,26 +323,3 @@ def count_waiting_time(time_to_wait, time_template, host_kit):
     wait_to = int(time.mktime(datetime.strptime(time_to_wait, time_template).timetuple()))
     time_now = int(time.mktime(datetime.now().timetuple()))
     return (wait_to - diff) - time_now
-
-
-# ################################################################################### AUCTIONS #####################################
-def get_auction_info(host_kit, auction_id_long):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            get_t_info = requests.get("{}/{}".format(host_kit, auction_id_long))
-            if get_t_info.status_code == 200:
-                return get_t_info.status_code, get_t_info
-            else:
-                print get_t_info.content
-                time.sleep(1)
-                if attempts >= 5:
-                    abort(get_t_info.status_code, get_t_info.content)
-        except Exception as e:
-            print e
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Get auction info error: ' + str(e))

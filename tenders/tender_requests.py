@@ -11,7 +11,6 @@ import time
 def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
     attempts = 0
     for x in range(5):
-        print '!!!Request'
         attempts += 1
         try:
             s = requests.Session()

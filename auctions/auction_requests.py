@@ -64,3 +64,6 @@ class AuctionRequests:
 
     def activate_auction_bid(self, auction_id_long, bid_id, bid_token):
         return request_to_cdb(headers_request(self.cdb, json_status_active), self.host, '/{}/bids/{}?acc_token={}'.format(auction_id_long, bid_id, bid_token), 'PATCH', json_status_active, 'Activate auction bid')
+
+    def get_auction_info(self, auction_id_long):
+        return request_to_cdb(None, self.host, '/{}'.format(auction_id_long), 'GET', None, 'Get auction info')
