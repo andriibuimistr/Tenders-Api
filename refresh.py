@@ -415,34 +415,18 @@ def check_if_contract_exists(get_t_info):
         return e
 
 
-# def get_tender_info(host_kit, tender_id_long):
-#     attempts = 0
-#     for x in range(5):
-#         attempts += 1
-#         # print 'Get tender info. Attempt {}'.format(attempts)
-#         try:
-#             get_t_info = requests.get("{}/api/{}/tenders/{}".format(host_kit[0], host_kit[1], tender_id_long))
-#             if get_t_info.status_code == 200:
-#                 return get_t_info.status_code, get_t_info
-#             else:
-#                 print get_t_info.content
-#                 time.sleep(1)
-#                 if attempts >= 5:
-#                     abort(get_t_info.status_code, get_t_info.content)
-#         except Exception as e:
-#             print e
-#             if attempts < 5:
-#                 time.sleep(1)
-#                 continue
-#             else:
-#                 abort(500, 'Get tender info error: ' + str(e))
-
-
 def get_time_difference(host_kit):
     lt = int(time.mktime(datetime.utcnow().timetuple()))
     r = requests.head(host_kit[0])
     st = int(time.mktime(datetime.strptime(r.headers['Date'][-24:-4], "%d %b %Y %H:%M:%S").timetuple()))
     return st - lt
+
+
+def count_waiting_time(time_to_wait, time_template, host_kit):
+    diff = get_time_difference(host_kit)
+    wait_to = int(time.mktime(datetime.strptime(time_to_wait, time_template).timetuple()))
+    time_now = int(time.mktime(datetime.now().timetuple()))
+    return (wait_to - diff) - time_now
 
 
 # ################################################################################### AUCTIONS #####################################

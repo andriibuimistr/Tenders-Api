@@ -87,3 +87,12 @@ class TenderRequests:
 
     def activate_award_contract(self, tender_id_long, entity, entity_id, token, activation_json, count):
         request_to_cdb(headers_request(self.cdb, activation_json), self.host, '/{}/{}/{}?acc_token={}'.format(tender_id_long, entity, entity_id, token), 'PATCH', activation_json, 'Activate {} {}'.format(entity, count))
+
+    def add_supplier_limited(self, tender_id_long, token, add_supplier_json, supplier_number):
+        return request_to_cdb(headers_request(self.cdb, add_supplier_json), self.host, '/{}/awards?acc_token={}'.format(tender_id_long, token), 'POST', add_supplier_json, 'Add supplier {}'.format(supplier_number))
+
+    def make_tender_bid(self, tender_id_long, bid_json, bid_number):
+        return request_to_cdb(headers_request(self.cdb, bid_json), self.host, '/{}/bids'.format(tender_id_long), 'POST', bid_json, 'Publish bid {}'.format(bid_number))
+
+    def activate_tender_bid(self, tender_id_long, bid_id, bid_token, activate_bid_json, bid_number):
+        return request_to_cdb(headers_request(self.cdb, activate_bid_json), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'PATCH', activate_bid_json, 'Activate bid {}'.format(bid_number))

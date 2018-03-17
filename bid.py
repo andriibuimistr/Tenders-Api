@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 from faker import Faker
-import requests
 import document
-from data_for_tender import auth_key, valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, below_threshold_procurement
+from data_for_tender import valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, below_threshold_procurement
 from database import BidsTender, db
 import json
 import time
 from random import randint
 import binascii
 import os
-from flask import abort
-from requests.exceptions import ConnectionError
+from tenders.tender_requests import TenderRequests
 
 
 fake = Faker('uk_UA')
@@ -111,43 +109,6 @@ def supplier_json_limited_lots(lot_id):
                                   }
                               }
     return suppliers_json_limited
-
-
-def add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json, supplier_number):
-    attempts = 0
-    for x in range(5):
-        attempts += 1
-        try:
-            s = requests.Session()
-            s.request('GET', '{}/api/{}/tenders'.format(host_kit[0], host_kit[1]))
-            r = requests.Request('POST', '{}/api/{}/tenders/{}/awards?acc_token={}'.format(host_kit[0], host_kit[1], tender_id, tender_token),
-                                 data=json.dumps(limited_supplier_json),
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
-            prepped = s.prepare_request(r)
-            resp = s.send(prepped)
-            resp.raise_for_status()
-            if resp.status_code == 201:
-                print('{}{}: {}'.format('Add supplier ', supplier_number, 'Success'))
-                print("       status code:  {}".format(resp.status_code))
-                return 0, resp, resp.content, resp.status_code
-            else:
-                print('{}{}: {}'.format('Add supplier ', supplier_number, 'Error'))
-                print("       status code:  {}".format(resp.status_code))
-                print("       response content:  {}".format(resp.content))
-                print("       headers:           {}".format(resp.headers))
-                time.sleep(1)
-                if attempts >= 5:
-                    abort(resp.status_code, 'Add supplier error ' + resp.content)
-        except ConnectionError as e:
-            print 'CDB Error'
-            if attempts < 5:
-                time.sleep(1)
-                continue
-            else:
-                abort(500, 'Add supplier error: ' + str(e))
-        except requests.exceptions.MissingSchema as e:
-            abort(500, 'Add supplier error: ' + str(e))
 
 
 # generate json for bid (tender with lots)
@@ -339,69 +300,6 @@ def determine_procedure_for_bid(procurement_method):
     return activate_bid_body
 
 
-#  generate headers for bid request
-def headers_bid(bid_json_open_length, headers_host):
-    headers = {"Authorization": "Basic {}".format(auth_key),
-               "Content-Length": "{}".format(len(json.dumps(bid_json_open_length))),
-               "Content-Type": "application/json",
-               "Host": headers_host}
-    return headers
-
-
-# create bid in CDB
-def create_bid_openua_procedure(n_bid, tender_id, bid_json, headers, host, api_version):
-    try:
-        s = requests.Session()
-        s.request('GET', '{}/api/{}/tenders'.format(host, api_version))
-        r = requests.Request('POST', '{}/api/{}/tenders/{}/bids'.format(host, api_version, tender_id),
-                             data=json.dumps(bid_json),
-                             headers=headers,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        resp.raise_for_status()
-        if resp.status_code == 201:
-            print('{}{}: {}'.format('Publishing bid ', n_bid, 'Success'))
-            print("       status code:  {}".format(resp.status_code))
-        else:
-            print('{}{}: {}'.format('Publishing bid ', n_bid, 'Error'))
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-        bid_location = resp.headers['Location']  # get url of created bid
-        bid_token = resp.json()['access']['token']  # get token of created bid
-        bid_id = resp.json()['data']['id']  # get id of created bid
-        return 0, resp.status_code, bid_location, bid_token, bid_id
-    except Exception as e:
-        return 1, e
-
-
-# activate created bid
-def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body, host, api_version):
-    try:
-        s = requests.Session()
-        s.request("GET", "{}/api/{}/tenders".format(host, api_version))
-        r = requests.Request('PATCH',
-                             "{}{}{}".format(bid_location, '?acc_token=', bid_token),
-                             data=json.dumps(activate_bid_body),
-                             headers=headers,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        resp.raise_for_status()
-        if resp.status_code == 200:
-            print('{}{}: {}'.format('Activating bid ', n_bid,  'Success'))
-            print("       status code:  {}".format(resp.status_code))
-        else:
-            print('{}{}: {}'.format('Activating bid ', n_bid,  'Error'))
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-            print("       headers:           {}".format(resp.headers))
-        return 0, resp.status_code
-    except Exception as e:
-        return 1, e
-
-
 # get info about bid
 '''def get_bid_info(bid_location, bid_token, n_bid):
     s = requests.Session()
@@ -426,11 +324,6 @@ def activate_bid(bid_location, bid_token, n_bid, headers, activate_bid_body, hos
         sys.exit("CDB error")'''
 
 
-# DB connections
-
-# db = MySQLdb.connect(host="localhost", user="python", passwd="python", db="python_dz")
-
-
 # add bid info to DB (SQLA)
 def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
     bid_to_sql = BidsTender(None, bid_id, bid_token, tender_id, None, None, None, None, u_identifier)
@@ -443,6 +336,7 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
 
 # create and activate bid for created tender
 def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, host_kit, if_docs):
+    tender = TenderRequests(host_kit[1])
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     bids_json = []
     if bids_quantity == 0:
@@ -476,58 +370,40 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
                 del bid_json["data"]["selfEligible"], bid_json["data"]["selfQualified"], bid_json["data"]["subcontractingDetails"]
             list_of_bids_json.append(bid_json)
 
-            headers = headers_bid(bid_json, host_kit[3])  # generate headers for bid
-
             attempts = 0
             for every_bid in range(5):
                 attempts += 1
                 print '{}{}'.format('Publishing bid: Attempt ', attempts)
-                created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers, host_kit[0], host_kit[1])  # create bid
-                if created_bid[1] == 201:
+                created_bid = tender.make_tender_bid(tender_id, bid_json, count)
+                if created_bid.status_code == 201:
                     break
                 else:
                     continue
 
-            if created_bid[0] == 1:
-                print created_bid[1]
-                bids_json.append({"bid_number": count,
-                                  "create_bid_status_code": 500,
-                                  "description": str(created_bid[1])
-                                  })
-            else:
-                bid_location = created_bid[2]
-                bid_token = created_bid[3]
-                bid_id = created_bid[4]
+            bid_token = created_bid.json()['access']['token']
+            bid_id = created_bid.json()['data']['id']
 
-                attempts = 0
-                for every_bid in range(5):  # activate bid
-                    activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
-                    time.sleep(0.5)
-                    if activate_created_bid[1] == 200:
-                        break
-                    else:
-                        attempts += 1
-                        print '{}{}'.format('Activating bid: Attempt ', attempts)
-
-                add_bid_db = bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
-                # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
-
-                if if_docs == 1:
-                    print "Add documents to bid"
-                    added_to_bid_documents = document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, procurement_method)
+            attempts = 0
+            for every_bid in range(5):  # activate bid
+                activate_created_bid = tender.activate_tender_bid(tender_id, bid_id, bid_token, activate_bid_body, count)
+                time.sleep(0.5)
+                if activate_created_bid.status_code == 200:
+                    break
                 else:
-                    added_to_bid_documents = "This bid has no documents"
+                    attempts += 1
+                    print '{}{}'.format('Activating bid: Attempt ', attempts)
 
-                bids_json.append({"bid_id": bid_id,
-                                  "create_bid_status_code": created_bid[1],
-                                  # activate_bid_key: activate_created_bid_result,
-                                  "add_bid_to_db_status": add_bid_db,
-                                  "documents_of_bid": added_to_bid_documents
-                                  })
+            bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
+            # get_bid_info(bid_location, bid_token, count)  # get info about bid from CDB
+
+            if if_docs == 1:
+                print "Add documents to bid"
+                document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, procurement_method)
         return bids_json, list_of_bids_json
 
 
-def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement_method):
+def make_bid_competitive(list_of_bids, tender_id, host_kit, procurement_method):
+    tender = TenderRequests(host_kit[1])
     if len(list_of_bids) == 0:
         print 'Bids haven\'t been made!'
     else:
@@ -537,8 +413,8 @@ def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement
             bid_json = list_of_bids[bid]
             attempts_create = 0
             for x in range(5):
-                created_bid = create_bid_openua_procedure(count, tender_id, bid_json, headers, host_kit[0], host_kit[1])
-                if created_bid[1] == 201:
+                created_bid = tender.make_tender_bid(tender_id, bid_json, count)
+                if created_bid.status_code == 201:
                     break
                 else:
                     attempts_create += 1
@@ -547,36 +423,30 @@ def make_bid_competitive(list_of_bids, tender_id, headers, host_kit, procurement
                 activate_bid_body = {"data": {"status": "active"}}
             else:
                 activate_bid_body = {"data": {"status": "pending"}}
-            bid_location = created_bid[2]
-            bid_token = created_bid[3]
-            bid_id = created_bid[4]
+            bid_token = created_bid.json()['access']['token']
+            bid_id = created_bid.json()['data']['id']
             identifier = list_of_bids[bid]['data']['tenderers'][0]['identifier']['id']
             attempts_activate = 0
             for every_bid in range(5):  # activate bid
-                activate_created_bid = activate_bid(bid_location, bid_token, count, headers, activate_bid_body, host_kit[0], host_kit[1])
-                if activate_created_bid[1] == 200:
+                activate_created_bid = tender.activate_tender_bid(tender_id, bid_id, bid_token, activate_bid_body, count)
+                if activate_created_bid.status_code == 200:
                     break
                 else:
                     attempts_activate += 1
                     print '{}{}'.format('Activating bid: Attempt ', attempts_activate)
 
-            add_bid_2nd_stage_db = bid_to_db(bid_id, bid_token, identifier, tender_id)
+            bid_to_db(bid_id, bid_token, identifier, tender_id)
 
 
-def suppliers_for_limited(number_of_lots, tender_id, tender_token, headers, procurement_method, list_of_id_lots, host_kit):
+def suppliers_for_limited(number_of_lots, tender_id, tender_token, list_of_id_lots, host_kit):
+    tender = TenderRequests(host_kit[1])
     supplier = 0
     if number_of_lots == 0:
         supplier += 1
         limited_supplier_json = supplier_json_limited()
-        add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json, supplier)
+        tender.add_supplier_limited(tender_id, tender_token, limited_supplier_json, supplier)
     else:
         for lot_id in range(len(list_of_id_lots)):
             supplier += 1
             limited_supplier_json = supplier_json_limited_lots(list_of_id_lots[lot_id])
-            add_supplier_limited(tender_id, tender_token, headers, host_kit, limited_supplier_json, supplier)
-
-
-
-
-
-
+            tender.add_supplier_limited(tender_id, tender_token, limited_supplier_json, supplier)
