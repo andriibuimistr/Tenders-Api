@@ -193,8 +193,8 @@ def creation_of_tender(tc_request, user_id):
 
         else:
             if procurement_method in competitive_procedures:  # qualification for competitive dialogue
-                t_end_date = datetime.strptime(t_publish.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')
-                waiting_time = (t_end_date - datetime.now()).seconds
+                t_end_date = t_publish.json()['data']['tenderPeriod']['endDate']
+                waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S+02:00', api_version)
                 time_counter(waiting_time, 'Check tender status (pre-qualification)')
 
                 attempt_counter = 0
@@ -280,8 +280,8 @@ def creation_of_tender(tc_request, user_id):
 
                                         get_t_info = tender.get_tender_info(second_stage_tender_id)
 
-                                        t_end_date = datetime.strptime(get_t_info.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f+02:00')  # get tender period end date
-                                        waiting_time = (t_end_date - datetime.now()).seconds
+                                        t_end_date = get_t_info.json()['data']['tenderPeriod']['endDate']  # get tender period end date
+                                        waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S.%f+02:00', api_version)
                                         time_counter(waiting_time, 'Check tender status')
 
                                         # pass pre-qualification for competitiveDialogueEU
@@ -364,8 +364,8 @@ def creation_of_tender(tc_request, user_id):
                         else:
                             abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
             else:
-                t_end_date = datetime.strptime(t_publish.json()['data']['tenderPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S+02:00')  # get tender period end date
-                waiting_time = (t_end_date - datetime.now()).seconds
+                t_end_date = t_publish.json()['data']['tenderPeriod']['endDate']  # get tender period end date
+                waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S+02:00', api_version)
                 time_counter(waiting_time, 'Check tender status')
 
                 # pass pre-qualification for procedure
