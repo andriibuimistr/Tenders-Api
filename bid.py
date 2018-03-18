@@ -335,8 +335,8 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
 
 
 # create and activate bid for created tender
-def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, host_kit, if_docs):
-    tender = TenderRequests(host_kit[1])
+def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list_of_id_lots, api_version, if_docs):
+    tender = TenderRequests(api_version)
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     bids_json = []
     if bids_quantity == 0:
@@ -402,8 +402,8 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
         return bids_json, list_of_bids_json
 
 
-def make_bid_competitive(list_of_bids, tender_id, host_kit, procurement_method):
-    tender = TenderRequests(host_kit[1])
+def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_method):
+    tender = TenderRequests(api_version)
     if len(list_of_bids) == 0:
         print 'Bids haven\'t been made!'
     else:
@@ -438,8 +438,8 @@ def make_bid_competitive(list_of_bids, tender_id, host_kit, procurement_method):
             bid_to_db(bid_id, bid_token, identifier, tender_id)
 
 
-def suppliers_for_limited(number_of_lots, tender_id, tender_token, list_of_id_lots, host_kit):
-    tender = TenderRequests(host_kit[1])
+def suppliers_for_limited(number_of_lots, tender_id, tender_token, list_of_id_lots, api_version):
+    tender = TenderRequests(api_version)
     supplier = 0
     if number_of_lots == 0:
         supplier += 1

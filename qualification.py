@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from data_for_tender import activate_contract_json
 from database import Tenders, BidsTender
-import requests
 import key
 import time
 from tenders.tender_requests import TenderRequests
@@ -67,9 +66,9 @@ def get_tender_token(tender_id_long):
 
 
 # get list of qualifications for tender (SQLA)
-def list_of_qualifications(tender_id_long, host, api_version):
+def list_of_qualifications(tender_id_long, api_version):
     print 'Get list of qualifications'
-    tender_json = requests.get("{}/api/{}/tenders/{}".format(host, api_version, tender_id_long))
+    tender_json = TenderRequests(api_version).get_tender_info(tender_id_long)
     response = tender_json.json()
     qualifications = response['data']['qualifications']
     return qualifications
@@ -107,8 +106,8 @@ def pass_second_pre_qualification(qualifications, tender_id, tender_token, api_v
     return bids_json
 
 
-def run_activate_award(host_kit, tender_id_long, tender_token, list_of_awards, procurement_method):
-    tender = TenderRequests(host_kit[1])
+def run_activate_award(api_version, tender_id_long, tender_token, list_of_awards, procurement_method):
+    tender = TenderRequests(api_version)
     award_number = 0
     activate_award_json = activate_award_json_select(procurement_method)
     for award in range(len(list_of_awards)):
@@ -117,8 +116,8 @@ def run_activate_award(host_kit, tender_id_long, tender_token, list_of_awards, p
         tender.activate_award_contract(tender_id_long, 'awards', award_id, tender_token, activate_award_json, award_number)
 
 
-def run_activate_contract(host_kit, tender_id_long, tender_token, list_of_contracts, complaint_end_date):
-    tender = TenderRequests(host_kit[1])
+def run_activate_contract(api_version, tender_id_long, tender_token, list_of_contracts, complaint_end_date):
+    tender = TenderRequests(api_version)
     contract_number = 0
     json_activate_contract = activate_contract_json(complaint_end_date)
     for contract in range(len(list_of_contracts)):

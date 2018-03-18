@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from data_for_tender import host, api_version
 from database import db, Companies, Tenders, BidsTender, Platforms, PlatformRoles, Roles, Users, Auctions
 import requests
 from datetime import datetime
@@ -7,6 +6,7 @@ from flask import abort
 import time
 import sys
 from requests.exceptions import ConnectionError
+from tenders.tender_requests import TenderRequests
 
 
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
@@ -22,83 +22,83 @@ def time_counter(waiting_time, message):
 
 
 # update tender status in database (SQLA)
-def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
-    get_t_info = requests.get('{}/api/{}/tenders/{}'.format(host, api_version, tender_id_long))
-    actual_tender_status = get_t_info.json()['data']['status']
-    if actual_tender_status == tender_status_in_db and actual_tender_status not in invalid_tender_status_list:
-        print '{}{}{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status, ' - ',
-                                  procurement_method_type)
-        return 0
-    else:
-        if actual_tender_status in invalid_tender_status_list:
-            BidsTender.query.filter_by(tender_id=tender_id_long).delete()
-            db.session.commit()
-            db.session.close()
-            delete_unsuccessful_tender = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
-            db.session.delete(delete_unsuccessful_tender)
-            db.session.commit()
-            db.session.close()
-            print '{}{}{}'.format('Tender ', tender_id_long,
-                                  ' and its related bids were deleted because of its status')
-            return 0
-        else:
-            Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(tender_status=actual_tender_status))
-            db.session.commit()
-            db.session.close()
-            print '{}{}{}{}{}{}{}'.format(
-                tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status, ' - ',
-                procurement_method_type)
-            return 1
-
-
-# get updated tenders from CDB (SQLA)
-def update_tenders_list():
-    cron = open('cron/synchronization.txt', 'r')
-    last_cron = cron.read()
-    year = last_cron[:4]
-    month = last_cron[5:7]
-    day = last_cron[8:10]
-    hours = last_cron[11:13]
-    minutes = int(last_cron[14:16]) - 1
-    if minutes == 0:
-        minutes = 1
-    seconds = last_cron[17:]
-    cron.close()
-
-    r = requests.get("{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(host, api_version, year, month, day, hours, minutes - 1, seconds))
-    updated_tenders = r.json()['data']
-    list_of_updated_tenders = []
-    for x in range(len(updated_tenders)):
-        list_of_updated_tenders.append(updated_tenders[x]['id'])
-
-    try:
-        tenders_list = Tenders.query.all()
-        db.session.close()
-        if len(tenders_list) == 0:
-            print 'DB is empty'
-        else:
-            count = 0
-            print "Update tenders in local DB"
-            n_updated_tenders = 0
-            for tender in range(len(tenders_list)):
-                tender_id = tenders_list[tender].tender_id_long
-                db_tender_status = tenders_list[tender].tender_status
-                procurement_method_type = tenders_list[tender].procurementMethodType
-                if tender_id in list_of_updated_tenders:
-                    count += 1
-                    num_updated_tenders = update_tender_status(db_tender_status, tender_id, procurement_method_type)
-                    n_updated_tenders += num_updated_tenders
-            print n_updated_tenders
-            print '{}{}'.format(count, ' tenders were found in synchronization list')
-
-            cron = open('cron/synchronization.txt', 'w')
-            cron.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-            cron.close()
-            return 0, n_updated_tenders
-    except Exception, e:
-        db.session.rollback()
-        print e
-        return 1, e
+# def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
+#     get_t_info = requests.get('{}/api/{}/tenders/{}'.format(host, api_version, tender_id_long))
+#     actual_tender_status = get_t_info.json()['data']['status']
+#     if actual_tender_status == tender_status_in_db and actual_tender_status not in invalid_tender_status_list:
+#         print '{}{}{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status, ' - ',
+#                                   procurement_method_type)
+#         return 0
+#     else:
+#         if actual_tender_status in invalid_tender_status_list:
+#             BidsTender.query.filter_by(tender_id=tender_id_long).delete()
+#             db.session.commit()
+#             db.session.close()
+#             delete_unsuccessful_tender = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
+#             db.session.delete(delete_unsuccessful_tender)
+#             db.session.commit()
+#             db.session.close()
+#             print '{}{}{}'.format('Tender ', tender_id_long,
+#                                   ' and its related bids were deleted because of its status')
+#             return 0
+#         else:
+#             Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(tender_status=actual_tender_status))
+#             db.session.commit()
+#             db.session.close()
+#             print '{}{}{}{}{}{}{}'.format(
+#                 tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status, ' - ',
+#                 procurement_method_type)
+#             return 1
+#
+#
+# # get updated tenders from CDB (SQLA)
+# def update_tenders_list():
+#     cron = open('cron/synchronization.txt', 'r')
+#     last_cron = cron.read()
+#     year = last_cron[:4]
+#     month = last_cron[5:7]
+#     day = last_cron[8:10]
+#     hours = last_cron[11:13]
+#     minutes = int(last_cron[14:16]) - 1
+#     if minutes == 0:
+#         minutes = 1
+#     seconds = last_cron[17:]
+#     cron.close()
+#
+#     r = requests.get("{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(host, api_version, year, month, day, hours, minutes - 1, seconds))
+#     updated_tenders = r.json()['data']
+#     list_of_updated_tenders = []
+#     for x in range(len(updated_tenders)):
+#         list_of_updated_tenders.append(updated_tenders[x]['id'])
+#
+#     try:
+#         tenders_list = Tenders.query.all()
+#         db.session.close()
+#         if len(tenders_list) == 0:
+#             print 'DB is empty'
+#         else:
+#             count = 0
+#             print "Update tenders in local DB"
+#             n_updated_tenders = 0
+#             for tender in range(len(tenders_list)):
+#                 tender_id = tenders_list[tender].tender_id_long
+#                 db_tender_status = tenders_list[tender].tender_status
+#                 procurement_method_type = tenders_list[tender].procurementMethodType
+#                 if tender_id in list_of_updated_tenders:
+#                     count += 1
+#                     num_updated_tenders = update_tender_status(db_tender_status, tender_id, procurement_method_type)
+#                     n_updated_tenders += num_updated_tenders
+#             print n_updated_tenders
+#             print '{}{}'.format(count, ' tenders were found in synchronization list')
+#
+#             cron = open('cron/synchronization.txt', 'w')
+#             cron.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+#             cron.close()
+#             return 0, n_updated_tenders
+#     except Exception, e:
+#         db.session.rollback()
+#         print e
+#         return 1, e
 
 
 # add one tender company (SQLA) ##############################################
@@ -311,15 +311,15 @@ def check_if_contract_exists(get_t_info):
         return e
 
 
-def get_time_difference(host_kit):
+def get_time_difference(api_version):
     lt = int(time.mktime(datetime.utcnow().timetuple()))
-    r = requests.head(host_kit[0])
+    r = TenderRequests(api_version).get_list_of_tenders()
     st = int(time.mktime(datetime.strptime(r.headers['Date'][-24:-4], "%d %b %Y %H:%M:%S").timetuple()))
     return st - lt
 
 
-def count_waiting_time(time_to_wait, time_template, host_kit):
-    diff = get_time_difference(host_kit)
+def count_waiting_time(time_to_wait, time_template, api_version):
+    diff = get_time_difference(api_version)
     wait_to = int(time.mktime(datetime.strptime(time_to_wait, time_template).timetuple()))
     time_now = int(time.mktime(datetime.now().timetuple()))
     return (wait_to - diff) - time_now

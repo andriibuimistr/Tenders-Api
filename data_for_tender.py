@@ -12,19 +12,19 @@ import pytz
 # ########################################### VARIABLES ############################
 fake = Faker('uk_UA')
 
-
-def host_selector(api_version):
-    if api_version == 'dev':
-        host = 'https://api-sandbox.prozorro.openprocurement.net'
-        api_version = "dev"
-        ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
-        host_headers = 'api-sandbox.prozorro.openprocurement.net'
-    else:
-        host = 'https://lb.api-sandbox.openprocurement.org'
-        api_version = "2.4"
-        ds_host = 'https://upload.docs-sandbox.openprocurement.org/upload'
-        host_headers = 'lb.api-sandbox.openprocurement.org'
-    return host, api_version, ds_host, host_headers
+#
+# def host_selector(api_version):
+#     if api_version == 'dev':
+#         host = 'https://api-sandbox.prozorro.openprocurement.net'
+#         api_version = "dev"
+#         ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
+#         host_headers = 'api-sandbox.prozorro.openprocurement.net'
+#     else:
+#         host = 'https://lb.api-sandbox.openprocurement.org'
+#         api_version = "2.4"
+#         ds_host = 'https://upload.docs-sandbox.openprocurement.org/upload'
+#         host_headers = 'lb.api-sandbox.openprocurement.org'
+#     return host, api_version, ds_host, host_headers
 
 
 sandbox = 1
