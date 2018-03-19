@@ -71,6 +71,7 @@ def tender_period(accelerator, procurement_method, received_tender_status):
                                     "endDate": tender_end_date
         },
                              "enquiryPeriod": {
+                                    "startDate": datetime.now().strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now)),
                                     "endDate": tender_start_date
                             }}
     return tender_period_data
