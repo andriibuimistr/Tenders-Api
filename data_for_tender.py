@@ -147,215 +147,215 @@ additionalClassifications = ', "additionalClassifications": [ ]'
 
 
 # generate data for item
-def item_data(id_number_of_lots, id_number_of_items, i, procurement_method, item_number):
-    if procurement_method == 'esco':
-        data_for_item = u'{}{}{}{}{}{}{}'.format(description_of_item(id_number_of_lots, id_number_of_items, item_number)[i], classification, additionalClassifications, description_en(),
-                                                 delivery_address_block(), deliveryDate, item_id_generator())
-    else:
-        data_for_item = u'{}{}{}{}{}{}{}{}'.format(
-            description_of_item(id_number_of_lots, id_number_of_items, item_number)[i], classification, additionalClassifications, description_en(), delivery_address_block(), deliveryDate, item_id_generator(),
-            unit())
-
-    return data_for_item
+# def item_data(id_number_of_lots, id_number_of_items, i, procurement_method, item_number):
+#     if procurement_method == 'esco':
+#         data_for_item = u'{}{}{}{}{}{}{}'.format(description_of_item(id_number_of_lots, id_number_of_items, item_number)[i], classification, additionalClassifications, description_en(),
+#                                                  delivery_address_block(), deliveryDate, item_id_generator())
+#     else:
+#         data_for_item = u'{}{}{}{}{}{}{}{}'.format(
+#             description_of_item(id_number_of_lots, id_number_of_items, item_number)[i], classification, additionalClassifications, description_en(), delivery_address_block(), deliveryDate, item_id_generator(),
+#             unit())
+#
+#     return data_for_item
 
 
 # --LOTS-- ###############
 
 # generate id for lot(s)
-def lot_id_generator():
-    lot_id_generated = (binascii.hexlify(os.urandom(16)))
-    return lot_id_generated
+# def lot_id_generator():
+#     lot_id_generated = (binascii.hexlify(os.urandom(16)))
+#     return lot_id_generated
 
 
-def title_for_lot(lot_number):
-    lot_title_en = ', "title_en": "Title of lot in English"'
-    lot_random_title = u"{}{}".format(u'Лот ', lot_number)
-    lot_title = u"{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"', lot_title_en)
-    lot_description_en = ', "description_en": "Description of lot in English"'
-    lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(200).replace('\n', ' '), '"')
-    lot_description_fragment = u"{}{}{}".format(', "description": ', lot_description_name, lot_description_en)
-    lot_data = u'{}{}'.format(lot_title, lot_description_fragment)
-    return lot_data
+# def title_for_lot(lot_number):
+#     lot_title_en = ', "title_en": "Title of lot in English"'
+#     lot_random_title = u"{}{}".format(u'Лот ', lot_number)
+#     lot_title = u"{}{}{}{}{}".format(', "title": ',  '"', lot_random_title, '"', lot_title_en)
+#     lot_description_en = ', "description_en": "Description of lot in English"'
+#     lot_description_name = u"{}{}{}{}{}".format(u'"Описание лота ', lot_random_title, ' - ', fake.text(200).replace('\n', ' '), '"')
+#     lot_description_fragment = u"{}{}{}".format(', "description": ', lot_description_name, lot_description_en)
+#     lot_data = u'{}{}'.format(lot_title, lot_description_fragment)
+#     return lot_data
 
 
 # lot value amount
-def lot_values():
-    lot_value_amount = random.randint(1000, 100000)
-    lot_value = u"{}{}{}".format(', "value": {"amount": "', lot_value_amount, '"}')
-    # lot minimal step amount
-    minimal_step_amount = '{0:.2f}'.format(lot_value_amount * 0.01)
-    minimal_step_fragment = u"{}{}{}".format(', "minimalStep": {"amount": "', minimal_step_amount, '"}')
-    # lot guarantee amount
-    lot_guarantee_amount = '{0:.2f}'.format(lot_value_amount * 0.02)
-    lot_guarantee = u"{}{}{}".format(', "guarantee": {"amount": "', lot_guarantee_amount, '"}')
-    values_of_lot = '{}{}{}'.format(lot_value, lot_guarantee, minimal_step_fragment)
-    return values_of_lot, lot_value_amount
+# def lot_values():
+#     lot_value_amount = random.randint(1000, 100000)
+#     lot_value = u"{}{}{}".format(', "value": {"amount": "', lot_value_amount, '"}')
+#     # lot minimal step amount
+#     minimal_step_amount = '{0:.2f}'.format(lot_value_amount * 0.01)
+#     minimal_step_fragment = u"{}{}{}".format(', "minimalStep": {"amount": "', minimal_step_amount, '"}')
+#     # lot guarantee amount
+#     lot_guarantee_amount = '{0:.2f}'.format(lot_value_amount * 0.02)
+#     lot_guarantee = u"{}{}{}".format(', "guarantee": {"amount": "', lot_guarantee_amount, '"}')
+#     values_of_lot = '{}{}{}'.format(lot_value, lot_guarantee, minimal_step_fragment)
+#     return values_of_lot, lot_value_amount
 
 
-lot_values = lot_values()
+# lot_values = lot_values()
 
 
-def lot_values_esco():
-    minimal_step_percentage = '"minimalStepPercentage": 0.02'
-    lot_value_esco = '{}{}'.format(', ', minimal_step_percentage)
-    return lot_value_esco
-
-
-lot_values_esco = lot_values_esco()
+# def lot_values_esco():
+#     minimal_step_percentage = '"minimalStepPercentage": 0.02'
+#     lot_value_esco = '{}{}'.format(', ', minimal_step_percentage)
+#     return lot_value_esco
+#
+#
+# lot_values_esco = lot_values_esco()
 
 
 # TENDERS
 # tender values
-def tender_values(tv_number_of_lots, procurement_method):
-    if tv_number_of_lots == 0:
-        tender_value_amount = lot_values[1]
-    else:
-        tender_value_amount = lot_values[1] * tv_number_of_lots
-    value_json = {"valueAddedTaxIncluded": valueAddedTaxIncluded,
-                  "amount": tender_value_amount,
-                  "currency": tender_currency
-                  }
-    tender_value = u"{}{}".format('"value": ', json.dumps(value_json))
-    guarantee_json = {"amount": 0,
-                      "currency": tender_currency
-                      }
-    tender_guarantee = u"{}{}".format(', "guarantee": ', json.dumps(guarantee_json))
-    tender_minimal_step_json = {"amount": '{0:.2f}'.format(lot_values[1] * 0.01),
-                                "currency": tender_currency,
-                                "valueAddedTaxIncluded": valueAddedTaxIncluded
-                                }
-    tender_minimal_step = u"{}{}".format(', "minimalStep": ', json.dumps(tender_minimal_step_json))
-    if procurement_method in limited_procurement:
-        values_of_tender = '{}'.format(tender_value)
-    else:
-        values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
-    return values_of_tender
+# def tender_values(tv_number_of_lots, procurement_method):
+#     if tv_number_of_lots == 0:
+#         tender_value_amount = lot_values[1]
+#     else:
+#         tender_value_amount = lot_values[1] * tv_number_of_lots
+#     value_json = {"valueAddedTaxIncluded": valueAddedTaxIncluded,
+#                   "amount": tender_value_amount,
+#                   "currency": tender_currency
+#                   }
+#     tender_value = u"{}{}".format('"value": ', json.dumps(value_json))
+#     guarantee_json = {"amount": 0,
+#                       "currency": tender_currency
+#                       }
+#     tender_guarantee = u"{}{}".format(', "guarantee": ', json.dumps(guarantee_json))
+#     tender_minimal_step_json = {"amount": '{0:.2f}'.format(lot_values[1] * 0.01),
+#                                 "currency": tender_currency,
+#                                 "valueAddedTaxIncluded": valueAddedTaxIncluded
+#                                 }
+#     tender_minimal_step = u"{}{}".format(', "minimalStep": ', json.dumps(tender_minimal_step_json))
+#     if procurement_method in limited_procurement:
+#         values_of_tender = '{}'.format(tender_value)
+#     else:
+#         values_of_tender = '{}{}{}'.format(tender_value, tender_guarantee, tender_minimal_step)
+#     return values_of_tender
 
 
 #######################################################################################################################
-def tender_values_esco(tv_number_of_lots):
-    funding_kind = '"fundingKind": "other"'
-    nbu_discount_rate = '"NBUdiscountRate": 0.99'
-    minimal_step_percentage = '"minimalStepPercentage": 0.02'
-    esco_values = '{}, {}, {}'.format(funding_kind, nbu_discount_rate, minimal_step_percentage)
-    if tv_number_of_lots != 0:
-        esco_values = '{}, {}'.format(nbu_discount_rate, minimal_step_percentage)
-    return esco_values
+# def tender_values_esco(tv_number_of_lots):
+#     funding_kind = '"fundingKind": "other"'
+#     nbu_discount_rate = '"NBUdiscountRate": 0.99'
+#     minimal_step_percentage = '"minimalStepPercentage": 0.02'
+#     esco_values = '{}, {}, {}'.format(funding_kind, nbu_discount_rate, minimal_step_percentage)
+#     if tv_number_of_lots != 0:
+#         esco_values = '{}, {}'.format(nbu_discount_rate, minimal_step_percentage)
+#     return esco_values
 
 
 # tender classification from list
-def classification():
-    classification_scheme = u'"scheme": "ДК021", '
-    classification_codes = random.choice([[
-        '"03000000-1"', u'"Сільськогосподарська, фермерська продукція, продукція рибальства, лісівництва та супутня продукція"'],
-         ['"09000000-3"', u'"Нафтопродукти, паливо, електроенергія та інші джерела енергії"'],
-         ['"14000000-1"', u'"Гірнича продукція, неблагородні метали та супутня продукція"']])
-    classification_id = u"{}{}{}{}".format(
-        '"description": ', classification_codes[1], ', "id": ', classification_codes[0])
-    classification_block = u"{}{}{}{}".format(', "classification": {', classification_scheme, classification_id, " }")
-    return classification_block
+# def classification():
+#     classification_scheme = u'"scheme": "ДК021", '
+#     classification_codes = random.choice([[
+#         '"03000000-1"', u'"Сільськогосподарська, фермерська продукція, продукція рибальства, лісівництва та супутня продукція"'],
+#          ['"09000000-3"', u'"Нафтопродукти, паливо, електроенергія та інші джерела енергії"'],
+#          ['"14000000-1"', u'"Гірнича продукція, неблагородні метали та супутня продукція"']])
+#     classification_id = u"{}{}{}{}".format(
+#         '"description": ', classification_codes[1], ', "id": ', classification_codes[0])
+#     classification_block = u"{}{}{}{}".format(', "classification": {', classification_scheme, classification_id, " }")
+#     return classification_block
 
 
-classification = classification()
+# classification = classification()
 
 
 # random tender description from list
-def description_en():
-    description_en_text = ['"Description 1"', '"Description 2"', '"Description 3"']
-    description_en_fragment = u"{}{}".format(', "description_en": ', random.choice(description_en_text))
-    return description_en_fragment
+# def description_en():
+#     description_en_text = ['"Description 1"', '"Description 2"', '"Description 3"']
+#     description_en_fragment = u"{}{}".format(', "description_en": ', random.choice(description_en_text))
+#     return description_en_fragment
 
 
 # Generate tender period
-def tender_period(accelerator, procurement_method, received_tender_status):
-    # tender_start_date
-    tender_start_date = datetime.now().strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
-    # tender_end_date
-    date_day = datetime.now() + timedelta(minutes=int(round(31 * (1440.0 / accelerator)) + 1))
-    tender_end_date = date_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
-    tender_period_data = u"{}{}{}{}{}{}".format(', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
-
-    if procurement_method == 'belowThreshold':
-        one_day = datetime.now() + timedelta(minutes=int(round(1 * (1440.0 / accelerator))), seconds=10)
-        six_days = datetime.now() + timedelta(minutes=int(round(6 * (1440.0 / accelerator))), seconds=10)
-        five_dozens_days = datetime.now() + timedelta(minutes=int(round(60 * (1440.0 / accelerator))), seconds=10)
-        tender_start_date = one_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
-        tender_end_date = five_dozens_days.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
-        # if received_tender_status == 'active.tendering':
-        if received_tender_status == 'active.qualification':
-            tender_end_date = six_days.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
-        tender_period_data = u"{}{}{}{}{}{}{}".format(', "tenderPeriod": {"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}, "enquiryPeriod": { "endDate": ', tender_start_date, '}')
-    return tender_period_data
-
-
-def tender_titles():
-    tender_random_title = u"{}{}".format(u'Тест ', datetime.now().strftime('%d-%H%M%S"'))
-    tender_title = u'{}{}"'.format(', "title": "', fake.text(100)).replace('\n', ' ')  # ', "title": "', tender_random_title
-    tender_description = u"{}{}{}".format(', "description": ', u'"Примечания для тендера ', tender_random_title)
-    tender_title_en = u"{}{}".format(', "title_en": ', '"Title of tender in english"')
-    tender_description_en = u"{}{}".format(', "description_en": ', '""')
-    tender_title_description = u'{}{}{}{}'.format(tender_title, tender_description, tender_title_en,
-                                                  tender_description_en)
-    return tender_title_description
+# def tender_period(accelerator, procurement_method, received_tender_status):
+#     # tender_start_date
+#     tender_start_date = datetime.now().strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+#     # tender_end_date
+#     date_day = datetime.now() + timedelta(minutes=int(round(31 * (1440.0 / accelerator)) + 1))
+#     tender_end_date = date_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+#     tender_period_data = u"{}{}{}{}{}{}".format(', "tenderPeriod": {', '"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}')
+#
+#     if procurement_method == 'belowThreshold':
+#         one_day = datetime.now() + timedelta(minutes=int(round(1 * (1440.0 / accelerator))), seconds=10)
+#         six_days = datetime.now() + timedelta(minutes=int(round(6 * (1440.0 / accelerator))), seconds=10)
+#         five_dozens_days = datetime.now() + timedelta(minutes=int(round(60 * (1440.0 / accelerator))), seconds=10)
+#         tender_start_date = one_day.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+#         tender_end_date = five_dozens_days.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+#         # if received_tender_status == 'active.tendering':
+#         if received_tender_status == 'active.qualification':
+#             tender_end_date = six_days.strftime('"%Y-%m-%dT%H:%M:%S{}"'.format(kiev_now))
+#         tender_period_data = u"{}{}{}{}{}{}{}".format(', "tenderPeriod": {"startDate": ', tender_start_date, ', "endDate": ', tender_end_date, '}, "enquiryPeriod": { "endDate": ', tender_start_date, '}')
+#     return tender_period_data
 
 
-def features(procurement_method):
-    if procurement_method in limited_procurement:
-        tender_features = ''
-    else:
-        tender_features = u"{}{}".format(', "features": ', '[ ]')
-    return tender_features
+# def tender_titles():
+#     tender_random_title = u"{}{}".format(u'Тест ', datetime.now().strftime('%d-%H%M%S"'))
+#     tender_title = u'{}{}"'.format(', "title": "', fake.text(100)).replace('\n', ' ')  # ', "title": "', tender_random_title
+#     tender_description = u"{}{}{}".format(', "description": ', u'"Примечания для тендера ', tender_random_title)
+#     tender_title_en = u"{}{}".format(', "title_en": ', '"Title of tender in english"')
+#     tender_description_en = u"{}{}".format(', "description_en": ', '""')
+#     tender_title_description = u'{}{}{}{}'.format(tender_title, tender_description, tender_title_en,
+#                                                   tender_description_en)
+#     return tender_title_description
 
 
-def procuring_entity():
-    procuring_entity_json = {"name": "Тестовая организация ООО Тест",
-                             "name_en": "Company name en english",
-                             "address": {
-                                   "countryName": "Україна",
-                                   "region": "місто Київ",
-                                   "locality": "Київ",
-                                   "streetAddress": "Улица Койкого",
-                                   "postalCode": "12345"
-                             },
-                             "contactPoint": {
-                                   "name": fake.name(),
-                                   "email": "testik@gmail.test",
-                                   "telephone": "+380002222222",
-                                   "url": "http://www.site.site",
-                                   "name_en": "Name of person in english"
-                             },
-                             "identifier": {
-                                   "id": "00000000",
-                                   "scheme": "UA-EDR",
-                                   "legalName": "Тестовая организация ООО Тест",
-                                   "legalName_en": fake.company()
-                             },
-                             "kind": "defense"
-                             }
-    procuring_entity_block = u"{}{}".format(
-        ', "procuringEntity": ', json.dumps(procuring_entity_json))
-    return procuring_entity_block
+# def features(procurement_method):
+#     if procurement_method in limited_procurement:
+#         tender_features = ''
+#     else:
+#         tender_features = u"{}{}".format(', "features": ', '[ ]')
+#     return tender_features
 
 
-def tender_data(procurement_method, accelerator, received_tender_status):
-    procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
-    mode = ', "mode": "test"'
-    if procurement_method == 'esco':
-        submission_method_details = ', "submissionMethodDetails": "quick(mode:no-auction)"'
-    else:
-        submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
-    procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
-    status = ', "status": "draft"'
-    limited_cause = u', "cause": "noCompetition", "causeDescription": "Створення закупівлі для переговорної процедури за нагальною потребою"'
-    if procurement_method in limited_procurement:
-        if procurement_method == 'reporting':
-            constant_tender_data = u'{}{}{}{}{}'.format(procuring_entity(), procurement_method_type, mode, procurement_method_details, status)
-        else:
-            constant_tender_data = u'{}{}{}{}{}{}'.format(procuring_entity(), procurement_method_type, mode, procurement_method_details, status, limited_cause)
-    else:
-        constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(accelerator, procurement_method, received_tender_status), procuring_entity(), procurement_method_type, mode, submission_method_details,
-                                                        procurement_method_details, status)
-    return constant_tender_data
+# def procuring_entity():
+#     procuring_entity_json = {"name": "Тестовая организация ООО Тест",
+#                              "name_en": "Company name en english",
+#                              "address": {
+#                                    "countryName": "Україна",
+#                                    "region": "місто Київ",
+#                                    "locality": "Київ",
+#                                    "streetAddress": "Улица Койкого",
+#                                    "postalCode": "12345"
+#                              },
+#                              "contactPoint": {
+#                                    "name": fake.name(),
+#                                    "email": "testik@gmail.test",
+#                                    "telephone": "+380002222222",
+#                                    "url": "http://www.site.site",
+#                                    "name_en": "Name of person in english"
+#                              },
+#                              "identifier": {
+#                                    "id": "00000000",
+#                                    "scheme": "UA-EDR",
+#                                    "legalName": "Тестовая организация ООО Тест",
+#                                    "legalName_en": fake.company()
+#                              },
+#                              "kind": "defense"
+#                              }
+#     procuring_entity_block = u"{}{}".format(
+#         ', "procuringEntity": ', json.dumps(procuring_entity_json))
+#     return procuring_entity_block
+
+#
+# def tender_data(procurement_method, accelerator, received_tender_status):
+#     procurement_method_type = ', "procurementMethodType": "{}"'.format(procurement_method)
+#     mode = ', "mode": "test"'
+#     if procurement_method == 'esco':
+#         submission_method_details = ', "submissionMethodDetails": "quick(mode:no-auction)"'
+#     else:
+#         submission_method_details = ', "submissionMethodDetails": "quick(mode:fast-forward)"'
+#     procurement_method_details = ', "procurementMethodDetails": "quick, accelerator={}"'.format(accelerator)
+#     status = ', "status": "draft"'
+#     limited_cause = u', "cause": "noCompetition", "causeDescription": "Створення закупівлі для переговорної процедури за нагальною потребою"'
+#     if procurement_method in limited_procurement:
+#         if procurement_method == 'reporting':
+#             constant_tender_data = u'{}{}{}{}{}'.format(procuring_entity(), procurement_method_type, mode, procurement_method_details, status)
+#         else:
+#             constant_tender_data = u'{}{}{}{}{}{}'.format(procuring_entity(), procurement_method_type, mode, procurement_method_details, status, limited_cause)
+#     else:
+#         constant_tender_data = u'{}{}{}{}{}{}{}'.format(tender_period(accelerator, procurement_method, received_tender_status), procuring_entity(), procurement_method_type, mode, submission_method_details,
+#                                                         procurement_method_details, status)
+#     return constant_tender_data
 
 
 # VARIABLES FOR BID

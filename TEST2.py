@@ -111,7 +111,7 @@ def generate_items(number_of_items, procurement_method, unit, classification):
     for item in range(number_of_items):
         item_number += 1
         item_data = {
-                    "description": "Предмет закупки {}{}".format(item_number, fake.text(200).replace('\n', ' ')),
+                    "description": "Предмет закупки {} {}".format(item_number, fake.text(200).replace('\n', ' ')),
                     "classification": {
                         "scheme": "ДК021",
                         "description": classification[1],
@@ -229,7 +229,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
         for lot in range(number_of_lots):
             lot_items = generate_items(number_of_items, procurement_method, unit, classification)
             for item in range(len(lot_items)):
-                lot_items[item]['description'] = "Предмет закупки {} Лот {}".format(item + 1, lot + 1)
+                lot_items[item]['description'] = "Предмет закупки {} Лот {} {}".format(item + 1, lot + 1, fake.text(200).replace('\n', ' '))
                 lot_items[item]['relatedLot'] = list_of_lots_id[lot]
                 items.append(lot_items[item])
         tender_data['data']['items'] = items

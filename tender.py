@@ -7,8 +7,7 @@ from qualification import run_activate_award, run_activate_contract
 from bid import suppliers_for_limited
 import refresh
 from refresh import check_if_contract_exists, time_counter, count_waiting_time
-from data_for_tender import tender_values, features, lot_values, tender_data, tender_titles, tender_values_esco, lot_values_esco, above_threshold_procurement,\
-    below_threshold_procurement, limited_procurement, prequalification_procedures, competitive_procedures, negotiation_procurement
+from data_for_tender import above_threshold_procurement, below_threshold_procurement, limited_procurement, prequalification_procedures, competitive_procedures, negotiation_procurement
 from database import db, Tenders
 from datetime import datetime, timedelta
 import time
@@ -19,88 +18,88 @@ from TEST2 import generate_tender_json, generate_id_for_lot
 
 
 # generate list of id fot lots
-def list_of_id_for_lots(number_of_lots):
-    list_of_lot_id = []
-    for x in range(number_of_lots):
-        list_of_lot_id.append(data_for_tender.lot_id_generator())
-    return list_of_lot_id
+# def list_of_id_for_lots(number_of_lots):
+#     list_of_lot_id = []
+#     for x in range(number_of_lots):
+#         list_of_lot_id.append(data_for_tender.lot_id_generator())
+#     return list_of_lot_id
 
 
 # generate list of lots
-def list_of_lots(number_of_lots, list_of_id_lots, procurement_method):
-    list_of_lots_for_tender = []
-    lot_number = 0
-    for i in range(number_of_lots):
-        lot_number += 1
-        lot_id = list_of_id_lots[i]
-        one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values[0], '}'))
-        if procurement_method in limited_procurement:
-            del one_lot['minimalStep'], one_lot['guarantee']
-        list_of_lots_for_tender.append(one_lot)
-    list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
-    lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
-    return lots_list
+# def list_of_lots(number_of_lots, list_of_id_lots, procurement_method):
+#     list_of_lots_for_tender = []
+#     lot_number = 0
+#     for i in range(number_of_lots):
+#         lot_number += 1
+#         lot_id = list_of_id_lots[i]
+#         one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values[0], '}'))
+#         if procurement_method in limited_procurement:
+#             del one_lot['minimalStep'], one_lot['guarantee']
+#         list_of_lots_for_tender.append(one_lot)
+#     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
+#     lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
+#     return lots_list
 
 
 # generate list of lots for esco procedure
-def list_of_lots_esco(number_of_lots, list_of_id_lots):
-    list_of_lots_for_tender = []
-    lot_number = 0
-    for i in range(number_of_lots):
-        lot_number += 1
-        lot_id = list_of_id_lots[i]
-        one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values_esco, '}'))
-        list_of_lots_for_tender.append(one_lot)
-    list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
-    lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
-    return lots_list
+# def list_of_lots_esco(number_of_lots, list_of_id_lots):
+#     list_of_lots_for_tender = []
+#     lot_number = 0
+#     for i in range(number_of_lots):
+#         lot_number += 1
+#         lot_id = list_of_id_lots[i]
+#         one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values_esco, '}'))
+#         list_of_lots_for_tender.append(one_lot)
+#     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
+#     lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
+#     return lots_list
 
 
 # generate items for tender with lots (for lots)
-def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method):
-    list_of_items = []
-    for i in range(number_of_lots):
-        item_number = 0
-        related_lot_id = list_of_id_lots[i]
-        for item in range(number_of_items):
-            item_number += 1
-            item = json.loads(u"{}{}{}{}{}".format('{ "relatedLot": "', related_lot_id, '"', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), "}"))
-            list_of_items.append(item)
-    list_of_items = json.dumps(list_of_items)
-    items_list = u"{}{}".format(', "items": ', list_of_items)
-    return items_list
+# def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method):
+#     list_of_items = []
+#     for i in range(number_of_lots):
+#         item_number = 0
+#         related_lot_id = list_of_id_lots[i]
+#         for item in range(number_of_items):
+#             item_number += 1
+#             item = json.loads(u"{}{}{}{}{}".format('{ "relatedLot": "', related_lot_id, '"', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), "}"))
+#             list_of_items.append(item)
+#     list_of_items = json.dumps(list_of_items)
+#     items_list = u"{}{}".format(', "items": ', list_of_items)
+#     return items_list
 
 
 # generate items for tender without lots
-def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method):
-    list_of_items = []
-    item_number = 0
-    for i in range(number_of_items):
-        item = json.loads(u"{}{}{}".format('{', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), '}'))
-        list_of_items.append(item)
-    list_of_items = json.dumps(list_of_items)
-    items_list = u"{}{}".format(', "items": ', list_of_items)
-    return items_list
+# def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method):
+#     list_of_items = []
+#     item_number = 0
+#     for i in range(number_of_items):
+#         item = json.loads(u"{}{}{}".format('{', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), '}'))
+#         list_of_items.append(item)
+#     list_of_items = json.dumps(list_of_items)
+#     items_list = u"{}{}".format(', "items": ', list_of_items)
+#     return items_list
 
 
 # generate json for tender
-def json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status):
-    if number_of_lots == 0:
-        if procurement_method == 'esco':
-            tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
-                                                   features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
-        else:
-            tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
-                                                   features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
-    else:
-        if procurement_method == 'esco':
-            tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_lots_esco(number_of_lots, list_of_id_lots), list_of_items_for_lots(
-                number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
-        else:
-            tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots, procurement_method),
-                                                     list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(
-                    procurement_method, accelerator, received_tender_status), '}}')
-    return tender_json
+# def json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status):
+#     if number_of_lots == 0:
+#         if procurement_method == 'esco':
+#             tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
+#                                                    features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
+#         else:
+#             tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
+#                                                    features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
+#     else:
+#         if procurement_method == 'esco':
+#             tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_lots_esco(number_of_lots, list_of_id_lots), list_of_items_for_lots(
+#                 number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
+#         else:
+#             tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots, procurement_method),
+#                                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(
+#                     procurement_method, accelerator, received_tender_status), '}}')
+#     return tender_json
 
 
 # ????????????????????????????????????????????????????? Get tender info
