@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-from faker import Faker
-import json
-import random
-import os
 import binascii
-from datetime import datetime, timedelta
-import key
+import os
+from random import randint, choice
 import pytz
+from faker import Faker
+from datetime import datetime, timedelta
+from tenders.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
 
 
-# ########################################### VARIABLES ############################
 fake = Faker('uk_UA')
-
+kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 #
 # def host_selector(api_version):
 #     if api_version == 'dev':
@@ -27,58 +25,10 @@ fake = Faker('uk_UA')
 #     return host, api_version, ds_host, host_headers
 
 
-sandbox = 1
-if sandbox == 2:
-    ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
-    host = 'https://api-sandbox.prozorro.openprocurement.net'
-    api_version = 'dev'
-else:
-    ds_host = 'https://upload.docs-sandbox.openprocurement.org/upload'
-    host = 'https://lb.api-sandbox.openprocurement.org'
-    api_version = '2.4'
-
-auth_key = key.auth_key
-
-
-tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
-valueAddedTaxIncluded = str(random.choice([True, False])).lower()
-
-
-# SELECT PROCUREMENT METHOD ############################################################################################################################
-above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
-below_threshold_procurement = ['belowThreshold']
-limited_procurement = ['reporting', 'negotiation', 'negotiation.quick']
-list_of_procurement_types = above_threshold_procurement + below_threshold_procurement + limited_procurement  # list of all procurement types - 1st stage only
-
-without_pre_qualification_procedures = ['aboveThresholdUA', 'aboveThresholdUA.defense']
-prequalification_procedures = ['aboveThresholdEU', 'esco']
-competitive_procedures = ['competitiveDialogueUA', 'competitiveDialogueEU']
-
-competitive_procedures_first_stage = ['competitiveDialogueUA', 'competitiveDialogueEU']
-competitive_procedures_second_stage = ['competitiveDialogueUA.stage2', 'competitiveDialogueEU.stage2']
-
-negotiation_procurement = ['negotiation', 'negotiation.quick']
-# list of status
-tender_status_list = ['active.tendering', 'active.tendering.stage2', 'active.pre-qualification', 'active.pre-qualification.stage2', 'active.qualification', 'complete', 'active.enquiries', 'active', 'active.award',
-                      'active.contract']
-
-without_pre_qualification_procedures_status = ['active.tendering', 'active.qualification']
-prequalification_procedures_status = ['active.pre-qualification']
-competitive_procedures_status = ['active.tendering.stage2', 'complete']
-competitive_dialogue_eu_status = ['active.pre-qualification.stage2']
-below_threshold_status = ['active.enquiries', 'active.tendering', 'active.qualification']
-limited_status = ['active', 'active.award', 'active.contract', 'complete']
-
-statuses_with_high_acceleration = ['active.tendering', 'complete', 'active.enquiries', 'active', 'active.award', 'active.contract']
-statuses_negotiation_with_high_acceleration = ['active', 'active.award']
 #################################################################################################################################################################
 
 
 # PLATFORMS AND DATA FOR TENDER CREATION ##################################################################################
-platforms = ['http://tender.byustudio.in.ua', 'http://tender-dev.byustudio.in.ua', 'https://tenders.all.biz']
-list_of_api_versions = ['2.4', 'dev']
-
-kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
 # # ITEMS
@@ -358,20 +308,6 @@ kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 #     return constant_tender_data
 
 
-# VARIABLES FOR BID
-# Above threshold procedures with active bid status
-above_threshold_active_bid_procurements = ['aboveThresholdUA', 'aboveThresholdUA.defense']
-
-# DOCS
-documents_above_procedures = ['aboveThresholdEU', 'esco', 'aboveThresholdUA.defense', 'competitiveDialogueEU.stage2',
-                              'aboveThresholdUA', 'competitiveDialogueUA.stage2']
-documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
-documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
-
-# index.py data
-create_tender_required_fields = ['procurementMethodType', 'number_of_lots', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
-
-
 # Contracts
 def activate_contract_json(complaint_end_date):
     contract_end_date = datetime.now() + timedelta(days=120)
@@ -388,3 +324,237 @@ def activate_contract_json(complaint_end_date):
                       }
                     }
     return contract_json
+
+
+# NEW CODE FOR CREATE TENDER
+classifications = [['03000000-1', u'Сільськогосподарська, фермерська продукція, продукція рибальства, лісівництва та супутня продукція'],
+                   ['09000000-3', u'Нафтопродукти, паливо, електроенергія та інші джерела енергії'],
+                   ['14000000-1', u'Гірнича продукція, неблагородні метали та супутня продукція']]
+
+
+def generate_id_for_item():
+    return binascii.hexlify(os.urandom(16))
+
+
+def generate_id_for_lot(number_of_lots):
+    list_of_id = []
+    for x in range(number_of_lots):
+        list_of_id.append(binascii.hexlify(os.urandom(16)))
+    return list_of_id
+
+
+def tender_period(accelerator, procurement_method, received_tender_status):
+    # tender_start_date
+    tender_start_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+    # tender_end_date
+    date_day = datetime.now() + timedelta(minutes=int(round(31 * (1440.0 / accelerator)) + 1))
+    tender_end_date = date_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+    tender_period_data = {"tenderPeriod": {
+                                    "startDate": tender_start_date,
+                                    "endDate": tender_end_date
+    }}
+
+    if procurement_method == 'belowThreshold':
+        one_day = datetime.now() + timedelta(minutes=int(round(1 * (1440.0 / accelerator))), seconds=10)
+        ten_days = datetime.now() + timedelta(minutes=int(round(10 * (1440.0 / accelerator))), seconds=10)
+        five_dozens_days = datetime.now() + timedelta(minutes=int(round(60 * (1440.0 / accelerator))), seconds=10)
+        tender_start_date = one_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+        tender_end_date = five_dozens_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+        if received_tender_status == 'active.qualification':
+            tender_end_date = ten_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+        tender_period_data = {"tenderPeriod": {
+                                    "startDate": tender_start_date,
+                                    "endDate": tender_end_date
+        },
+                             "enquiryPeriod": {
+                                    "endDate": tender_start_date
+                            }}
+    return tender_period_data
+
+
+def generate_values(procurement_method, number_of_lots):
+    if not number_of_lots:
+        number_of_lots = 1
+    generated_value = randint(100000, 1000000000)
+    currency = choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
+    if procurement_method == 'esco':
+        value = {"tenderValues": {
+                            "NBUdiscountRate": 0.99,
+                            "yearlyPaymentsPercentageRange": 0.8,
+                            "minimalStepPercentage": 0.02},
+                 "lotValues": {
+                            "yearlyPaymentsPercentageRange": 0.8,
+                            "minimalStepPercentage": 0.02}
+                 }
+    else:
+        value = {"tenderValues": {
+                            "value": {
+                                "currency": currency,
+                                "amount": generated_value,
+                                "valueAddedTaxIncluded": True},
+
+                            "guarantee": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format(generated_value * 0.05)
+                            },
+                            "minimalStep": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format(generated_value * 0.01),
+                                "valueAddedTaxIncluded": True
+                            }},
+                 "lotValues": {
+                            "value": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format(generated_value / number_of_lots),
+                                "valueAddedTaxIncluded": True},
+
+                            "guarantee": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format((generated_value * 0.05) / number_of_lots)
+                            },
+                            "minimalStep": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format((generated_value * 0.01) / number_of_lots),
+                                "valueAddedTaxIncluded": True
+                            }
+            }}
+        if procurement_method in limited_procurement:
+            del value['tenderValues']['guarantee'], value['tenderValues']['minimalStep'], value['lotValues']['guarantee'], value['lotValues']['minimalStep']
+    return value
+
+
+def generate_items(number_of_items, procurement_method, unit, classification):
+    items = []
+    item_number = 0
+    for item in range(number_of_items):
+        item_number += 1
+        item_data = {
+                    "description": "Предмет закупки {} {}".format(item_number, fake.text(200).replace('\n', ' ')),
+                    "classification": {
+                        "scheme": "ДК021",
+                        "description": classification[1],
+                        "id": classification[0]
+                    },
+                    "description_en": "Description",
+                    "deliveryAddress": {
+                        "postalCode": "00000",
+                        "countryName": "Україна",
+                        "streetAddress": "Улица",
+                        "region": "Дніпропетровська область",
+                        "locality": "Город"
+                    },
+                    "deliveryDate": {
+                        "startDate": datetime.strftime(datetime.now() + timedelta(days=7), '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now)),
+                        "endDate": datetime.strftime(datetime.now() + timedelta(days=120), '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+                    },
+                    "id": generate_id_for_item(),
+                    "unit": {
+                        "code": unit[0],
+                        "name": unit[1]
+                    },
+                    "quantity": randint(1, 10000)
+                }
+        if procurement_method == 'esco':
+            del(item_data['deliveryDate'])
+            del(item_data['unit'])
+            del (item_data['quantity'])
+        items.append(item_data)
+    return items
+
+
+def generate_lots(lots_id, values):
+    lots = []
+    lot_number = 0
+    for lot in range(len(lots_id)):
+        lot_number += 1
+        lots_data = {
+                    "status": "active",
+                    "description": "Описание лота Лот {} {}".format(lot_number, fake.text(200).replace('\n', ' ')),
+                    "title": "Лот {}".format(lot_number),
+                    "title_en": "Title of lot in English",
+                    "description_en": "Description of lot in English",
+                    "id": lots_id[lot],
+                }
+        for key in values:
+            lots_data[key] = values[key]
+        lots.append(lots_data)
+    return lots
+
+
+def generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_lots_id):
+    tender_data = {
+                    "data": {
+                        "procurementMethodType": procurement_method,
+                        "description": "Примечания для тендера Тест {}".format(datetime.now().strftime('%d-%H%M%S')),
+                        "title": fake.text(200).replace('\n', ' '),
+                        "status": "draft",
+                        "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
+                        "title_en": "Title of tender in english",
+                        "description_en": "",
+                        "mode": "test",
+                        "title_ru": "",
+                        "procuringEntity": {
+                            "kind": "defense",
+                            "name": "Тестовая организация ООО Тест",
+                            "address": {
+                                "postalCode": "12345",
+                                "countryName": "Україна",
+                                "streetAddress": "Улица Койкого",
+                                "region": "місто Київ",
+                                "locality": "Київ"
+                            },
+                            "contactPoint": {
+                                "telephone": "+380002222222",
+                                "url": "http://www.site.site",
+                                "name_en": "Name of person in english",
+                                "name": fake.name(),
+                                "email": "testik@gmail.test"
+                            },
+                            "identifier": {
+                                "scheme": "UA-EDR",
+                                "legalName_en": fake.company(),
+                                "id": "00000000",
+                                "legalName": "Тестовая организация ООО Тест"
+                            },
+                            "name_en": "Company name en english"
+                        }
+                    }
+                }
+    unit = choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'послуга']])
+    classification = choice(classifications)
+
+    if procurement_method not in limited_procurement:
+        if procurement_method == 'esco':
+            submission_method_details = 'quick(mode:no-auction)'
+        else:
+            submission_method_details = 'quick(mode:fast-forward)'
+        tender_data['data']['submissionMethodDetails'] = submission_method_details
+
+    if procurement_method in negotiation_procurement:
+        tender_data['data']['cause'] = 'noCompetition'
+        tender_data['data']['causeDescription'] = 'Створення закупівлі для переговорної процедури за нагальною потребою'
+
+    values = generate_values(procurement_method, number_of_lots)
+    for key in values['tenderValues']:
+        tender_data['data'][key] = values['tenderValues'][key]
+
+    if procurement_method not in limited_procurement:
+        tender_periods = tender_period(accelerator, procurement_method, received_tender_status)
+        for key in tender_periods:
+            tender_data['data'][key] = tender_periods[key]
+
+    items = []
+    if number_of_lots == 0:
+        items = generate_items(number_of_items, procurement_method, unit, classification)
+        tender_data['data']['items'] = items
+    else:
+        lots = generate_lots(list_of_lots_id, values['lotValues'])
+        for lot in range(number_of_lots):
+            lot_items = generate_items(number_of_items, procurement_method, unit, classification)
+            for item in range(len(lot_items)):
+                lot_items[item]['description'] = "Предмет закупки {} Лот {} {}".format(item + 1, lot + 1, fake.text(200).replace('\n', ' '))
+                lot_items[item]['relatedLot'] = list_of_lots_id[lot]
+                items.append(lot_items[item])
+        tender_data['data']['items'] = items
+        tender_data['data']['lots'] = lots
+    return tender_data

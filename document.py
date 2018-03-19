@@ -1,10 +1,25 @@
 # -*- coding: utf-8 -*-
-from data_for_tender import host, api_version, ds_host, documents_above_procedures, documents_above_non_financial,\
-    documents_above_non_confidential
+from tenders.tender_additional_data import documents_above_procedures, documents_above_non_financial, documents_above_non_confidential
 import requests
 import os
 import json
 from key import auth_key, auth_key_ds
+
+
+
+
+
+sandbox = 1
+if sandbox == 2:
+    ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
+    host = 'https://api-sandbox.prozorro.openprocurement.net'
+    api_version = 'dev'
+else:
+    ds_host = 'https://upload.docs-sandbox.openprocurement.org/upload'
+    host = 'https://lb.api-sandbox.openprocurement.org'
+    api_version = '2.4'
+
+
 
 path = os.getcwd()  # path to file for upload
 doc_host = host

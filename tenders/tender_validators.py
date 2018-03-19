@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from data_for_tender import above_threshold_procurement, below_threshold_procurement, limited_procurement, tender_status_list, without_pre_qualification_procedures, prequalification_procedures,\
-    competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status,\
-    create_tender_required_fields, limited_status, list_of_api_versions, statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration
+from tenders.tender_additional_data import create_tender_required_fields, list_of_api_versions
+from tender_additional_data import above_threshold_procurement, below_threshold_procurement, limited_procurement, without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, \
+    negotiation_procurement, tender_status_list, without_pre_qualification_procedures_status, prequalification_procedures_status, competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, \
+    limited_status, statuses_with_high_acceleration, statuses_negotiation_with_high_acceleration
 from flask import abort
 import refresh
 

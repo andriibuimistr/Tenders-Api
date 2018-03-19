@@ -1,3 +1,4 @@
+import tenders.tender_additional_data
 from database import db, Platforms, Users, Tenders
 from flask import render_template, abort, jsonify
 import validators
@@ -93,7 +94,7 @@ def delete_tender(tender_id):
 
 
 def get_tender_json_from_cdb(tender_id, api_version):
-    if api_version in data_for_tender.list_of_api_versions:
+    if api_version in tenders.tender_additional_data.list_of_api_versions:
         entity_json = TenderRequests(api_version).get_tender_info(tender_id).json()
     elif api_version in auction_additional_data.cdb_versions:
         entity_json = AuctionRequests(int(api_version)).get_auction_info(tender_id).json()

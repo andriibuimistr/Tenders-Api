@@ -5,14 +5,14 @@ from qualification import run_activate_award, run_activate_contract
 from bid import suppliers_for_limited
 import refresh
 from refresh import check_if_contract_exists, time_counter, count_waiting_time
-from data_for_tender import above_threshold_procurement, below_threshold_procurement, limited_procurement, prequalification_procedures, competitive_procedures, negotiation_procurement
+from tenders.tender_additional_data import above_threshold_procurement, below_threshold_procurement, limited_procurement, prequalification_procedures, competitive_procedures, negotiation_procurement
 from database import db, Tenders
 from datetime import datetime, timedelta
 import time
 from flask import abort
 import bid
 from tenders.tender_requests import TenderRequests
-from TEST2 import generate_tender_json, generate_id_for_lot, kiev_utc_now
+from data_for_tender import kiev_utc_now, generate_id_for_lot, generate_tender_json
 
 
 # generate list of id fot lots

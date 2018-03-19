@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from data_for_tender import tender_status_list, list_of_procurement_types, list_of_api_versions
+from tenders.tender_additional_data import list_of_procurement_types, tender_status_list, list_of_api_versions
 from database import db, Tenders, BidsTender, Users
 import tender
 from auctions import auction

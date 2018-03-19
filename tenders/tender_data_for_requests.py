@@ -1,3 +1,4 @@
+import tender_additional_data
 from key import auth_key
 import json
 import data_for_tender
@@ -45,13 +46,13 @@ json_finish_pq = {
 
 
 def json_activate_tender(procurement_method):
-    if procurement_method in data_for_tender.above_threshold_procurement:
+    if procurement_method in tender_additional_data.above_threshold_procurement:
         activate_tender_json = {
             "data": {
                 "status": "active.tendering"
             }
         }
-    elif procurement_method in data_for_tender.below_threshold_procurement:
+    elif procurement_method in tender_additional_data.below_threshold_procurement:
         activate_tender_json = {
             "data": {
                 "status": "active.enquiries"

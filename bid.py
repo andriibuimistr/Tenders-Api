@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from faker import Faker
 import document
-from data_for_tender import valueAddedTaxIncluded, tender_currency, above_threshold_active_bid_procurements, below_threshold_procurement
+from tenders.tender_additional_data import below_threshold_procurement, above_threshold_active_bid_procurements, tender_currency, valueAddedTaxIncluded
 from database import BidsTender, db
 import json
 import time
