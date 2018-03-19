@@ -25,21 +25,49 @@ def generate_id_for_lot(number_of_lots):
 
 def generate_values(procurement_method, number_of_lots):
     generated_value = randint(100000, 1000000000)
-    value = {
-        "currency": "UAH",
-        "amount": generated_value,
-        "valueAddedTaxIncluded": True
-    }
-    guarantee = {
-        "currency": "UAH",
-        "amount": '{0:.2f}'.format(generated_value * 0.05)
-    }
-    minimal_step = {
-        "currency": "UAH",
-        "amount": '{0:.2f}'.format(generated_value * 0.01),
-        "valueAddedTaxIncluded": True
-    }
-    return value, guarantee, minimal_step
+    currency = choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
+    if procurement_method == 'esco':
+        value = {"tenderValues": {
+                            "NBUdiscountRate": 0.99,
+                            "yearlyPaymentsPercentageRange": 0.8,
+                            "minimalStepPercentage": 0.02},
+                 "lotValues": {
+                            "yearlyPaymentsPercentageRange": 0.8,
+                            "minimalStepPercentage": 0.02}
+                 }
+    else:
+        value = {"tenderValues": {
+                            "value": {
+                                "currency": currency,
+                                "amount": generated_value,
+                                "valueAddedTaxIncluded": True},
+
+                            "guarantee": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format(generated_value * 0.05)
+                            },
+                            "minimalStep": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format(generated_value * 0.01),
+                                "valueAddedTaxIncluded": True
+                            }},
+                 "lotValues": {
+                            "value": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format(generated_value / number_of_lots),
+                                "valueAddedTaxIncluded": True},
+
+                            "guarantee": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format((generated_value * 0.05) / number_of_lots)
+                            },
+                            "minimalStep": {
+                                "currency": currency,
+                                "amount": '{0:.2f}'.format((generated_value * 0.01) / number_of_lots),
+                                "valueAddedTaxIncluded": True
+                            }
+            }}
+    return value
 
 
 def generate_items(number_of_items, procurement_method):
@@ -85,7 +113,7 @@ def generate_items(number_of_items, procurement_method):
     return items
 
 
-def generate_lots(lots_id, procurement_method):
+def generate_lots(lots_id, values):
     lots = []
     lot_number = 0
     for lot in range(len(lots_id)):
@@ -94,24 +122,12 @@ def generate_lots(lots_id, procurement_method):
                     "status": "active",
                     "description": "Описание лота Лот {} {}".format(lot_number, fake.text(200).replace('\n', ' ')),
                     "title": "Лот {}".format(lot_number),
-                    "minimalStep": {# !!!!!!!!!!!!!!!!!!
-                        "currency": "EUR",
-                        "amount": 672.25,
-                        "valueAddedTaxIncluded": True
-                    },
                     "title_en": "Title of lot in English",
                     "description_en": "Description of lot in English",
-                    "value": {#!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        "currency": "EUR",
-                        "amount": 67225,
-                        "valueAddedTaxIncluded": True
-                    },
                     "id": lots_id[lot],
-                    "guarantee": {####################
-                        "currency": "EUR",
-                        "amount": 1344.5
-                    }
                 }
+        for key in values:
+            lots_data[key] = values[key]
         lots.append(lots_data)
     return lots
 
@@ -122,10 +138,6 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                         "procurementMethodType": procurement_method,
                         "description": "Примечания для тендера Тест {}".format(datetime.now().strftime('%d-%H%M%S"')),
                         "title": fake.text(200).replace('\n', ' '),
-                        "guarantee": {####
-                            "currency": "EUR",
-                            "amount": 2689
-                        },
                         "status": "draft",
                         "tenderPeriod": {######################
                             "startDate": "2018-03-18T18:01:06+02:00",
@@ -135,16 +147,6 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                         "title_en": "Title of tender in english",
                         "description_en": "",
                         "submissionMethodDetails": "quick(mode:fast-forward)",
-                        "value": {###############
-                            "currency": "EUR",
-                            "amount": 134450,
-                            "valueAddedTaxIncluded": True
-                        },
-                        "minimalStep": {####################
-                            "currency": "EUR",
-                            "amount": 672.25,
-                            "valueAddedTaxIncluded": True
-                        },
                         "mode": "test",
                         "title_ru": "",
                         "procuringEntity": {
@@ -174,13 +176,17 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                         }
                     }
                 }
+    values = generate_values(procurement_method, number_of_lots)
+    for key in values['tenderValues']:
+        tender_data['data'][key] = values['tenderValues'][key]
+
     items = []
     if number_of_lots == 0:
         items = generate_items(number_of_items, procurement_method)
         tender_data['data']['items'] = items
     else:
         list_of_lots_id = generate_id_for_lot(number_of_lots)
-        lots = generate_lots(list_of_lots_id, procurement_method)
+        lots = generate_lots(list_of_lots_id, values['lotValues'])
         for lot in range(number_of_lots):
             lot_items = generate_items(number_of_items, procurement_method)
             for item in range(len(lot_items)):
@@ -190,3 +196,4 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
         tender_data['data']['items'] = items
         tender_data['data']['lots'] = lots
     return tender_data
+pprint(generate_tender_json('gg', 2, 1, 1, 'gg'))
