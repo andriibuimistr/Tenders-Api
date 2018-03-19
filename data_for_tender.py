@@ -81,69 +81,69 @@ list_of_api_versions = ['2.4', 'dev']
 kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
-# ITEMS
-# generate item description
-def description_of_item(di_number_of_lots, di_number_of_items, item_number):
-    description_text = u'"Предмет закупки '
-    description_item = []
-    if di_number_of_lots == 0:
-        items_count = 0
-        for item in range(di_number_of_items):
-            items_count += 1
-            item_description = u"{}{}{}{}{}{}".format('"description": ', description_text, items_count, ' - ', fake.text(200).replace('\n', ' '), '"')
-            description_item.append(item_description)
-        return description_item
-    else:
-        items_count = 0
-        for item in range(di_number_of_lots):
-            items_count += 1
-            item_description = u"{}{}{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, ' - ', fake.text(200).replace('\n', ' '), '"')
-            description_item.append(item_description)
-        return description_item
-
-
-# generate delivery address
-def delivery_address_block():
-    delivery_address_json = {"postalCode": "00000",
-                             "countryName": "Україна",
-                             "streetAddress": "Улица",
-                             "region": "Дніпропетровська область",
-                             "locality": "Город"
-                             }
-    delivery_address = u"{}{}".format(
-        ', "deliveryAddress": ', json.dumps(delivery_address_json))
-    return delivery_address
-
-
-# generate delivery start date
-def delivery_start_date():
-    date_week = datetime.now() + timedelta(days=7)
-    return date_week.strftime('%Y-%m-%dT%H:%M:%S+03:00')
-
-
-# generate delivery end date
-def delivery_end_date():
-    date_month = datetime.now() + timedelta(days=120)
-    return date_month.strftime('%Y-%m-%dT%H:%M:%S+03:00')
-
-
-# generate id for item(s)
-def item_id_generator():
-    item_id_generated = "{}{}{}".format(', "id": "', (binascii.hexlify(os.urandom(16))), '"')
-    return item_id_generated
-
-
-# generate unit
-def unit():
-    unit_code = random.choice([['"BX"', u'"ящик"'], ['"D64"', u'"блок"'], ['"E48"', u'"послуга"']])
-    unit_fragment = u"{}{}{}{}{}{}{}".format(', "unit": {"code": ', unit_code[0], ', "name": ', unit_code[1], ' }, "quantity": "', random.randint(1, 99999), '"')
-    return unit_fragment
+# # ITEMS
+# # generate item description
+# def description_of_item(di_number_of_lots, di_number_of_items, item_number):
+#     description_text = u'"Предмет закупки '
+#     description_item = []
+#     if di_number_of_lots == 0:
+#         items_count = 0
+#         for item in range(di_number_of_items):
+#             items_count += 1
+#             item_description = u"{}{}{}{}{}{}".format('"description": ', description_text, items_count, ' - ', fake.text(200).replace('\n', ' '), '"')
+#             description_item.append(item_description)
+#         return description_item
+#     else:
+#         items_count = 0
+#         for item in range(di_number_of_lots):
+#             items_count += 1
+#             item_description = u"{}{}{}{}{}{}{}{}".format(', "description": ', description_text, item_number, u' Лот ', items_count, ' - ', fake.text(200).replace('\n', ' '), '"')
+#             description_item.append(item_description)
+#         return description_item
+#
+#
+# # generate delivery address
+# def delivery_address_block():
+#     delivery_address_json = {"postalCode": "00000",
+#                              "countryName": "Україна",
+#                              "streetAddress": "Улица",
+#                              "region": "Дніпропетровська область",
+#                              "locality": "Город"
+#                              }
+#     delivery_address = u"{}{}".format(
+#         ', "deliveryAddress": ', json.dumps(delivery_address_json))
+#     return delivery_address
+#
+#
+# # generate delivery start date
+# def delivery_start_date():
+#     date_week = datetime.now() + timedelta(days=7)
+#     return date_week.strftime('%Y-%m-%dT%H:%M:%S+03:00')
+#
+#
+# # generate delivery end date
+# def delivery_end_date():
+#     date_month = datetime.now() + timedelta(days=120)
+#     return date_month.strftime('%Y-%m-%dT%H:%M:%S+03:00')
+#
+#
+# # generate id for item(s)
+# def item_id_generator():
+#     item_id_generated = "{}{}{}".format(', "id": "', (binascii.hexlify(os.urandom(16))), '"')
+#     return item_id_generated
+#
+#
+# # generate unit
+# def unit():
+#     unit_code = random.choice([['"BX"', u'"ящик"'], ['"D64"', u'"блок"'], ['"E48"', u'"послуга"']])
+#     unit_fragment = u"{}{}{}{}{}{}{}".format(', "unit": {"code": ', unit_code[0], ', "name": ', unit_code[1], ' }, "quantity": "', random.randint(1, 99999), '"')
+#     return unit_fragment
 
 
 # delivery date
-delivery_date_data = {"startDate": delivery_start_date(), "endDate": delivery_end_date()}
-deliveryDate = u"{}{}".format(', "deliveryDate": ', json.dumps(delivery_date_data))
-additionalClassifications = ', "additionalClassifications": [ ]'
+# delivery_date_data = {"startDate": delivery_start_date(), "endDate": delivery_end_date()}
+# deliveryDate = u"{}{}".format(', "deliveryDate": ', json.dumps(delivery_date_data))
+# additionalClassifications = ', "additionalClassifications": [ ]'
 
 
 # generate data for item

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from data_for_tender import above_threshold_procurement, below_threshold_procurement, limited_procurement, tender_status_list, without_pre_qualification_procedures, prequalification_procedures,\
     competitive_procedures, without_pre_qualification_procedures_status, prequalification_procedures_status, competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status,\
-    create_tender_required_fields, limited_status, list_of_api_versions, platforms, statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration
+    create_tender_required_fields, limited_status, list_of_api_versions, statuses_with_high_acceleration, negotiation_procurement, statuses_negotiation_with_high_acceleration
 from flask import abort
 import refresh
 
@@ -70,7 +70,7 @@ def validator_create_tender(data):
     if api_version not in list_of_api_versions:
         return abort(422, 'API version must be one of: {}'.format(list_of_api_versions))
     if platform_host not in refresh.get_list_of_platform_urls(1):
-        return abort(422, 'Platform must be one of: {}'.format(platforms))
+        return abort(422, 'Platform must be one of: {}'.format(refresh.get_list_of_platform_urls(1)))
 
     # check procurement method
     if procurement_method in above_threshold_procurement:  # check allowed statuses for above threshold procurements
