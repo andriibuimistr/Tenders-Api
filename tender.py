@@ -144,8 +144,8 @@ def creation_of_tender(tc_request, user_id):
 
     list_of_id_lots = generate_id_for_lot(number_of_lots)  # get list of id for lots
 
-    json_tender = json.loads(json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status))  # get json for create tender
-    # json_tender = generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_id_lots)
+    # json_tender = json.loads(json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status))  # get json for create tender
+    json_tender = generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_id_lots)
 
     tender = TenderRequests(api_version)
     t_publish = tender.publish_tender(json_tender)
@@ -451,7 +451,7 @@ def creation_of_tender(tc_request, user_id):
                 get_t_info = tender.get_tender_info(tender_id_long)
 
                 if get_t_info.json()['data']['status'] == 'active.tendering':
-                    bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, api_version, 0)  # 0 - documents of bid
+                    bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, api_version, 0, json_tender)  # 0 - documents of bid
                     if received_tender_status == 'active.tendering':
                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
                         response_json['status'] = 'success'

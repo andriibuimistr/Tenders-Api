@@ -57,6 +57,8 @@ def tender_period(accelerator, procurement_method, received_tender_status):
 
 
 def generate_values(procurement_method, number_of_lots):
+    if not number_of_lots:
+        number_of_lots = 1
     generated_value = randint(100000, 1000000000)
     currency = choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
     if procurement_method == 'esco':

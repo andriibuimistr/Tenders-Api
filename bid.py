@@ -474,15 +474,16 @@ def run_cycle(bids_quantity, number_of_lots, tender_id, procurement_method, list
             #     else:
             #         bid_json = bid_json_open_procedure_lots(identifier, number_of_lots, list_of_id_lots)
 
-            # if procurement_method == 'belowThreshold':
-            #     del bid_json["data"]["selfEligible"], bid_json["data"]["selfQualified"], bid_json["data"]["subcontractingDetails"]
-            # list_of_bids_json.append(bid_json)
+            bid_json = generate_json_bid(identifier, tender_json)
+            if procurement_method == 'belowThreshold':
+                del bid_json["data"]["selfEligible"], bid_json["data"]["selfQualified"], bid_json["data"]["subcontractingDetails"]
+            list_of_bids_json.append(bid_json)
 
             attempts = 0
             for every_bid in range(5):
                 attempts += 1
                 print '{}{}'.format('Publishing bid: Attempt ', attempts)
-                created_bid = tender.make_tender_bid(tender_id, generate_json_bid(identifier, tender_json), count)
+                created_bid = tender.make_tender_bid(tender_id, bid_json, count)
                 if created_bid.status_code == 201:
                     break
                 else:
