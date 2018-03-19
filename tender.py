@@ -180,7 +180,7 @@ def creation_of_tender(tc_request, user_id):
 
     if procurement_method in above_threshold_procurement:
         time.sleep(2)
-        make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, api_version, 0)  # 0 - documents of bid
+        make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, api_version, 0, json_tender)  # 0 - documents of bid
 
         if received_tender_status == 'active.tendering':
             get_t_info = tender.get_tender_info(tender_id_long)
