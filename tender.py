@@ -15,92 +15,6 @@ from tenders.tender_requests import TenderRequests
 from data_for_tender import kiev_utc_now, generate_id_for_lot, generate_tender_json
 
 
-# generate list of id fot lots
-# def list_of_id_for_lots(number_of_lots):
-#     list_of_lot_id = []
-#     for x in range(number_of_lots):
-#         list_of_lot_id.append(data_for_tender.lot_id_generator())
-#     return list_of_lot_id
-
-
-# generate list of lots
-# def list_of_lots(number_of_lots, list_of_id_lots, procurement_method):
-#     list_of_lots_for_tender = []
-#     lot_number = 0
-#     for i in range(number_of_lots):
-#         lot_number += 1
-#         lot_id = list_of_id_lots[i]
-#         one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values[0], '}'))
-#         if procurement_method in limited_procurement:
-#             del one_lot['minimalStep'], one_lot['guarantee']
-#         list_of_lots_for_tender.append(one_lot)
-#     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
-#     lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
-#     return lots_list
-
-
-# generate list of lots for esco procedure
-# def list_of_lots_esco(number_of_lots, list_of_id_lots):
-#     list_of_lots_for_tender = []
-#     lot_number = 0
-#     for i in range(number_of_lots):
-#         lot_number += 1
-#         lot_id = list_of_id_lots[i]
-#         one_lot = json.loads(u"{}{}{}{}{}{}".format('{"id": "', lot_id, '"', data_for_tender.title_for_lot(lot_number), lot_values_esco, '}'))
-#         list_of_lots_for_tender.append(one_lot)
-#     list_of_lots_for_tender = json.dumps(list_of_lots_for_tender)
-#     lots_list = u"{}{}".format(', "lots":', list_of_lots_for_tender)
-#     return lots_list
-
-
-# generate items for tender with lots (for lots)
-# def list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method):
-#     list_of_items = []
-#     for i in range(number_of_lots):
-#         item_number = 0
-#         related_lot_id = list_of_id_lots[i]
-#         for item in range(number_of_items):
-#             item_number += 1
-#             item = json.loads(u"{}{}{}{}{}".format('{ "relatedLot": "', related_lot_id, '"', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), "}"))
-#             list_of_items.append(item)
-#     list_of_items = json.dumps(list_of_items)
-#     items_list = u"{}{}".format(', "items": ', list_of_items)
-#     return items_list
-
-
-# generate items for tender without lots
-# def list_of_items_for_tender(number_of_lots, number_of_items, procurement_method):
-#     list_of_items = []
-#     item_number = 0
-#     for i in range(number_of_items):
-#         item = json.loads(u"{}{}{}".format('{', data_for_tender.item_data(number_of_lots, number_of_items, i, procurement_method, item_number), '}'))
-#         list_of_items.append(item)
-#     list_of_items = json.dumps(list_of_items)
-#     items_list = u"{}{}".format(', "items": ', list_of_items)
-#     return items_list
-
-
-# generate json for tender
-# def json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status):
-#     if number_of_lots == 0:
-#         if procurement_method == 'esco':
-#             tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
-#                                                    features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
-#         else:
-#             tender_json = u"{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_items_for_tender(number_of_lots, number_of_items, procurement_method),
-#                                                    features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
-#     else:
-#         if procurement_method == 'esco':
-#             tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values_esco(number_of_lots), tender_titles(), list_of_lots_esco(number_of_lots, list_of_id_lots), list_of_items_for_lots(
-#                 number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(procurement_method, accelerator, received_tender_status), '}}')
-#         else:
-#             tender_json = u"{}{}{}{}{}{}{}{}".format('{"data": {', tender_values(number_of_lots, procurement_method), tender_titles(), list_of_lots(number_of_lots, list_of_id_lots, procurement_method),
-#                                                      list_of_items_for_lots(number_of_lots, number_of_items, list_of_id_lots, procurement_method), features(procurement_method), tender_data(
-#                     procurement_method, accelerator, received_tender_status), '}}')
-#     return tender_json
-
-
-# ????????????????????????????????????????????????????? Get tender info
 def extend_tender_period(api_version, accelerator, second_stage_tender_id):
     tender_draft = TenderRequests(api_version).get_tender_info(second_stage_tender_id)
     new_tender_json = tender_draft.json()
@@ -177,7 +91,7 @@ def creation_of_tender(tc_request, user_id):
 
     if procurement_method in above_threshold_procurement:
         time.sleep(2)
-        make_bid = bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, api_version, 0, json_tender)  # 0 - documents of bid
+        make_bid = bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
 
         if received_tender_status == 'active.tendering':
             get_t_info = tender.get_tender_info(tender_id_long)
@@ -448,7 +362,7 @@ def creation_of_tender(tc_request, user_id):
                 get_t_info = tender.get_tender_info(tender_id_long)
 
                 if get_t_info.json()['data']['status'] == 'active.tendering':
-                    bid.run_cycle(number_of_bids, number_of_lots, tender_id_long, procurement_method, list_of_id_lots, api_version, 0, json_tender)  # 0 - documents of bid
+                    bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
                     if received_tender_status == 'active.tendering':
                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
                         response_json['status'] = 'success'
@@ -480,7 +394,7 @@ def creation_of_tender(tc_request, user_id):
             response_json['status'] = 'success'
             response_code = 201
         else:
-            suppliers_for_limited(number_of_lots, tender_id_long, tender_token, list_of_id_lots, api_version)
+            suppliers_for_limited(number_of_lots, tender_id_long, tender_token, list_of_id_lots, api_version, json_tender)
             time.sleep(3)
 
             get_t_info = tender.get_tender_info(tender_id_long)

@@ -33,7 +33,7 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
             print("       headers:           {}".format(resp.headers))
             time.sleep(1)
             if attempts >= 5:
-                abort(error.response.status_code, error.message)
+                abort(error.response.status_code, resp.content)
         except ConnectionError as e:
             print 'Connection Exception'
             if attempts < 5:
@@ -98,3 +98,6 @@ class TenderRequests:
 
     def get_list_of_tenders(self):
         return request_to_cdb(headers_request(self.cdb, None), self.host, '', 'GET', None, 'Get list of tenders')
+
+    def get_bid_info(self, tender_id_long, bid_id, bid_token):
+        return request_to_cdb(headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'GET', None, 'Get bid info')
