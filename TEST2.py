@@ -5,6 +5,7 @@ from random import randint, choice
 import pytz
 import binascii
 import os
+from data_for_tender import limited_procurement, negotiation_procurement
 
 fake = Faker('uk_UA')
 kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
@@ -40,12 +41,12 @@ def tender_period(accelerator, procurement_method, received_tender_status):
 
     if procurement_method == 'belowThreshold':
         one_day = datetime.now() + timedelta(minutes=int(round(1 * (1440.0 / accelerator))), seconds=10)
-        six_days = datetime.now() + timedelta(minutes=int(round(6 * (1440.0 / accelerator))), seconds=10)
+        ten_days = datetime.now() + timedelta(minutes=int(round(10 * (1440.0 / accelerator))), seconds=10)
         five_dozens_days = datetime.now() + timedelta(minutes=int(round(60 * (1440.0 / accelerator))), seconds=10)
         tender_start_date = one_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
         tender_end_date = five_dozens_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
         if received_tender_status == 'active.qualification':
-            tender_end_date = six_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+            tender_end_date = ten_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
         tender_period_data = {"tenderPeriod": {
                                     "startDate": tender_start_date,
                                     "endDate": tender_end_date
@@ -102,6 +103,8 @@ def generate_values(procurement_method, number_of_lots):
                                 "valueAddedTaxIncluded": True
                             }
             }}
+        if procurement_method in limited_procurement:
+            del value['tenderValues']['guarantee'], value['tenderValues']['minimalStep'], value['lotValues']['guarantee'], value['lotValues']['minimalStep']
     return value
 
 
@@ -173,7 +176,6 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                         "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
                         "title_en": "Title of tender in english",
                         "description_en": "",
-                        "submissionMethodDetails": "quick(mode:fast-forward)",
                         "mode": "test",
                         "title_ru": "",
                         "procuringEntity": {
@@ -206,19 +208,25 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
     unit = choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'послуга']])
     classification = choice(classifications)
 
-    if procurement_method == 'esco':
-        submission_method_details = 'quick(mode:no-auction)'
-    else:
-        submission_method_details = 'quick(mode:fast-forward)'
-    tender_data['submissionMethodDetails'] = submission_method_details
+    if procurement_method not in limited_procurement:
+        if procurement_method == 'esco':
+            submission_method_details = 'quick(mode:no-auction)'
+        else:
+            submission_method_details = 'quick(mode:fast-forward)'
+        tender_data['data']['submissionMethodDetails'] = submission_method_details
+
+    if procurement_method in negotiation_procurement:
+        tender_data['data']['cause'] = 'noCompetition'
+        tender_data['data']['causeDescription'] = 'Створення закупівлі для переговорної процедури за нагальною потребою'
 
     values = generate_values(procurement_method, number_of_lots)
     for key in values['tenderValues']:
         tender_data['data'][key] = values['tenderValues'][key]
 
-    tender_periods = tender_period(accelerator, procurement_method, received_tender_status)
-    for key in tender_periods:
-        tender_data['data'][key] = tender_periods[key]
+    if procurement_method not in limited_procurement:
+        tender_periods = tender_period(accelerator, procurement_method, received_tender_status)
+        for key in tender_periods:
+            tender_data['data'][key] = tender_periods[key]
 
     items = []
     if number_of_lots == 0:

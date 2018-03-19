@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
 import pytz
-import data_for_tender
 import qualification
 from qualification import run_activate_award, run_activate_contract
 from bid import suppliers_for_limited
@@ -14,7 +12,7 @@ import time
 from flask import abort
 import bid
 from tenders.tender_requests import TenderRequests
-from TEST2 import generate_tender_json, generate_id_for_lot
+from TEST2 import generate_tender_json, generate_id_for_lot, kiev_utc_now
 
 
 # generate list of id fot lots
@@ -195,7 +193,7 @@ def creation_of_tender(tc_request, user_id):
         else:
             if procurement_method in competitive_procedures:  # qualification for competitive dialogue
                 t_end_date = t_publish.json()['data']['tenderPeriod']['endDate']
-                waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S+02:00', api_version)
+                waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
                 time_counter(waiting_time, 'Check tender status (pre-qualification)')
 
                 attempt_counter = 0
@@ -282,7 +280,7 @@ def creation_of_tender(tc_request, user_id):
                                         get_t_info = tender.get_tender_info(second_stage_tender_id)
 
                                         t_end_date = get_t_info.json()['data']['tenderPeriod']['endDate']  # get tender period end date
-                                        waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S.%f+02:00', api_version)
+                                        waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), api_version)
                                         time_counter(waiting_time, 'Check tender status')
 
                                         # pass pre-qualification for competitiveDialogueEU
@@ -366,7 +364,7 @@ def creation_of_tender(tc_request, user_id):
                             abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
             else:
                 t_end_date = t_publish.json()['data']['tenderPeriod']['endDate']  # get tender period end date
-                waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S+02:00', api_version)
+                waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
                 time_counter(waiting_time, 'Check tender status')
 
                 # pass pre-qualification for procedure
@@ -437,7 +435,7 @@ def creation_of_tender(tc_request, user_id):
         else:
             get_t_info = tender.get_tender_info(tender_id_long)
             enquiry_end_date = get_t_info.json()['data']['enquiryPeriod']['endDate']  # get tender enquiries end date
-            waiting_time = count_waiting_time(enquiry_end_date, '%Y-%m-%dT%H:%M:%S+02:00', api_version)
+            waiting_time = count_waiting_time(enquiry_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
             if waiting_time > 3600:  # delete in the future
                 abort(422, "Waiting time is too long: {} seconds".format(waiting_time))
             time_counter(waiting_time, 'Check tender status (active.tendering)')
@@ -457,7 +455,7 @@ def creation_of_tender(tc_request, user_id):
                         response_code = 201
                         break
                     t_end_date = t_publish.json()['data']['tenderPeriod']['endDate']  # get tender period end date
-                    waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S+02:00', api_version)
+                    waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
                     if waiting_time > 3600:
                         abort(422, "Waiting time is too long: {} seconds".format(waiting_time))
                     time_counter(waiting_time, 'Check tender status')
@@ -498,12 +496,12 @@ def creation_of_tender(tc_request, user_id):
                 get_t_info = tender.get_tender_info(tender_id_long)
                 if procurement_method in negotiation_procurement:
                     complaint_end_date = get_t_info.json()['data']['awards'][-1]['complaintPeriod']['endDate']  # get tender period end date
-                    waiting_time = count_waiting_time(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f+02:00', api_version) + 5
+                    waiting_time = count_waiting_time(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), api_version) + 5
                     if waiting_time > 3600:  # delete in the future
                         abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
                     time_counter(waiting_time, 'Check presence of contract')
                 else:
-                    complaint_end_date = datetime.now()
+                    complaint_end_date = datetime.strftime(datetime.now(), '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now))
                     time.sleep(5)
 
                 for x in range(10):

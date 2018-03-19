@@ -33,7 +33,7 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
             print("       headers:           {}".format(resp.headers))
             time.sleep(1)
             if attempts >= 5:
-                abort(error.response.status_code, resp.content)
+                abort(error.response.status_code, error.message)
         except ConnectionError as e:
             print 'Connection Exception'
             if attempts < 5:

@@ -375,7 +375,7 @@ create_tender_required_fields = ['procurementMethodType', 'number_of_lots', 'num
 # Contracts
 def activate_contract_json(complaint_end_date):
     contract_end_date = datetime.now() + timedelta(days=120)
-    complaint_end_date = datetime.strptime(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f+02:00')
+    complaint_end_date = datetime.strptime(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now))
     contract_json = {
                       "data": {
                         "period": {
