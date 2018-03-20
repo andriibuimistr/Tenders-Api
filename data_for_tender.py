@@ -88,45 +88,46 @@ def generate_features(tender_data):
                 "code": generate_id_for_item(),
                 "description": "Описание неценового критерия для тендера",
                 "title": "Неценовой критерий для тендера",
-                "enum": [
-                    {
-                        "title_en": "Feature option 1",
-                        "value": 0,
-                        "title": "Опция 1 {}".format(fake.text(20).replace('\n', ' '))
-                    },
-                    {
-                        "title_en": "Feature option 2",
-                        "value": 0.01,
-                        "title": "Опция 2 {}".format(fake.text(20).replace('\n', ' '))
-                    },
-                    {
-                        "title_en": "Feature option 3",
-                        "value": 0.02,
-                        "title": "Опция 3 {}".format(fake.text(20).replace('\n', ' '))
-                    },
-                    {
-                        "title_en": "Feature option 4",
-                        "value": 0.03,
-                        "title": "Опция 4 {}".format(fake.text(20).replace('\n', ' '))
-                    },
-                    {
-                        "title_en": "Feature option 5",
-                        "value": 0.04,
-                        "title": "Опция 5 {}".format(fake.text(20).replace('\n', ' '))
-                    },
-                    {
-                        "title_en": "Feature option 6",
-                        "value": 0.05,
-                        "title": "Опция 6 {}".format(fake.text(20).replace('\n', ' '))
-                    }
-                ],
+                "enum": [],
                 "title_en": "Feature of tender",
                 "description_en": "Description of feature for tender",
                 "featureOf": "tenderer"
-            }]
+                }]
+    feature_number = -1
+    for feature in range(6):
+        feature_number += 1
+        feature = {
+                        "title_en": "Feature option {}".format(feature_number + 1),
+                        "value": float('0.0{}'.format(feature_number)),
+                        "title": "Опция {} {}".format(feature_number + 1, fake.text(20).replace('\n', ' '))
+                    }
+        features[0]['enum'].append(feature)
     if procurement_method not in limited_procurement:
         if number_of_lots == 0:
             features = features
+        else:
+            for lot in range(number_of_lots):
+                features.append({
+                        "code": generate_id_for_item(),
+                        "description": "Описание неценового критерия Лот {}".format(lot + 1),
+                        "title": "Неценовой критерий Лот {}".format(lot + 1),
+                        "enum": [
+                            {
+                                "title_en": "Option 1 Lot {}".format(lot + 1),
+                                "value": 0,
+                                "title": "Опция 1 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
+                            },
+                            {
+                                "title_en": "Option 2 Lot {}".format(lot + 1),
+                                "value": 0.01,
+                                "title": "Опция 2 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
+                            }
+                        ],
+                        "title_en": "Title of feature for lot {}".format(lot + 1),
+                        "description_en": "Description of feature for lot {}".format(lot + 1),
+                        "relatedItem": tender_data['data']['lots'][lot]['id'],
+                        "featureOf": "lot"
+                    })
     else:
         features = {"features": []}
     return features
