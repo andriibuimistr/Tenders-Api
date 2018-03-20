@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from dk021 import classifications
 import binascii
 import os
 from random import randint, choice
@@ -30,10 +31,16 @@ def activate_contract_json(complaint_end_date):
     return contract_json
 
 
-# NEW CODE FOR CREATE TENDER
-classifications = [['03000000-1', u'Сільськогосподарська, фермерська продукція, продукція рибальства, лісівництва та супутня продукція'],
-                   ['09000000-3', u'Нафтопродукти, паливо, електроенергія та інші джерела енергії'],
-                   ['14000000-1', u'Гірнича продукція, неблагородні метали та супутня продукція']]
+def get_classification():
+    classification = []
+    cl = choice(classifications)
+    for x in cl:
+        classification = [x, cl[x]]
+    return classification
+
+
+def get_unit():
+    return choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'послуга']])
 
 
 def generate_id_for_item():
@@ -180,7 +187,8 @@ def generate_values(procurement_method, number_of_lots):
     return value
 
 
-def generate_items(number_of_items, procurement_method, unit, classification):
+def generate_items(number_of_items, procurement_method, classification):
+    unit = get_unit()
     items = []
     item_number = 0
     for item in range(number_of_items):
@@ -277,8 +285,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                         }
                     }
                 }
-    unit = choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'послуга']])
-    classification = choice(classifications)
+    classification = get_classification()
 
     if procurement_method not in limited_procurement:
         if procurement_method == 'esco':
@@ -302,12 +309,12 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
 
     items = []
     if number_of_lots == 0:
-        items = generate_items(number_of_items, procurement_method, unit, classification)
+        items = generate_items(number_of_items, procurement_method, classification)
         tender_data['data']['items'] = items
     else:
         lots = generate_lots(list_of_lots_id, values['lotValues'])
         for lot in range(number_of_lots):
-            lot_items = generate_items(number_of_items, procurement_method, unit, classification)
+            lot_items = generate_items(number_of_items, procurement_method, classification)
             for item in range(len(lot_items)):
                 lot_items[item]['description'] = "Предмет закупки {} Лот {} {}".format(item + 1, lot + 1, fake.text(200).replace('\n', ' '))
                 lot_items[item]['relatedLot'] = list_of_lots_id[lot]
