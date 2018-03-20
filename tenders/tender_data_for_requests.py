@@ -10,7 +10,7 @@ def host_selector(cdb_version):
         host_public = 'https://public.api-sandbox.prozorro.openprocurement.net/api/dev/tenders'
     else:
         host = 'https://lb.api-sandbox.openprocurement.org/api/2.4/tenders'
-        host_public = host = 'https://public.api-sandbox.openprocurement.org/api/2.4/tenders'
+        host_public = 'https://public.api-sandbox.openprocurement.org/api/2.4/tenders'
     return host, host_public
 
 
