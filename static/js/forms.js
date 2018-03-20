@@ -427,3 +427,62 @@ $(function() {
       $("#cdb_version").change(disable_select);
 });
 
+
+//Disable features checkbox on tender creation page
+$(function() {
+    var disable_select = function () {
+        no_features = ['negotiation.quick', 'negotiation', 'reporting'];
+        if (jQuery.inArray($("#procurementMethodType").val(), no_features)!='-1') {
+            $("#if_features").prop('disabled', true).prop('checked', false);
+        }
+        else {
+            $("#if_features").prop('disabled', false);
+        }
+      };
+      $(disable_select);
+      $("#procurementMethodType").change(disable_select);
+});
+
+
+$(function() {
+    var disable_select = function () {
+        var limited = ['negotiation.quick', 'negotiation', 'reporting'];
+        var above = []
+        var status_limited = "active,complete,active.award,active.contract";
+        var status_non_limited = "active.tendering,active.tendering.stage2,active.pre-qualification,active.pre-qualification.stage2,active.pre-qualification.stage2,active.qualification,active.enquiries"
+        if (jQuery.inArray($("#procurementMethodType").val(), limited)=='-1') { //if is not limited block limited statuses
+                    $.each(status_limited.split(","), function(i,e){   //disable limited statuses for above procedures
+                        $("#tenderStatus option[value='" + e + "']").prop('disabled', true);
+                    });
+                    $.each(status_non_limited.split(","), function(i,e){  //enable above statuses for above procedures
+                        $("#tenderStatus option[value='" + e + "']").prop('disabled', false);
+                    });
+                    $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
+                    var disable_enquiry = function (){
+				        if ($("#procurementMethodType").val() !== 'belowThreshold') {
+							$('#tenderStatus option[value="active.enquiries"]').prop('disabled', true);
+						}
+						else {
+							$('#tenderStatus option[value="active.enquiries"]').prop('disabled', false);
+						}
+                    };
+                    $(disable_enquiry);
+        }
+        else if(jQuery.inArray($("#procurementMethodType").val(), above)=='-1'){ //if is not above procedure
+                       $.each(status_non_limited.split(","), function(i,e){  //disable above statuses for not above procedures
+                        $("#tenderStatus option[value='" + e + "']").prop('disabled', true);
+                    });
+                    $.each(status_limited.split(","), function(i,e){  //enable limited statuses for limited procedures
+                        $("#tenderStatus option[value='" + e + "']").prop('disabled', false);
+                    });
+                    $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
+        }
+        else {
+                    $.each(status_limited + status_non_limited.split(","), function(i,e){
+                        $("#tenderStatus option[value='" + e + "']").prop('disabled', false);
+                    });
+        }
+      };
+      $(disable_select);
+      $("#procurementMethodType").change(disable_select);
+});
