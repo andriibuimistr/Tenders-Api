@@ -8,9 +8,11 @@ import data_for_tender
 def host_selector(cdb_version):
     if cdb_version == 'dev':
         host = 'https://api-sandbox.prozorro.openprocurement.net/api/dev/tenders'
+        host_public = 'https://public.api-sandbox.prozorro.openprocurement.net/api/dev/tenders'
     else:
         host = 'https://lb.api-sandbox.openprocurement.org/api/2.4/tenders'
-    return host
+        host_public = host = 'https://public.api-sandbox.openprocurement.org/api/2.4/tenders'
+    return host, host_public
 
 
 # generate headers for create tender

@@ -53,7 +53,8 @@ class TenderRequests:
 
     def __init__(self, cdb):
         self.cdb = cdb
-        self.host = host_selector(cdb)
+        self.host = host_selector(cdb)[0]
+        self.host_public = host_selector(cdb)[1]
 
     def publish_tender(self, json_tender):
         return request_to_cdb(headers_request(self.cdb, json_tender), self.host, '', 'POST', json_tender, 'Publish tender')
@@ -63,7 +64,7 @@ class TenderRequests:
         return request_to_cdb(headers_request(self.cdb, json_tender_activation), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_tender_activation, 'Activate tender')
 
     def get_tender_info(self, tender_id_long):
-        return request_to_cdb(None, self.host, '/{}'.format(tender_id_long), 'GET', None, 'Get tender info')
+        return request_to_cdb(None, self.host_public, '/{}'.format(tender_id_long), 'GET', None, 'Get tender info')
 
     def finish_first_stage(self, tender_id_long, token):
         return request_to_cdb(headers_request(self.cdb, json_finish_first_stage), self.host, '/{}?acc_token={}'.format(tender_id_long, token), 'PATCH', json_finish_first_stage, 'Finish first stage')
@@ -97,7 +98,7 @@ class TenderRequests:
         return request_to_cdb(headers_request(self.cdb, activate_bid_json), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'PATCH', activate_bid_json, 'Activate bid {}'.format(bid_number))
 
     def get_list_of_tenders(self):
-        return request_to_cdb(headers_request(self.cdb, None), self.host, '', 'GET', None, 'Get list of tenders')
+        return request_to_cdb(headers_request(self.cdb, None), self.host_public, '', 'GET', None, 'Get list of tenders')
 
     def get_bid_info(self, tender_id_long, bid_id, bid_token):
         return request_to_cdb(headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'GET', None, 'Get bid info')

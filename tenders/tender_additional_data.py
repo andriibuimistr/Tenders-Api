@@ -39,8 +39,8 @@ documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdU
 create_tender_required_fields = ['procurementMethodType', 'number_of_lots', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
 
 # Bid.py !!!Temporal
-tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
-valueAddedTaxIncluded = str(random.choice([True, False])).lower()
+# tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
+# valueAddedTaxIncluded = str(random.choice([True, False])).lower()
 
 list_of_api_versions = ['2.4', 'dev']
 
