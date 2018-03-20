@@ -79,11 +79,11 @@ def tender_period(accelerator, procurement_method, received_tender_status):
 
 
 def generate_features(tender_data):
-    procurement_method = tender_data['data']['procurementMethodType']
     if 'lots' in tender_data['data']:
         number_of_lots = len(tender_data['data']['lots'])
     else:
         number_of_lots = 0
+
     features = [{
                 "code": generate_id_for_item(),
                 "description": "Описание неценового критерия для тендера",
@@ -102,34 +102,32 @@ def generate_features(tender_data):
                         "title": "Опция {} {}".format(feature_number + 1, fake.text(20).replace('\n', ' '))
                     }
         features[0]['enum'].append(feature)
-    if procurement_method not in limited_procurement:
-        if number_of_lots == 0:
-            features = features
-        else:
-            for lot in range(number_of_lots):
-                features.append({
-                        "code": generate_id_for_item(),
-                        "description": "Описание неценового критерия Лот {}".format(lot + 1),
-                        "title": "Неценовой критерий Лот {}".format(lot + 1),
-                        "enum": [
-                            {
-                                "title_en": "Option 1 Lot {}".format(lot + 1),
-                                "value": 0,
-                                "title": "Опция 1 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
-                            },
-                            {
-                                "title_en": "Option 2 Lot {}".format(lot + 1),
-                                "value": 0.01,
-                                "title": "Опция 2 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
-                            }
-                        ],
-                        "title_en": "Title of feature for lot {}".format(lot + 1),
-                        "description_en": "Description of feature for lot {}".format(lot + 1),
-                        "relatedItem": tender_data['data']['lots'][lot]['id'],
-                        "featureOf": "lot"
-                    })
+
+    if number_of_lots == 0:
+        features = features
     else:
-        features = {"features": []}
+        for lot in range(number_of_lots):
+            features.append({
+                    "code": generate_id_for_item(),
+                    "description": "Описание неценового критерия Лот {}".format(lot + 1),
+                    "title": "Неценовой критерий Лот {}".format(lot + 1),
+                    "enum": [
+                        {
+                            "title_en": "Option 1 Lot {}".format(lot + 1),
+                            "value": 0,
+                            "title": "Опция 1 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
+                        },
+                        {
+                            "title_en": "Option 2 Lot {}".format(lot + 1),
+                            "value": 0.01,
+                            "title": "Опция 2 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
+                        }
+                    ],
+                    "title_en": "Title of feature for lot {}".format(lot + 1),
+                    "description_en": "Description of feature for lot {}".format(lot + 1),
+                    "relatedItem": tender_data['data']['lots'][lot]['id'],
+                    "featureOf": "lot"
+                })
     return features
 
 
@@ -319,6 +317,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
         tender_data['data']['items'] = items
         tender_data['data']['lots'] = lots
 
-    tender_data['data']['features'] = generate_features(tender_data)
+    if procurement_method not in limited_procurement:
+        tender_data['data']['features'] = generate_features(tender_data)
     # pprint(tender_data)
     return tender_data
