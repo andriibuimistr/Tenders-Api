@@ -6,6 +6,7 @@ import pytz
 from faker import Faker
 from datetime import datetime, timedelta
 from tenders.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
+from pprint import pprint
 
 
 fake = Faker('uk_UA')
@@ -75,6 +76,60 @@ def tender_period(accelerator, procurement_method, received_tender_status):
                                     "endDate": tender_start_date
                             }}
     return tender_period_data
+
+
+def generate_features(tender_data):
+    procurement_method = tender_data['data']['procurementMethodType']
+    if 'lots' in tender_data['data']:
+        number_of_lots = len(tender_data['data']['lots'])
+    else:
+        number_of_lots = 0
+    features = [{
+                "code": generate_id_for_item(),
+                "description": "Описание неценового критерия для тендера",
+                "title": "Неценовой критерий для тендера",
+                "enum": [
+                    {
+                        "title_en": "Feature option 1",
+                        "value": 0,
+                        "title": "Опция 1 {}".format(fake.text(20).replace('\n', ' '))
+                    },
+                    {
+                        "title_en": "Feature option 2",
+                        "value": 0.01,
+                        "title": "Опция 2 {}".format(fake.text(20).replace('\n', ' '))
+                    },
+                    {
+                        "title_en": "Feature option 3",
+                        "value": 0.02,
+                        "title": "Опция 3 {}".format(fake.text(20).replace('\n', ' '))
+                    },
+                    {
+                        "title_en": "Feature option 4",
+                        "value": 0.03,
+                        "title": "Опция 4 {}".format(fake.text(20).replace('\n', ' '))
+                    },
+                    {
+                        "title_en": "Feature option 5",
+                        "value": 0.04,
+                        "title": "Опция 5 {}".format(fake.text(20).replace('\n', ' '))
+                    },
+                    {
+                        "title_en": "Feature option 6",
+                        "value": 0.05,
+                        "title": "Опция 6 {}".format(fake.text(20).replace('\n', ' '))
+                    }
+                ],
+                "title_en": "Feature of tender",
+                "description_en": "Description of feature for tender",
+                "featureOf": "tenderer"
+            }]
+    if procurement_method not in limited_procurement:
+        if number_of_lots == 0:
+            features = features
+    else:
+        features = {"features": []}
+    return features
 
 
 def generate_values(procurement_method, number_of_lots):
@@ -262,4 +317,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                 items.append(lot_items[item])
         tender_data['data']['items'] = items
         tender_data['data']['lots'] = lots
+
+    tender_data['data']['features'] = generate_features(tender_data)
+    # pprint(tender_data)
     return tender_data
