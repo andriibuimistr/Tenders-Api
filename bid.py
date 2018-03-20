@@ -104,6 +104,16 @@ def generate_bid_values(tender_json, lot_number):
                                   "annualCostsReduction": generate_annual_costs_reduction_list()
                                 }}
                 values_json['lotValues'].append(values)
+
+    if 'features' in tender_json['data']:
+        values_json['parameters'] = []
+        for feature in range(len(tender_json['data']['features'])):
+            number_of_feature_values = len(tender_json['data']['features'][feature]['enum'])
+            values_json['parameters'].append({
+                "code": tender_json['data']['features'][feature]['code'],
+                "value": tender_json['data']['features'][feature]['enum'][randint(0, number_of_feature_values - 1)]['value']
+            })
+    # pprint(values_json)
     return values_json
 
 
@@ -140,10 +150,13 @@ def generate_json_bid(user_idf, tender_json, lot_number=False):
                         }
                     }
     procurement_method = tender_json['data']['procurementMethodType']
+
     if procurement_method in limited_procurement:
         bid_json['data']['suppliers'] = bid_json['data']['tenderers']
         del bid_json['data']['tenderers']
-    bid_json['data'][values.keys()[0]] = values[values.keys()[0]]
+
+    for key in range(len(values.keys())):
+        bid_json['data'][values.keys()[key]] = values[values.keys()[key]]
     return bid_json
 
 
