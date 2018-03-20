@@ -6,7 +6,6 @@ import pytz
 from faker import Faker
 from datetime import datetime, timedelta
 from tenders.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
-from pprint import pprint
 
 
 fake = Faker('uk_UA')
@@ -107,27 +106,26 @@ def generate_features(tender_data):
         features = features
     else:
         for lot in range(number_of_lots):
-            features.append({
-                    "code": generate_id_for_item(),
-                    "description": "Описание неценового критерия Лот {}".format(lot + 1),
-                    "title": "Неценовой критерий Лот {}".format(lot + 1),
-                    "enum": [
-                        {
-                            "title_en": "Option 1 Lot {}".format(lot + 1),
-                            "value": 0,
-                            "title": "Опция 1 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
-                        },
-                        {
-                            "title_en": "Option 2 Lot {}".format(lot + 1),
-                            "value": 0.01,
-                            "title": "Опция 2 Лот {} {}".format(lot + 1, fake.text(20).replace('\n', ' '))
+            lot_feature = {
+                            "code": generate_id_for_item(),
+                            "description": "Описание неценового критерия Лот {}".format(lot + 1),
+                            "title": "Неценовой критерий Лот {}".format(lot + 1),
+                            "enum": [],
+                            "title_en": "Title of feature for lot {}".format(lot + 1),
+                            "description_en": "Description of feature for lot {}".format(lot + 1),
+                            "relatedItem": tender_data['data']['lots'][lot]['id'],
+                            "featureOf": "lot"
                         }
-                    ],
-                    "title_en": "Title of feature for lot {}".format(lot + 1),
-                    "description_en": "Description of feature for lot {}".format(lot + 1),
-                    "relatedItem": tender_data['data']['lots'][lot]['id'],
-                    "featureOf": "lot"
-                })
+            feature_number = -1
+            for feature in range(6):
+                feature_number += 1
+                feature = {
+                    "title_en": "Feature option {}".format(feature_number + 1),
+                    "value": float('0.0{}'.format(feature_number)),
+                    "title": "Опция {} Лот {} {}".format(feature_number + 1, lot + 1, fake.text(20).replace('\n', ' '))
+                }
+                lot_feature['enum'].append(feature)
+            features.append(lot_feature)
     return features
 
 
@@ -240,7 +238,7 @@ def generate_lots(lots_id, values):
     return lots
 
 
-def generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_lots_id):
+def generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_lots_id, if_features):
     tender_data = {
                     "data": {
                         "procurementMethodType": procurement_method,
@@ -318,6 +316,6 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
         tender_data['data']['lots'] = lots
 
     if procurement_method not in limited_procurement:
-        tender_data['data']['features'] = generate_features(tender_data)
-    # pprint(tender_data)
+        if if_features == 1:
+            tender_data['data']['features'] = generate_features(tender_data)
     return tender_data

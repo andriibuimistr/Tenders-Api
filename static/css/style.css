@@ -422,6 +422,11 @@ footer {
 	height: 34px !important;
 }
 
+.checkbox-tender-create {
+    float: right;
+    padding-right: 3px;
+}
+
 /*LIST OF COMPANIES*/
 .lbl {
 	font-weight: bold;
