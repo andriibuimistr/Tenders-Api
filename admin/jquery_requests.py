@@ -3,7 +3,6 @@ from database import db, Platforms, Users, Tenders
 from flask import render_template, abort, jsonify
 import validators
 import refresh
-import data_for_tender
 from auctions import auction_additional_data
 from tenders.tender_requests import TenderRequests
 from auctions.auction_requests import AuctionRequests

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from data_for_tender import activate_contract_json
+from tenders.data_for_tender import activate_contract_json
 from database import Tenders, BidsTender
 import key
 import time

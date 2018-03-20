@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from tenders.tender_additional_data import list_of_procurement_types, tender_status_list, list_of_api_versions
 from database import db, Tenders, BidsTender, Users
-import tender
 from auctions import auction
 # import document
 from datetime import timedelta
@@ -21,7 +20,7 @@ from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
 from auctions.pages import AuctionPages
-from tenders import tender_validators
+from tenders import tender_validators, tender
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)

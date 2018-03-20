@@ -1,7 +1,6 @@
 import tender_additional_data
 from key import auth_key
 import json
-import data_for_tender
 
 
 # Select host for CDB

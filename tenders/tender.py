@@ -2,7 +2,7 @@
 import pytz
 import qualification
 from qualification import run_activate_award, run_activate_contract
-from bid import suppliers_for_limited
+from tenders.tender_bid import suppliers_for_limited
 import refresh
 from refresh import check_if_contract_exists, time_counter, count_waiting_time
 from tenders.tender_additional_data import above_threshold_procurement, below_threshold_procurement, limited_procurement, prequalification_procedures, competitive_procedures, negotiation_procurement
@@ -10,9 +10,9 @@ from database import db, Tenders
 from datetime import datetime, timedelta
 import time
 from flask import abort
-import bid
+from tenders import tender_bid
 from tenders.tender_requests import TenderRequests
-from data_for_tender import kiev_utc_now, generate_id_for_lot, generate_tender_json
+from tenders.data_for_tender import kiev_utc_now, generate_id_for_lot, generate_tender_json
 
 
 def extend_tender_period(api_version, accelerator, second_stage_tender_id):
@@ -95,7 +95,7 @@ def creation_of_tender(tc_request, user_id):
 
     if procurement_method in above_threshold_procurement:
         time.sleep(2)
-        make_bid = bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
+        make_bid = tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
 
         if received_tender_status == 'active.tendering':
             get_t_info = tender.get_tender_info(tender_id_long)
@@ -193,7 +193,7 @@ def creation_of_tender(tc_request, user_id):
                                             break
 
                                         time.sleep(2)
-                                        bid.make_bid_competitive(make_bid[1], second_stage_tender_id, api_version, procurement_method)  # make bids 2nd stage
+                                        tender_bid.make_bid_competitive(make_bid[1], second_stage_tender_id, api_version, procurement_method)  # make bids 2nd stage
 
                                         get_t_info = tender.get_tender_info(second_stage_tender_id)
 
@@ -366,7 +366,7 @@ def creation_of_tender(tc_request, user_id):
                 get_t_info = tender.get_tender_info(tender_id_long)
 
                 if get_t_info.json()['data']['status'] == 'active.tendering':
-                    bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
+                    tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
                     if received_tender_status == 'active.tendering':
                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
                         response_json['status'] = 'success'
