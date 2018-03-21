@@ -2,7 +2,7 @@ import tenders.tender_additional_data
 from database import db, Platforms, Users, Tenders
 from flask import render_template, abort, jsonify
 import validators
-import refresh
+import core
 from auctions import auction_additional_data
 from tenders.tender_requests import TenderRequests
 from auctions.auction_requests import AuctionRequests
@@ -35,7 +35,7 @@ def add_platform(request):
     newly_added_platform_data = Platforms.query.filter_by(id=last_id)
     db.session.commit()
     db.session.remove()
-    return render_template('includes/newly_added_platform_info.inc.html', platform=newly_added_platform_data, platform_roles=refresh.get_list_of_platform_roles())
+    return render_template('includes/newly_added_platform_info.inc.html', platform=newly_added_platform_data, platform_roles=core.get_list_of_platform_roles())
 
 
 def add_user(request):
@@ -48,7 +48,7 @@ def add_user(request):
         return abort(400, 'User password length can\'t be less than 4')
     if ' ' in request.form['user-password']:
         return abort(422, 'U can\'t use spaces in password')
-    all_users = refresh.get_list_of_users()
+    all_users = core.get_list_of_users()
     list_login = []
     for x in range(len(all_users)):
         list_login.append(all_users[x].user_login)
@@ -61,12 +61,12 @@ def add_user(request):
     newly_added_user_data = Users.query.filter_by(id=last_id)
     db.session.commit()
     db.session.remove()
-    return render_template('includes/newly_added_user_info.inc.html', user=newly_added_user_data, user_roles=refresh.get_list_of_user_roles())
+    return render_template('includes/newly_added_user_info.inc.html', user=newly_added_user_data, user_roles=core.get_list_of_user_roles())
 
 
 def delete_platform(platform_id):
     existing_platforms_id = []
-    list_of_platforms_id_db = refresh.get_list_of_platforms(False)
+    list_of_platforms_id_db = core.get_list_of_platforms(False)
     for x in range(len(list_of_platforms_id_db)):
         existing_platforms_id.append(str(list_of_platforms_id_db[x].id))
     if platform_id not in existing_platforms_id:
@@ -80,7 +80,7 @@ def delete_platform(platform_id):
 
 def delete_tender(tender_id):
     existing_tenders_id = []
-    list_of_tenders_id_db = refresh.get_list_of_tenders()
+    list_of_tenders_id_db = core.get_list_of_tenders()
     for x in range(len(list_of_tenders_id_db)):
         existing_tenders_id.append(str(list_of_tenders_id_db[x].id))
     if tender_id not in existing_tenders_id:

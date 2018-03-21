@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-
-# SELECT PROCUREMENT METHOD ############################################################################################################################
-import random
 from datetime import datetime
 
 import pytz
@@ -46,3 +43,26 @@ list_of_api_versions = ['2.4', 'dev']
 
 # Get local timezone
 kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
+
+# json for approve qualification
+prequalification_approve_bid_json = {
+  "data": {
+    "status": "active",
+    "qualified": True,
+    "eligible": True
+  }
+}
+
+# json for decline qualification
+prequalification_decline_bid_json = {
+  "data": {
+    "status": "unsuccessful",
+  }
+}
+
+# json for submit prequalification protocol
+finish_prequalification_json = {
+  "data": {
+    "status": "active.pre-qualification.stand-still"
+  }
+}

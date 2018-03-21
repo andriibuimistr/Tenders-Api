@@ -6,7 +6,7 @@ from auctions import auction
 from datetime import timedelta
 # import qualification
 # import time
-import refresh
+import core
 # from refresh import get_tenders_list
 from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
@@ -168,7 +168,7 @@ def page_create_tender():
     if not session.get('logged_in'):
         return login_form()
     else:
-        content = render_template('tenders/create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=refresh.get_list_of_platforms(1),
+        content = render_template('tenders/create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions, platforms=core.get_list_of_platforms(1),
                                   statuses=tender_status_list)
         return render_template('index.html', user_role_id=get_user_role(), content=content)
 
@@ -204,7 +204,7 @@ def create_tender_function():
 @app.route('/api/tenders/synchronization', methods=['PATCH'])
 @auth.login_required
 def update_list_of_tenders():
-    update_tenders = refresh.update_tenders_list()
+    update_tenders = core.update_tenders_list()
     db.session.close()
     if update_tenders[0] == 0:
         return jsonify({"status": "success", "updated tenders": update_tenders[1]})
@@ -245,7 +245,7 @@ def get_bids_of_one_tender(tender_id_short):
             else:
                 list_of_tender_bids[every_bid]['has_company'] = False
         db.session.remove()
-        return render_template('modules/tender_modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids, platforms=refresh.get_list_of_platforms(1))
+        return render_template('modules/tender_modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids, platforms=core.get_list_of_platforms(1))
 
 
 # show all bids of auction
@@ -280,7 +280,7 @@ def get_bids_of_one_auction(auction_id_short):
             else:
                 list_of_auction_bids[every_bid]['has_company'] = False
         db.session.remove()
-        return render_template('modules/auction_modules/list_of_bids_of_auction.html', user_role_id=get_user_role(), list_of_auction_bids=list_of_auction_bids, platforms=refresh.get_list_of_platforms(2))
+        return render_template('modules/auction_modules/list_of_bids_of_auction.html', user_role_id=get_user_role(), list_of_auction_bids=list_of_auction_bids, platforms=core.get_list_of_platforms(2))
 
 
 # add one tender bid to company
@@ -312,7 +312,7 @@ def add_tender_bid_to_company(bid_id):
         company_id = request.form['company-id']
 
         company_platform_host = request.form['platform_host']
-        add_bid_company = refresh.add_one_bid_to_company(company_platform_host, company_id, bid_id)
+        add_bid_company = core.add_one_bid_to_company(company_platform_host, company_id, bid_id)
         db.session.commit()
         db.session.remove()
         if add_bid_company[1] == 201:
@@ -350,7 +350,7 @@ def add_auction_bid_to_company(bid_id):
         company_id = request.form['company-id']
 
         company_platform_host = request.form['platform_host']
-        add_bid_company = refresh.add_one_auction_bid_to_company(company_platform_host, company_id, bid_id)
+        add_bid_company = core.add_one_auction_bid_to_company(company_platform_host, company_id, bid_id)
         db.session.commit()
         db.session.remove()
         if add_bid_company[1] == 201:

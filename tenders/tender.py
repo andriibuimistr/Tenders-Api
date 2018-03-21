@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import pytz
 import qualification
-from qualification import run_activate_award, run_activate_contract
 from tenders.tender_bid import suppliers_for_limited
-import refresh
-from refresh import check_if_contract_exists, time_counter, count_waiting_time
+import core
+from core import check_if_contract_exists, time_counter, count_waiting_time, run_activate_award, run_activate_contract
 from tenders.tender_additional_data import above_threshold_procurement, below_threshold_procurement, limited_procurement, prequalification_procedures, competitive_procedures, negotiation_procurement
 from database import db, Tenders
 from datetime import datetime, timedelta
@@ -80,7 +79,7 @@ def creation_of_tender(tc_request, user_id):
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
 
-    add_tender_company = refresh.add_one_tender_company(company_id, platform_host, tender_id_long, 'tender')  # add first stage to company
+    add_tender_company = core.add_one_tender_company(company_id, platform_host, tender_id_long, 'tender')  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', tender_id_short)
 
     ''''# add documents to tender
@@ -129,8 +128,8 @@ def creation_of_tender(tc_request, user_id):
                             response_json['status'] = 'success'
                             response_code = 201
                             break
-                        qualifications = qualification.list_of_qualifications(tender_id_long, api_version)  # get list of qualifications for tender
-                        qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version)  # approve all my bids
+                        qualifications = core.list_of_qualifications(tender_id_long, api_version)  # get list of qualifications for tender
+                        core.pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version)  # approve all my bids
 
                         time.sleep(2)
                         tender.finish_prequalification(tender_id_long, tender_token)
@@ -219,8 +218,8 @@ def creation_of_tender(tc_request, user_id):
                                                         response_code = 201
                                                         break
                                                     else:
-                                                        qualifications = qualification.list_of_qualifications(second_stage_tender_id, api_version)  # get list of qualifications for tender
-                                                        qualification.pass_second_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, api_version)  # approve all bids
+                                                        qualifications = core.list_of_qualifications(second_stage_tender_id, api_version)  # get list of qualifications for tender
+                                                        core.pass_second_pre_qualification(qualifications, second_stage_tender_id, second_stage_token, api_version)  # approve all bids
                                                         time.sleep(2)
 
                                                         tender.finish_prequalification(second_stage_tender_id, second_stage_token)
@@ -258,7 +257,7 @@ def creation_of_tender(tc_request, user_id):
                                                         else:
                                                             abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
 
-                                        add_2nd_stage_to_company = refresh.add_one_tender_company(company_id, platform_host, second_stage_tender_id, 'tender')
+                                        add_2nd_stage_to_company = core.add_one_tender_company(company_id, platform_host, second_stage_tender_id, 'tender')
                                         response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
                                         response_json['tender_to_company'] = add_2nd_stage_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', second_stage_tender_id_short)
                                         break
@@ -303,8 +302,8 @@ def creation_of_tender(tc_request, user_id):
                                 response_code = 201
                                 break
                             else:
-                                qualifications = qualification.list_of_qualifications(tender_id_long, api_version)  # get list of qualifications for tender
-                                qualification.pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version)  # approve all bids
+                                qualifications = core.list_of_qualifications(tender_id_long, api_version)  # get list of qualifications for tender
+                                core.pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version)  # approve all bids
                                 time.sleep(2)
                                 tender.finish_prequalification(tender_id_long, tender_token)
                                 db.session.remove()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from auction_additional_data import create_auction_required_fields, auction_status_to_create, cdb_versions, auction_procurement_method_types, dgf_insider_steps
 from flask import abort
-import refresh
+import core
 
 
 def validator_create_auction(data):
@@ -49,7 +49,7 @@ def validator_create_auction(data):
             if int(data["steps"]) not in dgf_insider_steps:
                 abort(422, 'Steps value must be between one of {}'.format(dgf_insider_steps))
 
-    list_of_platform_urls = refresh.get_list_of_platform_urls(2)
+    list_of_platform_urls = core.get_list_of_platform_urls(2)
     if data['platform_host'] not in list_of_platform_urls:
         abort(422, 'Platform must be one of: {}'.format(list_of_platform_urls))
 

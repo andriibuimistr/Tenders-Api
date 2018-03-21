@@ -4,7 +4,7 @@ from data_for_auction_cdb2 import generate_auction_json_cdb_2
 import time
 from flask import abort
 from database import db, Auctions
-import refresh
+import core
 import auction_validators
 from auction_bid import create_bids
 from auction_requests import AuctionRequests
@@ -52,7 +52,7 @@ def create_auction(ac_request, session):
 
     auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method_type, auction_status, session['user_id'], cdb_version)  # add auction data to database
     create_bids(cdb_version, auction_id_long, procurement_method_type, number_of_bids)  # make bids
-    add_auction_to_company = refresh.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')  # add auction to local database
+    add_auction_to_company = core.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')  # add auction to local database
 
     # Initial 'Response JSON' data
     response_json = dict()
