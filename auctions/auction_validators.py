@@ -53,10 +53,6 @@ def validator_create_auction(data):
     if data['platform_host'] not in list_of_platform_urls:
         abort(422, 'Platform must be one of: {}'.format(list_of_platform_urls))
 
-    if 'minNumberOfQualifiedBids' in data:
-        if data['minNumberOfQualifiedBids'] != '1':
-            abort(422, 'minNumberOfQualifiedBids value must de "1" or empty')
-
     if int(data['accelerator']) < 30:
         if data['auctionStatus'] != 'active.tendering':
             abort(422, 'Accelerator value can be less than 30 for "active.tendering" status only')
@@ -67,6 +63,8 @@ def validator_create_auction(data):
     if 'minNumberOfQualifiedBids' in data:
         if data['minNumberOfQualifiedBids'] == '1':
             valid_data['min_number_of_qualified_bids'] = 1
+        else:
+            abort(422, 'minNumberOfQualifiedBids value must de "1" or empty')
 
     for field in data:
         valid_data[field] = data[field]
@@ -81,7 +79,7 @@ def validator_create_auction(data):
     else:
         valid_data['steps'] = int(data['steps'])
 
-        valid_data['rent'] = False
+    valid_data['rent'] = False
     if 'rent' in data:
         valid_data['rent'] = True
 

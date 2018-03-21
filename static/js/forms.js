@@ -481,7 +481,7 @@ $(function() {
         }
         else {
             $("#if_features").prop('disabled', false);
-            $("#skip_tender_auction").prop('disabled', false);
+            $("#skip_tender_auction").prop('disabled', false).prop('checked', true);
         }
       };
       $(disable_select);

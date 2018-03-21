@@ -82,7 +82,7 @@ def creation_of_tender(tc_request, user_id):
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
 
-    add_tender_company = core.add_one_tender_company(company_id, platform_host, tender_id_long, 'tender')  # add first stage to company
+    add_tender_company = core.add_one_tender_company(company_id, platform_host, tender_id_long, tender_token, 'tender')  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', tender_id_short)
 
     ''''# add documents to tender
@@ -260,7 +260,7 @@ def creation_of_tender(tc_request, user_id):
                                                         else:
                                                             abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
 
-                                        add_2nd_stage_to_company = core.add_one_tender_company(company_id, platform_host, second_stage_tender_id, 'tender')
+                                        add_2nd_stage_to_company = core.add_one_tender_company(company_id, platform_host, second_stage_tender_id, tender_token, 'tender')
                                         response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
                                         response_json['tender_to_company'] = add_2nd_stage_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', second_stage_tender_id_short)
                                         break

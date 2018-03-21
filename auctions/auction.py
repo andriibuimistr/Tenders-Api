@@ -53,11 +53,11 @@ def create_auction(ac_request, session):
 
     auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method_type, auction_status, session['user_id'], cdb_version)  # add auction data to database
     create_bids(cdb_version, auction_id_long, procurement_method_type, number_of_bids)  # make bids
-    add_auction_to_company = core.add_one_tender_company(company_id, platform_host, auction_id_long, 'auction')  # add auction to local database
+    add_auction_to_company = core.add_one_tender_company(company_id, platform_host, auction_id_long, auction_token, 'auction')  # add auction to local database
 
     # Initial 'Response JSON' data
     response_json = dict()
-    response_json['tender_to_company'] = add_auction_to_company[0], add_auction_to_company[2] + auction_id_short
+    response_json['tender_to_company'] = add_auction_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', auction_id_short)
     response_json['id'] = auction_id_short
     response_json['status'] = 'error'
     response_code = 0
