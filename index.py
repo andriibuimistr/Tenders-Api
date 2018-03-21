@@ -464,7 +464,7 @@ def page_create_auction():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return AuctionPages(1).page_create_auction()
+        return AuctionPages(session['user_role']).page_create_auction()
 
 
 # template for work with tender bids
@@ -473,9 +473,7 @@ def page_auction_bids():
     if not session.get('logged_in'):
         return login_form()
     else:
-        content = render_template('auctions/auction_bids.html')
-        # user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
-        return render_template('index.html', user_role_id=get_user_role(), content=content)
+        return AuctionPages(session['user_role']).page_auction_bids()
 
 
 if __name__ == '__main__':

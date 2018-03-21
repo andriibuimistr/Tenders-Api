@@ -369,6 +369,7 @@ footer {
     padding: 3px 6px !important;
     font-weight: bold;
     font-size: 15px;
+    text-align: center;
 }
 
 .list-bids-of-tender, .list-bids-of-auction {

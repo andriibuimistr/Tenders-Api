@@ -13,3 +13,7 @@ class AuctionPages:
         content = render_template('auctions/create_auction.html', list_of_types=auction_procurement_method_types, cdb_versions=cdb_versions, platforms=core.get_list_of_platforms(2),
                                   statuses=auction_status_to_create, steps=dgf_insider_steps)
         return render_template('index.html', user_role_id=self.user_role_id, content=content)
+
+    def page_auction_bids(self):
+        content = render_template('auctions/auction_bids.html')
+        return render_template('index.html', user_role_id=self.user_role_id, content=content)
