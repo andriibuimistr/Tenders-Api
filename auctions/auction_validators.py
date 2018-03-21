@@ -26,8 +26,8 @@ def validator_create_auction(data):
 
     if str(data['accelerator']).isdigit() is False:
         abort(400, 'Accelerator must be integer')
-    if 1 > int(data['accelerator']) or int(data['accelerator']) > 30000:
-        abort(422, 'Accelerator must be between 1 and 30000')
+    if 1 > int(data['accelerator']) or int(data['accelerator']) > 1440:
+        abort(422, 'Accelerator must be between 1 and 1440')
 
     if str(data['company_id']).isdigit() is False:
         abort(400, 'Company ID must be integer')
@@ -70,6 +70,11 @@ def validator_create_auction(data):
 
     for field in data:
         valid_data[field] = data[field]
+
+    if 'skip_auction' in data:
+        valid_data['skip_auction'] = '(mode:no-auction)'
+    else:
+        valid_data['skip_auction'] = ''
 
     if 'steps' not in data:
         valid_data['steps'] = 0

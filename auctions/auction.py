@@ -33,10 +33,7 @@ def create_auction(ac_request, session):
     received_auction_status = data['auctionStatus']
     number_of_bids = int(data['number_of_bids'])
     procurement_method_type = data['procurementMethodType']
-
-    skip_auction = ''
-    if 'skip_auction' in data:
-        skip_auction = '(mode:no-auction)'
+    skip_auction = data['skip_auction']
 
     if cdb_version == 1:
         json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator, data['steps'], skip_auction)
