@@ -46,6 +46,10 @@ def creation_of_tender(tc_request, user_id):
     api_version = tc_request['api_version']
     received_tender_status = tc_request['tenderStatus']
 
+    skip_auction = False
+    if 'skip_auction' in tc_request:
+        skip_auction = True
+
     number_of_lots = 0
     if "number_of_lots" in tc_request:
         number_of_lots = int(tc_request["number_of_lots"])
@@ -61,7 +65,7 @@ def creation_of_tender(tc_request, user_id):
     list_of_id_lots = generate_id_for_lot(number_of_lots)  # get list of id for lots
 
     # json_tender = json.loads(json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status))  # get json for create tender
-    json_tender = generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_id_lots, if_features)
+    json_tender = generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_id_lots, if_features, skip_auction)
 
     tender = TenderRequests(api_version)
     t_publish = tender.publish_tender(json_tender)

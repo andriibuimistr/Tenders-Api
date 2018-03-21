@@ -41,12 +41,6 @@ def unauthorized():
                                  'You are not authorized to access this resource'}), 401)
 
 
-@app.errorhandler(400)
-def custom400(error):
-    return make_response(jsonify(
-        {'error': '400 Bad Request', 'description': error.description}), 400)
-
-
 @app.errorhandler(403)
 def custom403(error):
     return make_response(jsonify(
@@ -83,6 +77,10 @@ def custom500(error):
         {'error': '500 Internal Server Error', 'description': error.description}), 500)
 
 
+@app.errorhandler(503)
+def custom503(error):
+    return make_response(jsonify(
+        {'error': '503 Service Unavailable', 'description': error.description}), 503)
 #############################################################################################
 ##########################################################
 
