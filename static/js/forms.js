@@ -477,9 +477,11 @@ $(function() {
         no_features = ['negotiation.quick', 'negotiation', 'reporting'];
         if (jQuery.inArray($("#procurementMethodType").val(), no_features)!='-1') {
             $("#if_features").prop('disabled', true).prop('checked', false);
+            $("#skip_tender_auction").prop('disabled', true).prop('checked', false);
         }
         else {
             $("#if_features").prop('disabled', false);
+            $("#skip_tender_auction").prop('disabled', false);
         }
       };
       $(disable_select);
