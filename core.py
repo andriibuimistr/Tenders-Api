@@ -265,7 +265,7 @@ def add_one_auction_bid_to_company(company_platform_host, company_id, bid_id):
             company_platform_host, '/tender/add-bid-to-company?tid=', auction_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
         print '{}{}{}{}{}{}{}{}{}{}'.format(
             company_platform_host, '/tender/add-bid-to-company?tid=', auction_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING')
-        add_to_site_response = add_to_site.content
+        add_to_site_response = add_to_site.json()
         if 'tid' in add_to_site_response and add_to_site.status_code == 200:
             BidsAuction.query.filter_by(bid_id=bid_id).update(
                 dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1

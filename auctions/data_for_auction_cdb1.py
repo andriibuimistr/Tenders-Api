@@ -73,7 +73,7 @@ def generate_items_for_auction(number_of_items):
     return items
 
 
-def generate_auction_json(procurement_method_type, number_of_items, accelerator, steps):
+def generate_auction_json(procurement_method_type, number_of_items, accelerator, steps, skip_auction):
     values = auction_value()
     auction_data = {"data": {
                         "procurementMethod": "open",
@@ -92,7 +92,7 @@ def generate_auction_json(procurement_method_type, number_of_items, accelerator,
                         "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
                         "title_en": "[TESTING] Title in English",
                         "dgfID": "N-1234567890",
-                        "submissionMethodDetails": "quick(mode:no-auction)",
+                        "submissionMethodDetails": "quick{}".format(skip_auction),
                         "items": generate_items_for_auction(number_of_items),
                         "value": values[0],
                         "minimalStep": values[2],
