@@ -66,3 +66,42 @@ def json_activate_tender(procurement_method):
             }
         }
     return activate_tender_json
+
+
+# json for approve qualification
+prequalification_approve_bid_json = {
+  "data": {
+    "status": "active",
+    "qualified": True,
+    "eligible": True
+  }
+}
+# json for decline qualification
+prequalification_decline_bid_json = {
+  "data": {
+    "status": "unsuccessful",
+  }
+}
+# json for submit prequalification protocol
+finish_prequalification_json = {
+  "data": {
+    "status": "active.pre-qualification.stand-still"
+  }
+}
+
+
+def activate_award_json_select(procurement_method):
+    if procurement_method == 'reporting':
+        activate_award_json_negotiation = {
+            "data": {
+                "status": "active"
+            }
+        }
+    else:
+        activate_award_json_negotiation = {
+                                  "data": {
+                                    "status": "active",
+                                    "qualified": True
+                                  }
+                                }
+    return activate_award_json_negotiation

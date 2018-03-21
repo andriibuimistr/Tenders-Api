@@ -14,8 +14,6 @@ def validator_create_tender(data):
 
     procurement_method = data["procurementMethodType"]
     number_of_items = data["number_of_items"]
-    # add_documents = tc_request["documents"]
-    # documents_of_bid = tc_request["documents_bid"]
     number_of_bids = data["number_of_bids"]
     accelerator = data["accelerator"]
     company_id = data['company_id']
@@ -36,16 +34,6 @@ def validator_create_tender(data):
         abort(400, 'Number of items must be integer')
     elif 1 > int(number_of_items) or int(number_of_items) > 20:
         abort(422, 'Number of items must be between 1 and 20')
-
-    # if type(add_documents) != int:
-    #     abort(400, 'Documents must be integer')
-    # elif 0 > add_documents or add_documents > 1:
-    #     abort(422, 'Documents must be 0 or 1')
-    #
-    # if type(documents_of_bid) != int:
-    #     abort(400, 'Documents of bid must be integer')
-    # elif 0 > documents_of_bid or documents_of_bid > 1:
-    #     abort(422, 'Documents of bid must be 0 or 1')
 
     if str(number_of_bids).isdigit() is False:
         abort(400, 'Number of bids must be integer')

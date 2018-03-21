@@ -62,8 +62,6 @@ def creation_of_tender(tc_request, user_id):
     response_json = dict()
 
     list_of_id_lots = generate_id_for_lot(number_of_lots)  # get list of id for lots
-
-    # json_tender = json.loads(json_for_tender(number_of_lots, number_of_items, list_of_id_lots, procurement_method, accelerator, received_tender_status))  # get json for create tender
     json_tender = generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_id_lots, if_features, skip_auction)
 
     tender = TenderRequests(api_version)

@@ -8,7 +8,7 @@ import sys
 from requests.exceptions import ConnectionError
 
 from tenders.data_for_tender import activate_contract_json
-from tenders.tender_additional_data import prequalification_approve_bid_json, prequalification_decline_bid_json
+from tenders.tender_data_for_requests import prequalification_approve_bid_json, prequalification_decline_bid_json, activate_award_json_select
 from tenders.tender_requests import TenderRequests
 
 
@@ -22,86 +22,6 @@ def time_counter(waiting_time, message):
         sys.stdout.flush()
         time.sleep(1)
     sys.stdout.write("\rOk!\n")
-
-
-# update tender status in database (SQLA)
-# def update_tender_status(tender_status_in_db, tender_id_long, procurement_method_type):
-#     get_t_info = requests.get('{}/api/{}/tenders/{}'.format(host, api_version, tender_id_long))
-#     actual_tender_status = get_t_info.json()['data']['status']
-#     if actual_tender_status == tender_status_in_db and actual_tender_status not in invalid_tender_status_list:
-#         print '{}{}{}{}{}'.format(tender_id_long, ' status is up to date. Status: ', actual_tender_status, ' - ',
-#                                   procurement_method_type)
-#         return 0
-#     else:
-#         if actual_tender_status in invalid_tender_status_list:
-#             BidsTender.query.filter_by(tender_id=tender_id_long).delete()
-#             db.session.commit()
-#             db.session.close()
-#             delete_unsuccessful_tender = Tenders.query.filter_by(tender_id_long=tender_id_long).first()
-#             db.session.delete(delete_unsuccessful_tender)
-#             db.session.commit()
-#             db.session.close()
-#             print '{}{}{}'.format('Tender ', tender_id_long,
-#                                   ' and its related bids were deleted because of its status')
-#             return 0
-#         else:
-#             Tenders.query.filter_by(tender_id_long=tender_id_long).update(dict(tender_status=actual_tender_status))
-#             db.session.commit()
-#             db.session.close()
-#             print '{}{}{}{}{}{}{}'.format(
-#                 tender_id_long, ' status was updated from ', tender_status_in_db, ' to ', actual_tender_status, ' - ',
-#                 procurement_method_type)
-#             return 1
-#
-#
-# # get updated tenders from CDB (SQLA)
-# def update_tenders_list():
-#     cron = open('cron/synchronization.txt', 'r')
-#     last_cron = cron.read()
-#     year = last_cron[:4]
-#     month = last_cron[5:7]
-#     day = last_cron[8:10]
-#     hours = last_cron[11:13]
-#     minutes = int(last_cron[14:16]) - 1
-#     if minutes == 0:
-#         minutes = 1
-#     seconds = last_cron[17:]
-#     cron.close()
-#
-#     r = requests.get("{}/api/{}/tenders?mode=test&offset={}-{}-{}T{}%3A{}%3A{}.0%2B03%3A00&limit=1000".format(host, api_version, year, month, day, hours, minutes - 1, seconds))
-#     updated_tenders = r.json()['data']
-#     list_of_updated_tenders = []
-#     for x in range(len(updated_tenders)):
-#         list_of_updated_tenders.append(updated_tenders[x]['id'])
-#
-#     try:
-#         tenders_list = Tenders.query.all()
-#         db.session.close()
-#         if len(tenders_list) == 0:
-#             print 'DB is empty'
-#         else:
-#             count = 0
-#             print "Update tenders in local DB"
-#             n_updated_tenders = 0
-#             for tender in range(len(tenders_list)):
-#                 tender_id = tenders_list[tender].tender_id_long
-#                 db_tender_status = tenders_list[tender].tender_status
-#                 procurement_method_type = tenders_list[tender].procurementMethodType
-#                 if tender_id in list_of_updated_tenders:
-#                     count += 1
-#                     num_updated_tenders = update_tender_status(db_tender_status, tender_id, procurement_method_type)
-#                     n_updated_tenders += num_updated_tenders
-#             print n_updated_tenders
-#             print '{}{}'.format(count, ' tenders were found in synchronization list')
-#
-#             cron = open('cron/synchronization.txt', 'w')
-#             cron.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-#             cron.close()
-#             return 0, n_updated_tenders
-#     except Exception, e:
-#         db.session.rollback()
-#         print e
-#         return 1, e
 
 
 # add one tender company (SQLA) ##############################################
@@ -170,18 +90,6 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
     else:
         print '{} {}{}'.format(entity, entity_id_long, ' was added to company before')
         return abort(422, '{} was added to site before'.format(entity))
-
-
-# list of tenders in prequalification status (SQLA)
-def get_tenders_prequalification_status():
-    list_tenders_preq = Tenders.query.filter_by(tender_status='active.pre-qualification').all()
-    list_json = []
-    for x in range(len(list_tenders_preq)):
-        id_tp = list_tenders_preq[x].tender_id_long
-        procedure = list_tenders_preq[x].procurementMethodType
-        status = list_tenders_preq[x].tender_status
-        list_json.append({"id": id_tp, "procurementMethodType": procedure, "status": status})
-    return {'data': {"tenders": list_json}}
 
 
 # ################################### BIDS ############################
@@ -313,23 +221,6 @@ def count_waiting_time(time_to_wait, time_template, api_version):
     wait_to = int(time.mktime(datetime.strptime(time_to_wait, time_template).timetuple()))
     time_now = int(time.mktime(datetime.now().timetuple()))
     return (wait_to - diff) - time_now
-
-
-def activate_award_json_select(procurement_method):
-    if procurement_method == 'reporting':
-        activate_award_json_negotiation = {
-            "data": {
-                "status": "active"
-            }
-        }
-    else:
-        activate_award_json_negotiation = {
-                                  "data": {
-                                    "status": "active",
-                                    "qualified": True
-                                  }
-                                }
-    return activate_award_json_negotiation
 
 
 # get list of qualifications for tender (SQLA)

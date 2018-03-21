@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-
 import pytz
 
 above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
@@ -35,34 +34,7 @@ documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdU
 # List of fields for tender create validator
 create_tender_required_fields = ['procurementMethodType', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
 
-# Bid.py !!!Temporal
-# tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'
-# valueAddedTaxIncluded = str(random.choice([True, False])).lower()
-
 list_of_api_versions = ['2.4', 'dev']
 
 # Get local timezone
 kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
-
-# json for approve qualification
-prequalification_approve_bid_json = {
-  "data": {
-    "status": "active",
-    "qualified": True,
-    "eligible": True
-  }
-}
-
-# json for decline qualification
-prequalification_decline_bid_json = {
-  "data": {
-    "status": "unsuccessful",
-  }
-}
-
-# json for submit prequalification protocol
-finish_prequalification_json = {
-  "data": {
-    "status": "active.pre-qualification.stand-still"
-  }
-}
