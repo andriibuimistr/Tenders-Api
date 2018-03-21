@@ -73,7 +73,7 @@ def create_bids(cdb, auction_id_long, procurement_method_type, number_of_bids):
         count = 0
         for bid in range(number_of_bids):
             count += 1
-            identifier = "00137256"
+            identifier = str(randint(10000000, 99999999))
             bid = AuctionRequests(cdb)
 
             print 'Publish bid {}'.format(count)

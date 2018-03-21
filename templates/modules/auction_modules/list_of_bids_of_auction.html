@@ -1,5 +1,5 @@
-{% if list_of_tender_bids|length != 0 %}
-    {% for bid in list_of_tender_bids %}
+{% if list_of_auction_bids|length != 0 %}
+    {% for bid in list_of_auction_bids %}
     <div class="bid_info col-lg-15 col-md-23 col-sm-48 col-xs-48">
         <div class="bid-id-short">{{ bid.id }}</div>
         <div class="bid-company-identifier"><span>Company identifier: </span>{{ bid.user_identifier }}</div>
@@ -26,7 +26,7 @@
                     <div class="input-group input-group-sm">
                         <input type="text" name="company-id" class="form-control bid-company-input" placeholder="Company ID" maxlength="4">
                         <div class="input-group-btn">
-                            <button class="btn btn-primary tender-bid-company-button" form="{{bid.id}}" type="button">Add</button>
+                            <button class="btn btn-primary auction-bid-company-button" form="{{bid.id}}" type="button">Add</button>
                         </div>
                     </div>
                 </div>
@@ -35,6 +35,7 @@
 
             {%endif%}
         </div>
+    </div>
     {% endfor %}
 {%else%}
     <div>Tender has no bids</div>

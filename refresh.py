@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from database import db, Companies, Tenders, BidsTender, Platforms, PlatformRoles, Roles, Users, Auctions
+from database import db, Companies, Tenders, BidsTender, Platforms, PlatformRoles, Roles, Users, Auctions, BidsAuction
 import requests
 from datetime import datetime
 from flask import abort
@@ -248,6 +248,40 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id):
         print '{}{}{}'.format('Bid ', bid_id, ' was added to company before')
         return abort(422, 'Bid was added to company before')
 
+
+# add one bid to company (SQLA)
+def add_one_auction_bid_to_company(company_platform_host, company_id, bid_id):
+    get_bid_data = BidsAuction.query.filter_by(bid_id=bid_id).first()
+    bid_id = get_bid_data.bid_id
+    bid_token = get_bid_data.bid_token
+    added_to_site = get_bid_data.added_to_site
+    auction_id = get_bid_data.auction_id
+    db.session.commit()
+    if added_to_site == 0 or added_to_site is None:
+        add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
+            company_platform_host, '/tender/add-bid-to-company?tid=', auction_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+        print '{}{}{}{}{}{}{}{}{}{}'.format(
+            company_platform_host, '/tender/add-bid-to-company?tid=', auction_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING')
+        add_to_site_response = add_to_site.content
+        if 'tid' in add_to_site_response and add_to_site.status_code == 200:
+            BidsAuction.query.filter_by(bid_id=bid_id).update(
+                dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
+            db.session.commit()
+            print '\nBid was added to company - ' + bid_id
+            bid_id_site = '{}{}'.format('Auction ID is: ', add_to_site_response['tid'])
+            print bid_id_site
+            return {'status': 'success'}, 201
+        elif 'Bid exist' in add_to_site_response['error']:
+            BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
+            db.session.commit()
+            print 'Bid has company'
+            return abort(422, 'Bid has company')
+        else:
+            print '{}{}{}'.format(bid_id, ' - ', add_to_site_response)
+            return {'status': 'error', 'description': add_to_site_response}
+    else:
+        print '{}{}{}'.format('Bid ', bid_id, ' was added to company before')
+        return abort(422, 'Bid was added to company before')
 
 # get list of platform (SQLA)
 def get_list_of_platforms(platform_role):

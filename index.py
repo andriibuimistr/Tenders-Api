@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from tenders.tender_additional_data import list_of_procurement_types, tender_status_list, list_of_api_versions
-from database import db, Tenders, BidsTender, Users
+from database import db, Tenders, BidsTender, Users, Auctions, BidsAuction
 from auctions import auction
 # import document
 from datetime import timedelta
@@ -248,9 +248,44 @@ def get_bids_of_one_tender(tender_id_short):
         return render_template('modules/tender_modules/list_of_bids_of_tender.html', user_role_id=get_user_role(), list_of_tender_bids=list_of_tender_bids, platforms=refresh.get_list_of_platforms(1))
 
 
-# add one bid to company
+# show all bids of auction
+@app.route('/api/auctions/<auction_id_short>/bids', methods=['GET'])
+def get_bids_of_one_auction(auction_id_short):
+    if not session.get('logged_in'):
+        return jquery_forbidden_login()
+    else:
+        list_of_auctions = Auctions.query.all()  # 'SELECT tender_id_long FROM tenders'???
+        list_tid = []
+        for tid in range(len(list_of_auctions)):
+            list_tid.append(list_of_auctions[tid].auction_id_short)
+        if auction_id_short not in list_tid:
+            abort(404, 'Tender id was not found in database')  # ####################### add render template
+
+        auction_id_long = Auctions.query.filter_by(auction_id_short=auction_id_short).first().auction_id_long
+        get_bids_of_auction = BidsAuction.query.filter_by(auction_id=auction_id_long).all()
+        list_of_auction_bids = []
+        for every_bid in range(len(get_bids_of_auction)):
+            bid_id = get_bids_of_auction[every_bid].bid_id
+            bid_token = get_bids_of_auction[every_bid].bid_token
+            bid_platform = get_bids_of_auction[every_bid].bid_platform
+            user_identifier = get_bids_of_auction[every_bid].user_identifier
+            company_id = get_bids_of_auction[every_bid].company_id
+            added_to_site = get_bids_of_auction[every_bid].added_to_site
+
+            list_of_auction_bids.append({"id": bid_id, "bid_token": bid_token,
+                                        "user_identifier": user_identifier, "has_company": added_to_site, "bid_platform": bid_platform})
+            if added_to_site == 1:
+                list_of_auction_bids[every_bid]['company_id'] = company_id
+                list_of_auction_bids[every_bid]['has_company'] = True
+            else:
+                list_of_auction_bids[every_bid]['has_company'] = False
+        db.session.remove()
+        return render_template('modules/auction_modules/list_of_bids_of_auction.html', user_role_id=get_user_role(), list_of_auction_bids=list_of_auction_bids, platforms=refresh.get_list_of_platforms(2))
+
+
+# add one tender bid to company
 @app.route('/api/tenders/bids/<bid_id>/company', methods=['PATCH'])
-def add_bid_to_company(bid_id):
+def add_tender_bid_to_company(bid_id):
     if not session.get('logged_in'):
         return abort(401)
     else:
@@ -285,6 +320,43 @@ def add_bid_to_company(bid_id):
         else:
             return jsonify(add_bid_company)
 
+
+# add one auction bid to company
+@app.route('/api/auctions/bids/<bid_id>/company', methods=['PATCH'])
+def add_auction_bid_to_company(bid_id):
+    if not session.get('logged_in'):
+        return abort(401)
+    else:
+        list_of_bids = BidsAuction.query.all()
+        list_bid = []
+        for tid in range(len(list_of_bids)):
+            list_bid.append(list_of_bids[tid].bid_id)
+        if bid_id not in list_bid:
+            abort(404, 'Bid id was not found in database')
+
+        if not request.form:
+            abort(400)
+        bid_to_company_data = request.form
+
+        if 'company-id' not in bid_to_company_data:
+            abort(400, 'Company UID was not found in request')
+
+        if str(request.form['company-id']).isdigit() is False:
+            abort(400, 'Company UID must be integer')
+
+        if int(request.form['company-id']) == 0:
+            abort(422, 'Company id can\'t be 0')
+
+        company_id = request.form['company-id']
+
+        company_platform_host = request.form['platform_host']
+        add_bid_company = refresh.add_one_auction_bid_to_company(company_platform_host, company_id, bid_id)
+        db.session.commit()
+        db.session.remove()
+        if add_bid_company[1] == 201:
+            return render_template('includes/bid_company_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
+        else:
+            return jsonify(add_bid_company)
 # ################################################################ BIDS END ################################################################################
 
 
@@ -393,6 +465,17 @@ def page_create_auction():
         return login_form()
     else:
         return AuctionPages(1).page_create_auction()
+
+
+# template for work with tender bids
+@app.route("/auctions/bids")
+def page_auction_bids():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        content = render_template('auctions/auction_bids.html')
+        # user_role_id = Users.query.filter_by(user_login=session['username']).first().user_role_id
+        return render_template('index.html', user_role_id=get_user_role(), content=content)
 
 
 if __name__ == '__main__':

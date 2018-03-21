@@ -312,7 +312,7 @@ footer {
 .tender-status {
 	margin-bottom: 5px;
 }
-.tender-company-input, .tender-company-button, .bid-company-input, .bid-company-button {
+.tender-company-input, .tender-company-button, .bid-company-input, .tender-bid-company-button, .auction-bid-company-button {
 	height: 24px !important;
 	padding: 2px 10px !important;
 }
@@ -357,21 +357,21 @@ footer {
 .panel-created-tender-json {
 	padding: 0 !important;
 }
-.panel-created-tender, .block-bids-of-tender {
+.panel-created-tender, .block-bids-of-tender, .block-bids-of-auction {
 	margin: 6px 0 !important;
 }
 
-.block-bids-of-tender {
+.block-bids-of-tender, .block-bids-of-auction {
     border: 1px solid #CCC;
 }
 
-.block-bids-of-tender-title {
+.block-bids-of-tender-title, .block-bids-of-auction-title {
     padding: 3px 6px !important;
     font-weight: bold;
     font-size: 15px;
 }
 
-.list-bids-of-tender {
+.list-bids-of-tender, .list-bids-of-auction {
     padding: 3px !important;
 }
 .clear-alerts-button {
@@ -385,7 +385,7 @@ footer {
 	padding: 6px;
 	border: 1px solid #CCC;
 }
-.create-tender-form-inputs, .get-tender-bids-inputs {
+.create-tender-form-inputs, .get-tender-bids-inputs, .get-auction-bids-inputs {
 	display: inline-block;
 	height: auto;
 }
@@ -396,15 +396,15 @@ footer {
 	margin-left: 3px;
 }
 
-.get-tender-bids-inputs {
+.get-tender-bids-inputs, .get-auction-bids-inputs {
     width:100%;
 }
 
-.get-tender-bids {
+.get-tender-bids, .get-auction-bids {
     padding: 3px;
 }
 
-.get-bids-tender-id, .get-bids-submit-button {
+.get-bids-tender-id, .get-bids-auction-id, .get-bids-submit-button {
     margin-top: 3px;
 }
 

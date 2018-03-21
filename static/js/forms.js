@@ -32,8 +32,8 @@ $(function() {
 });
 
 
-//Add bid to company
-$(document).on("click",".bid-company-button", function() {
+//Add tender bid to company
+$(document).on("click",".tender-bid-company-button", function() {
         $(this).prop('disabled', true);
         var bid  = $(this).closest("form").attr('id');
 		var form = $(this).closest("form");
@@ -45,16 +45,36 @@ $(document).on("click",".bid-company-button", function() {
             success: function(data) {
                 form.remove();
                 parent_div.append(data);
-                $('.bid-company-button').removeAttr("disabled");
+                $('.tender-bid-company-button').removeAttr("disabled");
             },
             error: function (jqXHR, textStatus, errorThrown) {
             	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
-                $('.bid-company-button').removeAttr("disabled");
+                $('.tender-bid-company-button').removeAttr("disabled");
             }
         });
     });
 
-
+//Add auction bid to company
+$(document).on("click",".auction-bid-company-button", function() {
+        $(this).prop('disabled', true);
+        var bid  = $(this).closest("form").attr('id');
+		var form = $(this).closest("form");
+		var parent_div = $(this).closest(".bid-company");
+        $.ajax({
+            url: '/api/auctions/bids/' + bid + '/company',
+            data: $(this).closest('form').serialize(),
+            type: 'PATCH',
+            success: function(data) {
+                form.remove();
+                parent_div.append(data);
+                $('.auction-bid-company-button').removeAttr("disabled");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                $('.auction-bid-company-button').removeAttr("disabled");
+            }
+        });
+    });
 
 //Create tender
 $(function() {
@@ -191,23 +211,44 @@ $(function() {
                 $('#list-of-bids').empty();
                 $('#list-of-bids').append(data);
                 $('#get-tender-bids-button').removeAttr("disabled");
-                //jsonPrettyPrint.toHtml(data)
-
-                //$('#createTender').removeAttr("disabled");
             },
             error: function (jqXHR) {
-                //$("#created_tender_json").html(JSON.parse(jqXHR.responseText));
-                //alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
 				var error_description = JSON.parse(jqXHR.responseText).description
 				var error_type = JSON.parse(jqXHR.responseText).error
                 $('#list-of-bids').empty();
-                $('#list-of-bids').append(jqXHR.responseText); //jsonPrettyPrint.toHtml(JSON.parse(jqXHR.responseText)));
+                $('#list-of-bids').append(jqXHR.responseText);
                 $('#get-tender-bids-button').removeAttr("disabled");
             }
         });
     });
 });
 
+
+//Get list of bids for auction
+$(function() {
+    $('#get-auction-bids-button').click(function() {
+        $(this).prop('disabled', true);
+        var form = $("#get-auction-bids-form");
+        var bid_id = $("#get-auction-bids-form input[name=auction_id]").val();
+        $.ajax({
+            url: '/api/auctions/' + bid_id + '/bids',
+            crossDomain: true,
+            type: 'GET',
+            success: function(data, textStatus, xhr) {
+                $('#list-of-bids').empty();
+                $('#list-of-bids').append(data);
+                $('#get-auction-bids-button').removeAttr("disabled");
+            },
+            error: function (jqXHR) {
+				var error_description = JSON.parse(jqXHR.responseText).description
+				var error_type = JSON.parse(jqXHR.responseText).error
+                $('#list-of-bids').empty();
+                $('#list-of-bids').append(jqXHR.responseText);
+                $('#get-auction-bids-button').removeAttr("disabled");
+            }
+        });
+    });
+});
 
 //ADMIN
 
