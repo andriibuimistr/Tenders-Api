@@ -116,11 +116,11 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
 
     if added_to_site == 0 or added_to_site is None:
         response = None
-        add_count = 1
+        add_count = 0
         for x in range(30):
+            add_count += 1
             print "Adding {} to company. Attempt {}".format(entity, add_count)
             try:
-                add_count += 1
                 add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(company_platform_host, '/tender/add-tender-to-company?tid=', entity_id_long, '&token=', entity_token, '&company=', company_id,
                                                                      '&acc_token=SUPPPER_SEEECRET_STRIIING'))
                 add_to_site_response = add_to_site.json()
@@ -186,70 +186,57 @@ def get_tenders_prequalification_status():
 
 # ################################### BIDS ############################
 # add one bid to company (SQLA)
-def add_one_bid_to_company(company_platform_host, company_id, bid_id):
-    get_bid_data = BidsTender.query.filter_by(bid_id=bid_id).first()
+def add_one_bid_to_company(company_platform_host, company_id, bid_id, entity):
+    if entity == 'tender':
+        get_bid_data = BidsTender.query.filter_by(bid_id=bid_id).first()
+        tender_id = get_bid_data.tender_id
+    else:
+        get_bid_data = BidsAuction.query.filter_by(bid_id=bid_id).first()
+        tender_id = get_bid_data.auction_id
     bid_id = get_bid_data.bid_id
     bid_token = get_bid_data.bid_token
     added_to_site = get_bid_data.added_to_site
-    tender_id = get_bid_data.tender_id
     db.session.commit()
+
     if added_to_site == 0 or added_to_site is None:
-        add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
-            company_platform_host, '/tender/add-bid-to-company?tid=', tender_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
-        add_to_site_response = add_to_site.json()
-        print add_to_site_response
-        if 'tid' in add_to_site_response and add_to_site.status_code == 200:
-            BidsTender.query.filter_by(bid_id=bid_id).update(
-                dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
-            db.session.commit()
-            print '\nBid was added to company - ' + bid_id
-            bid_id_site = '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
-            print bid_id_site
-            return {'status': 'success'}, 201
-        elif 'Bid exist' in add_to_site_response['error']:
-            BidsTender.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
-            db.session.commit()
-            print 'Bid has company'
-            return abort(422, 'Bid has company')
-        else:
-            print '{}{}{}'.format(bid_id, ' - ', add_to_site_response)
-            return {'status': 'error', 'description': add_to_site_response}
+        add_count = 0
+        for x in range(30):
+            add_count += 1
+            print "Adding bid to company. Attempt {}".format(add_count)
+            try:
+                add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
+                    company_platform_host, '/tender/add-bid-to-company?tid=', tender_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
+                add_to_site_response = add_to_site.json()
+                print add_to_site_response
+                if 'tid' in add_to_site_response and add_to_site.status_code == 200:
+                    if entity == 'tender':
+                        BidsTender.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
+                    else:
+                        BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
+                    db.session.commit()
+                    print '\nBid was added to company - ' + bid_id
+                    print '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
+                    return {'status': 'success'}, 201
+                elif 'Bid exist' in add_to_site_response['error']:
+                    if entity == 'tender':
+                        BidsTender.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
+                    else:
+                        BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
+                    db.session.commit()
+                    print 'Bid has company'
+                    abort(422, 'Bid has company')
+                else:
+                    print '{}{}{}'.format(bid_id, ' - ', add_to_site_response)
+                    return {'status': 'error', 'description': add_to_site_response}
+            except Exception as e:
+                if add_count < 30:
+                    time.sleep(1)
+                    continue
+                else:
+                    abort(500, 'Publish {} error: ' + str(e))
     else:
         print '{}{}{}'.format('Bid ', bid_id, ' was added to company before')
-        return abort(422, 'Bid was added to company before')
-
-
-# add one bid to company (SQLA)
-def add_one_auction_bid_to_company(company_platform_host, company_id, bid_id):
-    get_bid_data = BidsAuction.query.filter_by(bid_id=bid_id).first()
-    bid_id = get_bid_data.bid_id
-    bid_token = get_bid_data.bid_token
-    added_to_site = get_bid_data.added_to_site
-    auction_id = get_bid_data.auction_id
-    db.session.commit()
-    if added_to_site == 0 or added_to_site is None:
-        add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
-            company_platform_host, '/tender/add-bid-to-company?tid=', auction_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
-        add_to_site_response = add_to_site.json()
-        if 'tid' in add_to_site_response and add_to_site.status_code == 200:
-            BidsAuction.query.filter_by(bid_id=bid_id).update(
-                dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
-            db.session.commit()
-            print '\nBid was added to company - ' + bid_id
-            bid_id_site = '{}{}'.format('Auction ID is: ', add_to_site_response['tid'])
-            print bid_id_site
-            return {'status': 'success'}, 201
-        elif 'Bid exist' in add_to_site_response['error']:
-            BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
-            db.session.commit()
-            print 'Bid has company'
-            return abort(422, 'Bid has company')
-        else:
-            print '{}{}{}'.format(bid_id, ' - ', add_to_site_response)
-            return {'status': 'error', 'description': add_to_site_response}
-    else:
-        print '{}{}{}'.format('Bid ', bid_id, ' was added to company before')
-        return abort(422, 'Bid was added to company before')
+        abort(422, 'Bid was added to company before')
 
 
 # get list of platform (SQLA)

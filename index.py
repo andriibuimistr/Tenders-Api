@@ -304,7 +304,7 @@ def add_tender_bid_to_company(bid_id):
         company_id = request.form['company-id']
 
         company_platform_host = request.form['platform_host']
-        add_bid_company = core.add_one_bid_to_company(company_platform_host, company_id, bid_id)
+        add_bid_company = core.add_one_bid_to_company(company_platform_host, company_id, bid_id, 'tender')
         db.session.commit()
         db.session.remove()
         if add_bid_company[1] == 201:
@@ -342,7 +342,7 @@ def add_auction_bid_to_company(bid_id):
         company_id = request.form['company-id']
 
         company_platform_host = request.form['platform_host']
-        add_bid_company = core.add_one_auction_bid_to_company(company_platform_host, company_id, bid_id)
+        add_bid_company = core.add_one_bid_to_company(company_platform_host, company_id, bid_id, 'auction')
         db.session.commit()
         db.session.remove()
         if add_bid_company[1] == 201:

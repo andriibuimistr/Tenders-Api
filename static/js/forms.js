@@ -45,11 +45,11 @@ $(document).on("click",".tender-bid-company-button", function() {
             success: function(data) {
                 form.remove();
                 parent_div.append(data);
-                $('.tender-bid-company-button').removeAttr("disabled");
+                $(this).prop('disabled', false);
             },
             error: function (jqXHR, textStatus, errorThrown) {
             	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
-                $('.tender-bid-company-button').removeAttr("disabled");
+                $(this).prop('disabled', false);
             }
         });
     });
@@ -67,11 +67,11 @@ $(document).on("click",".auction-bid-company-button", function() {
             success: function(data) {
                 form.remove();
                 parent_div.append(data);
-                $('.auction-bid-company-button').removeAttr("disabled");
+                $(this).prop('disabled', false);
             },
             error: function (jqXHR, textStatus, errorThrown) {
             	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
-                $('.auction-bid-company-button').removeAttr("disabled");
+                $(this).prop('disabled', false);
             }
         });
     });
