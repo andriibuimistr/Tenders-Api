@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import pytz
-import qualification
 from tenders.tender_bid import suppliers_for_limited
 import core
 from core import check_if_contract_exists, time_counter, count_waiting_time, run_activate_award, run_activate_contract

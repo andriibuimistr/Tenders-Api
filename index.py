@@ -2,16 +2,10 @@
 from tenders.tender_additional_data import list_of_procurement_types, tender_status_list, list_of_api_versions
 from database import db, Tenders, BidsTender, Users, Auctions, BidsAuction
 from auctions import auction
-# import document
 from datetime import timedelta
-# import qualification
-# import time
 import core
-# from refresh import get_tenders_list
 from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
-# import re
-# import validators
 import os
 import flask
 import flask_login
