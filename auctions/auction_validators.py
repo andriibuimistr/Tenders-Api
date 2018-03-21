@@ -2,6 +2,7 @@
 from auction_additional_data import create_auction_required_fields, auction_status_to_create, cdb_versions, auction_procurement_method_types, dgf_insider_steps
 from flask import abort
 import core
+from database import BidsAuction, Auctions, db
 
 
 def validator_create_auction(data):
@@ -84,3 +85,34 @@ def validator_create_auction(data):
         valid_data['rent'] = True
 
     return valid_data
+
+
+def validator_add_auction_bid_to_company(bid_id, data):
+    list_of_bids = BidsAuction.query.all()
+    list_bid = []
+    for tid in range(len(list_of_bids)):
+        list_bid.append(list_of_bids[tid].bid_id)
+    if bid_id not in list_bid:
+        abort(404, 'Bid id was not found in database')
+
+    if 'company-id' not in data:
+        abort(400, 'Company UID was not found in request')
+
+    if str(data['company-id']).isdigit() is False:
+        abort(400, 'Company UID must be integer')
+
+    if int(data['company-id']) == 0:
+        abort(422, 'Company id can\'t be 0')
+
+    return data
+
+
+def validator_if_auction_id_short_in_db(auction_id_short):
+    list_of_auctions = Auctions.query.all()
+    list_tid = []
+    for tid in range(len(list_of_auctions)):
+        db.session.remove()
+        list_tid.append(list_of_auctions[tid].auction_id_short)
+    if auction_id_short not in list_tid:
+        abort(404, 'Tender id was not found in database')
+    return True
