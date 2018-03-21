@@ -36,7 +36,7 @@ documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA',
 documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 
 # List of fields for tender create validator
-create_tender_required_fields = ['procurementMethodType', 'number_of_lots', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
+create_tender_required_fields = ['procurementMethodType', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
 
 # Bid.py !!!Temporal
 # tender_currency = random.choice(['UAH', 'USD', 'EUR', 'RUB'])  # 'GBP'

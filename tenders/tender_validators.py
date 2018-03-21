@@ -13,7 +13,6 @@ def validator_create_tender(data):
             abort(400, "Field '{}' is required. List of required fields: {}".format(create_tender_required_fields[field], create_tender_required_fields))
 
     procurement_method = data["procurementMethodType"]
-    number_of_lots = data["number_of_lots"]
     number_of_items = data["number_of_items"]
     # add_documents = tc_request["documents"]
     # documents_of_bid = tc_request["documents_bid"]
@@ -24,10 +23,14 @@ def validator_create_tender(data):
     api_version = data['api_version']
     platform_host = data['platform_host']
 
-    if str(number_of_lots).isdigit() is False:
-        abort(400, 'Number of lots must be integer')
-    elif 0 > int(number_of_lots) or int(number_of_lots) > 20:
-        abort(422, 'Number of lots must be between 0 and 20')
+    if data["procurementMethodType"] != 'reporting':
+        if "number_of_lots" not in data:
+            abort(400, "Number of lots is required")
+        number_of_lots = data["number_of_lots"]
+        if str(number_of_lots).isdigit() is False:
+            abort(400, 'Number of lots must be integer')
+        elif 0 > int(number_of_lots) or int(number_of_lots) > 20:
+            abort(422, 'Number of lots must be between 0 and 20')
 
     if str(number_of_items).isdigit() is False:
         abort(400, 'Number of items must be integer')

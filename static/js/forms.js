@@ -447,9 +447,11 @@ $(function() {
 $(function() {
     var disable_select = function () {
         var limited = ['negotiation.quick', 'negotiation', 'reporting'];
-        var above = []
+		var above = [];
+		var prequalification = ['esco', 'aboveThresholdEU', 'competitiveDialogueEU', 'competitiveDialogueUA'];
         var status_limited = "active,complete,active.award,active.contract";
-        var status_non_limited = "active.tendering,active.tendering.stage2,active.pre-qualification,active.pre-qualification.stage2,active.pre-qualification.stage2,active.qualification,active.enquiries"
+        var competitive = ['competitiveDialogueEU', 'competitiveDialogueUA'];
+        var status_non_limited = "active.tendering,active.tendering.stage2,active.pre-qualification,active.pre-qualification.stage2,active.pre-qualification.stage2,active.qualification,active.enquiries";
         if (jQuery.inArray($("#procurementMethodType").val(), limited)=='-1') { //if is not limited block limited statuses
                     $.each(status_limited.split(","), function(i,e){   //disable limited statuses for above procedures
                         $("#tenderStatus option[value='" + e + "']").prop('disabled', true);
@@ -467,6 +469,33 @@ $(function() {
 						}
                     };
                     $(disable_enquiry);
+                    var disable_2nd_preq = function (){
+				        if ($("#procurementMethodType").val() !== 'competitiveDialogueEU') {
+							$('#tenderStatus option[value="active.pre-qualification.stage2"]').prop('disabled', true);
+						}
+						else {
+							$('#tenderStatus option[value="active.pre-qualification.stage2"]').prop('disabled', false);
+						}
+                    };
+                    $(disable_2nd_preq);
+                    var disable_competitive = function (){
+				        if (jQuery.inArray($("#procurementMethodType").val(), competitive)=='-1') {
+							$('#tenderStatus option[value="active.tendering.stage2"]').prop('disabled', true);
+						}
+						else {
+							$('#tenderStatus option[value="active.tendering.stage2"]').prop('disabled', false);
+						}
+                    };
+                    $(disable_competitive);
+                    var disable_preq = function (){
+				        if (jQuery.inArray($("#procurementMethodType").val(), prequalification)=='-1') {
+							$('#tenderStatus option[value="active.pre-qualification"]').prop('disabled', true);
+						}
+						else {
+							$('#tenderStatus option[value="active.pre-qualification"]').prop('disabled', false);
+						}
+                    };
+                    $(disable_preq);
         }
         else if(jQuery.inArray($("#procurementMethodType").val(), above)=='-1'){ //if is not above procedure
                        $.each(status_non_limited.split(","), function(i,e){  //disable above statuses for not above procedures
@@ -476,6 +505,16 @@ $(function() {
                         $("#tenderStatus option[value='" + e + "']").prop('disabled', false);
                     });
                     $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
+					var disable_lots_reporting = function (){
+				        if ($("#procurementMethodType").val() === 'reporting') {
+							$('#number_of_lots').prop('disabled', true).val('');
+						}
+						else {
+							$('#number_of_lots').prop('disabled', false);
+						}
+                    };
+                    $(disable_lots_reporting);
+					$("#procurementMethodType").change(disable_lots_reporting);
         }
         else {
                     $.each(status_limited + status_non_limited.split(","), function(i,e){
