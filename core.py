@@ -56,7 +56,7 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                     db.session.commit()
                     db.session.remove()
                     print '\nTender was added to site - ' + entity_id_long
-                    response = {'status': 'success'}, 201
+                    response = {'status': 'success'}, 201, add_to_site_response['tid']
                     break
                 elif 'tender has company' in add_to_site_response['error']:
                     if entity == 'tender':
