@@ -284,7 +284,7 @@ def get_bids_of_one_tender(tender_id_short):
         return jquery_forbidden_login()
     else:
         validator_if_tender_id_short_in_db(tender_id_short)
-        list_of_tender_bids = core.get_bids_of_tender(tender_id_short)
+        list_of_tender_bids = core.get_bids_of_entity(tender_id_short, 'tender')
 
         return render_template('modules/tender_modules/list_of_bids_of_tender.html', user_role_id=session['user_role'],
                                list_of_tender_bids=list_of_tender_bids, platforms=core.get_list_of_platforms(1))
@@ -349,7 +349,7 @@ def get_bids_of_one_auction(auction_id_short):
         return jquery_forbidden_login()
     else:
         validator_if_auction_id_short_in_db(auction_id_short)
-        bids = core.get_bids_of_auction(auction_id_short)
+        bids = core.get_bids_of_entity(auction_id_short, 'auction')
         return render_template('modules/auction_modules/list_of_bids_of_auction.html', user_role_id=session['user_role'],
                                list_of_auction_bids=bids, platforms=core.get_list_of_platforms(2))
 

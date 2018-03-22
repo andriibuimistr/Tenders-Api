@@ -148,40 +148,26 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id, entity):
         abort(422, 'Bid was added to company before')
 
 
-def get_bids_of_auction(auction_id_short):
-    auction_id_long = Auctions.query.filter_by(auction_id_short=auction_id_short).first().auction_id_long
-    bids = BidsAuction.query.filter_by(auction_id=auction_id_long).all()
-    list_of_auction_bids = []
+def get_bids_of_entity(id_short, entity):
+    if entity == 'tender':
+        id_long = Tenders.query.filter_by(tender_id_short=id_short).first().tender_id_long
+        bids = BidsTender.query.filter_by(tender_id=id_long).all()
+    else:
+        id_long = Auctions.query.filter_by(auction_id_short=id_short).first().auction_id_long
+        bids = BidsAuction.query.filter_by(auction_id=id_long).all()
+    list_of_bids = []
     for every_bid in range(len(bids)):
         added_to_site = bids[every_bid].added_to_site
-        list_of_auction_bids.append({"id": bids[every_bid].bid_id, "bid_token": bids[every_bid].bid_token, "user_identifier": bids[every_bid].user_identifier,
-                                     "has_company": added_to_site, "bid_platform": bids[every_bid].bid_platform})
+        list_of_bids.append({"id": bids[every_bid].bid_id, "bid_token": bids[every_bid].bid_token, "user_identifier": bids[every_bid].user_identifier, "has_company": added_to_site,
+                             "bid_platform": bids[every_bid].bid_platform})
+
         if added_to_site == 1:
-            list_of_auction_bids[every_bid]['company_id'] = bids[every_bid].company_id
-            list_of_auction_bids[every_bid]['has_company'] = True
+            list_of_bids[every_bid]['company_id'] = bids[every_bid].company_id
+            list_of_bids[every_bid]['has_company'] = True
         else:
-            list_of_auction_bids[every_bid]['has_company'] = False
+            list_of_bids[every_bid]['has_company'] = False
     db.session.remove()
-    return list_of_auction_bids
-
-
-def get_bids_of_tender(tender_id_short):
-    tender_id_long = Tenders.query.filter_by(tender_id_short=tender_id_short).first().tender_id_long
-    bids = BidsTender.query.filter_by(tender_id=tender_id_long).all()
-    list_of_tender_bids = []
-    for every_bid in range(len(bids)):
-        added_to_site = bids[every_bid].added_to_site
-
-        list_of_tender_bids.append({"id": bids[every_bid].bid_id, "bid_token": bids[every_bid].bid_token,
-                                    "user_identifier": bids[every_bid].user_identifier, "has_company": added_to_site, "bid_platform": bids[every_bid].bid_platform})
-        if added_to_site == 1:
-            list_of_tender_bids[every_bid]['company_id'] = bids[every_bid].company_id
-            list_of_tender_bids[every_bid]['has_company'] = True
-        else:
-            list_of_tender_bids[every_bid]['has_company'] = False
-    db.session.remove()
-    return list_of_tender_bids
-
+    return list_of_bids
 
 
 # get list of platform (SQLA)
