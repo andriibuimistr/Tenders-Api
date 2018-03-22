@@ -66,13 +66,14 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                     db.session.commit()
                     db.session.remove()
                     print '{} has company'.format(entity)
-                    response = {'status': 'error'}, 422
-                    break
+                    abort(422, '{} has company'.format(entity))
                 else:
                     print '{}{}{}'.format(entity_id_long, ' - ', add_to_site_response)
-                    response = {'status': 'error'}, 422
-                    time.sleep(20)
-                    continue
+                    if add_count < 30:
+                        time.sleep(1)
+                        continue
+                    else:
+                        abort(422, add_to_site_response)
             except ConnectionError as e:
                 print 'Connection Error'
                 if add_count < 30:
