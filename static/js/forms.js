@@ -504,15 +504,9 @@ $(function() {
                     $.each(status_non_limited.split(","), function(i,e){  //enable above statuses for above procedures
                         $("#tenderStatus option[value='" + e + "']").prop('disabled', false);
                     });
-                    if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
-                        $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
-                    }
                     var disable_enquiry = function (){
 				        if ($("#procurementMethodType").val() !== 'belowThreshold') {
 							$('#tenderStatus option[value="active.enquiries"]').prop('disabled', true);
-							if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
-                                $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
-                            }
 						}
 						else {
 							$('#tenderStatus option[value="active.enquiries"]').prop('disabled', false);
@@ -522,9 +516,6 @@ $(function() {
                     var disable_2nd_preq = function (){
 				        if ($("#procurementMethodType").val() !== 'competitiveDialogueEU') {
 							$('#tenderStatus option[value="active.pre-qualification.stage2"]').prop('disabled', true);
-							if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
-                                $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
-                            }
 						}
 						else {
 							$('#tenderStatus option[value="active.pre-qualification.stage2"]').prop('disabled', false);
@@ -534,9 +525,6 @@ $(function() {
                     var disable_competitive = function (){
 				        if (jQuery.inArray($("#procurementMethodType").val(), competitive)=='-1') {
 							$('#tenderStatus option[value="active.tendering.stage2"]').prop('disabled', true);
-							if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
-                                $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
-                            }
 						}
 						else {
 							$('#tenderStatus option[value="active.tendering.stage2"]').prop('disabled', false);
@@ -546,9 +534,6 @@ $(function() {
                     var disable_preq = function (){
 				        if (jQuery.inArray($("#procurementMethodType").val(), prequalification)=='-1') {
 							$('#tenderStatus option[value="active.pre-qualification"]').prop('disabled', true);
-							if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
-                                $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
-                            }
 						}
 						else {
 							$('#tenderStatus option[value="active.pre-qualification"]').prop('disabled', false);
@@ -563,9 +548,6 @@ $(function() {
                     $.each(status_limited.split(","), function(i,e){  //enable limited statuses for limited procedures
                         $("#tenderStatus option[value='" + e + "']").prop('disabled', false);
                     });
-                    if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
-                        $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
-                    }
 					var disable_lots_reporting = function (){
 				        if ($("#procurementMethodType").val() === 'reporting') {
 							$('#number_of_lots').prop('disabled', true).val('');
@@ -581,11 +563,13 @@ $(function() {
                     $.each(status_limited + status_non_limited.split(","), function(i,e){
                         $("#tenderStatus option[value='" + e + "']").prop('disabled', false);
                     });
-                    if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
-                        $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
-                    }
+        };
+        if ($('#tenderStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
+            $('#tenderStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
+            console.log('select was changed!')
         }
       };
+
       $(disable_select);
       $("#procurementMethodType").change(disable_select);
 });
