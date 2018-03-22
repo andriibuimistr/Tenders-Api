@@ -258,6 +258,7 @@ def list_of_qualifications(tender_id_long, api_version):
 # select my bids
 def pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version):
     list_of_my_bids = BidsTender.query.filter_by(tender_id=tender_id_long).all()
+    db.session.remove()
     my_bids = []
     bids_json = []
     tender = TenderRequests(api_version)
