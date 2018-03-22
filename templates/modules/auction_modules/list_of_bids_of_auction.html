@@ -1,4 +1,4 @@
-{% if list_of_auction_bids|length != 0 %}
+<div>{% if list_of_auction_bids|length != 0 %}
     {% for bid in list_of_auction_bids %}
     <div class="bid_info col-lg-15 col-md-23 col-sm-48 col-xs-48">
         <div class="bid-id-short">{{ bid.id }}</div>

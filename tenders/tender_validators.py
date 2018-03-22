@@ -5,6 +5,7 @@ from tender_additional_data import above_threshold_procurement, below_threshold_
     limited_status, statuses_with_high_acceleration, statuses_negotiation_with_high_acceleration
 from flask import abort
 import core
+from database import BidsTender, Tenders, db
 
 
 def validator_create_tender(data):
@@ -97,3 +98,34 @@ def validator_create_tender(data):
             abort(422, 'Accelerator value can be less than 30 for: {} for the following statuses only: {}'.format(negotiation_procurement, statuses_negotiation_with_high_acceleration))
         if procurement_method == 'belowThreshold' and received_tender_status != 'active.enquiries':
             abort(422, 'For {} accelerator value can be less than 30 for the following status only: {}'.format('"belowThreshold"', 'active.enquiries'))
+
+
+def validator_add_tender_bid_to_company(bid_id, data):
+    list_of_bids = BidsTender.query.all()
+    list_bid = []
+    for tid in range(len(list_of_bids)):
+        list_bid.append(list_of_bids[tid].bid_id)
+    if bid_id not in list_bid:
+        abort(404, 'Bid id was not found in database')
+
+    if 'company-id' not in data:
+        abort(400, 'Company UID was not found in request')
+
+    if str(data['company-id']).isdigit() is False:
+        abort(400, 'Company UID must be integer')
+
+    if int(data['company-id']) == 0:
+        abort(422, 'Company id can\'t be 0')
+
+    return data
+
+
+def validator_if_tender_id_short_in_db(tender_id_short):
+    list_of_tenders = Tenders.query.all()
+    list_tid = []
+    for tid in range(len(list_of_tenders)):
+        db.session.remove()
+        list_tid.append(list_of_tenders[tid].tender_id_short)
+    if tender_id_short not in list_tid:
+        abort(404, 'Tender id was not found in database')
+    return True

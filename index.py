@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from tenders.tender_additional_data import list_of_procurement_types, tender_status_list, list_of_api_versions
 from auctions.auction_validators import validator_add_auction_bid_to_company, validator_if_auction_id_short_in_db
-from database import db, Tenders, BidsTender, Users
+from tenders.tender_validators import validator_if_tender_id_short_in_db, validator_add_tender_bid_to_company
+from database import db, Users
 from auctions import auction
 from datetime import timedelta
 import core
@@ -266,33 +267,12 @@ def add_tender_bid_to_company(bid_id):
     if not session.get('logged_in'):
         return abort(401)
     else:
-        list_of_bids = BidsTender.query.all()
-        list_bid = []
-        for tid in range(len(list_of_bids)):
-            list_bid.append(list_of_bids[tid].bid_id)
-        if bid_id not in list_bid:
-            abort(404, 'Bid id was not found in database')
-
         if not request.form:
             abort(400)
-
-        if 'company-id' not in request.form:
-            abort(400, 'Company UID was not found in request')
-
-        if str(request.form['company-id']).isdigit() is False:
-            abort(400, 'Company UID must be integer')
-
-        if int(request.form['company-id']) == 0:
-            abort(422, 'Company id can\'t be 0')
-
-        company_id = request.form['company-id']
-
-        company_platform_host = request.form['platform_host']
-        add_bid_company = core.add_one_bid_to_company(company_platform_host, company_id, bid_id, 'tender')
-        db.session.commit()
-        db.session.remove()
+        data = validator_add_tender_bid_to_company(bid_id, request.form)
+        add_bid_company = core.add_one_bid_to_company(data['platform_host'], data['company-id'], bid_id, 'tender')
         if add_bid_company[1] == 201:
-            return render_template('includes/bid_company_id.inc.html', company_id=company_id, bid_platform=company_platform_host)
+            return render_template('includes/bid_company_id.inc.html', company_id=data['company-id'], bid_platform=data['platform_host'])
         else:
             return jsonify(add_bid_company)
 
@@ -303,32 +283,9 @@ def get_bids_of_one_tender(tender_id_short):
     if not session.get('logged_in'):
         return jquery_forbidden_login()
     else:
-        list_of_tenders = Tenders.query.all()
-        list_tid = []
-        for tid in range(len(list_of_tenders)):
-            list_tid.append(list_of_tenders[tid].tender_id_short)
-        if tender_id_short not in list_tid:
-            abort(404, 'Tender id was not found in database')
+        validator_if_tender_id_short_in_db(tender_id_short)
+        list_of_tender_bids = core.get_bids_of_tender(tender_id_short)
 
-        tender_id_long = Tenders.query.filter_by(tender_id_short=tender_id_short).first().tender_id_long
-        get_bids_of_tender = BidsTender.query.filter_by(tender_id=tender_id_long).all()
-        list_of_tender_bids = []
-        for every_bid in range(len(get_bids_of_tender)):
-            bid_id = get_bids_of_tender[every_bid].bid_id
-            bid_token = get_bids_of_tender[every_bid].bid_token
-            bid_platform = get_bids_of_tender[every_bid].bid_platform
-            user_identifier = get_bids_of_tender[every_bid].user_identifier
-            company_id = get_bids_of_tender[every_bid].company_id
-            added_to_site = get_bids_of_tender[every_bid].added_to_site
-
-            list_of_tender_bids.append({"id": bid_id, "bid_token": bid_token,
-                                        "user_identifier": user_identifier, "has_company": added_to_site, "bid_platform": bid_platform})
-            if added_to_site == 1:
-                list_of_tender_bids[every_bid]['company_id'] = company_id
-                list_of_tender_bids[every_bid]['has_company'] = True
-            else:
-                list_of_tender_bids[every_bid]['has_company'] = False
-        db.session.remove()
         return render_template('modules/tender_modules/list_of_bids_of_tender.html', user_role_id=session['user_role'],
                                list_of_tender_bids=list_of_tender_bids, platforms=core.get_list_of_platforms(1))
 

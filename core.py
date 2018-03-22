@@ -70,7 +70,7 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                 else:
                     print '{}{}{}'.format(entity_id_long, ' - ', add_to_site_response)
                     if add_count < 30:
-                        time.sleep(1)
+                        time.sleep(20)
                         continue
                     else:
                         abort(422, add_to_site_response)
@@ -86,7 +86,7 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                     time.sleep(1)
                     continue
                 else:
-                    abort(500, 'Publish {} error: ' + str(e))
+                    abort(500, 'Publish {} error: {}'.format(entity, str(e)))
         return response
     else:
         print '{} {}{}'.format(entity, entity_id_long, ' was added to company before')
@@ -163,6 +163,25 @@ def get_bids_of_auction(auction_id_short):
             list_of_auction_bids[every_bid]['has_company'] = False
     db.session.remove()
     return list_of_auction_bids
+
+
+def get_bids_of_tender(tender_id_short):
+    tender_id_long = Tenders.query.filter_by(tender_id_short=tender_id_short).first().tender_id_long
+    bids = BidsTender.query.filter_by(tender_id=tender_id_long).all()
+    list_of_tender_bids = []
+    for every_bid in range(len(bids)):
+        added_to_site = bids[every_bid].added_to_site
+
+        list_of_tender_bids.append({"id": bids[every_bid].bid_id, "bid_token": bids[every_bid].bid_token,
+                                    "user_identifier": bids[every_bid].user_identifier, "has_company": added_to_site, "bid_platform": bids[every_bid].bid_platform})
+        if added_to_site == 1:
+            list_of_tender_bids[every_bid]['company_id'] = bids[every_bid].company_id
+            list_of_tender_bids[every_bid]['has_company'] = True
+        else:
+            list_of_tender_bids[every_bid]['has_company'] = False
+    db.session.remove()
+    return list_of_tender_bids
+
 
 
 # get list of platform (SQLA)
