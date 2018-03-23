@@ -287,14 +287,17 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                 }
     classification = get_classification()
 
-    submission_method_details = 'quick'
-    if skip_auction is True:
-        if procurement_method not in limited_procurement:
+    # submission_method_details = 'quick'
+
+    if procurement_method not in limited_procurement:
+        if skip_auction is True:
             if procurement_method == 'esco':
                 submission_method_details = 'quick(mode:no-auction)'
             else:
                 submission_method_details = 'quick(mode:fast-forward)'
-    tender_data['data']['submissionMethodDetails'] = submission_method_details
+        else:
+            submission_method_details = 'quick'
+        tender_data['data']['submissionMethodDetails'] = submission_method_details
 
     if procurement_method in negotiation_procurement:
         tender_data['data']['cause'] = 'noCompetition'
