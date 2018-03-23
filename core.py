@@ -65,8 +65,9 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                         Auctions.query.filter_by(auction_id_long=entity_id_long).update(dict(added_to_site=1, company_uid=company_id))
                     db.session.commit()
                     db.session.remove()
+                    response = {'status': '{} has company'.format(entity)}, 201, add_to_site_response['tid']
                     print '{} has company'.format(entity)
-                    abort(422, '{} has company'.format(entity))
+                    break
                 else:
                     print '{}{}{}'.format(entity_id_long, ' - ', add_to_site_response)
                     if add_count < 30:
