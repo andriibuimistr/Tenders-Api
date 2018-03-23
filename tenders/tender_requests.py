@@ -10,9 +10,9 @@ from datetime import datetime
 from pprint import pformat
 
 
-def save_log(code, body, host, endpoint, method):
+def save_log(code, body, host, endpoint, method, request_name):
     now = datetime.now()
-    path = os.path.join(os.getcwd(), 'logs', 'tenders', str(now.year), str(now.month), str(now.day), str(now.hour), '{} {}.txt'.format(code, datetime.now().strftime("%d-%m-%Y %H-%M-%S")))
+    path = os.path.join(os.getcwd(), 'logs', 'tenders', str(now.year), str(now.month), str(now.day), str(now.hour), '{} {} {}.txt'.format(code, datetime.now().strftime("%d-%m-%Y %H-%M-%S"), request_name))
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
     f = open(path, "w+")
@@ -43,14 +43,14 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
             if resp.status_code in [200, 201, 202]:
                 print("{}: Success".format(request_name))
                 print("       status code:  {}".format(resp.status_code))
-                save_log(resp.status_code, resp.content, host, endpoint, method)
+                save_log(resp.status_code, resp.content, host, endpoint, method, request_name)
                 return resp
         except HTTPError as error:
             print("{}: Error".format(request_name))
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
             print("       headers:           {}".format(resp.headers))
-            save_log(error.response.status_code, resp.content, host, endpoint, method)
+            save_log(error.response.status_code, resp.content, host, endpoint, method, request_name)
             time.sleep(1)
             if attempts >= 5:
                 abort(error.response.status_code, resp.content)
@@ -60,15 +60,15 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name):
                 time.sleep(1)
                 continue
             else:
-                save_log(503, str(e), host, endpoint, method)
+                save_log(503, str(e), host, endpoint, method, request_name)
                 abort(503, '{} error: {}'.format(request_name, e))
         except requests.exceptions.MissingSchema as e:
             print 'MissingSchema Exception'
-            save_log(500, str(e), host, endpoint, method)
+            save_log(500, str(e), host, endpoint, method, request_name)
             abort(500, '{} error: {}'.format(request_name, e))
         except Exception as e:
             print 'General Exception'
-            save_log(500, str(e),host, endpoint, method)
+            save_log(500, str(e), host, endpoint, method, request_name)
             abort(500, '{} error: {}'.format(request_name, e))
 
 
