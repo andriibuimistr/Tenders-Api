@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import time
 from flask import abort
 from tenders import tender_bid
-from tenders.tender_requests import TenderRequests
+from cdb_requests import TenderRequests
 from tenders.data_for_tender import kiev_utc_now, generate_id_for_lot, generate_tender_json
 
 

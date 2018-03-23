@@ -7,7 +7,7 @@ from database import db, Auctions
 import core
 import auction_validators
 from auction_bid import create_bids
-from auction_requests import AuctionRequests
+from cdb_requests import AuctionRequests
 
 
 # Add auction info to database

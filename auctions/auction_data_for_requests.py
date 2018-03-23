@@ -3,7 +3,7 @@ import json
 
 
 # Select host for CDB
-def host_selector(cdb_number):
+def auction_host_selector(cdb_number):
     if cdb_number == 1:
         host = 'https://lb.api-sandbox.ea.openprocurement.org/api/2.5/auctions'
     else:
@@ -12,7 +12,7 @@ def host_selector(cdb_number):
 
 
 # generate headers for create auction
-def headers_request(cdb_number, json_data):
+def auction_headers_request(cdb_number, json_data):
     if cdb_number == 1:
         authorization = "Basic {}".format(key_cdb1)
         host_headers = 'lb.api-sandbox.ea.openprocurement.org'

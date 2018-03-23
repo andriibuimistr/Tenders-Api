@@ -4,7 +4,7 @@ import json
 
 
 # Select host for CDB
-def host_selector(cdb_version):
+def tender_host_selector(cdb_version):
     if cdb_version == 'dev':
         host = 'https://api-sandbox.prozorro.openprocurement.net/api/dev/tenders'
         host_public = 'https://public.api-sandbox.prozorro.openprocurement.net/api/dev/tenders'
@@ -15,7 +15,7 @@ def host_selector(cdb_version):
 
 
 # generate headers for create tender
-def headers_request(cdb_version, json_data):
+def tender_headers_request(cdb_version, json_data):
     if cdb_version == 'dev':
         host_headers = 'api-sandbox.prozorro.openprocurement.net'
     else:

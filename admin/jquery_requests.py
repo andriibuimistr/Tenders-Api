@@ -4,8 +4,7 @@ from flask import render_template, abort, jsonify
 import validators
 import core
 from auctions import auction_additional_data
-from tenders.tender_requests import TenderRequests
-from auctions.auction_requests import AuctionRequests
+from cdb_requests import TenderRequests, AuctionRequests
 
 
 def add_platform(request):

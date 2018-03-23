@@ -9,7 +9,7 @@ from requests.exceptions import ConnectionError
 
 from tenders.data_for_tender import activate_contract_json
 from tenders.tender_data_for_requests import prequalification_approve_bid_json, prequalification_decline_bid_json, activate_award_json_select
-from tenders.tender_requests import TenderRequests
+from cdb_requests import TenderRequests
 
 
 invalid_tender_status_list = ['unsuccessful', 'cancelled']

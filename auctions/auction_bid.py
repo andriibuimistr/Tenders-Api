@@ -2,7 +2,7 @@
 from faker import Faker
 from random import randint
 from database import db, BidsAuction
-from auction_requests import AuctionRequests
+from cdb_requests import AuctionRequests
 
 fake = Faker('uk_UA')
 

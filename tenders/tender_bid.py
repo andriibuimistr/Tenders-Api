@@ -5,7 +5,7 @@ from tenders.tender_additional_data import below_threshold_procurement, above_th
 from database import BidsTender, db
 import time
 from random import randint
-from tenders.tender_requests import TenderRequests
+from cdb_requests import TenderRequests
 
 
 fake = Faker('uk_UA')
