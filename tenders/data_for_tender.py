@@ -238,7 +238,7 @@ def generate_lots(lots_id, values):
                     "title": "Лот {}".format(lot_number),
                     "title_en": "Title of lot in English",
                     "description_en": "Description of lot in English",
-                    "id": lots_id[lot],
+                    "id": lots_id[lot]
                 }
         for key in values:
             lots_data[key] = values[key]
@@ -286,8 +286,6 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                     }
                 }
     classification = get_classification()
-
-    # submission_method_details = 'quick'
 
     if procurement_method not in limited_procurement:
         if skip_auction is True:
