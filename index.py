@@ -329,7 +329,7 @@ def create_auction_function():
     if not request.form:
         abort(400, 'Form wasn\'t submitted')
     result = auction.create_auction(request.form, session)
-    return jsonify(result[0])
+    return jsonify(result[0]), result[1]
 
 
 # Add one auction bid to company
