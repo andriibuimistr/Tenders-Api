@@ -156,3 +156,51 @@ function selectForm() {
 }
 selectForm();
 $("input").click(function(){selectForm()});
+
+//Render JSON from CDB
+$(function() {
+    $('#render_json_get').click(function() {
+        $(this).prop('disabled', true);
+		var tender_id = $("#form-view-json-get input[name=tender_id_long]").val();
+		var api_version = $("#form-view-json-get select[name=api_version]").val();
+		$.ajax({
+            url: '/backend/jquery/get_tender_json/' + tender_id + '/' + api_version,
+            type: 'GET',
+            success: function(data) {
+                console.log(data);
+                $("#json_output").jsonViewer(data);
+				$('#render_json_get').removeAttr("disabled");
+			},
+            error: function (jqXHR, textStatus, errorThrown) {
+            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                $('#render_json_get').removeAttr("disabled");
+            }
+        });
+    });
+});
+
+//Render JSON from form (input)
+$(function() {
+    $('#render_json_insert').click(function() {
+        if(testJSON($('#raw_json_input').val()) === true){
+			var raw_json = jQuery.parseJSON($('#raw_json_input').val());
+			$("#json_output").jsonViewer(raw_json);
+		}
+		else {
+			alert('Invalid JSON');
+		}
+    });
+});
+
+
+
+//Test if is JSON
+function testJSON(input){
+    try{
+        JSON.parse(input);
+        return true;
+    }
+    catch (error){
+        return false;
+    }
+}
