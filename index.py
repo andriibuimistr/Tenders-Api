@@ -6,6 +6,7 @@ from database import db, Users
 from auctions import auction
 from datetime import timedelta
 import core
+from tools.pages import Pages
 from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
 import os
@@ -199,8 +200,6 @@ def admin_pages(page):
         return admin_page.page_admin_users()
     elif page == 'tenders':
         return admin_page.page_admin_tenders()
-    elif page == 'json-viewer':
-        return admin_page.page_admin_json_viewer()
     else:
         return abort(404)
 
@@ -241,14 +240,6 @@ def jquery_delete_tender(tender_id):
     else:
         return jquery_requests.delete_tender(tender_id)
 
-
-# Get JSON of tender from CDB (with jquery) for json viewer
-@app.route('/backend/jquery/get_tender_json/<tender_id>/<api_version>', methods=['GET'])
-def jquery_get_tender_json(tender_id, api_version):
-    if check_if_admin_jquery() is not True:
-        return check_if_admin_jquery()
-    else:
-        return jsonify(jquery_requests.get_tender_json_from_cdb(tender_id, api_version)), 200
 # ############################################################## ADMIN END #############################################################################
 
 
@@ -377,6 +368,29 @@ def page_auction_bids():
         return login_form()
     else:
         return AuctionPages(session['user_role']).page_auction_bids()
+
+
+# ############################################################## TOOLS ##############################################################################
+#                                                       ###### TOOLS PAGES ######
+@app.route('/tools/<page>', methods=['GET'])  # generate custom page for admin
+def tools_pages(page):
+    if not session.get('logged_in'):
+        return login_form()
+    pages = Pages(session['user_role'])
+    if page == 'json-viewer':
+        return pages.page_json_viewer()
+    else:
+        return abort(404)
+
+
+#                                                       ###### TOOLS JQUERY ######
+# Get JSON of tender from CDB (with jquery) for json viewer
+@app.route('/backend/jquery/get_tender_json/<tender_id>/<api_version>', methods=['GET'])
+def jquery_get_tender_json(tender_id, api_version):
+    if not session.get('logged_in'):
+        return jquery_forbidden_login()
+    else:
+        return jsonify(jquery_requests.get_tender_json_from_cdb(tender_id, api_version)), 200
 
 
 if __name__ == '__main__':
