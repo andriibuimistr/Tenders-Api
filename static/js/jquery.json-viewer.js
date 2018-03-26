@@ -167,7 +167,6 @@ $(function() {
             url: '/backend/jquery/get_tender_json/' + tender_id + '/' + api_version,
             type: 'GET',
             success: function(data) {
-                console.log(data);
                 $("#json_output").jsonViewer(data);
 				$('#render_json_get').removeAttr("disabled");
 			},
