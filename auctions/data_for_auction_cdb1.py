@@ -17,7 +17,7 @@ def dgf_decision_date(days_ago):
 
 
 def auction_period_start_date(accelerator):
-    return (datetime.now() + timedelta(minutes=1*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))  # standard period is 10 minutes if accelerator == 1440
+    return (datetime.now() + timedelta(minutes=2*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))  # standard period is 10 minutes if accelerator == 1440
 
 
 def auction_value():
