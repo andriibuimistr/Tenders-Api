@@ -115,7 +115,7 @@ def before_request():
 
 # Generate template for Login form
 def login_form():
-    return render_template('login.html'), 403
+    return render_template('login.html'), 401
 
 
 # Forbidden error for jquery requests
