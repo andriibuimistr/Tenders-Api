@@ -159,7 +159,7 @@ def generate_values(procurement_method, number_of_lots):
 
                             "guarantee": {
                                 "currency": currency,
-                                "amount": '{0:.2f}'.format(generated_value * 0.05)
+                                "amount": '{0:.2f}'.format(generated_value * 0.02)
                             },
                             "minimalStep": {
                                 "currency": currency,
@@ -174,7 +174,7 @@ def generate_values(procurement_method, number_of_lots):
 
                             "guarantee": {
                                 "currency": currency,
-                                "amount": '{0:.2f}'.format((generated_value * 0.05) / number_of_lots)
+                                "amount": '{0:.2f}'.format((generated_value * 0.02) / number_of_lots)
                             },
                             "minimalStep": {
                                 "currency": currency,
