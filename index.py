@@ -132,23 +132,26 @@ def redirect_url(default='main'):
 # Generate session or show Login form
 @app.route('/login', methods=['POST'])
 def do_login():
-    get_list_of_users = Users.query.all()
-    list_of_users = []
-    for user in range(len(get_list_of_users)):
-        list_of_users.append(get_list_of_users[user].user_login)
-    if request.form['username'] not in list_of_users:
-        return redirect(redirect_url())
-    else:
-        user_id = Users.query.filter_by(user_login=request.form['username']).first().id
-        if request.form['password'] == Users.query.filter_by(id=user_id).first().user_password and Users.query.filter_by(id=user_id).first().active != 0:
-            db.session.remove()
-            session['logged_in'] = True
-            session['username'] = request.form['username']
-            session['user_id'] = user_id
-            session['user_role'] = get_user_role()
+    try:
+        get_list_of_users = Users.query.all()
+        list_of_users = []
+        for user in range(len(get_list_of_users)):
+            list_of_users.append(get_list_of_users[user].user_login)
+        if request.form['username'] not in list_of_users:
             return redirect(redirect_url())
         else:
-            return redirect(redirect_url())
+            user_id = Users.query.filter_by(user_login=request.form['username']).first().id
+            if request.form['password'] == Users.query.filter_by(id=user_id).first().user_password and Users.query.filter_by(id=user_id).first().active != 0:
+                db.session.remove()
+                session['logged_in'] = True
+                session['username'] = request.form['username']
+                session['user_id'] = user_id
+                session['user_role'] = get_user_role()
+                return redirect(redirect_url())
+            else:
+                return redirect(redirect_url())
+    except Exception as e:
+        abort(500, str(e))
 
 
 # Logout
