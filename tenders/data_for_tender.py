@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from dk021 import classification_dk021, additional_class_scheme, additional_class_003, additional_class_015, additional_class_018
+from dk021 import classification_dk021, additional_class_scheme, additional_class_003, additional_class_015, additional_class_018, additional_class_INN
 import binascii
 import os
 from random import randint, choice
@@ -41,19 +41,24 @@ def get_classification():
     cl = choice(classification_dk021)
     for x in cl:
         main_classification = [x, cl[x]]
-    if '99999999-9' in main_classification:
+    if '33600000-6' in main_classification or '99999999-9' in main_classification:
         classification_section["additionalClassifications"] = []
-        additional_classification_scheme = choice(additional_class_scheme)
-        random_ad_class = {"000": "Спеціальні норми та інше"}
-        if additional_classification_scheme == 'ДК003':
-            random_ad_class = choice(additional_class_003)
-        elif additional_classification_scheme == 'ДК015':
-            random_ad_class = choice(additional_class_015)
-        elif additional_classification_scheme == 'ДК018':
-            random_ad_class = choice(additional_class_018)
-        else:
-            additional_classification_scheme = 'specialNorms'
-
+        additional_classification_scheme = ''
+        random_ad_class = ''
+        if '99999999-9' in main_classification:
+            additional_classification_scheme = choice(additional_class_scheme)
+            random_ad_class = {"000": "Спеціальні норми та інше"}
+            if additional_classification_scheme == 'ДК003':
+                random_ad_class = choice(additional_class_003)
+            elif additional_classification_scheme == 'ДК015':
+                random_ad_class = choice(additional_class_015)
+            elif additional_classification_scheme == 'ДК018':
+                random_ad_class = choice(additional_class_018)
+            else:
+                additional_classification_scheme = 'specialNorms'
+        elif '33600000-6' in main_classification:
+            additional_classification_scheme = "INN"
+            random_ad_class = choice(additional_class_INN)
         classification_section["additionalClassifications"].append({
                                                                         "scheme": additional_classification_scheme,
                                                                         "id": random_ad_class.keys()[0],
@@ -63,7 +68,7 @@ def get_classification():
     classification_section['classification']['description'] = main_classification[1]
     classification_section['classification']['id'] = main_classification[0]
     return classification_section
-# print get_classification()
+
 
 def get_unit():
     return choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'послуга']])
