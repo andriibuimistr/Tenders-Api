@@ -10,8 +10,8 @@
             {% for user in range(users|length) %}
                 <div class="user-info">
                     <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">{{ users[user].id }}</div>
-                    <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">{{ users[user].user_login }}</div>
-                    <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">{{ users[user].user_password }}</div>
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">{{ users[user].user_login }}</div>
+                    <div class="col-lg-16 col-md-16 col-sm-10 col-xs-10">{{ users[user].user_password }}</div>
                     <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">{{ user_roles[users[user].user_role_id] }}</div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">{{ users[user].active }}</div>
                 </div>

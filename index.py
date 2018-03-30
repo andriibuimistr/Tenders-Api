@@ -18,6 +18,7 @@ from admin import jquery_requests
 from admin.pages import AdminPages
 from auctions.pages import AuctionPages
 from tenders import tender_validators, tender
+import hashlib
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
@@ -141,7 +142,8 @@ def do_login():
             return redirect(redirect_url())
         else:
             user_id = Users.query.filter_by(user_login=request.form['username']).first().id
-            if request.form['password'] == Users.query.filter_by(id=user_id).first().user_password and Users.query.filter_by(id=user_id).first().active != 0:
+            user_password_db = Users.query.filter_by(id=user_id).first().user_password
+            if hashlib.md5(request.form['password'].encode('utf8')).hexdigest() == user_password_db and Users.query.filter_by(id=user_id).first().active != 0:
                 db.session.remove()
                 session['logged_in'] = True
                 session['username'] = request.form['username']

@@ -5,6 +5,7 @@ import validators
 import core
 from auctions import auction_additional_data
 from cdb_requests import TenderRequests, AuctionRequests
+import hashlib
 
 
 def add_platform(request):
@@ -54,7 +55,8 @@ def add_user(request):
     if request.form['user-name'] in list_login:
         return abort(422, 'We have this login yet')
 
-    user_to_sql = Users(None, new_user_data['user-name'], new_user_data['user-password'], new_user_data['user_role'], int(new_user_data['user_status']), None)
+    password = hashlib.md5(new_user_data['user-password'].encode('utf8')).hexdigest()
+    user_to_sql = Users(None, new_user_data['user-name'], password, new_user_data['user_role'], int(new_user_data['user_status']), None)
     db.session.add(user_to_sql)
     last_id = Users.query.order_by(Users.id.desc()).first().id
     newly_added_user_data = Users.query.filter_by(id=last_id)

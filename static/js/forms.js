@@ -106,9 +106,11 @@ $(function() {
                     var disable_competitive = function (){
 				        if (jQuery.inArray($("#procurementMethodType").val(), competitive)=='-1') {
 							$('#tenderStatus option[value="active.tendering.stage2"]').prop('disabled', true);
+							$('#tenderStatus option[value="complete"]').prop('disabled', true);
 						}
 						else {
 							$('#tenderStatus option[value="active.tendering.stage2"]').prop('disabled', false);
+							$('#tenderStatus option[value="complete"]').prop('disabled', false);
 						}
                     };
                     $(disable_competitive);
@@ -131,7 +133,7 @@ $(function() {
                     });
 					var disable_lots_reporting = function (){
 				        if ($("#procurementMethodType").val() === 'reporting') {
-							$('#number_of_lots').prop('disabled', true).val('');
+							$('#number_of_lots').prop('disabled', true);
 						}
 						else {
 							$('#number_of_lots').prop('disabled', false);

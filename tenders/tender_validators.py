@@ -65,6 +65,10 @@ def validator_create_tender(data):
     if platform_host not in core.get_list_of_platform_urls(1):
         return abort(422, 'Platform must be one of: {}'.format(core.get_list_of_platform_urls(1)))
 
+    if procurement_method not in limited_procurement:
+        if 'skip_auction' not in data and received_tender_status not in ['active.tendering', 'active.pre-qualification', 'active.enquiries', 'complete']:
+            abort(422, '"skip_auction" must be checked for {} status'.format(received_tender_status))
+
     # check procurement method
     if procurement_method in above_threshold_procurement:  # check allowed statuses for above threshold procurements
         # check status for procedure
