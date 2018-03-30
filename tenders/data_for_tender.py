@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from dk021 import classifications
+from dk021 import classification_dk021, additional_class_scheme, additional_class_003, additional_class_015, additional_class_018
 import binascii
 import os
 from random import randint, choice
@@ -32,12 +32,38 @@ def activate_contract_json(complaint_end_date):
 
 
 def get_classification():
-    classification = []
-    cl = choice(classifications)
+    classification_section = {"classification": {
+        "scheme": "ДК021",
+        "description": '',
+        "id": ''
+    }}
+    main_classification = []
+    cl = choice(classification_dk021)
     for x in cl:
-        classification = [x, cl[x]]
-    return classification
+        main_classification = [x, cl[x]]
+    if '99999999-9' in main_classification:
+        classification_section["additionalClassifications"] = []
+        additional_classification_scheme = choice(additional_class_scheme)
+        random_ad_class = {"000": "Спеціальні норми та інше"}
+        if additional_classification_scheme == 'ДК003':
+            random_ad_class = choice(additional_class_003)
+        elif additional_classification_scheme == 'ДК015':
+            random_ad_class = choice(additional_class_015)
+        elif additional_classification_scheme == 'ДК018':
+            random_ad_class = choice(additional_class_018)
+        else:
+            additional_classification_scheme = 'specialNorms'
 
+        classification_section["additionalClassifications"].append({
+                                                                        "scheme": additional_classification_scheme,
+                                                                        "id": random_ad_class.keys()[0],
+                                                                        "description": random_ad_class[random_ad_class.keys()[0]]
+                                                                    })
+
+    classification_section['classification']['description'] = main_classification[1]
+    classification_section['classification']['id'] = main_classification[0]
+    return classification_section
+# print get_classification()
 
 def get_unit():
     return choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'послуга']])
@@ -195,11 +221,6 @@ def generate_items(number_of_items, procurement_method, classification):
         item_number += 1
         item_data = {
                     "description": "Предмет закупки {} {}".format(item_number, fake.text(200).replace('\n', ' ')),
-                    "classification": {
-                        "scheme": "ДК021",
-                        "description": classification[1],
-                        "id": classification[0]
-                    },
                     "description_en": "Description",
                     "deliveryAddress": {
                         "postalCode": "00000",
@@ -219,6 +240,8 @@ def generate_items(number_of_items, procurement_method, classification):
                     },
                     "quantity": randint(1, 10000)
                 }
+        for key in classification:
+            item_data[key] = classification[key]
         if procurement_method == 'esco':
             del(item_data['deliveryDate'])
             del(item_data['unit'])
