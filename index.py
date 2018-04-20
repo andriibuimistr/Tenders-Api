@@ -76,6 +76,12 @@ def custom500(error):
         {'error': '500 Internal Server Error', 'description': error.description}), 500)
 
 
+@app.errorhandler(501)
+def custom501(error):
+    return make_response(jsonify(
+        {'error': '501 Not Implemented', 'description': error.description}), 501)
+
+
 @app.errorhandler(502)
 def custom502(error):
     return make_response(jsonify(
