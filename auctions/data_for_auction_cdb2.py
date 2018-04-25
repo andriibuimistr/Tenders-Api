@@ -93,7 +93,7 @@ def generate_items_for_auction(number_of_items, rent):
     return items
 
 
-def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifiedBids, rent):
+def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifiedBids, rent, skip_auction):
     values = auction_value()
     auction_data = {"data": {
                         "procurementMethod": "open",
@@ -105,7 +105,7 @@ def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifi
                         "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
                         "procurementMethodType": "dgfOtherAssets",
                         "dgfID": "N-1234567890",
-                        "submissionMethodDetails": "quick",
+                        "submissionMethodDetails": "quick{}".format(skip_auction),
                         "items": generate_items_for_auction(number_of_items, rent),
                         "value": values[0],
                         "minimalStep": values[2],

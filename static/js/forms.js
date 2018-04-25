@@ -23,7 +23,7 @@ $(function() {
 			$('#procurementMethodType option[value="dgfInsider"]').prop('disabled', 'disabled');
 			$("#steps").prop('disabled', 'disabled').val('80');
             $("#rent").prop('disabled', false);
-            $("#skip_auction").prop('disabled', 'disabled').prop('checked', false);
+//            $("#skip_auction").prop('disabled', 'disabled').prop('checked', false);
 			$('#rent').change(function(){
 				   $("#minNumberOfQualifiedBids").prop("disabled", !$(this).is(':checked'));
 				   $("#minNumberOfQualifiedBids").prop('checked', false, !$(this).is(':checked'));
@@ -34,7 +34,7 @@ $(function() {
             $('#procurementMethodType option[value="dgfInsider"]').prop('disabled', false);
             $("#minNumberOfQualifiedBids").prop('disabled', 'disabled').prop('checked', false);
             $("#rent").prop('disabled', 'disabled').prop('checked', false);
-            $("#skip_auction").prop('disabled', false)
+//            $("#skip_auction").prop('disabled', false)
 			var disable_steps = function (){
 				        if ($("#procurementMethodType").val() === 'dgfInsider') {
 							$("#steps").prop('disabled', false);
