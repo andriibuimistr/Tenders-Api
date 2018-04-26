@@ -109,6 +109,7 @@ def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifi
                         "items": generate_items_for_auction(number_of_items, rent),
                         "value": values[0],
                         "minimalStep": values[2],
+                        "mode": "test",
                         "awardCriteria": "highestCost",
                         "auctionPeriod": {
                             "startDate": auction_period_start_date(accelerator),
