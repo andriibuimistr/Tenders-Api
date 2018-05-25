@@ -86,13 +86,10 @@ def generate_id_for_lot(number_of_lots):
 
 
 def tender_period(accelerator, procurement_method, received_tender_status):
-    # tender_start_date
-    tender_start_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
     # tender_end_date
     date_day = datetime.now() + timedelta(minutes=int(round(31 * (1440.0 / accelerator)) + 1))
     tender_end_date = date_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
     tender_period_data = {"tenderPeriod": {
-                                    "startDate": tender_start_date,
                                     "endDate": tender_end_date
     }}
 
