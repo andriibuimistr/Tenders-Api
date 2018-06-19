@@ -400,7 +400,8 @@ def creation_of_tender(tc_request, user_id):
                     waiting_time = count_waiting_time(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), api_version)
                     if waiting_time > 3600:  # delete in the future
                         abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
-                    time.sleep(waiting_time + 5)
+                    if waiting_time > 0:
+                        time.sleep(waiting_time + 5)
 
                 for x in range(10):
                     print 'Check if contract exists'
