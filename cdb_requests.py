@@ -181,7 +181,7 @@ class Privatization(AuctionRequests):
         return request_to_cdb(None, self.host_p, '/{}'.format(asset_id_long), 'GET', None, 'Get asset info', self.entity)
 
     def get_lot_info(self, lot_id_long):
-        return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get asset info', self.entity)
+        return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get lot info', self.entity)
 
     def get_p_auction_info(self, auction_id_long):
         return self.get_auction_info(auction_id_long)
