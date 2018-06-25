@@ -11,7 +11,7 @@ from datetime import datetime
 from pprint import pformat
 
 
-def save_log(code, body, header, host, endpoint, method, request_name, entity):
+def save_log(code, body, resp_header, host, endpoint, method, request_name, entity, headers, json_request):
     now = datetime.now()
     path = os.path.join(os.getcwd(), 'logs', entity, str(now.year), str(now.month), str(now.day), str(now.hour), '{} {} {}.txt'.format(code, datetime.now().strftime("%d-%m-%Y %H-%M-%S"),
                                                                                                                                        request_name))
@@ -23,7 +23,7 @@ def save_log(code, body, header, host, endpoint, method, request_name, entity):
     except Exception as e:
         print e
         body = body
-    f.write('{} {}{}\n\n{}\n\n{}'.format(method, host, endpoint, str(header).replace(',', '\n'), pformat(body)))
+    f.write('{} {}{}\n\n{}\n\n{}\n\n{}\n\n{}'.format(method, host, endpoint, str(headers).replace(',', ',\n'), pformat(json_request), str(resp_header).replace(',', ',\n'), pformat(body)))
     f.close()
 
 
@@ -45,14 +45,14 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
             if resp.status_code in [200, 201, 202]:
                 print("{}: Success".format(request_name))
                 print("       status code:  {}".format(resp.status_code))
-                save_log(resp.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity)
+                save_log(resp.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
                 return resp
         except HTTPError as error:
             print("{}: Error".format(request_name))
             print("       status code:  {}".format(resp.status_code))
             print("       response content:  {}".format(resp.content))
             print("       headers:           {}".format(resp.headers))
-            save_log(error.response.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity)
+            save_log(error.response.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
             time.sleep(1)
             if attempts >= 5:
                 abort(error.response.status_code, resp.content)
@@ -62,15 +62,15 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
                 time.sleep(1)
                 continue
             else:
-                save_log(503, str(e), 'No header', host, endpoint, method, request_name, entity)
+                save_log(503, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
                 abort(503, '{} error: {}'.format(request_name, e))
         except requests.exceptions.MissingSchema as e:
             print 'MissingSchema Exception'
-            save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity)
+            save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
             abort(500, '{} error: {}'.format(request_name, e))
         except Exception as e:
             print 'General Exception'
-            save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity)
+            save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
             abort(500, '{} error: {}'.format(request_name, e))
 
 
@@ -167,17 +167,21 @@ class Privatization(AuctionRequests):
 
     def __init__(self, entity):
         self.entity = entity
-        self.host = privatization_host_selector(self.entity)
+        self.host_p = privatization_host_selector(self.entity)
         super(Privatization, self).__init__(2)
 
-    def get_asset_info(self, asset_id_long):
-        return request_to_cdb(None, self.host, '/{}'.format(asset_id_long), 'GET', None, 'Get asset info', self.entity)
-
     def publish_asset(self, json_asset):
-        return request_to_cdb(auction_headers_request(self.cdb, json_asset), self.host, '', 'POST', json_asset, 'Publish auction', self.entity)
+        return request_to_cdb(auction_headers_request(self.cdb, json_asset), self.host_p, '', 'POST', json_asset, 'Publish asset', self.entity)
+
+    def activate_asset(self, asset_id_long, token):
+        return request_to_cdb(auction_headers_request(self.cdb, json_status_pending), self.host_p, '/{}?acc_token={}'.format(asset_id_long, token), 'PATCH', json_status_pending,
+                              'Activate asset', self.entity)
+
+    def get_asset_info(self, asset_id_long):
+        return request_to_cdb(None, self.host_p, '/{}'.format(asset_id_long), 'GET', None, 'Get asset info', self.entity)
 
     def get_lot_info(self, lot_id_long):
-        return request_to_cdb(None, self.host, '/{}'.format(lot_id_long), 'GET', None, 'Get asset info', self.entity)
+        return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get asset info', self.entity)
 
     def get_p_auction_info(self, auction_id_long):
         return self.get_auction_info(auction_id_long)

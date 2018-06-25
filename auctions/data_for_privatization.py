@@ -55,10 +55,9 @@ def generate_asset_json(number_of_items):
     asset_data = {"data": {
                         "decisions": [
                             {
-                                "decisionID": "1637-9",
+                                "decisionID": "1637-10",
                                 "title": fake.text(50).replace('\n', ' '),
                                 "decisionDate": decision_date(),
-                                "decisionOf": "asset"
                             }
                         ],
                         "status": "draft",
