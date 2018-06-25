@@ -26,6 +26,15 @@ def auction_headers_request(cdb_number, json_data):
     return headers
 
 
+# Select host for CDB
+def privatization_host_selector(entity):
+    if entity == 'asset':
+        host = 'https://lb.api-sandbox.ea2.openprocurement.net/api/2.3/assets'
+    else:
+        host = 'https://lb.api-sandbox.ea2.openprocurement.net/api/2.3/lots'
+    return host
+
+
 json_status_active_tendering = {
                             "data": {
                                 "status": "active.tendering"

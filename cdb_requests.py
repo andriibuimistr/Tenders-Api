@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from auctions.auction_data_for_requests import auction_headers_request, auction_host_selector, json_status_active_tendering, json_status_active
+from auctions.auction_data_for_requests import *
 from tenders.tender_data_for_requests import tender_headers_request, tender_host_selector, json_activate_tender, json_finish_first_stage, json_finish_pq
 from flask import abort
 import os
@@ -74,7 +74,7 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
             abort(500, '{} error: {}'.format(request_name, e))
 
 
-class TenderRequests:
+class TenderRequests(object):
 
     def __init__(self, cdb):
         self.cdb = cdb
@@ -138,7 +138,7 @@ class TenderRequests:
         return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'GET', None, 'Get bid info', self.entity)
 
 
-class AuctionRequests:
+class AuctionRequests(object):
 
     def __init__(self, cdb):
         self.cdb = cdb
@@ -161,3 +161,24 @@ class AuctionRequests:
 
     def get_auction_info(self, auction_id_long):
         return request_to_cdb(None, self.host, '/{}'.format(auction_id_long), 'GET', None, 'Get auction info', self.entity)
+
+
+class Privatization(AuctionRequests):
+
+    def __init__(self, entity):
+        self.entity = entity
+        self.host = privatization_host_selector(self.entity)
+        super(Privatization, self).__init__(2)
+
+    def get_asset_info(self, asset_id_long):
+        return request_to_cdb(None, self.host, '/{}'.format(asset_id_long), 'GET', None, 'Get asset info', self.entity)
+
+    def publish_asset(self, json_asset):
+        return request_to_cdb(auction_headers_request(self.cdb, json_asset), self.host, '', 'POST', json_asset, 'Publish auction', self.entity)
+
+    def get_lot_info(self, lot_id_long):
+        return request_to_cdb(None, self.host, '/{}'.format(lot_id_long), 'GET', None, 'Get asset info', self.entity)
+
+    def get_p_auction_info(self, auction_id_long):
+        return self.get_auction_info(auction_id_long)
+
