@@ -143,24 +143,24 @@ class AuctionRequests(object):
     def __init__(self, cdb):
         self.cdb = cdb
         self.host = auction_host_selector(cdb)
-        self.entity = 'auctions'
+        self.__entity = 'auctions'
 
     def publish_auction(self, json_auction):
-        return request_to_cdb(auction_headers_request(self.cdb, json_auction), self.host, '', 'POST', json_auction, 'Publish auction', self.entity)
+        return request_to_cdb(auction_headers_request(self.cdb, json_auction), self.host, '', 'POST', json_auction, 'Publish auction', self.__entity)
 
     def activate_auction(self, auction_id_long, token):
         return request_to_cdb(auction_headers_request(self.cdb, json_status_active_tendering), self.host, '/{}?acc_token={}'.format(auction_id_long, token), 'PATCH', json_status_active_tendering,
-                              'Activate auction', self.entity)
+                              'Activate auction', self.__entity)
 
     def make_bid_auction(self, auction_id_long, json_bid):
-        return request_to_cdb(auction_headers_request(self.cdb, json_bid), self.host, '/{}/bids'.format(auction_id_long), 'POST', json_bid, 'Publish auction bid', self.entity)
+        return request_to_cdb(auction_headers_request(self.cdb, json_bid), self.host, '/{}/bids'.format(auction_id_long), 'POST', json_bid, 'Publish auction bid', self.__entity)
 
     def activate_auction_bid(self, auction_id_long, bid_id, bid_token):
         return request_to_cdb(auction_headers_request(self.cdb, json_status_active), self.host, '/{}/bids/{}?acc_token={}'.format(auction_id_long, bid_id, bid_token), 'PATCH', json_status_active,
-                              'Activate auction bid', self.entity)
+                              'Activate auction bid', self.__entity)
 
     def get_auction_info(self, auction_id_long):
-        return request_to_cdb(None, self.host, '/{}'.format(auction_id_long), 'GET', None, 'Get auction info', self.entity)
+        return request_to_cdb(None, self.host, '/{}'.format(auction_id_long), 'GET', None, 'Get auction info', self.__entity)
 
 
 class Privatization(AuctionRequests):
