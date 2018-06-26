@@ -14,6 +14,14 @@ def decision_date():
     return (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
 
 
+def auction_period_start_date(accelerator):
+    return (datetime.now() + timedelta(minutes=1*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+
+
+def auction_period_end_date(accelerator):
+    return (datetime.now() + timedelta(minutes=5*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+
+
 def generate_id_for_item():
     return binascii.hexlify(os.urandom(16))
 
@@ -150,3 +158,46 @@ def generate_lot_json(asset_id):
                   }
                 }
     return lot_json
+
+
+def fill_auction_data(number, accelerator):
+    if number == 1:
+        auction_data = {"data": {
+                            "minimalStep": {
+                              "currency": "UAH",
+                              "amount": 300,
+                              "valueAddedTaxIncluded": True
+                            },
+                            "auctionPeriod": {
+                              "startDate": auction_period_start_date(accelerator),
+                              "endDate": auction_period_end_date(accelerator)
+                            },
+                            "registrationFee": {
+                              "currency": "UAH",
+                              "amount": 700
+                            },
+                            "value": {
+                              "currency": "UAH",
+                              "amount": 3000,
+                              "valueAddedTaxIncluded": True
+                            },
+                            "guarantee": {
+                              "currency": "UAH",
+                              "amount": 700
+                            },
+                            "procurementMethodDetails": "quick, accelerator={}".format(accelerator)
+                          }
+                        }
+    elif number == 2:
+        auction_data = {"data": {
+                            "tenderingDuration": "P10D"
+                          }
+                        }
+    else:
+        auction_data = {"data": {
+                            "auctionParameters": {
+                                    "dutchSteps": 10
+                                                    }
+                                }
+                        }
+    return auction_data

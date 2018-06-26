@@ -12,7 +12,7 @@ def auction_host_selector(cdb_number):
 
 
 # generate headers for create auction
-def auction_headers_request(cdb_number, json_data):
+def auction_headers_request(cdb_number, json_data, token=None):
     if cdb_number == 1:
         key = key_cdb1
         host_headers = 'lb.api-sandbox.ea.openprocurement.org'
@@ -22,6 +22,7 @@ def auction_headers_request(cdb_number, json_data):
     headers = {"Authorization": "Basic {}".format(key),
                "Content-Length": "{}".format(len(json.dumps(json_data))),
                "Content-Type": "application/json",
+               "X-Access-Token": token,
                "Host": host_headers}
     return headers
 

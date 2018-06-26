@@ -36,5 +36,10 @@ def create_asset(items):
     print('id long: ' + lot_id_long, 'token: ' + lot_token, 'transfer: ' + lot_transfer, 'id short: ' + lot_id_short, 'status: ' + lot_status)
     print(lot_publish.json())
 
+    auctions = lot_publish.json()['data']['auctions']
+    for auction in range(len(auctions)):
+        auction_id_long = auctions[auction]['id']
+        patched_auction = lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(auction + 1, 1), auction_id_long)
+        print(patched_auction.json())
 
 create_asset(2)
