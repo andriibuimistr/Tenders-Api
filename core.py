@@ -9,7 +9,7 @@ from requests.exceptions import ConnectionError
 
 from tenders.data_for_tender import activate_contract_json
 from tenders.tender_data_for_requests import prequalification_approve_bid_json, prequalification_decline_bid_json, activate_award_json_select
-from cdb_requests import TenderRequests
+from cdb_requests import *
 
 
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
@@ -233,15 +233,18 @@ def check_if_contract_exists(get_t_info):
         return e
 
 
-def get_time_difference(api_version):
+def get_time_difference(api_version, entity=''):
     lt = int(time.mktime(datetime.utcnow().timetuple()))
-    r = TenderRequests(api_version).get_list_of_tenders()
+    if entity == 'lots':
+        r = Privatization(entity).get_list_of_lots()
+    else:
+        r = TenderRequests(api_version).get_list_of_tenders()
     st = int(time.mktime(datetime.strptime(r.headers['Date'][-24:-4], "%d %b %Y %H:%M:%S").timetuple()))
     return st - lt
 
 
-def count_waiting_time(time_to_wait, time_template, api_version):
-    diff = get_time_difference(api_version)
+def count_waiting_time(time_to_wait, time_template, api_version, entity=''):
+    diff = get_time_difference(api_version, entity)
     wait_to = int(time.mktime(datetime.strptime(time_to_wait, time_template).timetuple()))
     time_now = int(time.mktime(datetime.now().timetuple()))
     return (wait_to - diff) - time_now

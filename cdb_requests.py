@@ -194,7 +194,10 @@ class Privatization(AuctionRequests):
     def get_lot_info(self, lot_id_long):
         return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get lot info', self.entity)
 
-    def patch_lot_auction(self, lot_id_long, token, json_path_auction, auction_id_long):
+    def patch_lot_auction(self, lot_id_long, token, json_path_auction, auction_id_long, index):
         return request_to_cdb(auction_headers_request(self.cdb, json_status_composing, token), self.host_p, '/{}/auctions/{}'.format(lot_id_long, auction_id_long), 'PATCH', json_path_auction,
-                              'Patch auction in lot', self.entity)
+                              'Patch auction {} in lot'.format(index), self.entity)
+
+    def get_list_of_lots(self):
+        return request_to_cdb(tender_headers_request(self.cdb, None), self.host_p, '', 'GET', None, 'Get list of lots', self.entity)
 
