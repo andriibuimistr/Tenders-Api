@@ -14,12 +14,12 @@ def decision_date():
     return (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
 
 
-def auction_period_start_date(accelerator):
-    return (datetime.now() + timedelta(minutes=1*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+def auction_period_start_date(lot_accelerator):
+    return (datetime.now() + timedelta(minutes=8*(1440/lot_accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
 
 
 def auction_period_end_date(accelerator):
-    return (datetime.now() + timedelta(minutes=5*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+    return (datetime.now() + timedelta(minutes=60*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
 
 
 def generate_id_for_item():
@@ -141,7 +141,7 @@ def generate_asset_json(number_of_items):
     return asset_data
 
 
-def generate_lot_json(asset_id):
+def generate_lot_json(asset_id, accelerator):
     lot_json = {"data": {
                     "lotType": "loki",
                     "description": "Щось там тестове",
@@ -154,13 +154,15 @@ def generate_lot_json(asset_id):
                     "assets": [
                         asset_id
                     ],
-                    "title": "Тестовий лот"
+                    "title": "Тестовий лот",
+                    "mode": "test",
+                    "sandboxParameters": "quick, accelerator={}".format(accelerator)
                   }
                 }
     return lot_json
 
 
-def fill_auction_data(number, accelerator):
+def fill_auction_data(number, accelerator, lot_accelerator):
     if number == 1:
         auction_data = {"data": {
                             "minimalStep": {
@@ -169,8 +171,8 @@ def fill_auction_data(number, accelerator):
                               "valueAddedTaxIncluded": True
                             },
                             "auctionPeriod": {
-                              "startDate": auction_period_start_date(accelerator),
-                              "endDate": auction_period_end_date(accelerator)
+                              "startDate": auction_period_start_date(lot_accelerator),
+                              # "endDate": auction_period_end_date(accelerator)
                             },
                             "registrationFee": {
                               "currency": "UAH",
@@ -185,7 +187,28 @@ def fill_auction_data(number, accelerator):
                               "currency": "UAH",
                               "amount": 700
                             },
-                            "procurementMethodDetails": "quick, accelerator={}".format(accelerator)
+                            "submissionMethodDetails": "quick",
+                            "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
+                            "bankAccount": {
+                                "accountIdentification": [
+                                    {
+                                        "scheme": "UA-EDR",
+                                        "id": "769881",
+                                        "description": "ЕДПРОУ отримуцвача"
+                                    },
+                                    {
+                                        "scheme": "UA-MFO",
+                                        "id": "123456",
+                                        "description": "МФО банку"
+                                    },
+                                    {
+                                        "scheme": "accountNumber",
+                                        "id": "1234567890",
+                                        "description": "Розрахунковий рахунок"
+                                    }
+                                ],
+                                "bankName": "Raiffeisen Bank Aval"
+                            }
                           }
                         }
     elif number == 2:

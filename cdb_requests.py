@@ -188,6 +188,9 @@ class Privatization(AuctionRequests):
     def lot_to_composing(self, lot_id_long, token):
         return request_to_cdb(auction_headers_request(self.cdb, json_status_composing), self.host_p, '/{}?acc_token={}'.format(lot_id_long, token), 'PATCH', json_status_composing, 'Lot to composing', self.entity)
 
+    def lot_to_verification(self, lot_id_long, token):
+        return request_to_cdb(auction_headers_request(self.cdb, json_status_composing), self.host_p, '/{}?acc_token={}'.format(lot_id_long, token), 'PATCH', json_status_verification, 'Lot to verification', self.entity)
+
     def get_lot_info(self, lot_id_long):
         return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get lot info', self.entity)
 

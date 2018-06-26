@@ -20,7 +20,7 @@ def create_asset(items):
     asset_status = asset_activate.json()['data']['status']
 
     lot = Privatization('lot')
-    json_lot = generate_lot_json(asset_id_long)
+    json_lot = generate_lot_json(asset_id_long, 1440)
     lot_publish = lot.publish_lot(json_lot)
 
     lot_id_long = lot_publish.json()['data']['id']
@@ -32,14 +32,19 @@ def create_asset(items):
 
     lot_status = lot_to_composing.json()['data']['status']
 
-    print('id long: ' + asset_id_long, 'token: ' + asset_token, 'id short: ' + asset_id_short, 'status: ' + asset_status)
+    # print('id long: ' + asset_id_long, 'token: ' + asset_token, 'id short: ' + asset_id_short, 'status: ' + asset_status)
     print('id long: ' + lot_id_long, 'token: ' + lot_token, 'transfer: ' + lot_transfer, 'id short: ' + lot_id_short, 'status: ' + lot_status)
     print(lot_publish.json())
 
     auctions = lot_publish.json()['data']['auctions']
     for auction in range(len(auctions)):
         auction_id_long = auctions[auction]['id']
-        patched_auction = lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(auction + 1, 1), auction_id_long)
+        patched_auction = lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(auction + 1, accelerator=1440, lot_accelerator=1440), auction_id_long)
         print(patched_auction.json())
+
+    lot_to_verification = lot.lot_to_verification(lot_id_long, lot_token)
+
+    print(lot_to_verification.json())
+
 
 create_asset(2)

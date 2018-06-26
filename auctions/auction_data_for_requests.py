@@ -55,3 +55,8 @@ json_status_composing = {"data": {
                             "status": "composing"
                           }
                          }
+
+json_status_verification = {"data": {
+                                "status": "verification"
+                              }
+                            }
