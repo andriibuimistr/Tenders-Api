@@ -165,7 +165,7 @@ class AuctionRequests(object):
 
 class Privatization(AuctionRequests):
 
-    def __init__(self, entity):
+    def __init__(self, entity=None):
         self.entity = entity
         self.host_p = privatization_host_selector(self.entity)
         super(Privatization, self).__init__(2)
@@ -179,6 +179,9 @@ class Privatization(AuctionRequests):
 
     def get_asset_info(self, asset_id_long):
         return request_to_cdb(None, self.host_p, '/{}'.format(asset_id_long), 'GET', None, 'Get asset info', self.entity)
+
+    def publish_lot(self, json_lot):
+        return request_to_cdb(auction_headers_request(self.cdb, json_lot), self.host_p, '', 'POST', json_lot, 'Publish lot', self.entity)
 
     def get_lot_info(self, lot_id_long):
         return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get lot info', self.entity)

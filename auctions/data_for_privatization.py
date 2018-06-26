@@ -131,3 +131,22 @@ def generate_asset_json(number_of_items):
                         }
                   }
     return asset_data
+
+
+def generate_lot_json(asset_id):
+    lot_json = {"data": {
+                    "lotType": "loki",
+                    "description": "Щось там тестове",
+                    "decisions": [
+                      {
+                        "decisionDate": decision_date(),
+                        "decisionID": "decisionLotID"
+                      }
+                    ],
+                    "assets": [
+                        asset_id
+                    ],
+                    "title": "Тестовий лот"
+                  }
+                }
+    return lot_json
