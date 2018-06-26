@@ -25,13 +25,16 @@ def create_asset(items):
 
     lot_id_long = lot_publish.json()['data']['id']
     lot_token = lot_publish.json()['access']['token']
-    lot_id_short = lot_publish.json()['data']['assetID']
-    lot_transfer = lot_publish.json()['data']['assetID']
+    lot_id_short = lot_publish.json()['data']['lotID']
+    lot_transfer = lot_publish.json()['access']['transfer']
 
-    # asset_status = asset_activate.json()['data']['status']
+    lot_to_composing = lot.lot_to_composing(lot_id_long, lot_token)
+
+    lot_status = lot_to_composing.json()['data']['status']
 
     print('id long: ' + asset_id_long, 'token: ' + asset_token, 'id short: ' + asset_id_short, 'status: ' + asset_status)
-    print('id long: ' + lot_id_long, 'token: ' + lot_token, 'transfer: ' + lot_transfer, 'id short: ' + lot_id_short, 'status: ' + asset_status)
+    print('id long: ' + lot_id_long, 'token: ' + lot_token, 'transfer: ' + lot_transfer, 'id short: ' + lot_id_short, 'status: ' + lot_status)
+    print(lot_publish.json())
 
 
 create_asset(2)

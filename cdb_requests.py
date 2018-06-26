@@ -11,10 +11,12 @@ from datetime import datetime
 from pprint import pformat
 
 
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 def save_log(code, body, resp_header, host, endpoint, method, request_name, entity, headers, json_request):
     now = datetime.now()
-    path = os.path.join(os.getcwd(), 'logs', entity, str(now.year), str(now.month), str(now.day), str(now.hour), '{} {} {}.txt'.format(code, datetime.now().strftime("%d-%m-%Y %H-%M-%S"),
-                                                                                                                                       request_name))
+    path = os.path.join(ROOT_DIR, 'logs', entity, str(now.year), str(now.month), str(now.day), str(now.hour), '{} {} {}.txt'.format(code, datetime.now().strftime("%d-%m-%Y %H-%M-%S"), request_name))
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
     f = open(path, "w+")
@@ -182,6 +184,9 @@ class Privatization(AuctionRequests):
 
     def publish_lot(self, json_lot):
         return request_to_cdb(auction_headers_request(self.cdb, json_lot), self.host_p, '', 'POST', json_lot, 'Publish lot', self.entity)
+
+    def lot_to_composing(self, lot_id_long, token):
+        return request_to_cdb(auction_headers_request(self.cdb, json_status_composing), self.host_p, '/{}?acc_token={}'.format(lot_id_long, token), 'PATCH', json_status_composing, 'Lot to composing', self.entity)
 
     def get_lot_info(self, lot_id_long):
         return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get lot info', self.entity)

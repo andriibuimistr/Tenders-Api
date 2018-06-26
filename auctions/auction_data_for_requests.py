@@ -35,11 +35,10 @@ def privatization_host_selector(entity):
     return host
 
 
-json_status_active_tendering = {
-                            "data": {
-                                "status": "active.tendering"
-                            }
-                        }
+json_status_active_tendering = {"data": {
+                                    "status": "active.tendering"
+                                }
+                                }
 
 json_status_active = {"data": {
                              "status": "active"
@@ -50,3 +49,8 @@ json_status_pending = {"data": {
                              "status": "pending"
                              }
                        }
+
+json_status_composing = {"data": {
+                            "status": "composing"
+                          }
+                         }
