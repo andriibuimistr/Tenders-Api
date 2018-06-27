@@ -7,7 +7,7 @@ import json
 import requests
 from requests.exceptions import ConnectionError, HTTPError
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pprint import pformat
 
 
@@ -47,7 +47,7 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
             if resp.status_code in [200, 201, 202]:
                 print("{}: Success".format(request_name))
                 print("       status code:  {}".format(resp.status_code))
-                save_log(resp.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
+                # save_log(resp.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
                 return resp
         except HTTPError as error:
             print("{}: Error".format(request_name))
@@ -164,6 +164,13 @@ class AuctionRequests(object):
     def get_auction_info(self, auction_id_long):
         return request_to_cdb(None, self.host, '/{}'.format(auction_id_long), 'GET', None, 'Get auction info', self.__entity)
 
+    def get_list_of_auctions(self):
+        endpoint = ((datetime.now() - timedelta(minutes=60)).strftime('?offset=%Y-%m-%dT%Hx%Mx%S.104183y03x00&mode=_all_')).replace('x', '%3A').replace('y', '%2B')
+        return request_to_cdb(tender_headers_request(self.cdb, None), self.host, endpoint, 'GET', None, 'Get list of auctions', self.__entity)
+
+    def change_auction_ownership(self, auction_id_long, json_of_transfer):
+        return request_to_cdb(auction_headers_request(self.cdb, json_of_transfer), self.host, '/{}/ownership'.format(auction_id_long), 'POST', json_of_transfer, 'Publish auction bid', self.__entity)
+
 
 class Privatization(AuctionRequests):
 
@@ -200,4 +207,9 @@ class Privatization(AuctionRequests):
 
     def get_list_of_lots(self):
         return request_to_cdb(tender_headers_request(self.cdb, None), self.host_p, '', 'GET', None, 'Get list of lots', self.entity)
+
+    def create_transfer(self):
+        return request_to_cdb(auction_headers_request(self.cdb, transfer_json), self.host_p, '', 'POST', transfer_json, 'Create transfer', self.entity)
+
+
 

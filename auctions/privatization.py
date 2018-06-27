@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from cdb_requests import *
 from auctions.data_for_privatization import *
-import time
 from core import *
 
 
@@ -19,7 +17,7 @@ def create_asset(items):
     asset_activate = asset.activate_asset(asset_id_long, asset_token)
     asset_status = asset_activate.json()['data']['status']
 
-    lot = Privatization(entity='lot')
+    lot = Privatization('lot')
     json_lot = generate_lot_json(asset_id_long, 1440)
     lot_publish = lot.publish_lot(json_lot)
 
@@ -52,10 +50,10 @@ def create_asset(items):
     attempts = 0
     for x in range(20):
         attempts += 1
-        print('Attempt: {}'.format(attempts))
+        print('Check pending status. Attempt: {}'.format(attempts))
         status = lot.get_lot_info(lot_id_long).json()['data']['status']
-        print('Status: '.format(status))
-        if status == 'active.auction':
+        print('Status: {}'.format(status))
+        if status == 'pending':
             break
         else:
             time.sleep(30)
@@ -67,12 +65,52 @@ def create_asset(items):
     waiting_time = count_waiting_time(rectification, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), None, 'lots')
     if waiting_time > 0:  # delete in the future
         time_counter(waiting_time, 'Check if rectificationPeriod is finished')
-    auction = Privatization().activate_auction(lot_auctions[0]['id'], lot_token)
-    print(auction.json())
+    # auction = Privatization().activate_auction(lot_auctions[0]['id'], lot_token)
+    # print(auction.json())
 
+    attempts = 0
+    for x in range(20):
+        attempts += 1
+        print('Check active.auction status. Attempt: {}'.format(attempts))
+        status = lot.get_lot_info(lot_id_long).json()['data']['status']
+        print('Status: {}'.format(status))
+        if status == 'active.auction':
+            break
+        else:
+            time.sleep(30)
+            continue
+    if attempts == 20:
+        return False
 
+    print(lot_auctions)
+    first_auction_short_id = lot.get_lot_info(lot_id_long).json()['data']['auctions'][0]['auctionID']
 
+    get_list_number = 0
+    for attempt in range(10):
+        list_of_all_auctions = Privatization().get_list_of_auctions().json()['data']
+        get_list_number += 1
+        print('Get list of auctions. Attempt: {}'.format(get_list_number))
+        time.sleep(60)
+        auction_number = 0
+        for x in range(len(list_of_all_auctions)):
+            auction_number += 1
+            print('Auction number: {}'.format(auction_number))
+            au_id_long = list_of_all_auctions[x]['id']
+            auction_id_short = Privatization().get_auction_info(au_id_long).json()['data']['auctionID']
+            if first_auction_short_id == auction_id_short:
+                transfer = Privatization('transfer').create_transfer().json()
+                print(transfer)
+                json_of_transfer = {"data": {
+                                            "id": transfer['data']['id'],
+                                            "transfer": transfer['access']['transfer']
+                }}
+                change_ownership = Privatization().change_auction_ownership(au_id_long, json_of_transfer).json()
+                print(change_ownership)
 
+                activate_auction = Privatization().activate_auction(au_id_long, change_ownership['access']['token'])
+                print(activate_auction.json())
+                break
+    print('c\'est fini')
 
 
 create_asset(2)

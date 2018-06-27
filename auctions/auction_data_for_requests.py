@@ -31,6 +31,8 @@ def auction_headers_request(cdb_number, json_data, token=None):
 def privatization_host_selector(entity):
     if entity == 'asset':
         host = 'https://lb.api-sandbox.ea2.openprocurement.net/api/2.3/assets'
+    elif entity == 'transfer':
+        host = 'https://lb.api-sandbox.ea2.openprocurement.net/api/2.3/transfers'
     else:
         host = 'https://lb.api-sandbox.ea2.openprocurement.net/api/2.3/lots'
     return host
@@ -60,3 +62,5 @@ json_status_verification = {"data": {
                                 "status": "verification"
                               }
                             }
+
+transfer_json = {"data": {}}
