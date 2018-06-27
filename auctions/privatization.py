@@ -31,7 +31,7 @@ def create_asset(items):
     lot_status = lot_to_composing.json()['data']['status']
 
     # print('id long: ' + asset_id_long, 'token: ' + asset_token, 'id short: ' + asset_id_short, 'status: ' + asset_status)
-    print('id long: ' + lot_id_long, 'token: ' + lot_token, 'transfer: ' + lot_transfer, 'id short: ' + lot_id_short, 'status: ' + lot_status)
+    # print('id long: ' + lot_id_long, 'token: ' + lot_token, 'transfer: ' + lot_transfer, 'id short: ' + lot_id_short, 'status: ' + lot_status)
     # print(lot_publish.json())
 
     lot_auctions = lot_publish.json()['data']['auctions']
@@ -60,13 +60,11 @@ def create_asset(items):
             continue
     if attempts == 20:
         return False
-    print(lot.get_lot_info(lot_id_long).json())
+    # print(lot.get_lot_info(lot_id_long).json())
     rectification = lot.get_lot_info(lot_id_long).json()['data']['rectificationPeriod']['endDate']  # get tender period end date
     waiting_time = count_waiting_time(rectification, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), None, 'lots')
     if waiting_time > 0:  # delete in the future
         time_counter(waiting_time, 'Check if rectificationPeriod is finished')
-    # auction = Privatization().activate_auction(lot_auctions[0]['id'], lot_token)
-    # print(auction.json())
 
     attempts = 0
     for x in range(20):
@@ -82,34 +80,35 @@ def create_asset(items):
     if attempts == 20:
         return False
 
-    print(lot_auctions)
+    # print(lot_auctions)
     first_auction_short_id = lot.get_lot_info(lot_id_long).json()['data']['auctions'][0]['auctionID']
 
-    get_list_number = 0
-    for attempt in range(10):
-        list_of_all_auctions = Privatization().get_list_of_auctions().json()['data']
-        get_list_number += 1
-        print('Get list of auctions. Attempt: {}'.format(get_list_number))
-        time.sleep(60)
-        auction_number = 0
-        for x in range(len(list_of_all_auctions)):
-            auction_number += 1
-            print('Auction number: {}'.format(auction_number))
-            au_id_long = list_of_all_auctions[x]['id']
-            auction_id_short = Privatization().get_auction_info(au_id_long).json()['data']['auctionID']
-            if first_auction_short_id == auction_id_short:
-                transfer = Privatization('transfer').create_transfer().json()
-                print(transfer)
-                json_of_transfer = {"data": {
-                                            "id": transfer['data']['id'],
-                                            "transfer": transfer['access']['transfer']
-                }}
-                change_ownership = Privatization().change_auction_ownership(au_id_long, json_of_transfer).json()
-                print(change_ownership)
+    # get_list_number = 0
+    # for attempt in range(10):
+    list_of_all_auctions = Privatization().get_list_of_auctions().json()['data']
+    # get_list_number += 1
+    # print('Get list of auctions. Attempt: {}'.format(get_list_number))
+    time.sleep(60)
+    auction_number = 0
+    for x in range(len(list_of_all_auctions)):
+        auction_number += 1
+        print('Auction number: {}'.format(auction_number))
+        au_id_long = list_of_all_auctions[x]['id']
+        auction_id_short = Privatization().get_auction_info(au_id_long).json()['data']['auctionID']
+        if first_auction_short_id == auction_id_short:
+            transfer = Privatization('transfer').create_transfer().json()
+            print(transfer)
+            json_of_transfer = {"data": {
+                                        "id": transfer['data']['id'],
+                                        "transfer": lot_transfer
+            }}
+            change_ownership = Privatization().change_auction_ownership(au_id_long, json_of_transfer).json()
+            # print(change_ownership)
 
-                activate_auction = Privatization().activate_auction(au_id_long, change_ownership['access']['token'])
-                print(activate_auction.json())
-                break
+            activate_auction = Privatization().activate_auction_privatization(au_id_long, transfer['access']['token'])
+            print(activate_auction.json())
+            break
+
     print('c\'est fini')
 
 

@@ -64,3 +64,12 @@ json_status_verification = {"data": {
                             }
 
 transfer_json = {"data": {}}
+
+
+def json_activate_auction_p(token):
+    json_auction = {"access": {
+                            "token": token},
+                    "data": {
+                            "status": "active.tendering"}
+                    }
+    return json_auction

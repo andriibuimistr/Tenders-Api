@@ -169,7 +169,11 @@ class AuctionRequests(object):
         return request_to_cdb(tender_headers_request(self.cdb, None), self.host, endpoint, 'GET', None, 'Get list of auctions', self.__entity)
 
     def change_auction_ownership(self, auction_id_long, json_of_transfer):
-        return request_to_cdb(auction_headers_request(self.cdb, json_of_transfer), self.host, '/{}/ownership'.format(auction_id_long), 'POST', json_of_transfer, 'Publish auction bid', self.__entity)
+        return request_to_cdb(auction_headers_request(self.cdb, json_of_transfer), self.host, '/{}/ownership'.format(auction_id_long), 'POST', json_of_transfer, 'Change auction ownership', self.__entity)
+
+    def activate_auction_privatization(self, auction_id_long, token):
+        return request_to_cdb(auction_headers_request(self.cdb, json_activate_auction_p(token)), self.host, '/{}'.format(auction_id_long), 'PATCH', json_activate_auction_p(token),
+                              'Activate auction privatization', self.__entity)
 
 
 class Privatization(AuctionRequests):
