@@ -19,7 +19,7 @@ def auction_period_start_date(lot_accelerator):
 
 
 def auction_period_end_date(accelerator):
-    return (datetime.now() + timedelta(minutes=60*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+    return (datetime.now() + timedelta(minutes=1000*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
 
 
 def generate_id_for_item():
@@ -172,7 +172,6 @@ def fill_auction_data(number, accelerator, lot_accelerator):
                             },
                             "auctionPeriod": {
                               "startDate": auction_period_start_date(lot_accelerator),
-                              # "endDate": auction_period_end_date(accelerator)
                             },
                             "registrationFee": {
                               "currency": "UAH",
