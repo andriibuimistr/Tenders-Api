@@ -34,9 +34,7 @@ def create_asset(items):
 
     lot.lot_to_verification(lot_id_long, lot_token)
 
-    print('Sleep 60 sec.')
-    time.sleep(60)
-
+    time_counter(60, '"Check lot pending status"')
     attempts = 0
     for x in range(20):
         attempts += 1
@@ -70,8 +68,6 @@ def create_asset(items):
     if attempts == 20:
         return False
 
-    print('Sleep 60 sec.')
-    time.sleep(60)
     au_id_long = lot.get_lot_info(lot_id_long).json()['data']['auctions'][0]['relatedProcessID']
     transfer = Privatization('transfer').create_transfer().json()
     print(transfer)

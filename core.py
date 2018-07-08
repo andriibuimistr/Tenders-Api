@@ -15,13 +15,13 @@ from cdb_requests import *
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
 
 
-def time_counter(waiting_time, message):
+def time_counter(waiting_time, message=''):
     for remaining in range(waiting_time, 0, -1):
         sys.stdout.write("\r")
         sys.stdout.write("{:2d} seconds remaining to {}.".format(remaining, message))
         sys.stdout.flush()
         time.sleep(1)
-    sys.stdout.write("\rOk!\n")
+    sys.stdout.write("\rWaiting time is over!\n")
 
 
 # add one tender company (SQLA) ##############################################
