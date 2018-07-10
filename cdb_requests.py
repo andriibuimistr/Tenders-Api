@@ -38,7 +38,8 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
         attempts += 1
         try:
             s = requests.Session()
-            s.request("HEAD", "{}".format(host))
+            if method != 'GET':
+                s.request("HEAD", "{}".format(host))
             r = requests.Request(method, "{}{}".format(host, endpoint),
                                  data=json.dumps(json_request),
                                  headers=headers,
