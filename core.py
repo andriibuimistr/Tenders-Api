@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 from database import db, Tenders, BidsTender, Platforms, PlatformRoles, Roles, Users, Auctions, BidsAuction
-import requests
-from datetime import datetime
-from flask import abort
-import time
 import sys
-from requests.exceptions import ConnectionError
-
 from tenders.data_for_tender import activate_contract_json
 from tenders.tender_data_for_requests import prequalification_approve_bid_json, prequalification_decline_bid_json, activate_award_json_select
 from cdb_requests import *
@@ -24,7 +18,6 @@ def time_counter(waiting_time, message=''):
     sys.stdout.write("\rWaiting time is over!\n")
 
 
-# add one tender company (SQLA) ##############################################
 def add_one_tender_company(company_id, company_platform_host, entity_id_long, entity_token, entity):
     if entity == 'tender':
         get_tender_data = Tenders.query.filter_by(tender_id_long=entity_id_long).first()
@@ -172,7 +165,7 @@ def get_bids_of_entity(id_short, entity):
 
 
 # get list of platform (SQLA)
-def get_list_of_platforms(platform_role):
+def get_list_of_platforms(platform_role=False):
     if platform_role:  # if platform role is passed to function
         platforms_list = Platforms.query.filter_by(platform_role=platform_role).all()
     else:

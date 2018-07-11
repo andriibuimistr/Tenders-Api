@@ -30,7 +30,6 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
     return "success"
 
 
-# ############################################################################### NEW CODE
 def generate_annual_costs_reduction_list():
     annual_costs_reduction_list = []
     cost = 0
@@ -113,7 +112,6 @@ def generate_bid_values(tender_json, lot_number):
                 "code": tender_json['data']['features'][feature]['code'],
                 "value": tender_json['data']['features'][feature]['enum'][randint(0, number_of_feature_values - 1)]['value']
             })
-    # pprint(values_json)
     return values_json
 
 

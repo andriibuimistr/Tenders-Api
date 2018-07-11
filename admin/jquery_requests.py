@@ -67,7 +67,7 @@ def add_user(request):
 
 def delete_platform(platform_id):
     existing_platforms_id = []
-    list_of_platforms_id_db = core.get_list_of_platforms(False)
+    list_of_platforms_id_db = core.get_list_of_platforms()
     for x in range(len(list_of_platforms_id_db)):
         existing_platforms_id.append(str(list_of_platforms_id_db[x].id))
     if platform_id not in existing_platforms_id:
