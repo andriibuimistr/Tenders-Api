@@ -4,7 +4,7 @@ from core import *
 
 
 def create_asset(items):
-    json_asset = generate_asset_json(items)
+    json_asset = generate_asset_json(items, accelerator=1)
 
     asset = Privatization('asset')
     asset_publish = asset.publish_asset(json_asset)
