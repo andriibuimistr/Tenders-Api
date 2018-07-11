@@ -213,7 +213,7 @@ def fill_auction_data(number, accelerator, lot_accelerator):
                         }
     elif number == 2:
         auction_data = {"data": {
-                            "tenderingDuration": "P10D"
+                            "tenderingDuration": "P{}D".format(randint(20, 35))
                           }
                         }
     else:
