@@ -1,5 +1,5 @@
 from tender_additional_data import *
-from key import auth_key
+from key import auth_key, auth_key_ds
 import json
 
 
@@ -14,6 +14,14 @@ def tender_host_selector(cdb_version):
     return host, host_public
 
 
+def tender_ds_host_selector(cdb_version):
+    if cdb_version == 'dev':
+        host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
+    else:
+        host = 'https://upload.docs-sandbox.openprocurement.org/upload'
+    return host
+
+
 # generate headers for create tender
 def tender_headers_request(cdb_version, json_data):
     if cdb_version == 'dev':
@@ -25,6 +33,19 @@ def tender_headers_request(cdb_version, json_data):
                "Content-Type": "application/json",
                "Host": host_headers}
     return headers
+
+
+tender_headers_add_document_ds = {
+    'authorization': "Basic {}".format(auth_key_ds),
+    'content-type': "multipart/form-data; boundary=--------------------------1507111922.4992",
+    'cache-control': "no-cache",
+    }
+
+tender_headers_patch_document_ds = {
+    'authorization': "Basic {}".format(auth_key),
+    'content-type': "application/json",
+    'cache-control': "no-cache",
+    }
 
 
 json_status_active = {
