@@ -80,16 +80,12 @@ def creation_of_tender(tc_request, user_id):
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
 
-    add_documents = add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_version)
-
     add_tender_company = core.add_one_tender_company(company_id, platform_host, tender_id_long, tender_token, 'tender')  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', add_tender_company[2])
 
-    ''''# add documents to tender
-    if add_documents == 1:
-        add_documents = document.add_documents_to_tender_ds(tender_id_long, tender_token, list_of_id_lots)
-    else:
-        add_documents = 'tender was created without documents'''
+    # add documents to tender
+    # if add_documents == 1:
+    #     add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_version)
 
     print 'Tender id ' + tender_id_long
     print 'Tender token ' + tender_token

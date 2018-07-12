@@ -1,63 +1,16 @@
 # -*- coding: utf-8 -*-
 from tenders.tender_additional_data import documents_above_procedures, documents_above_non_financial, documents_above_non_confidential
-import requests
 import os
 import json
-from key import auth_key, auth_key_ds
 from cdb_requests import TenderRequests
 
 
-
-
-
-sandbox = 1
-if sandbox == 2:
-    ds_host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
-    host = 'https://api-sandbox.prozorro.openprocurement.net'
-    api_version = 'dev'
-else:
-    ds_host = 'https://upload.docs-sandbox.openprocurement.org/upload'
-    host = 'https://lb.api-sandbox.openprocurement.org'
-    api_version = '2.4'
-
-
-
 path = os.getcwd()  # path to file for upload
-doc_host = host
-doc_api_version = api_version
-
-
 file_for_upload = open('{}{}doc.pdf'.format(path, os.sep), 'rb').read()
 filename = 'doc.pdf'
 document_data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
           "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
                 "----------------------------1507111922.4992--".format(filename, file_for_upload)
-
-
-headers_add_document = {
-    'authorization': "Basic {}".format(auth_key),
-    'content-type': "multipart/form-data; boundary=--------------------------1507111922.4992",
-    'cache-control': "no-cache",
-    }
-
-headers_patch_document = {
-    'authorization': "Basic {}".format(auth_key),
-    'content-type': "application/json",
-    'cache-control': "no-cache",
-    }
-
-
-headers_add_document_ds = {
-    'authorization': "Basic {}".format(auth_key_ds),
-    'content-type': "multipart/form-data; boundary=--------------------------1507111922.4992",
-    'cache-control': "no-cache",
-    }
-
-headers_patch_document_ds = {
-    'authorization': "Basic {}".format(auth_key),
-    'content-type': "application/json",
-    'cache-control': "no-cache",
-    }
 
 
 tender_documents_type = {'technicalSpecifications': 'Технічний опис предмету закупівлі',
@@ -79,34 +32,9 @@ def docs_list_for_bid(procurement_method):
 financial_documents = ['commercialProposal', 'billOfQuantity']
 
 
-# upload document to document service
-def upload_documents_to_ds():
-    try:
-        s = requests.Session()
-        s.request("GET", "{}".format(doc_host))
-        r = requests.Request('POST',
-                             "{}".format(
-                                 ds_host),
-                             data=document_data,
-                             headers=headers_add_document_ds,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        print("Uploading documentation:")
-        if resp.status_code == 200:
-            print("       status code:  {}".format(resp.status_code))
-        else:
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-        return 0, resp, resp.status_code
-    except Exception as e:
-        return 1, e
-
-
 # upload document from ds to tender
 def patch_tender_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc, t_id_long, t_token, lot_id, doc_of, ds):
-    add_document_json = json.loads(added_tender_doc.content)  # ??????????????????
+    add_document_json = json.loads(added_tender_doc.content)
     if type_for_doc != 0:
         add_document_json['data']['documentType'] = type_for_doc
     add_document_json['data']['title'] = name_for_doc
@@ -122,8 +50,7 @@ def patch_tender_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc,
 
 
 # upload document from ds to bid
-def patch_bid_documents_from_ds(
-        type_for_doc, name_for_doc, added_tender_doc, t_id_long, bid_id, bid_token, lot_id, doc_of, procurement_method):
+def patch_bid_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc, t_id_long, bid_id, bid_token, lot_id, doc_of, procurement_method, ds):
 
     patch_bid_json = json.loads(added_tender_doc.content)
 
@@ -149,30 +76,9 @@ def patch_bid_documents_from_ds(
         print '                    Financial document!!!'
     else:
         doc_type_url = 'documents'
-    try:
-        s = requests.Session()
-        s.request("GET", "{}/api/{}/tenders".format(doc_host, doc_api_version))
-        r = requests.Request('POST',
-                             "{}/api/{}/tenders/{}/bids/{}/{}?acc_token={}".format(
-                                 doc_host, doc_api_version, t_id_long, bid_id, doc_type_url, bid_token),
-                             data=json.dumps(patch_bid_json),
-                             headers=headers_patch_document_ds,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        print('{}{}'.format("Patching documentation: ", name_for_doc))
-        if resp.status_code == 201:
-            print("       status code:  {}".format(resp.status_code))
-        else:
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-        return 0, resp, resp.status_code
-    except Exception as e:
-        return 1, e
+    ds.add_document_from_ds_to_tender_bid(t_id_long, bid_id, doc_type_url, bid_token, patch_bid_json, 'Add document from DS to bid - {}'.format(name_for_doc))
 
 
-# add documents to tender ds
 def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_version):
     doc_publish_info = []
     ds = TenderRequests(api_version)
@@ -193,26 +99,12 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_v
     return doc_publish_info
 
 
-def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token, procurement_method):
+def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token, procurement_method, api_version):
+    ds = TenderRequests(api_version)
     doc_publish_info = []
     bid_document_types = docs_list_for_bid(procurement_method)
     for doc_type in bid_document_types:  # add one document for every document type
         doc_type_name = bid_document_types[doc_type]
-        added_bid_document = upload_documents_to_ds()
-        if added_bid_document[0] == 1:
-            doc_resp_json = {"upload_document": {"status": "error", "description": str(added_bid_document[1])},
-                             "document_name": doc_type_name}
-            doc_publish_info.append(doc_resp_json)
-        else:
-            doc_resp_json = {"upload_document": {"status_code": added_bid_document[2]},
-                             "document_name": doc_type_name}
-            patch_document_ds = patch_bid_documents_from_ds(doc_type, doc_type_name, added_bid_document[1],
-                                                            tender_id_long, bid_id, bid_token, 0, 'tender',
-                                                            procurement_method)
-            if patch_document_ds[0] == 1:
-                doc_resp_json["patch_document"] = {"status": "error", "description": str(patch_document_ds[1])}
-            else:
-                document_id = json.loads(patch_document_ds[1].content)['data']['id']
-                doc_resp_json["patch_document"] = {"status_code": patch_document_ds[2], "id": document_id}
-            doc_publish_info.append(doc_resp_json)
+        added_bid_document = ds.add_tender_document_to_ds(document_data)
+        patch_bid_documents_from_ds(doc_type, doc_type_name, added_bid_document, tender_id_long, bid_id, bid_token, 0, 'tender', procurement_method, ds)
     return doc_publish_info

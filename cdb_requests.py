@@ -151,10 +151,13 @@ class TenderRequests(object):
                               'GET', None, 'Get bid info', self.entity)
 
     def add_tender_document_to_ds(self, document_data):
-        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', document_data, 'Add tender document to DS', self.document, False)
+        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', document_data, 'Add document to DS (tenders)', self.document, False)
 
     def add_document_from_ds_to_tender(self, tender_id_long, tender_token, json_with_document, message):
         return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/documents?acc_token={}".format(tender_id_long, tender_token), 'POST', json_with_document, message, self.document)
+
+    def add_document_from_ds_to_tender_bid(self, tender_id_long, bid_id, doc_type_url, bid_token, json_with_document, message):
+        return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/bids/{}/{}?acc_token={}".format(tender_id_long, bid_id, doc_type_url, bid_token), 'POST', json_with_document, message, self.document)
 
 
 class AuctionRequests(object):
