@@ -58,6 +58,12 @@ def creation_of_tender(tc_request, user_id):
 
     if procurement_method == 'reporting':
         number_of_lots = 0
+    add_documents_tender = 0
+    if 'docs_for_tender' in tc_request:
+        add_documents_tender = 1
+    add_documents_bid = 0
+    if 'docs_for_bids' in tc_request:
+        add_documents_bid = 1
 
     response_json = dict()
 
@@ -84,8 +90,8 @@ def creation_of_tender(tc_request, user_id):
     response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', add_tender_company[2])
 
     # add documents to tender
-    # if add_documents == 1:
-    #     add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_version)
+    if add_documents_tender == 1:
+        add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_version)
 
     print 'Tender id ' + tender_id_long
     print 'Tender token ' + tender_token
@@ -95,7 +101,7 @@ def creation_of_tender(tc_request, user_id):
 
     if procurement_method in above_threshold_procurement:
         time.sleep(2)
-        make_bid = tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
+        make_bid = tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, add_documents_bid, json_tender)
 
         if received_tender_status == 'active.tendering':
             get_t_info = tender.get_tender_info(tender_id_long)
