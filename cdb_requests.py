@@ -32,8 +32,8 @@ def save_log(code, body, resp_header, host, endpoint, method, request_name, enti
 
 
 # Send request to cdb
-def request_to_cdb(headers, host, endpoint, method, json_request, request_name, entity):
-    if 'document' not in entity:
+def request_to_cdb(headers, host, endpoint, method, json_request, request_name, entity, is_json=True):
+    if is_json:
         json_request = json.dumps(json_request)
     attempts = 0
     for x in range(5):
@@ -151,10 +151,10 @@ class TenderRequests(object):
                               'GET', None, 'Get bid info', self.entity)
 
     def add_tender_document_to_ds(self, document_data):
-        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', document_data, 'Add tender document to DS', self.document)
+        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', document_data, 'Add tender document to DS', self.document, False)
 
-    def patch_tender_document_from_ds(self, tender_id_long, tender_token, json_with_document):
-        return request_to_cdb(tender_headers_patch_document_ds, self.ds_host, "/{}/documents?acc_token={}".format(tender_id_long, tender_token), 'PATCH', json_with_document, 'Add document from DS to tender', self.document)
+    def add_document_from_ds_to_tender(self, tender_id_long, tender_token, json_with_document, message):
+        return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/documents?acc_token={}".format(tender_id_long, tender_token), 'POST', json_with_document, message, self.document)
 
 
 class AuctionRequests(object):

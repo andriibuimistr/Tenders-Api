@@ -210,9 +210,9 @@ def run_cycle(bids_quantity, tender_id, procurement_method, api_version, if_docs
 
             bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
 
-            if if_docs == 1:
-                print "Add documents to bid"
-                document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, procurement_method)
+            # if if_docs == 1:
+            #     print "Add documents to bid"
+            document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, procurement_method)
         return bids_json, list_of_bids_json
 
 

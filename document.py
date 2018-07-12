@@ -105,40 +105,20 @@ def upload_documents_to_ds():
 
 
 # upload document from ds to tender
-def patch_tender_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc, t_id_long, t_token, lot_id, doc_of):
-    patch_bid_json = json.loads(added_tender_doc.content)
+def patch_tender_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc, t_id_long, t_token, lot_id, doc_of, ds):
+    add_document_json = json.loads(added_tender_doc.content)  # ??????????????????
     if type_for_doc != 0:
-        patch_bid_json['data']['documentType'] = type_for_doc
-    patch_bid_json['data']['title'] = name_for_doc
+        add_document_json['data']['documentType'] = type_for_doc
+    add_document_json['data']['title'] = name_for_doc
     if doc_of == 'lot':
-        patch_bid_json['data']['relatedItem'] = lot_id
-        patch_bid_json['data']['documentOf'] = 'lot'
+        add_document_json['data']['relatedItem'] = lot_id
+        add_document_json['data']['documentOf'] = 'lot'
     elif doc_of == 'item':
-        patch_bid_json['data']['relatedItem'] = lot_id
-        patch_bid_json['data']['documentOf'] = 'item'
+        add_document_json['data']['relatedItem'] = lot_id
+        add_document_json['data']['documentOf'] = 'item'
     else:
-        patch_bid_json['data']['documentOf'] = 'tender'
-    try:
-        s = requests.Session()
-        s.request("GET", "{}/api/{}/tenders".format(doc_host, doc_api_version))
-        r = requests.Request('POST',
-                             "{}/api/{}/tenders/{}/documents?acc_token={}".format(
-                                 doc_host, doc_api_version, t_id_long, t_token),
-                             data=json.dumps(patch_bid_json),
-                             headers=headers_patch_document_ds,
-                             cookies=requests.utils.dict_from_cookiejar(s.cookies))
-
-        prepped = s.prepare_request(r)
-        resp = s.send(prepped)
-        print('{}{}'.format("Patching documentation: ", name_for_doc))
-        if resp.status_code == 201:
-            print("       status code:  {}".format(resp.status_code))
-        else:
-            print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
-        return 0, resp, resp.status_code
-    except Exception as e:
-        return 1, e
+        add_document_json['data']['documentOf'] = 'tender'
+    ds.add_document_from_ds_to_tender(t_id_long, t_token, add_document_json, 'Add document from DS to tender - {}'.format(name_for_doc))
 
 
 # upload document from ds to bid
@@ -199,7 +179,7 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_v
     for doc_type in tender_documents_type:  # add one document for every document type
         doc_type_name = tender_documents_type[doc_type]
         added_tender_document = ds.add_tender_document_to_ds(document_data)
-        patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, 0, 'tender')
+        patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, 0, 'tender', ds)
 
     lot_number = 0
     for lot in range(len(list_of_id_lots)):
@@ -208,7 +188,7 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_v
         for doc_type in tender_documents_type:  # add one document for every document type
             doc_type_name = '{}{}{}'.format(tender_documents_type[doc_type], ' Лот ', lot_number)
             added_tender_document = ds.add_tender_document_to_ds(document_data)
-            patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, lot_id, 'lot')
+            patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, lot_id, 'lot', ds)
 
     return doc_publish_info
 
