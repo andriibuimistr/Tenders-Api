@@ -10,6 +10,7 @@ from flask import abort
 from tenders import tender_bid
 from cdb_requests import TenderRequests
 from tenders.data_for_tender import kiev_utc_now, generate_id_for_lot, generate_tender_json
+from document import *
 
 
 def extend_tender_period(api_version, accelerator, second_stage_tender_id):
@@ -78,6 +79,8 @@ def creation_of_tender(tc_request, user_id):
     add_tender_db = tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, tender_status, number_of_lots, user_id, api_version)
     if add_tender_db[1] == 1:
         abort(500, '{}'.format(add_tender_db[0]))
+
+    add_documents = add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_version)
 
     add_tender_company = core.add_one_tender_company(company_id, platform_host, tender_id_long, tender_token, 'tender')  # add first stage to company
     response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', add_tender_company[2])
