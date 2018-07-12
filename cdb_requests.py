@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from auctions.auction_data_for_requests import *
-from tenders.tender_data_for_requests import tender_headers_request, tender_host_selector, json_activate_tender, json_finish_first_stage, json_finish_pq
+from tenders.tender_data_for_requests import *
 from flask import abort
 import os
 import json
@@ -85,7 +85,9 @@ class TenderRequests(object):
         self.cdb = cdb
         self.host = tender_host_selector(cdb)[0]
         self.host_public = tender_host_selector(cdb)[1]
+        self.ds_host = tender_ds_host_selector(cdb)
         self.entity = 'tenders'
+        self.document = 'tender_documents'
 
     def publish_tender(self, json_tender):
         return request_to_cdb(tender_headers_request(self.cdb, json_tender), self.host, '', 'POST', json_tender, 'Publish tender', self.entity)
@@ -145,6 +147,12 @@ class TenderRequests(object):
     def get_bid_info(self, tender_id_long, bid_id, bid_token):
         return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token),
                               'GET', None, 'Get bid info', self.entity)
+
+    def add_tender_document_to_ds(self, document_data):
+        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', document_data, 'Add tender document to DS', self.document)
+
+    def patch_tender_document_from_ds(self, tender_id_long, tender_token, json_with_document):
+        return request_to_cdb(tender_headers_patch_document_ds, self.ds_host, "/{}/documents?acc_token={}".format(tender_id_long, tender_token), 'PATCH', json_with_document, 'Add document from DS to tender', self.document)
 
 
 class AuctionRequests(object):
