@@ -8,15 +8,13 @@ from datetime import datetime, timedelta
 import time
 from flask import abort
 from tenders import tender_bid
-from cdb_requests import TenderRequests
 from tenders.data_for_tender import kiev_utc_now, generate_id_for_lot, generate_tender_json
 from document import *
 
 
-def extend_tender_period(api_version, accelerator, second_stage_tender_id):
+def extend_tender_period(api_version, accelerator, second_stage_tender_id):  # extend tender period for second stage
     tender_draft = TenderRequests(api_version).get_tender_info(second_stage_tender_id)
     new_tender_json = tender_draft.json()
-    kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
     new_tender_json['data']['tenderPeriod']['endDate'] = str(
         datetime.now() + timedelta(minutes=int(round(11 * (1440.0 / accelerator)) + 1))) + kiev_now
     return new_tender_json
@@ -38,7 +36,6 @@ def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_meth
 def creation_of_tender(tc_request, user_id):
     procurement_method = tc_request["procurementMethodType"]
     number_of_items = int(tc_request["number_of_items"])
-    number_of_bids = int(tc_request["number_of_bids"])
     accelerator = int(tc_request["accelerator"])
     company_id = int(tc_request['company_id'])
     platform_host = tc_request['platform_host']
@@ -52,6 +49,11 @@ def creation_of_tender(tc_request, user_id):
     number_of_lots = 0
     if "number_of_lots" in tc_request:
         number_of_lots = int(tc_request["number_of_lots"])
+
+    number_of_bids = 0
+    if "number_of_bids" in tc_request and len(tc_request["number_of_bids"]) > 0:
+        number_of_bids = int(tc_request["number_of_bids"])
+
     if_features = False
     if 'if_features' in tc_request:
         if_features = 1

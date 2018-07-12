@@ -32,7 +32,7 @@ documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA',
 documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 
 # List of fields for tender create validator
-create_tender_required_fields = ['procurementMethodType', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
+create_tender_required_fields = ['procurementMethodType', 'number_of_items', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
 
 list_of_api_versions = ['2.4', 'dev']
 

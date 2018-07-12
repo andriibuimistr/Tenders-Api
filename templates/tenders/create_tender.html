@@ -13,40 +13,40 @@
                             </select>
                             </div>
                             <div class="number-of-lots col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                            <input type="text" name="number_of_lots" id="number_of_lots" class="form-control" placeholder="Number of lots" maxlength="2">
+                                <input type="text" name="number_of_lots" id="number_of_lots" class="form-control" placeholder="Number of lots" maxlength="2">
                             </div>
                             <div class="number-of-items col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                            <input type="text" name="number_of_items" class="form-control" placeholder="Number of items" maxlength="2">
+                                <input type="text" name="number_of_items" class="form-control" placeholder="Number of items" maxlength="2">
                             </div>
                             <div class="number-of-bids col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                            <input type="text" name="number_of_bids" class="form-control" placeholder="Number of bids" maxlength="2">
+                                <input type="text" name="number_of_bids" id="number_of_bids" class="form-control" placeholder="Number of bids" maxlength="2">
                             </div>
                             <div class="api-version col-lg-6 col-md-48 col-sm-48 col-xs-48">
-                            <select name="api_version" class="form-control" size="1">
-                                {% for version in api_versions %}
-                              <option value="{{version}}">{{version}}</option>
-                                {%endfor%}
-                            </select>
+                                <select name="api_version" class="form-control" size="1">
+                                    {% for version in api_versions %}
+                                  <option value="{{version}}">{{version}}</option>
+                                    {%endfor%}
+                                </select>
                             </div>
                             <div class="accelerator col-lg-8 col-md-48 col-sm-48 col-xs-48">
-                            <input type="text" name="accelerator" class="form-control" placeholder="Accelerator" maxlength="5">
+                                <input type="text" name="accelerator" class="form-control" placeholder="Accelerator" maxlength="5">
                             </div>
                             <div class="company_id col-lg-7 col-md-48 col-sm-48 col-xs-48">
-                            <input type="text" name="company_id" class="form-control" placeholder="Company id" maxlength="4">
+                                <input type="text" name="company_id" class="form-control" placeholder="Company id" maxlength="4">
                             </div>
                             <div class="platform-host col-lg-18 col-md-48 col-sm-48 col-xs-48">
-                            <select name="platform_host" class="form-control" size="1">
-                                {% for platform in range(platforms|length) %}
-                              <option value="{{platforms[platform].platform_url}}">{{platforms[platform].platform_name}}</option>
-                                {%endfor%}
-                            </select>
+                                <select name="platform_host" class="form-control" size="1">
+                                    {% for platform in range(platforms|length) %}
+                                  <option value="{{platforms[platform].platform_url}}">{{platforms[platform].platform_name}}</option>
+                                    {%endfor%}
+                                </select>
                             </div>
                             <div class="tender-status col-lg-15 col-md-48 col-sm-48 col-xs-48">
-                            <select name="tenderStatus" id="tenderStatus" class="form-control" size="1">
-                                {% for status in statuses %}
-                              <option value="{{status}}">{{status}}</option>
-                                {%endfor%}
-                            </select>
+                                <select name="tenderStatus" id="tenderStatus" class="form-control" size="1">
+                                    {% for status in statuses %}
+                                  <option value="{{status}}">{{status}}</option>
+                                    {%endfor%}
+                                </select>
                             </div>
                             <label class="checkbox-inline">
                                 <input type="checkbox" name="if_features" id="if_features" value="1"> Features<br>
@@ -55,10 +55,10 @@
                                 <input type="checkbox" name="skip_auction" id="skip_tender_auction" value="1"> Skip auction<br>
                             </label>
                             <label class="checkbox-inline">
-                                <input type="checkbox" name="docs_for_tender" value="1"> Documents for tender<br>
+                                <input type="checkbox" name="docs_for_tender" id="docs_for_tender" value="1"> Documents for tender<br>
                             </label>
                             <label class="checkbox-inline">
-                                <input type="checkbox" name="docs_for_bids" value="1"> Documents for bids<br>
+                                <input type="checkbox" name="docs_for_bids" id="docs_for_bids" value="1"> Documents for bids<br>
                             </label>
                         </div>
                             <div class="create-tender-button-div">

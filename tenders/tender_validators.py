@@ -15,7 +15,7 @@ def validator_create_tender(data):
 
     procurement_method = data["procurementMethodType"]
     number_of_items = data["number_of_items"]
-    number_of_bids = data["number_of_bids"]
+    # number_of_bids = data["number_of_bids"]
     accelerator = data["accelerator"]
     company_id = data['company_id']
     received_tender_status = data['tenderStatus']
@@ -36,10 +36,14 @@ def validator_create_tender(data):
     elif 1 > int(number_of_items) or int(number_of_items) > 20:
         abort(422, 'Number of items must be between 1 and 20')
 
-    if str(number_of_bids).isdigit() is False:
-        abort(400, 'Number of bids must be integer')
-    elif 0 > int(number_of_bids) or int(number_of_bids) > 10:
-        abort(422, 'Number of bids must be between 0 and 10')
+    if procurement_method not in limited_procurement:
+        if "number_of_bids" in data:
+            number_of_bids = data["number_of_bids"]
+            if str(number_of_bids).isdigit() is True:
+                if 0 > int(number_of_bids) or int(number_of_bids) > 10:
+                    abort(422, 'Number of bids must be between 0 and 10')
+            if str(number_of_bids).isdigit() is False and len(number_of_bids) > 0:
+                abort(400, 'Number of bids must be integer')
 
     if str(accelerator).isdigit() is False:
         abort(400, 'Accelerator must be integer')
