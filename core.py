@@ -2,8 +2,8 @@
 from database import db, Tenders, BidsTender, Platforms, PlatformRoles, Roles, Users, Auctions, BidsAuction
 import sys
 from tenders.data_for_tender import activate_contract_json
-from tenders.tender_data_for_requests import prequalification_approve_bid_json, prequalification_decline_bid_json, activate_award_json_select
 from cdb_requests import *
+from document import *
 
 
 invalid_tender_status_list = ['unsuccessful', 'cancelled']
@@ -265,9 +265,11 @@ def pass_pre_qualification(qualifications, tender_id_long, tender_token, api_ver
         qualification_bid_id = qualifications[x]['bidID']
         if qualification_bid_id in my_bids:
             time.sleep(1)
+            add_document_to_prequalification(tender_id_long, qualification_id, tender_token, api_version)
             action = tender.approve_prequalification(tender_id_long, qualification_id, tender_token, prequalification_approve_bid_json)
         else:
             time.sleep(1)
+            add_document_to_prequalification(tender_id_long, qualification_id, tender_token, api_version, False)
             action = tender.approve_prequalification(tender_id_long, qualification_id, tender_token, prequalification_decline_bid_json)
         bids_json.append(action)
     return bids_json

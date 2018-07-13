@@ -4,13 +4,18 @@ import os
 import json
 from cdb_requests import TenderRequests
 
+sign_name = 'sign.p7s'
 
-path = os.getcwd()  # path to file for upload
-file_for_upload = open('{}{}doc.pdf'.format(path, os.sep), 'rb').read()
-filename = 'doc.pdf'
-document_data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
-          "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
-                "----------------------------1507111922.4992--".format(filename, file_for_upload)
+
+def document_data(filename=False):
+    if not filename:
+        filename = 'doc.pdf'
+    doc_path = os.getcwd()  # path to file for upload
+    file_for_upload = open('{}{}doc.pdf'.format(doc_path, os.sep), 'rb').read()
+    data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
+           "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
+           "----------------------------1507111922.4992--".format(filename, file_for_upload)
+    return data
 
 
 tender_documents_type = {'technicalSpecifications': 'Технічний опис предмету закупівлі',
@@ -51,9 +56,7 @@ def patch_tender_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc,
 
 # upload document from ds to bid
 def patch_bid_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc, t_id_long, bid_id, bid_token, lot_id, doc_of, procurement_method, ds):
-
     patch_bid_json = json.loads(added_tender_doc.content)
-
     patch_bid_json['data']['documentType'] = type_for_doc
     patch_bid_json['data']['title'] = name_for_doc
 
@@ -84,7 +87,7 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_v
     ds = TenderRequests(api_version)
     for doc_type in tender_documents_type:  # add one document for every document type
         doc_type_name = tender_documents_type[doc_type]
-        added_tender_document = ds.add_tender_document_to_ds(document_data)
+        added_tender_document = ds.add_tender_document_to_ds(document_data())
         patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, 0, 'tender', ds)
 
     lot_number = 0
@@ -93,7 +96,7 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_v
         lot_id = list_of_id_lots[lot]
         for doc_type in tender_documents_type:  # add one document for every document type
             doc_type_name = '{}{}{}'.format(tender_documents_type[doc_type], ' Лот ', lot_number)
-            added_tender_document = ds.add_tender_document_to_ds(document_data)
+            added_tender_document = ds.add_tender_document_to_ds(document_data())
             patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, lot_id, 'lot', ds)
 
     return doc_publish_info
@@ -105,6 +108,18 @@ def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token, procurement_metho
     bid_document_types = docs_list_for_bid(procurement_method)
     for doc_type in bid_document_types:  # add one document for every document type
         doc_type_name = bid_document_types[doc_type]
-        added_bid_document = ds.add_tender_document_to_ds(document_data)
+        added_bid_document = ds.add_tender_document_to_ds(document_data())
         patch_bid_documents_from_ds(doc_type, doc_type_name, added_bid_document, tender_id_long, bid_id, bid_token, 0, 'tender', procurement_method, ds)
     return doc_publish_info
+
+
+def add_document_to_prequalification(tender_id_long, qualification_id, tender_token, api_version, qualified=True):
+    ds = TenderRequests(api_version)
+    document = ds.add_tender_document_to_ds(document_data())
+    document = document.json()
+    document['data']['title'] = 'Document for approve qualification'
+    if not qualified:
+        document['data']['title'] = 'Document for decline qualification'
+    ds.add_document_from_ds_to_prequalification(tender_id_long, qualification_id, tender_token, document, 'Add document from DS to prequalification - {}'.format(qualification_id))
+    sign = ds.add_tender_document_to_ds(document_data(sign_name)).json()
+    ds.add_document_from_ds_to_prequalification(tender_id_long, qualification_id, tender_token, sign, 'Add sign from DS to prequalification - {}'.format(qualification_id))
