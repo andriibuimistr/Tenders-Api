@@ -256,7 +256,6 @@ def list_of_qualifications(tender_id_long, api_version):
 def pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version):
     list_of_my_bids = BidsTender.query.filter_by(tender_id=tender_id_long).all()
     my_bids = []
-    bids_json = []
     tender = TenderRequests(api_version)
     for x in range(len(list_of_my_bids)):  # select bid_id of every bid
         my_bids.append(list_of_my_bids[x].bid_id)
@@ -265,25 +264,21 @@ def pass_pre_qualification(qualifications, tender_id_long, tender_token, api_ver
         qualification_bid_id = qualifications[x]['bidID']
         if qualification_bid_id in my_bids:
             time.sleep(1)
-            add_document_to_prequalification(tender_id_long, qualification_id, tender_token, api_version)
-            action = tender.approve_prequalification(tender_id_long, qualification_id, tender_token, prequalification_approve_bid_json)
+            add_document_to_entity(tender_id_long, qualification_id, tender_token, api_version, 'qualifications')
+            tender.approve_prequalification(tender_id_long, qualification_id, tender_token, prequalification_approve_bid_json)
         else:
             time.sleep(1)
-            add_document_to_prequalification(tender_id_long, qualification_id, tender_token, api_version, False)
-            action = tender.approve_prequalification(tender_id_long, qualification_id, tender_token, prequalification_decline_bid_json)
-        bids_json.append(action)
-    return bids_json
+            add_document_to_entity(tender_id_long, qualification_id, tender_token, api_version, 'qualifications', False)
+            tender.approve_prequalification(tender_id_long, qualification_id, tender_token, prequalification_decline_bid_json)
 
 
 def pass_second_pre_qualification(qualifications, tender_id, tender_token, api_version):
-    bids_json = []
     tender = TenderRequests(api_version)
     for x in range(len(qualifications)):
         qualification_id = qualifications[x]['id']
         time.sleep(1)
-        action = tender.approve_prequalification(tender_id, qualification_id, tender_token, prequalification_approve_bid_json)
-        bids_json.append(action)
-    return bids_json
+        add_document_to_entity(tender_id, qualification_id, tender_token, api_version, 'qualifications')
+        tender.approve_prequalification(tender_id, qualification_id, tender_token, prequalification_approve_bid_json)
 
 
 def run_activate_award(api_version, tender_id_long, tender_token, list_of_awards, procurement_method):
@@ -293,6 +288,7 @@ def run_activate_award(api_version, tender_id_long, tender_token, list_of_awards
     for award in range(len(list_of_awards)):
         award_number += 1
         award_id = list_of_awards[award]['id']
+        add_document_to_entity(tender_id_long, award_id, tender_token, api_version, 'awards')
         tender.activate_award_contract(tender_id_long, 'awards', award_id, tender_token, activate_award_json, award_number)
 
 
@@ -303,4 +299,5 @@ def run_activate_contract(api_version, tender_id_long, tender_token, list_of_con
     for contract in range(len(list_of_contracts)):
         contract_number += 1
         contract_id = list_of_contracts[contract]['id']
+        add_document_to_entity(tender_id_long, contract_id, tender_token, api_version, 'contracts')
         tender.activate_award_contract(tender_id_long, 'contracts', contract_id, tender_token, json_activate_contract, contract_number)

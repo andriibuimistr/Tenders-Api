@@ -159,8 +159,8 @@ class TenderRequests(object):
     def add_document_from_ds_to_tender_bid(self, tender_id_long, bid_id, doc_type_url, bid_token, json_with_document, message):
         return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/bids/{}/{}?acc_token={}".format(tender_id_long, bid_id, doc_type_url, bid_token), 'POST', json_with_document, message, self.document)
 
-    def add_document_from_ds_to_prequalification(self, tender_id_long, qualification_id, tender_token, json_with_document, message):
-        return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/qualifications/{}/documents?acc_token={}".format(tender_id_long, qualification_id, tender_token), 'POST', json_with_document, message, self.document)
+    def add_document_from_ds_to_entity(self, tender_id_long, entity_id, tender_token, json_with_document, message, entity):
+        return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/{}/{}/documents?acc_token={}".format(tender_id_long, entity, entity_id, tender_token), 'POST', json_with_document, message, self.document)
 
 
 class AuctionRequests(object):

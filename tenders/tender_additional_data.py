@@ -38,3 +38,7 @@ list_of_api_versions = ['2.4', 'dev']
 
 # Get local timezone
 kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
+
+document_types_for_award = ['notice', 'evaluationReports', 'winningBid', 'complaints']
+document_types_for_contract = ['notice', 'contractSigned', 'contractArrangements', 'contractSchedule', 'contractAnnexe', 'contractGuarantees', 'subContract']
+

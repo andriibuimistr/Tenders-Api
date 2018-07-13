@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-from tenders.tender_additional_data import documents_above_procedures, documents_above_non_financial, documents_above_non_confidential
+from tenders.tender_additional_data import *
 import os
 import json
 from cdb_requests import TenderRequests
+from random import choice
 
 sign_name = 'sign.p7s'
 
@@ -113,13 +114,21 @@ def add_documents_to_bid_ds(tender_id_long, bid_id, bid_token, procurement_metho
     return doc_publish_info
 
 
-def add_document_to_prequalification(tender_id_long, qualification_id, tender_token, api_version, qualified=True):
+def add_document_to_entity(tender_id_long, entity_id, tender_token, api_version, entity, qualified=True):
     ds = TenderRequests(api_version)
     document = ds.add_tender_document_to_ds(document_data())
     document = document.json()
-    document['data']['title'] = 'Document for approve qualification'
-    if not qualified:
-        document['data']['title'] = 'Document for decline qualification'
-    ds.add_document_from_ds_to_prequalification(tender_id_long, qualification_id, tender_token, document, 'Add document from DS to prequalification - {}'.format(qualification_id))
+    if entity == 'qualifications':
+        document['data']['title'] = 'Document for approve qualification'
+        document['data']['documentType'] = choice(document_types_for_award)
+        if not qualified:
+            document['data']['title'] = 'Document for decline qualification'
+    elif entity == 'awards':
+        document['data']['title'] = 'Document for approve award'
+        document['data']['documentType'] = choice(document_types_for_award)
+    elif entity == 'contracts':
+        document['data']['title'] = 'Document for contract'
+        document['data']['documentType'] = choice(document_types_for_contract)
+    ds.add_document_from_ds_to_entity(tender_id_long, entity_id, tender_token, document, 'Add document from DS to {} - {}'.format(entity, entity_id), entity)
     sign = ds.add_tender_document_to_ds(document_data(sign_name)).json()
-    ds.add_document_from_ds_to_prequalification(tender_id_long, qualification_id, tender_token, sign, 'Add sign from DS to prequalification - {}'.format(qualification_id))
+    ds.add_document_from_ds_to_entity(tender_id_long, entity_id, tender_token, sign, 'Add sign from DS to {} - {}'.format(entity, entity_id), entity)
