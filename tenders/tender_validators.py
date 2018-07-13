@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-from tenders.tender_additional_data import create_tender_required_fields, list_of_api_versions
-from tender_additional_data import above_threshold_procurement, below_threshold_procurement, limited_procurement, without_pre_qualification_procedures, prequalification_procedures, competitive_procedures, \
-    negotiation_procurement, tender_status_list, without_pre_qualification_procedures_status, prequalification_procedures_status, competitive_procedures_status, competitive_dialogue_eu_status, below_threshold_status, \
-    limited_status, statuses_with_high_acceleration, statuses_negotiation_with_high_acceleration
+from tender_additional_data import *
 from flask import abort
 import core
 from database import BidsTender, Tenders, db
@@ -15,7 +12,6 @@ def validator_create_tender(data):
 
     procurement_method = data["procurementMethodType"]
     number_of_items = data["number_of_items"]
-    # number_of_bids = data["number_of_bids"]
     accelerator = data["accelerator"]
     company_id = data['company_id']
     received_tender_status = data['tenderStatus']

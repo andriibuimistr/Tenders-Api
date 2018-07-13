@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from database import db, Tenders, BidsTender, Platforms, PlatformRoles, Roles, Users, Auctions, BidsAuction
+from database import *
 import sys
 from tenders.data_for_tender import activate_contract_json
 from cdb_requests import *

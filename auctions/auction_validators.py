@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from auction_additional_data import create_auction_required_fields, auction_status_to_create, cdb_versions, auction_procurement_method_types, dgf_insider_steps
+from auction_additional_data import *
 from flask import abort
 import core
 from database import BidsAuction, Auctions, db

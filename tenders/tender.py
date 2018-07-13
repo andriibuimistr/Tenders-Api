@@ -2,9 +2,8 @@
 from tenders.tender_bid import suppliers_for_limited
 import core
 from core import *
-from tenders.tender_additional_data import *
 from database import db, Tenders
-from datetime import datetime, timedelta
+from datetime import timedelta
 import time
 from flask import abort
 from tenders import tender_bid
@@ -151,8 +150,6 @@ def creation_of_tender(tc_request, user_id):
 
                             if get_t_info.json()['data']['status'] == 'active.stage2.pending':
                                 response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                # response_json['status'] = 'success'
-                                # response_code = 201
 
                                 tender.finish_first_stage(tender_id_long, tender_token)  # Finish first stage
 
@@ -306,13 +303,9 @@ def creation_of_tender(tc_request, user_id):
                     time.sleep(2)
                     tender.finish_prequalification(tender_id_long, tender_token)
                     db.session.remove()
-
-                    # response_code = 201  # change
-
                     waiting_time = int(round(7200.0 / accelerator * 60))
                     time_counter(waiting_time, 'Check qualification status')
 
-                # if response_code in [200, 201]:
                 if received_tender_status == 'active.qualification':
                     attempt_counter = 0
                     for attempt in range(30):  # check if tender is in qualification status

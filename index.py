@@ -7,10 +7,10 @@ from auctions import auction
 from datetime import timedelta
 import core
 from tools.pages import Pages
-from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for
+from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for, g
 from flask_httpauth import HTTPBasicAuth
 import os
-import flask
+# import flask
 import flask_login
 from flask_cors import CORS, cross_origin
 from datetime import datetime
@@ -115,10 +115,10 @@ def get_user_id():
 # Check session before every request
 @app.before_request
 def before_request():
-    flask.session.permanent = True
+    session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=120)
-    flask.session.modified = True
-    flask.g.user = flask_login.current_user
+    session.modified = True
+    g.user = flask_login.current_user
 
 
 # Generate template for Login form
