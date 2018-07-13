@@ -84,3 +84,12 @@ def generate_conclusion_false():
                       }
                   }
     return conclusion
+
+
+def generate_json_for_post():
+    post = {"data": {
+                    "title": "Lorem ipsum",
+                    "description": "Lorem ipsum dolor sit amet."
+                  }
+            }
+    return post

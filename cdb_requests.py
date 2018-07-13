@@ -258,5 +258,5 @@ class Monitoring(object):
     def patch_monitoring(self, monitoring_id, json_body, message):
         return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_body, message, self.entity)
 
-    # def activate_monitoring(self, monitoring_id):
-    #     return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_status_active, 'Activate monitoring', self.entity)
+    def add_post(self, monitoring_id, post_json):
+        return request_to_cdb(self.headers, self.host, '/{}/posts'.format(monitoring_id), 'POST', post_json, 'Add post to monitoring', self.entity)

@@ -22,6 +22,11 @@ monitoring_id = mn.json()['data']['id']
 
 add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(), 'Add decision to monitoring')
 a_monitoring = monitoring.patch_monitoring(monitoring_id, json_status_active, 'Activate monitoring')
+
+add_post = monitoring.add_post(monitoring_id, generate_json_for_post())
+
 add_conclusion = monitoring.patch_monitoring(monitoring_id, generate_conclusion_true(), 'Add conclusion to monitoring')
 monitoring_to_addressed = monitoring.patch_monitoring(monitoring_id, json_status_addressed, 'Monitoring to addressed status')
-print(monitoring_to_addressed.json())
+
+# add_post = monitoring.add_post(monitoring_id, generate_json_for_post())
+# print(add_post.json())
