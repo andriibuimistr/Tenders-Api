@@ -56,3 +56,31 @@ def generate_decision():
                   }
                 }
     return decision
+
+
+def generate_conclusion_true():
+    conclusion = {"data": {
+                        "conclusion": {
+                              "violationType": [
+                                    "documentsForm",
+                                    "corruptionAwarded"
+                              ],
+                              "description": "Ashes, ashes, we all fall down 1112222222",
+                              "stringsAttached": "Pocket full of posies",
+                              "auditFinding": "Ring around the rosies",
+                              "violationOccurred": True
+                            }
+                        }
+                  }
+    return conclusion
+
+
+def generate_conclusion_false():
+    conclusion = {"data": {
+                        "conclusion": {
+                          # "relatedParty": "3f193d61e4ca3863a60e29557b338073",
+                          "violationOccurred": False
+                        }
+                      }
+                  }
+    return conclusion

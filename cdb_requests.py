@@ -245,16 +245,18 @@ class Privatization(AuctionRequests):
 
 class Monitoring(object):
 
-    def __init__(self):
+    def __init__(self, cdb):
         self.host = monitoring_host
         self.headers = monitoring_headers
         self.entity = 'monitoring'
+        self.tenders_host = tender_host_selector(cdb)[0]
+        self.cdb = cdb
 
     def publish_monitoring(self, json_monitoring):
         return request_to_cdb(self.headers, self.host, '', 'POST', json_monitoring, 'Publish monitoring', self.entity)
 
-    def add_decision(self, monitoring_id, json_decision):
-        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_decision, 'Add decision to monitoring', self.entity)
+    def patch_monitoring(self, monitoring_id, json_body, message):
+        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_body, message, self.entity)
 
-    def activate_monitoring(self, monitoring_id):
-        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_status_active, 'Activate monitoring', self.entity)
+    # def activate_monitoring(self, monitoring_id):
+    #     return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_status_active, 'Activate monitoring', self.entity)

@@ -133,3 +133,9 @@ def activate_award_json_select(procurement_method):
                                   }
                                 }
     return activate_award_json_negotiation
+
+
+json_status_addressed = {"data": {
+                                "status": "addressed"
+                              }
+                         }
