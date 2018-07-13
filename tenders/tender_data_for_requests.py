@@ -1,5 +1,5 @@
 from tender_additional_data import *
-from key import auth_key, auth_key_ds
+from key import auth_key, auth_key_ds, key_monitoring
 import json
 
 
@@ -20,6 +20,9 @@ def tender_ds_host_selector(cdb_version):
     else:
         host = 'https://upload.docs-sandbox.openprocurement.org/upload'
     return host
+
+
+monitoring_host = 'https://audit-api-sandbox.prozorro.gov.ua/api/2.4/monitorings'
 
 
 # generate headers for create tender
@@ -46,6 +49,10 @@ tender_headers_patch_document_ds = {
     'content-type': "application/json",
     'cache-control': "no-cache",
     }
+
+monitoring_headers = {"Authorization": "Basic {}".format(key_monitoring),
+                      "Content-Type": "application/json",
+                      "Host": "audit-api-sandbox.prozorro.gov.ua"}
 
 
 json_status_active = {

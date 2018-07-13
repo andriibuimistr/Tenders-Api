@@ -241,3 +241,20 @@ class Privatization(AuctionRequests):
 
     def create_transfer(self):
         return request_to_cdb(auction_headers_request(self.cdb, transfer_json), self.host_p, '', 'POST', transfer_json, 'Create transfer', self.entity)
+
+
+class Monitoring(object):
+
+    def __init__(self):
+        self.host = monitoring_host
+        self.headers = monitoring_headers
+        self.entity = 'monitoring'
+
+    def publish_monitoring(self, json_monitoring):
+        return request_to_cdb(self.headers, self.host, '', 'POST', json_monitoring, 'Publish monitoring', self.entity)
+
+    def add_decision(self, monitoring_id, json_decision):
+        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_decision, 'Add decision to monitoring', self.entity)
+
+    def activate_monitoring(self, monitoring_id):
+        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_status_active, 'Activate monitoring', self.entity)

@@ -5,9 +5,10 @@ import pytz
 from datetime import datetime, timedelta
 import binascii
 import os
+from tenders.tender_additional_data import *
 
 fake = Faker('uk_UA')
-kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
+# kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
 def decision_date():
@@ -15,11 +16,11 @@ def decision_date():
 
 
 def auction_period_start_date(lot_accelerator):
-    return (datetime.now() + timedelta(minutes=8*(1440/lot_accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+    return (datetime.now() + timedelta(minutes=8*(1440/lot_accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
 
 
 def auction_period_end_date(accelerator):
-    return (datetime.now() + timedelta(minutes=1000*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+    return (datetime.now() + timedelta(minutes=1000*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
 
 
 def generate_id_for_item():
