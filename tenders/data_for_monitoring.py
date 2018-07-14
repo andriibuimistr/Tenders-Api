@@ -7,7 +7,7 @@ def decision_date():
     return (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
 
 
-def generate_monitoring_json(tender_id_long):
+def generate_monitoring_json(tender_id_long, accelerator):
     monitoring_data = {"data": {
                             "reasons": [
                               "public",
@@ -18,6 +18,7 @@ def generate_monitoring_json(tender_id_long):
                               "awarding",
                               "contracting"
                             ],
+                            "monitoringDetails": "accelerator={}".format(accelerator),
                             "parties": [
                               {
                                 "contactPoint": {

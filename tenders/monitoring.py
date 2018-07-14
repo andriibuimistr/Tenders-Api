@@ -15,18 +15,16 @@ tender_token = t_publish.json()['access']['token']
 time.sleep(1)
 t_activate = tender.activate_tender(tender_id_long, tender_token, procurement_method)
 
-json_monitoring = generate_monitoring_json(tender_id_long)
+json_monitoring = generate_monitoring_json(tender_id_long, accelerator=1440)
 monitoring = Monitoring(cdb)
 mn = monitoring.publish_monitoring(json_monitoring)
 monitoring_id = mn.json()['data']['id']
 
 add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(), 'Add decision to monitoring')
 a_monitoring = monitoring.patch_monitoring(monitoring_id, json_status_active, 'Activate monitoring')
+# print(a_monitoring.json())
 
 add_post = monitoring.add_post(monitoring_id, generate_json_for_post())
 
 add_conclusion = monitoring.patch_monitoring(monitoring_id, generate_conclusion_true(), 'Add conclusion to monitoring')
 monitoring_to_addressed = monitoring.patch_monitoring(monitoring_id, json_status_addressed, 'Monitoring to addressed status')
-
-# add_post = monitoring.add_post(monitoring_id, generate_json_for_post())
-# print(add_post.json())
