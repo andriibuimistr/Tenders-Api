@@ -2,6 +2,7 @@
 from tenders.data_for_tender import *
 from tenders.data_for_monitoring import *
 from document import *
+from pprint import pprint
 
 cdb = '2.4'
 procurement_method = 'belowThreshold'
@@ -33,4 +34,4 @@ add_post = monitoring.add_post(monitoring_id, generate_json_for_post(document())
 
 add_conclusion = monitoring.patch_monitoring(monitoring_id, generate_conclusion_true(document()), 'Add conclusion to monitoring')
 monitoring_to_addressed = monitoring.patch_monitoring(monitoring_id, json_status_addressed, 'Monitoring to addressed status')
-print(monitoring_to_addressed.json())
+pprint(monitoring_to_addressed.json())

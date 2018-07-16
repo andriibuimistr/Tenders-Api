@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 from tenders.tender_additional_data import *
+from faker import Faker
+
+fake = Faker('uk_UA')
 
 
 def decision_date():
@@ -53,7 +56,7 @@ def generate_decision(document):
     decision = {"data": {
                     "decision": {
                       "date": decision_date(),
-                      "description": "Описание decision",
+                      "description": fake.text(500).replace('\n', ' '),
                       "documents": [document['data']]
                     }
                   }
@@ -62,16 +65,16 @@ def generate_decision(document):
 
 
 def generate_conclusion_true(document):
-    document['data']['title'] = 'Документ для висновку (Document for conclusion, status TRUE)'
+    document['data']['title'] = 'Документ для висновку. Порушення виявлені (Document for conclusion, status TRUE)'
     conclusion = {"data": {
                         "conclusion": {
                               "violationType": [
                                     "documentsForm",
                                     "corruptionAwarded"
                               ],
-                              "description": "Ashes, ashes, we all fall down 1112222222",
-                              "stringsAttached": "Pocket full of posies",
-                              "auditFinding": "Ring around the rosies",
+                              "description": fake.text(500).replace('\n', ' '),
+                              "stringsAttached": fake.text(50).replace('\n', ' '),
+                              "auditFinding": fake.text(50).replace('\n', ' '),
                               "violationOccurred": True,
                               "documents": [document['data']]
                             }
@@ -80,10 +83,12 @@ def generate_conclusion_true(document):
     return conclusion
 
 
-def generate_conclusion_false():
+def generate_conclusion_false(document):
+    document['data']['title'] = 'Документ для висновку. Порушення не виявлені (Document for conclusion, status FALSE)'
     conclusion = {"data": {
                         "conclusion": {
                           "violationOccurred": False,
+                          "documents": [document['data']]
                         }
                       }
                   }
@@ -93,8 +98,8 @@ def generate_conclusion_false():
 def generate_json_for_post(document):
     document['data']['title'] = 'Документ для пояснення (Document for post)'
     post = {"data": {
-                    "title": "Lorem ipsum",
-                    "description": "Lorem ipsum dolor sit amet.",
+                    "title": fake.text(50).replace('\n', ' '),
+                    "description": fake.text(200).replace('\n', ' '),
                     "documents": [document['data']]
                   }
             }
