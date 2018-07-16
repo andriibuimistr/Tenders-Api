@@ -27,7 +27,7 @@ monitoring = Monitoring(cdb)
 mn = monitoring.publish_monitoring(json_monitoring)
 monitoring_id = mn.json()['data']['id']
 
-add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(document()), 'Add decision to monitoring')
+add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(cdb, True), 'Add decision to monitoring')
 a_monitoring = monitoring.patch_monitoring(monitoring_id, json_status_active, 'Activate monitoring')
 
 

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
-from tenders.tender_additional_data import *
+# from datetime import timedelta
+# from tenders.tender_additional_data import *
 from faker import Faker
+from document import *
 
 fake = Faker('uk_UA')
 
@@ -51,16 +52,21 @@ def generate_monitoring_json(tender_id_long, accelerator):
     return monitoring_data
 
 
-def generate_decision(document):
-    document['data']['title'] = 'Документ для рішення про початок моніторингу (Document for decision)'
+def generate_decision(cdb, with_documents=False):
     decision = {"data": {
                     "decision": {
                       "date": decision_date(),
                       "description": fake.text(500).replace('\n', ' '),
-                      "documents": [document['data']]
                     }
                   }
                 }
+    if with_documents:
+        documents = list()
+        for doc in range(5):
+            document = add_document_to_tender_ds(cdb)
+            document['data']['title'] = 'Документ для рішення про початок моніторингу (Document for decision) - {}'.format(doc)
+            documents.append(document['data'])
+        decision['documents'] = documents
     return decision
 
 
@@ -111,7 +117,6 @@ def elimination_resolution(document):
     resolution = {"data": {
                         "eliminationResolution": {
                           "description": fake.text(200).replace('\n', ' '),
-                          # "relatedParty": "3f193d61e4ca3863a60e29557b338073",
                           "resultByType": {
                             "corruptionAwarded": "not_eliminated",
                             "documentsForm": "eliminated"
