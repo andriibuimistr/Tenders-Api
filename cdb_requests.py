@@ -269,3 +269,9 @@ class Monitoring(object):
 
     def add_elimination_report(self, monitoring_id, monitoring_token, json_with_report):
         return request_to_cdb(tender_headers_request(self.cdb, json_with_report), self.host, '/{}/eliminationReport?acc_token={}'.format(monitoring_id, monitoring_token), 'PUT', json_with_report, 'Add eliminationReport by tender owner', self.entity)
+
+    def get_monitoring_info(self, monitoring_id):
+        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'GET', None, 'Get monitoring info', self.entity)
+
+    def get_list_of_monitorings(self):
+        return request_to_cdb(self.headers, self.host, '', 'GET', None, 'Get list of monitorings', self.entity)

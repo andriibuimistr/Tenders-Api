@@ -61,6 +61,12 @@ json_status_active = {
     }
 }
 
+json_status_completed = {
+    "data": {
+        "status": "completed"
+    }
+}
+
 json_finish_first_stage = {
     "data": {
         "status": "active.stage2.waiting"

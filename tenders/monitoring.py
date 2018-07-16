@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from tenders.data_for_tender import *
 from tenders.data_for_monitoring import *
-from document import *
+# from document import *
 from pprint import pprint
+# from cdb_requests import *
+from core import *
 
+add_documents = True
 cdb = '2.4'
 procurement_method = 'belowThreshold'
 json_tender = generate_tender_json(procurement_method, number_of_lots=0, number_of_items=3, accelerator=1, received_tender_status='active.tendering', list_of_lots_id=[], if_features=0, skip_auction=True)
@@ -27,7 +30,7 @@ monitoring = Monitoring(cdb)
 mn = monitoring.publish_monitoring(json_monitoring)
 monitoring_id = mn.json()['data']['id']
 
-add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(cdb, True), 'Add decision to monitoring')
+add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(cdb, add_documents), 'Add decision to monitoring')
 a_monitoring = monitoring.patch_monitoring(monitoring_id, json_status_active, 'Activate monitoring')
 
 
@@ -41,4 +44,9 @@ monitoring_to_addressed = monitoring.patch_monitoring(monitoring_id, json_status
 
 add_elimination_report = monitoring.add_elimination_report(monitoring_id, monitoring_owner_token, elimination_report(document()))
 add_elimination_resolution = monitoring.patch_monitoring(monitoring_id, elimination_resolution(document()), 'Add eliminationResolution to monitoring')
-pprint(add_elimination_resolution.json())
+# pprint(add_elimination_resolution.json())
+elimination_period = monitoring.get_monitoring_info(monitoring_id).json()['data']['eliminationPeriod']['endDate']
+waiting_time = count_waiting_time(elimination_period, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now), cdb, 'monitoring')
+time_counter(waiting_time, 'Wait for eliminationPeriod endDate')
+monitoring_to_completed = monitoring.patch_monitoring(monitoring_id, json_status_completed, 'Change monitoring status to completed')
+pprint(monitoring_to_completed.json())

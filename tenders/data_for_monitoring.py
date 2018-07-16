@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# from datetime import timedelta
+from datetime import timedelta
 # from tenders.tender_additional_data import *
 from faker import Faker
 from document import *
@@ -52,7 +52,7 @@ def generate_monitoring_json(tender_id_long, accelerator):
     return monitoring_data
 
 
-def generate_decision(cdb, with_documents=False):
+def generate_decision(cdb, add_documents):
     decision = {"data": {
                     "decision": {
                       "date": decision_date(),
@@ -60,7 +60,7 @@ def generate_decision(cdb, with_documents=False):
                     }
                   }
                 }
-    if with_documents:
+    if add_documents:
         documents = list()
         for doc in range(5):
             document = add_document_to_tender_ds(cdb)

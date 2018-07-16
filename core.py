@@ -7,7 +7,6 @@ from document import *
 
 
 # invalid_tender_status_list = ['unsuccessful', 'cancelled']
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def time_counter(waiting_time, message=''):
@@ -231,6 +230,8 @@ def get_time_difference(api_version, entity=''):
     lt = int(time.mktime(datetime.utcnow().timetuple()))
     if entity == 'lots':
         r = Privatization(entity).get_list_of_lots()
+    elif entity == 'monitoring':
+        r = Monitoring(api_version).get_list_of_monitorings()
     else:
         r = TenderRequests(api_version).get_list_of_tenders()
     st = int(time.mktime(datetime.strptime(r.headers['Date'][-24:-4], "%d %b %Y %H:%M:%S").timetuple()))

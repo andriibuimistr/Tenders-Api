@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from tenders.tender_additional_data import *
-import os
+# import os
 import json
 from cdb_requests import TenderRequests
 from random import choice
-from core import *
+from config import ROOT_DIR
+# from core import *
 
 sign_name = 'sign.p7s'
 
