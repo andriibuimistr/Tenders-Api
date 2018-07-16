@@ -50,7 +50,7 @@ def create_asset(items):
         return False
 
     rectification = lot.get_lot_info(lot_id_long).json()['data']['rectificationPeriod']['endDate']  # get tender period end date
-    waiting_time = count_waiting_time(rectification, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), None, 'lots')
+    waiting_time = count_waiting_time(rectification, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now), None, 'lots')
     if waiting_time > 0:  # delete in the future
         time_counter(waiting_time, 'Check if rectificationPeriod is finished')
 

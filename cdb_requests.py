@@ -263,3 +263,9 @@ class Monitoring(object):
 
     def add_document_to_monitoring_entity(self, monitoring_id, entity, json_with_document, message):
         return request_to_cdb(self.headers, self.host, '/{}/{}'.format(monitoring_id, entity), 'PATCH', json_with_document, message, entity)
+
+    def get_monitoring_token(self, monitoring_id, tender_token):
+        return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/credentials?acc_token={}'.format(monitoring_id, tender_token), 'PATCH', None, 'Get monitoring token', self.entity)
+
+    def add_elimination_report(self, monitoring_id, monitoring_token, json_with_report):
+        return request_to_cdb(tender_headers_request(self.cdb, json_with_report), self.host, '/{}/eliminationReport?acc_token={}'.format(monitoring_id, monitoring_token), 'PUT', json_with_report, 'Add eliminationReport by tender owner', self.entity)

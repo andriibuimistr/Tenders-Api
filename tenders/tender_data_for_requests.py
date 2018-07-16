@@ -26,15 +26,16 @@ monitoring_host = 'https://audit-api-sandbox.prozorro.gov.ua/api/2.4/monitorings
 
 
 # generate headers for create tender
-def tender_headers_request(cdb_version, json_data):
-    if cdb_version == 'dev':
-        host_headers = 'api-sandbox.prozorro.openprocurement.net'
-    else:
-        host_headers = 'lb.api-sandbox.openprocurement.org'
+def tender_headers_request(cdb_version, json_data, monitoring=False):
+    # if cdb_version == 'dev':
+    #     host_headers = 'api-sandbox.prozorro.openprocurement.net'
+    # else:
+    #     host_headers = 'lb.api-sandbox.openprocurement.org'
+    #     if monitoring:
+    #         host_headers = 'audit-api-sandbox.prozorro.gov.ua'
     headers = {"Authorization": "Basic {}".format(auth_key),
                "Content-Length": "{}".format(len(json.dumps(json_data))),
-               "Content-Type": "application/json",
-               "Host": host_headers}
+               "Content-Type": "application/json"}  # "Host": host_headers
     return headers
 
 
@@ -51,8 +52,7 @@ tender_headers_patch_document_ds = {
     }
 
 monitoring_headers = {"Authorization": "Basic {}".format(key_monitoring),
-                      "Content-Type": "application/json",
-                      "Host": "audit-api-sandbox.prozorro.gov.ua"}
+                      "Content-Type": "application/json"}  # "Host": "audit-api-sandbox.prozorro.gov.ua"
 
 
 json_status_active = {

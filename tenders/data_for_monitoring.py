@@ -104,3 +104,31 @@ def generate_json_for_post(document):
                   }
             }
     return post
+
+
+def elimination_resolution(document):
+    document['data']['title'] = 'Документ про Підтвердження факту усунення порушення (Document of eliminationResolution)'
+    resolution = {"data": {
+                        "eliminationResolution": {
+                          "description": fake.text(200).replace('\n', ' '),
+                          # "relatedParty": "3f193d61e4ca3863a60e29557b338073",
+                          "resultByType": {
+                            "corruptionAwarded": "not_eliminated",
+                            "documentsForm": "eliminated"
+                          },
+                          "documents": [document['data']],
+                          "result": "partly"
+                        }
+                      }
+                  }
+    return resolution
+
+
+def elimination_report(document):
+    document['data']['title'] = 'Документ до Оприлюднення інформації про усунення порушень (Document of eliminationReport)'
+    report = {"data": {
+                "documents": [document['data']],
+                "description": "The procurement requirements have been fixed and the changes are attached."
+              }
+              }
+    return report
