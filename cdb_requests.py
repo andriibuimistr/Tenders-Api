@@ -260,3 +260,6 @@ class Monitoring(object):
 
     def add_post(self, monitoring_id, post_json):
         return request_to_cdb(self.headers, self.host, '/{}/posts'.format(monitoring_id), 'POST', post_json, 'Add post to monitoring', self.entity)
+
+    def add_document_to_monitoring_entity(self, monitoring_id, entity, json_with_document, message):
+        return request_to_cdb(self.headers, self.host, '/{}/{}'.format(monitoring_id, entity), 'PATCH', json_with_document, message, entity)

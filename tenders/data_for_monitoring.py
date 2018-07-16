@@ -48,18 +48,21 @@ def generate_monitoring_json(tender_id_long, accelerator):
     return monitoring_data
 
 
-def generate_decision():
+def generate_decision(document):
+    document['data']['title'] = 'Документ для рішення про початок моніторингу (Document for decision)'
     decision = {"data": {
                     "decision": {
                       "date": decision_date(),
-                      "description": "Описание decision"
+                      "description": "Описание decision",
+                      "documents": [document['data']]
                     }
                   }
                 }
     return decision
 
 
-def generate_conclusion_true():
+def generate_conclusion_true(document):
+    document['data']['title'] = 'Документ для висновку (Document for conclusion, status TRUE)'
     conclusion = {"data": {
                         "conclusion": {
                               "violationType": [
@@ -69,7 +72,8 @@ def generate_conclusion_true():
                               "description": "Ashes, ashes, we all fall down 1112222222",
                               "stringsAttached": "Pocket full of posies",
                               "auditFinding": "Ring around the rosies",
-                              "violationOccurred": True
+                              "violationOccurred": True,
+                              "documents": [document['data']]
                             }
                         }
                   }
@@ -79,18 +83,19 @@ def generate_conclusion_true():
 def generate_conclusion_false():
     conclusion = {"data": {
                         "conclusion": {
-                          # "relatedParty": "3f193d61e4ca3863a60e29557b338073",
-                          "violationOccurred": False
+                          "violationOccurred": False,
                         }
                       }
                   }
     return conclusion
 
 
-def generate_json_for_post():
+def generate_json_for_post(document):
+    document['data']['title'] = 'Документ для пояснення (Document for post)'
     post = {"data": {
                     "title": "Lorem ipsum",
-                    "description": "Lorem ipsum dolor sit amet."
+                    "description": "Lorem ipsum dolor sit amet.",
+                    "documents": [document['data']]
                   }
             }
     return post

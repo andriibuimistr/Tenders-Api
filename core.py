@@ -6,7 +6,8 @@ from cdb_requests import *
 from document import *
 
 
-invalid_tender_status_list = ['unsuccessful', 'cancelled']
+# invalid_tender_status_list = ['unsuccessful', 'cancelled']
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def time_counter(waiting_time, message=''):

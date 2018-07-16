@@ -4,6 +4,7 @@ import os
 import json
 from cdb_requests import TenderRequests
 from random import choice
+from core import *
 
 sign_name = 'sign.p7s'
 
@@ -11,8 +12,8 @@ sign_name = 'sign.p7s'
 def document_data(filename=False):
     if not filename:
         filename = 'doc.pdf'
-    doc_path = os.getcwd()  # path to file for upload
-    file_for_upload = open('{}{}doc.pdf'.format(doc_path, os.sep), 'rb').read()
+    # doc_path = os.getcwd()  # path to file for upload
+    file_for_upload = open('{}/{}'.format(ROOT_DIR, 'doc.pdf'), 'rb').read()
     data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
            "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
            "----------------------------1507111922.4992--".format(filename, file_for_upload)
@@ -132,3 +133,10 @@ def add_document_to_entity(tender_id_long, entity_id, tender_token, api_version,
     ds.add_document_from_ds_to_entity(tender_id_long, entity_id, tender_token, document, 'Add document from DS to {} - {}'.format(entity, entity_id), entity)
     sign = ds.add_tender_document_to_ds(document_data(sign_name)).json()
     ds.add_document_from_ds_to_entity(tender_id_long, entity_id, tender_token, sign, 'Add sign from DS to {} - {}'.format(entity, entity_id), entity)
+
+
+def add_document_to_tender_ds(api_version):
+    ds = TenderRequests(api_version)
+    document = ds.add_tender_document_to_ds(document_data())
+    document = document.json()
+    return document
