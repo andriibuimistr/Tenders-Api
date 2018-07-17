@@ -126,8 +126,8 @@ class TenderRequests(object):
                               'PATCH', json_finish_pq, 'Finish prequalification', self.entity)
 
     def activate_award_contract(self, tender_id_long, entity, entity_id, token, activation_json, count):
-        request_to_cdb(tender_headers_request(self.cdb, activation_json), self.host, '/{}/{}/{}?acc_token={}'.format(tender_id_long, entity, entity_id, token),
-                       'PATCH', activation_json, 'Activate {} {}'.format(entity, count), self.entity)
+        return request_to_cdb(tender_headers_request(self.cdb, activation_json), self.host, '/{}/{}/{}?acc_token={}'.format(tender_id_long, entity, entity_id, token),
+                              'PATCH', activation_json, 'Activate {} {}'.format(entity, count), self.entity)
 
     def add_supplier_limited(self, tender_id_long, token, add_supplier_json, supplier_number):
         return request_to_cdb(tender_headers_request(self.cdb, add_supplier_json), self.host, '/{}/awards?acc_token={}'.format(tender_id_long, token),
