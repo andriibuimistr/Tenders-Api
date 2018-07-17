@@ -87,7 +87,7 @@ def create_limited(received_tender_status, response_json, response_code, number_
                     time.sleep(20)
 
 
-def create_below_threshold(received_tender_status, response_json, response_code, number_of_bids, tender_id_long, api_version, json_tender, tender, procurement_method, t_publish):
+def create_below_threshold(received_tender_status, response_json, response_code, number_of_bids, tender_id_long, api_version, json_tender, tender, procurement_method, t_publish, add_documents_bid):
     if received_tender_status == 'active.enquiries':
         get_t_info = tender.get_tender_info(tender_id_long)
 
@@ -113,7 +113,7 @@ def create_below_threshold(received_tender_status, response_json, response_code,
             get_t_info = tender.get_tender_info(tender_id_long)
 
             if get_t_info.json()['data']['status'] == 'active.tendering':
-                tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
+                tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, add_documents_bid, json_tender)
                 if received_tender_status == 'active.tendering':
                     response_json['tenderStatus'] = get_t_info.json()['data']['status']
                     return response_json, response_code
@@ -237,7 +237,7 @@ def creation_of_tender(tc_request, user_id):
                             return response_json, response_code
 
                         qualifications = core.list_of_qualifications(tender_id_long, api_version)  # get list of qualifications for tender
-                        core.pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version)  # approve all my bids
+                        core.pass_pre_qualification(qualifications, tender_id_long, tender_token, api_version)  # approve all my bids, decline other bids
 
                         time.sleep(2)
                         tender.finish_prequalification(tender_id_long, tender_token)
@@ -429,7 +429,7 @@ def creation_of_tender(tc_request, user_id):
                                 abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
 
     elif procurement_method in below_threshold_procurement:
-        below_threshold = create_below_threshold(received_tender_status, response_json, response_code, number_of_bids, tender_id_long, api_version, json_tender, tender, procurement_method, t_publish)
+        below_threshold = create_below_threshold(received_tender_status, response_json, response_code, number_of_bids, tender_id_long, api_version, json_tender, tender, procurement_method, t_publish, add_documents_bid)
         return below_threshold[0], below_threshold[1]
     elif procurement_method in limited_procurement:
         limited = create_limited(received_tender_status, response_json, response_code, number_of_lots, tender_id_long, tender_token, list_of_id_lots, api_version, json_tender, tender, procurement_method)
