@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from tenders.data_for_tender import *
 from tenders.data_for_monitoring import *
-# from document import *
 from pprint import pprint
-# from cdb_requests import *
 from core import *
 
 add_documents = True

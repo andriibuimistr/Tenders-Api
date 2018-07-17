@@ -6,9 +6,6 @@ from cdb_requests import *
 from document import *
 
 
-# invalid_tender_status_list = ['unsuccessful', 'cancelled']
-
-
 def time_counter(waiting_time, message=''):
     for remaining in range(waiting_time, 0, -1):
         sys.stdout.write("\r")

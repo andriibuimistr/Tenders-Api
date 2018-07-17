@@ -32,6 +32,111 @@ def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_meth
         return e, 1
 
 
+def create_limited(received_tender_status, response_json, response_code, number_of_lots, tender_id_long, tender_token, list_of_id_lots, api_version, json_tender, tender, procurement_method):
+    if received_tender_status == 'active':
+        response_json['tenderStatus'] = 'active'
+        return response_json, response_code
+    else:
+        suppliers_for_limited(number_of_lots, tender_id_long, tender_token, list_of_id_lots, api_version, json_tender)
+        time.sleep(3)
+
+        get_t_info = tender.get_tender_info(tender_id_long)
+        list_of_awards = get_t_info.json()['data']['awards']
+        if received_tender_status == 'active.award':
+            response_json['tenderStatus'] = 'active.award'
+            return response_json, response_code
+        else:
+            run_activate_award(api_version, tender_id_long, tender_token, list_of_awards, procurement_method)
+            time.sleep(3)
+            get_t_info = tender.get_tender_info(tender_id_long)
+            if procurement_method in negotiation_procurement:
+                complaint_end_date = get_t_info.json()['data']['awards'][-1]['complaintPeriod']['endDate']  # get tender period end date
+                waiting_time = count_waiting_time(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), api_version) + 5
+                if waiting_time > 3600:  # delete in the future
+                    abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
+                time_counter(waiting_time, 'Check presence of contract')
+            else:
+                complaint_end_date = datetime.strftime(datetime.now(), '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now))
+                waiting_time = count_waiting_time(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), api_version)
+                if waiting_time > 3600:  # delete in the future
+                    abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
+                if waiting_time > 0:
+                    time.sleep(waiting_time + 5)
+
+            for x in range(10):
+                print 'Check if contract exists'
+                get_t_info = tender.get_tender_info(tender_id_long)
+                check_if_contract_exist = check_if_contract_exists(get_t_info)
+                if check_if_contract_exist == 200:
+                    if received_tender_status == 'active.contract':
+                        response_json['tenderStatus'] = 'active.contract'
+                        return response_json, response_code
+                    else:
+                        list_of_contracts = get_t_info.json()['data']['contracts']
+                        run_activate_contract(api_version, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
+                        for c in range(30):
+                            get_t_info = tender.get_tender_info(tender_id_long)
+                            if get_t_info.json()['data']['status'] == 'complete':
+                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                                return response_json, response_code
+                            else:
+                                print 'Sleep 10 seconds'
+                                time.sleep(10)
+                        break
+                else:
+                    time.sleep(20)
+
+
+def create_below_threshold(received_tender_status, response_json, response_code, number_of_bids, tender_id_long, api_version, json_tender, tender, procurement_method, t_publish):
+    if received_tender_status == 'active.enquiries':
+        get_t_info = tender.get_tender_info(tender_id_long)
+
+        if get_t_info.json()['data']['status'] == 'active.enquiries':
+            response_json['tenderStatus'] = get_t_info.json()['data']['status']
+            return response_json, response_code
+        else:
+            abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
+
+    else:
+        get_t_info = tender.get_tender_info(tender_id_long)
+        enquiry_end_date = get_t_info.json()['data']['enquiryPeriod']['endDate']  # get tender enquiries end date
+        waiting_time = count_waiting_time(enquiry_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
+        if waiting_time > 3600:  # delete in the future
+            abort(422, "Waiting time is too long: {} seconds".format(waiting_time))
+        time_counter(waiting_time, 'Check tender status (active.tendering)')
+
+        attempt_counter = 0
+        for x in range(30):
+            attempt_counter += 1
+            print '{}{}'.format('Check tender status (active.tendering). Attempt ', attempt_counter)
+            time.sleep(20)
+            get_t_info = tender.get_tender_info(tender_id_long)
+
+            if get_t_info.json()['data']['status'] == 'active.tendering':
+                tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
+                if received_tender_status == 'active.tendering':
+                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                    return response_json, response_code
+                t_end_date = t_publish.json()['data']['tenderPeriod']['endDate']  # get tender period end date
+                waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
+                if waiting_time > 3600:
+                    abort(422, "Waiting time is too long: {} seconds".format(waiting_time))
+                time_counter(waiting_time, 'Check tender status')
+
+                attempt_counter = 0
+                for w in range(60):
+                    attempt_counter += 1
+                    print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
+                    time.sleep(20)
+                    get_t_info = tender.get_tender_info(tender_id_long)
+
+                    if get_t_info.json()['data']['status'] == 'active.qualification':
+                        if received_tender_status == 'active.qualification':
+                            response_json['tenderStatus'] = get_t_info.json()['data']['status']
+                            return response_json, response_code
+                break
+
+
 def creation_of_tender(tc_request, user_id):
     procurement_method = tc_request["procurementMethodType"]
     number_of_items = int(tc_request["number_of_items"])
@@ -324,105 +429,10 @@ def creation_of_tender(tc_request, user_id):
                                 abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
 
     elif procurement_method in below_threshold_procurement:
-        if received_tender_status == 'active.enquiries':
-            get_t_info = tender.get_tender_info(tender_id_long)
-
-            if get_t_info.json()['data']['status'] == 'active.enquiries':
-                response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                return response_json, response_code
-            else:
-                abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
-
-        else:
-            get_t_info = tender.get_tender_info(tender_id_long)
-            enquiry_end_date = get_t_info.json()['data']['enquiryPeriod']['endDate']  # get tender enquiries end date
-            waiting_time = count_waiting_time(enquiry_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
-            if waiting_time > 3600:  # delete in the future
-                abort(422, "Waiting time is too long: {} seconds".format(waiting_time))
-            time_counter(waiting_time, 'Check tender status (active.tendering)')
-
-            attempt_counter = 0
-            for x in range(30):
-                attempt_counter += 1
-                print '{}{}'.format('Check tender status (active.tendering). Attempt ', attempt_counter)
-                time.sleep(20)
-                get_t_info = tender.get_tender_info(tender_id_long)
-
-                if get_t_info.json()['data']['status'] == 'active.tendering':
-                    tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, 0, json_tender)  # 0 - documents of bid
-                    if received_tender_status == 'active.tendering':
-                        response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                        return response_json, response_code
-                    t_end_date = t_publish.json()['data']['tenderPeriod']['endDate']  # get tender period end date
-                    waiting_time = count_waiting_time(t_end_date, '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now), api_version)
-                    if waiting_time > 3600:
-                        abort(422, "Waiting time is too long: {} seconds".format(waiting_time))
-                    time_counter(waiting_time, 'Check tender status')
-
-                    attempt_counter = 0
-                    for w in range(60):
-                        attempt_counter += 1
-                        print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
-                        time.sleep(20)
-                        get_t_info = tender.get_tender_info(tender_id_long)
-
-                        if get_t_info.json()['data']['status'] == 'active.qualification':
-                            if received_tender_status == 'active.qualification':
-                                response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                return response_json, response_code
-                    break
+        below_threshold = create_below_threshold(received_tender_status, response_json, response_code, number_of_bids, tender_id_long, api_version, json_tender, tender, procurement_method, t_publish)
+        return below_threshold[0], below_threshold[1]
     elif procurement_method in limited_procurement:
-        if received_tender_status == 'active':
-            response_json['tenderStatus'] = 'active'
-            return response_json, response_code
-        else:
-            suppliers_for_limited(number_of_lots, tender_id_long, tender_token, list_of_id_lots, api_version, json_tender)
-            time.sleep(3)
-
-            get_t_info = tender.get_tender_info(tender_id_long)
-            list_of_awards = get_t_info.json()['data']['awards']
-            if received_tender_status == 'active.award':
-                response_json['tenderStatus'] = 'active.award'
-                return response_json, response_code
-            else:
-                run_activate_award(api_version, tender_id_long, tender_token, list_of_awards, procurement_method)
-                time.sleep(3)
-                get_t_info = tender.get_tender_info(tender_id_long)
-                if procurement_method in negotiation_procurement:
-                    complaint_end_date = get_t_info.json()['data']['awards'][-1]['complaintPeriod']['endDate']  # get tender period end date
-                    waiting_time = count_waiting_time(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), api_version) + 5
-                    if waiting_time > 3600:  # delete in the future
-                        abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
-                    time_counter(waiting_time, 'Check presence of contract')
-                else:
-                    complaint_end_date = datetime.strftime(datetime.now(), '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now))
-                    waiting_time = count_waiting_time(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_utc_now), api_version)
-                    if waiting_time > 3600:  # delete in the future
-                        abort(400, "Waiting time is too long: {} seconds".format(waiting_time))
-                    if waiting_time > 0:
-                        time.sleep(waiting_time + 5)
-
-                for x in range(10):
-                    print 'Check if contract exists'
-                    get_t_info = tender.get_tender_info(tender_id_long)
-                    check_if_contract_exist = check_if_contract_exists(get_t_info)
-                    if check_if_contract_exist == 200:
-                        if received_tender_status == 'active.contract':
-                            response_json['tenderStatus'] = 'active.contract'
-                            return response_json, response_code
-                        else:
-                            list_of_contracts = get_t_info.json()['data']['contracts']
-                            run_activate_contract(api_version, tender_id_long, tender_token, list_of_contracts, complaint_end_date)
-                            for c in range(30):
-                                get_t_info = tender.get_tender_info(tender_id_long)
-                                if get_t_info.json()['data']['status'] == 'complete':
-                                    response_json['tenderStatus'] = get_t_info.json()['data']['status']
-                                    return response_json, response_code
-                                else:
-                                    print 'Sleep 10 seconds'
-                                    time.sleep(10)
-                            break
-                    else:
-                        time.sleep(20)
+        limited = create_limited(received_tender_status, response_json, response_code, number_of_lots, tender_id_long, tender_token, list_of_id_lots, api_version, json_tender, tender, procurement_method)
+        return limited[0], limited[1]
 
     return response_json, response_code

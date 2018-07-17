@@ -12,7 +12,7 @@ from cdb_requests import AuctionRequests
 
 # Add auction info to database
 def auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method, auction_status, creator_id, cdb_version):
-    try:  # Try to connect to DB
+    try:
         auction_to_sql = Auctions(None, auction_id_long, auction_id_short, auction_token, procurement_method, None, auction_status, None, None, None, None, creator_id, cdb_version)
         db.session.add(auction_to_sql)
         db.session.commit()
