@@ -6,8 +6,8 @@ from random import randint, choice
 import pytz
 from faker import Faker
 from datetime import datetime, timedelta
-from tenders.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
-
+from tenders.tender_additional_data import limited_procurement, negotiation_procurement
+from config import kiev_now
 
 fake = Faker('uk_UA')
 kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]

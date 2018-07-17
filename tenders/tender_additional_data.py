@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-import pytz
 
 above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
 below_threshold_procurement = ['belowThreshold']
@@ -37,8 +35,6 @@ create_tender_required_fields = ['procurementMethodType', 'number_of_items', 'ac
 list_of_api_versions = ['2.4', 'dev']
 
 # Get local timezone
-kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 document_types_for_award = ['notice', 'evaluationReports', 'winningBid', 'complaints']
 document_types_for_contract = ['notice', 'contractSigned', 'contractArrangements', 'contractSchedule', 'contractAnnexe', 'contractGuarantees', 'subContract']
-

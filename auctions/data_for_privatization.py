@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 from faker import Faker
 from random import randint
-import pytz
 from datetime import datetime, timedelta
 import binascii
 import os
-from tenders.tender_additional_data import *
+
+from config import kiev_now
 
 fake = Faker('uk_UA')
-# kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
 def decision_date():
-    return (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_utc_now))
+    return (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
 
 
 def auction_period_start_date(lot_accelerator):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from auctions.data_for_privatization import *
+from config import kiev_now
 from core import *
 
 

@@ -2,6 +2,8 @@
 from datetime import timedelta
 # from tenders.tender_additional_data import *
 from faker import Faker
+
+from config import kiev_now
 from document import *
 
 fake = Faker('uk_UA')

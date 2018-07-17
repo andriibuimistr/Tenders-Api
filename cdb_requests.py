@@ -9,9 +9,7 @@ from requests.exceptions import ConnectionError, HTTPError
 import time
 from datetime import datetime, timedelta
 from pprint import pformat
-
-
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+from config import ROOT_DIR
 
 
 def save_log(code, body, resp_header, host, endpoint, method, request_name, entity, headers, json_request):
@@ -268,7 +266,8 @@ class Monitoring(object):
         return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/credentials?acc_token={}'.format(monitoring_id, tender_token), 'PATCH', None, 'Get monitoring token', self.entity)
 
     def add_elimination_report(self, monitoring_id, monitoring_token, json_with_report):
-        return request_to_cdb(tender_headers_request(self.cdb, json_with_report), self.host, '/{}/eliminationReport?acc_token={}'.format(monitoring_id, monitoring_token), 'PUT', json_with_report, 'Add eliminationReport by tender owner', self.entity)
+        return request_to_cdb(tender_headers_request(self.cdb, json_with_report), self.host, '/{}/eliminationReport?acc_token={}'.format(monitoring_id, monitoring_token), 'PUT',
+                              json_with_report, 'Add eliminationReport by tender owner', self.entity)
 
     def get_monitoring_info(self, monitoring_id):
         return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'GET', None, 'Get monitoring info', self.entity)

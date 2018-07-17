@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from config import kiev_now
 from tenders.tender_bid import suppliers_for_limited
 import core
 from core import *

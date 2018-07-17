@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from tenders.tender_additional_data import *
-# import os
 import json
 from cdb_requests import TenderRequests
 from random import choice
 from config import ROOT_DIR
-# from core import *
 
 sign_name = 'sign.p7s'
 
@@ -13,7 +11,6 @@ sign_name = 'sign.p7s'
 def document_data(filename=False):
     if not filename:
         filename = 'doc.pdf'
-    # doc_path = os.getcwd()  # path to file for upload
     file_for_upload = open('{}/{}'.format(ROOT_DIR, 'doc.pdf'), 'rb').read()
     data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
            "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \

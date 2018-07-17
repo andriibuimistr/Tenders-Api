@@ -31,18 +31,16 @@ monitoring_id = mn.json()['data']['id']
 add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(cdb, add_documents), 'Add decision to monitoring')
 a_monitoring = monitoring.patch_monitoring(monitoring_id, json_status_active, 'Activate monitoring')
 
-
 monitoring_owner_token = monitoring.get_monitoring_token(monitoring_id, tender_token).json()['access']['token']
 
 add_post = monitoring.add_post(monitoring_id, generate_json_for_post(document()))
 
 add_conclusion = monitoring.patch_monitoring(monitoring_id, generate_conclusion_true(document()), 'Add conclusion to monitoring')
 monitoring_to_addressed = monitoring.patch_monitoring(monitoring_id, json_status_addressed, 'Monitoring to addressed status')
-# pprint(monitoring_to_addressed.json())
 
 add_elimination_report = monitoring.add_elimination_report(monitoring_id, monitoring_owner_token, elimination_report(document()))
 add_elimination_resolution = monitoring.patch_monitoring(monitoring_id, elimination_resolution(document()), 'Add eliminationResolution to monitoring')
-# pprint(add_elimination_resolution.json())
+
 elimination_period = monitoring.get_monitoring_info(monitoring_id).json()['data']['eliminationPeriod']['endDate']
 waiting_time = count_waiting_time(elimination_period, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now), cdb, 'monitoring')
 time_counter(waiting_time, 'Wait for eliminationPeriod endDate')

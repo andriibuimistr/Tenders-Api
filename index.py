@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from tenders.tender_additional_data import list_of_procurement_types, tender_status_list, list_of_api_versions
-from auctions.auction_validators import validator_add_auction_bid_to_company, validator_if_auction_id_short_in_db
-from tenders.tender_validators import validator_if_tender_id_short_in_db, validator_add_tender_bid_to_company
+from auctions.auction_validators import *
+from tenders.tender_validators import *
 from database import db, Users
 from auctions import auction
 from datetime import timedelta
@@ -10,7 +9,6 @@ from tools.pages import Pages
 from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for, g
 from flask_httpauth import HTTPBasicAuth
 import os
-# import flask
 import flask_login
 from flask_cors import CORS, cross_origin
 from datetime import datetime

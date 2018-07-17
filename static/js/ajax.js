@@ -12,7 +12,6 @@ var randomString = function(length) {
 //Create tender
 $(function() {
     $('#createTender').click(function() {
-        //$(this).prop('disabled', true);
         var form = $("#create-tender");
         var request_id = randomString(32);
         var procedure = $("#create-tender select[name=procurementMethodType]").val();
@@ -63,28 +62,6 @@ $(function() {
         });
     });
 });
-
-//Add tender to company
-//$(function() {
-//    $('.tender-company-button').click(function() {
-//        $(this).prop('disabled', true);
-//        var tid  = $(this).closest("form").attr('id');
-//		var form = $(this).closest("form");
-//        $.ajax({
-//            url: '/tenders/' + tid + '/company',
-//            data: $(this).closest('form').serialize(),
-//            type: 'POST',
-//            success: function(data) {
-//                form.parent().html(data);
-//                $('.tender-company-button').removeAttr("disabled");
-//            },
-//            error: function (jqXHR, textStatus, errorThrown) {
-//            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
-//                $('.tender-company-button').removeAttr("disabled");
-//            }
-//        });
-//    });
-//});
 
 //Add tender bid to company
 $(document).on("click",".tender-bid-company-button", function() {
