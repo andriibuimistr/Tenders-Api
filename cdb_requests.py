@@ -42,8 +42,7 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
                 s.request("HEAD", "{}".format(host))
             r = requests.Request(method, "{}{}".format(host, endpoint),
                                  data=json_request,
-                                 headers=headers,
-                                 cookies=requests.utils.dict_from_cookiejar(s.cookies))
+                                 headers=headers)
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
             resp.raise_for_status()
