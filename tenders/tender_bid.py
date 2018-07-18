@@ -153,8 +153,8 @@ def generate_json_bid(user_idf, tender_json, lot_number=False):
         bid_json['data']['suppliers'] = bid_json['data']['tenderers']
         del bid_json['data']['tenderers']
 
-    for key in range(len(values.keys())):
-        bid_json['data'][values.keys()[key]] = values[values.keys()[key]]
+    for key in values:
+        bid_json['data'][key] = values[key]
     return bid_json
 
 
