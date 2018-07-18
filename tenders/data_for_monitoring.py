@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
+from datetime import datetime, timedelta
 # from tenders.tender_additional_data import *
 from faker import Faker
 
