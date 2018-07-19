@@ -4,18 +4,16 @@ import json
 from cdb_requests import TenderRequests
 from random import choice
 from config import ROOT_DIR
+import os
 
 sign_name = 'sign.p7s'
 
 
-def document_data(filename=False):
+def document_data(filename=None):
     if not filename:
         filename = 'doc.pdf'
-    file_for_upload = open('{}/{}'.format(ROOT_DIR, 'doc.pdf'), 'rb').read()
-    data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
-           "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
-           "----------------------------1507111922.4992--".format(filename, file_for_upload)
-    return data
+    files = {'file': (filename, open(os.path.join(ROOT_DIR, 'doc.pdf'), 'rb').read())}  # 1st filename - title
+    return files
 
 
 tender_documents_type = {'technicalSpecifications': 'Технічний опис предмету закупівлі',

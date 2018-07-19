@@ -30,7 +30,7 @@ def save_log(code, body, resp_header, host, endpoint, method, request_name, enti
 
 
 # Send request to cdb
-def request_to_cdb(headers, host, endpoint, method, json_request, request_name, entity, is_json=True):
+def request_to_cdb(headers, host, endpoint, method, json_request, request_name, entity, is_json=True, files=None):
     if is_json:
         json_request = json.dumps(json_request)
     attempts = 0
@@ -42,7 +42,8 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
                 s.request("HEAD", "{}".format(host))
             r = requests.Request(method, "{}{}".format(host, endpoint),
                                  data=json_request,
-                                 headers=headers)
+                                 headers=headers,
+                                 files=files)
             prepped = s.prepare_request(r)
             resp = s.send(prepped)
             resp.raise_for_status()
@@ -147,8 +148,8 @@ class TenderRequests(object):
         return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token),
                               'GET', None, 'Get bid info', self.entity)
 
-    def add_tender_document_to_ds(self, document_data):
-        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', document_data, 'Add document to DS (tenders)', self.document, False)
+    def add_tender_document_to_ds(self, files):
+        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', None, 'Add document to DS (tenders)', self.document, False, files)
 
     def add_document_from_ds_to_tender(self, tender_id_long, tender_token, json_with_document, message):
         return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/documents?acc_token={}".format(tender_id_long, tender_token), 'POST', json_with_document, message, self.document)

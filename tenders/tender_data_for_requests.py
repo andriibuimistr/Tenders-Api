@@ -40,9 +40,7 @@ def tender_headers_request(cdb_version, json_data, monitoring=False):
 
 
 tender_headers_add_document_ds = {
-    'authorization': "Basic {}".format(auth_key_ds),
-    'content-type': "multipart/form-data; boundary=--------------------------1507111922.4992",
-    'cache-control': "no-cache",
+    'authorization': "Basic {}".format(auth_key_ds)
     }
 
 tender_headers_patch_document_ds = {
