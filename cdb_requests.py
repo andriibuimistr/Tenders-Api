@@ -207,38 +207,94 @@ class Privatization(AuctionRequests):
         super(Privatization, self).__init__(2)
 
     def publish_asset(self, json_asset):
-        return request_to_cdb(auction_headers_request(self.cdb, json_asset), self.host_p, '', 'POST', json_asset, 'Publish asset', self.entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_asset),
+                              host=self.host_p,
+                              endpoint='',
+                              method='POST',
+                              json_request=json_asset,
+                              request_name='Publish asset',
+                              entity=self.entity)
 
     def activate_asset(self, asset_id_long, token):
-        return request_to_cdb(auction_headers_request(self.cdb, json_status_pending), self.host_p, '/{}?acc_token={}'.format(asset_id_long, token),
-                              'PATCH', json_status_pending, 'Activate asset', self.entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_pending),
+                              host=self.host_p,
+                              endpoint='/{}?acc_token={}'.format(asset_id_long, token),
+                              method='PATCH',
+                              json_request=json_status_pending,
+                              request_name='Activate asset',
+                              entity=self.entity)
 
     def get_asset_info(self, asset_id_long):
-        return request_to_cdb(None, self.host_p, '/{}'.format(asset_id_long), 'GET', None, 'Get asset info', self.entity)
+        return request_to_cdb(headers=None,
+                              host=self.host_p,
+                              endpoint='/{}'.format(asset_id_long),
+                              method='GET',
+                              json_request=None,
+                              request_name='Get asset info',
+                              entity=self.entity)
 
     def publish_lot(self, json_lot):
-        return request_to_cdb(auction_headers_request(self.cdb, json_lot), self.host_p, '', 'POST', json_lot, 'Publish lot', self.entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_lot),
+                              host=self.host_p,
+                              endpoint='',
+                              method='POST',
+                              json_request=json_lot,
+                              request_name='Publish lot',
+                              entity=self.entity)
 
     def lot_to_composing(self, lot_id_long, token):
-        return request_to_cdb(auction_headers_request(self.cdb, json_status_composing), self.host_p, '/{}?acc_token={}'.format(lot_id_long, token),
-                              'PATCH', json_status_composing, 'Lot to composing', self.entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_composing),
+                              host=self.host_p,
+                              endpoint='/{}?acc_token={}'.format(lot_id_long, token),
+                              method='PATCH',
+                              json_request=json_status_composing,
+                              request_name='Lot to composing',
+                              entity=self.entity)
 
     def lot_to_verification(self, lot_id_long, token):
-        return request_to_cdb(auction_headers_request(self.cdb, json_status_composing), self.host_p, '/{}?acc_token={}'.format(lot_id_long, token),
-                              'PATCH', json_status_verification, 'Lot to verification', self.entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_composing),
+                              host=self.host_p,
+                              endpoint='/{}?acc_token={}'.format(lot_id_long, token),
+                              method='PATCH',
+                              json_request=json_status_verification,
+                              request_name='Lot to verification',
+                              entity=self.entity)
 
     def get_lot_info(self, lot_id_long):
-        return request_to_cdb(None, self.host_p, '/{}'.format(lot_id_long), 'GET', None, 'Get lot info', self.entity)
+        return request_to_cdb(headers=None,
+                              host=self.host_p,
+                              endpoint='/{}'.format(lot_id_long),
+                              method='GET',
+                              json_request=None,
+                              request_name='Get lot info',
+                              entity=self.entity)
 
     def patch_lot_auction(self, lot_id_long, token, json_path_auction, auction_id_long, index):
-        return request_to_cdb(auction_headers_request(self.cdb, json_status_composing, token), self.host_p, '/{}/auctions/{}'.format(lot_id_long, auction_id_long),
-                              'PATCH', json_path_auction, 'Patch auction {} in lot'.format(index), self.entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_composing, token),
+                              host=self.host_p,
+                              endpoint='/{}/auctions/{}'.format(lot_id_long, auction_id_long),
+                              method='PATCH',
+                              json_request=json_path_auction,
+                              request_name='Patch auction {} in lot'.format(index),
+                              entity=self.entity)
 
     def get_list_of_lots(self):
-        return request_to_cdb(tender_headers_request(self.cdb, None), self.host_p, '', 'GET', None, 'Get list of lots', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, None),
+                              host=self.host_p,
+                              endpoint='',
+                              method='GET',
+                              json_request=None,
+                              request_name='Get list of lots',
+                              entity=self.entity)
 
     def create_transfer(self):
-        return request_to_cdb(auction_headers_request(self.cdb, transfer_json), self.host_p, '', 'POST', transfer_json, 'Create transfer', self.entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, transfer_json),
+                              host=self.host_p,
+                              endpoint='',
+                              method='POST',
+                              json_request=transfer_json,
+                              request_name='Create transfer',
+                              entity=self.entity)
 
 
 class Monitoring(object):
@@ -251,26 +307,73 @@ class Monitoring(object):
         self.cdb = cdb
 
     def publish_monitoring(self, json_monitoring):
-        return request_to_cdb(self.headers, self.host, '', 'POST', json_monitoring, 'Publish monitoring', self.entity)
+        return request_to_cdb(headers=self.headers,
+                              host=self.host,
+                              endpoint='',
+                              method='POST',
+                              json_request=json_monitoring,
+                              request_name='Publish monitoring',
+                              entity=self.entity)
 
     def patch_monitoring(self, monitoring_id, json_body, message):
-        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'PATCH', json_body, message, self.entity)
+        return request_to_cdb(headers=self.headers,
+                              host=self.host,
+                              endpoint='/{}'.format(monitoring_id),
+                              method='PATCH',
+                              json_request=json_body,
+                              request_name=message,
+                              entity=self.entity)
 
     def add_post(self, monitoring_id, post_json):
-        return request_to_cdb(self.headers, self.host, '/{}/posts'.format(monitoring_id), 'POST', post_json, 'Add post to monitoring', self.entity)
+        return request_to_cdb(headers=self.headers,
+                              host=self.host,
+                              endpoint='/{}/posts'.format(monitoring_id),
+                              method='POST',
+                              json_request=post_json,
+                              request_name='Add post to monitoring',
+                              entity=self.entity)
 
     def add_document_to_monitoring_entity(self, monitoring_id, entity, json_with_document, message):
-        return request_to_cdb(self.headers, self.host, '/{}/{}'.format(monitoring_id, entity), 'PATCH', json_with_document, message, entity)
+        return request_to_cdb(headers=self.headers,
+                              host=self.host,
+                              endpoint='/{}/{}'.format(monitoring_id, entity),
+                              method='PATCH',
+                              json_request=json_with_document,
+                              request_name=message,
+                              entity=entity)
 
     def get_monitoring_token(self, monitoring_id, tender_token):
-        return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/credentials?acc_token={}'.format(monitoring_id, tender_token), 'PATCH', None, 'Get monitoring token', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, None),
+                              host=self.host,
+                              endpoint='/{}/credentials?acc_token={}'.format(monitoring_id, tender_token),
+                              method='PATCH',
+                              json_request=None,
+                              request_name='Get monitoring token',
+                              entity=self.entity)
 
     def add_elimination_report(self, monitoring_id, monitoring_token, json_with_report):
-        return request_to_cdb(tender_headers_request(self.cdb, json_with_report), self.host, '/{}/eliminationReport?acc_token={}'.format(monitoring_id, monitoring_token), 'PUT',
-                              json_with_report, 'Add eliminationReport by tender owner', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_with_report),
+                              host=self.host,
+                              endpoint='/{}/eliminationReport?acc_token={}'.format(monitoring_id, monitoring_token),
+                              method='PUT',
+                              json_request=json_with_report,
+                              request_name='Add eliminationReport by tender owner',
+                              entity=self.entity)
 
     def get_monitoring_info(self, monitoring_id):
-        return request_to_cdb(self.headers, self.host, '/{}'.format(monitoring_id), 'GET', None, 'Get monitoring info', self.entity)
+        return request_to_cdb(headers=self.headers,
+                              host=self.host,
+                              endpoint='/{}'.format(monitoring_id),
+                              method='GET',
+                              json_request=None,
+                              request_name='Get monitoring info',
+                              entity=self.entity)
 
     def get_list_of_monitorings(self):
-        return request_to_cdb(self.headers, self.host, '', 'GET', None, 'Get list of monitorings', self.entity)
+        return request_to_cdb(headers=self.headers,
+                              host=self.host,
+                              endpoint='',
+                              method='GET',
+                              json_request=None,
+                              request_name='Get list of monitorings',
+                              entity=self.entity)
