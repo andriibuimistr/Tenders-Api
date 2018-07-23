@@ -90,75 +90,179 @@ class TenderRequests(object):
         self.document = 'tender_documents'
 
     def publish_tender(self, json_tender):
-        return request_to_cdb(tender_headers_request(self.cdb, json_tender), self.host, '', 'POST', json_tender, 'Publish tender', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_tender),
+                              host=self.host,
+                              endpoint='',
+                              method='POST',
+                              json_request=json_tender,
+                              request_name='Publish tender',
+                              entity=self.entity)
 
     def activate_tender(self, tender_id_long, token, procurement_method):
         json_tender_activation = json_activate_tender(procurement_method)
-        return request_to_cdb(tender_headers_request(self.cdb, json_tender_activation), self.host, '/{}?acc_token={}'.format(tender_id_long, token),
-                              'PATCH', json_tender_activation, 'Activate tender', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_tender_activation),
+                              host=self.host,
+                              endpoint='/{}?acc_token={}'.format(tender_id_long, token),
+                              method='PATCH',
+                              json_request=json_tender_activation,
+                              request_name='Activate tender',
+                              entity=self.entity)
 
     def get_tender_info(self, tender_id_long):
-        return request_to_cdb(None, self.host_public, '/{}'.format(tender_id_long), 'GET', None, 'Get tender info', self.entity)
+        return request_to_cdb(headers=None,
+                              host=self.host_public,
+                              endpoint='/{}'.format(tender_id_long),
+                              method='GET',
+                              json_request=None,
+                              request_name='Get tender info',
+                              entity=self.entity)
 
     def finish_first_stage(self, tender_id_long, token):
-        return request_to_cdb(tender_headers_request(self.cdb, json_finish_first_stage), self.host, '/{}?acc_token={}'.format(tender_id_long, token),
-                              'PATCH', json_finish_first_stage, 'Finish first stage', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_finish_first_stage),
+                              host=self.host,
+                              endpoint='/{}?acc_token={}'.format(tender_id_long, token),
+                              method='PATCH',
+                              json_request=json_finish_first_stage,
+                              request_name='Finish first stage',
+                              entity=self.entity)
 
     def patch_second_stage(self, tender_id_long, token, json_patch_2nd_stage):
-        return request_to_cdb(tender_headers_request(self.cdb, json_patch_2nd_stage), self.host, '/{}?acc_token={}'.format(tender_id_long, token),
-                              'PATCH',  json_patch_2nd_stage, 'Patch 2nd stage', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_patch_2nd_stage),
+                              host=self.host,
+                              endpoint='/{}?acc_token={}'.format(tender_id_long, token),
+                              method='PATCH',
+                              json_request=json_patch_2nd_stage,
+                              request_name='Patch 2nd stage',
+                              entity=self.entity)
 
     def activate_2nd_stage(self, tender_id_long, token, procurement_method):
         json_tender_activation = json_activate_tender(procurement_method)
-        return request_to_cdb(tender_headers_request(self.cdb, json_tender_activation), self.host, '/{}?acc_token={}'.format(tender_id_long, token),
-                              'PATCH', json_tender_activation, 'Activate 2nd stage', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_tender_activation),
+                              host=self.host,
+                              endpoint='/{}?acc_token={}'.format(tender_id_long, token),
+                              method='PATCH',
+                              json_request=json_tender_activation,
+                              request_name='Activate 2nd stage',
+                              entity=self.entity)
 
     def get_2nd_stage_info(self, tender_id_long, token):
-        return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/credentials?acc_token={}'.format(tender_id_long, token),
-                              'PATCH', None, 'Get 2nd stage info', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, None),
+                              host=self.host,
+                              endpoint='/{}/credentials?acc_token={}'.format(tender_id_long, token),
+                              method='PATCH',
+                              json_request=None,
+                              request_name='Get 2nd stage info',
+                              entity=self.entity)
 
     def approve_prequalification(self, tender_id_long, qualification_id, token, json_pq):
-        return request_to_cdb(tender_headers_request(self.cdb, json_pq), self.host, '/{}/qualifications/{}?acc_token={}'.format(tender_id_long, qualification_id, token),
-                              'PATCH', json_pq, 'Approve prequalification', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_pq),
+                              host=self.host,
+                              endpoint='/{}/qualifications/{}?acc_token={}'.format(tender_id_long, qualification_id, token),
+                              method='PATCH',
+                              json_request=json_pq,
+                              request_name='Approve prequalification',
+                              entity=self.entity)
 
     def finish_prequalification(self, tender_id_long, token):
-        return request_to_cdb(tender_headers_request(self.cdb, json_finish_pq), self.host, '/{}?acc_token={}'.format(tender_id_long, token),
-                              'PATCH', json_finish_pq, 'Finish prequalification', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, json_finish_pq),
+                              host=self.host,
+                              endpoint='/{}?acc_token={}'.format(tender_id_long, token),
+                              method='PATCH',
+                              json_request=json_finish_pq,
+                              request_name='Finish prequalification',
+                              entity=self.entity)
 
     def activate_award_contract(self, tender_id_long, entity, entity_id, token, activation_json, count):
-        return request_to_cdb(tender_headers_request(self.cdb, activation_json), self.host, '/{}/{}/{}?acc_token={}'.format(tender_id_long, entity, entity_id, token),
-                              'PATCH', activation_json, 'Activate {} {}'.format(entity, count), self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, activation_json),
+                              host=self.host,
+                              endpoint='/{}/{}/{}?acc_token={}'.format(tender_id_long, entity, entity_id, token),
+                              method='PATCH',
+                              json_request=activation_json,
+                              request_name='Activate {} {}'.format(entity, count),
+                              entity=self.entity)
 
     def add_supplier_limited(self, tender_id_long, token, add_supplier_json, supplier_number):
-        return request_to_cdb(tender_headers_request(self.cdb, add_supplier_json), self.host, '/{}/awards?acc_token={}'.format(tender_id_long, token),
-                              'POST', add_supplier_json, 'Add supplier {}'.format(supplier_number), self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, add_supplier_json),
+                              host=self.host,
+                              endpoint='/{}/awards?acc_token={}'.format(tender_id_long, token),
+                              method='POST',
+                              json_request=add_supplier_json,
+                              request_name='Add supplier {}'.format(supplier_number),
+                              entity=self.entity)
 
     def make_tender_bid(self, tender_id_long, bid_json, bid_number):
-        return request_to_cdb(tender_headers_request(self.cdb, bid_json), self.host, '/{}/bids'.format(tender_id_long),
-                              'POST', bid_json, 'Publish bid {}'.format(bid_number), self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, bid_json),
+                              host=self.host,
+                              endpoint='/{}/bids'.format(tender_id_long),
+                              method='POST',
+                              json_request=bid_json,
+                              request_name='Publish bid {}'.format(bid_number),
+                              entity=self.entity)
 
     def activate_tender_bid(self, tender_id_long, bid_id, bid_token, activate_bid_json, bid_number):
-        return request_to_cdb(tender_headers_request(self.cdb, activate_bid_json), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token),
-                              'PATCH', activate_bid_json, 'Activate bid {}'.format(bid_number), self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, activate_bid_json),
+                              host=self.host,
+                              endpoint='/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token),
+                              method='PATCH',
+                              json_request=activate_bid_json,
+                              request_name='Activate bid {}'.format(bid_number),
+                              entity=self.entity)
 
     def get_list_of_tenders(self):
-        return request_to_cdb(tender_headers_request(self.cdb, None), self.host_public, '', 'GET', None, 'Get list of tenders', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, None),
+                              host=self.host_public,
+                              endpoint='',
+                              method='GET',
+                              json_request=None,
+                              request_name='Get list of tenders',
+                              entity=self.entity)
 
     def get_bid_info(self, tender_id_long, bid_id, bid_token):
-        return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token),
-                              'GET', None, 'Get bid info', self.entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, None),
+                              host=self.host,
+                              endpoint='/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token),
+                              method='GET',
+                              json_request=None,
+                              request_name='Get bid info',
+                              entity=self.entity)
 
     def add_tender_document_to_ds(self, files):
-        return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', None, 'Add document to DS (tenders)', self.document, False, files)
+        return request_to_cdb(headers=tender_headers_add_document_ds,
+                              host=self.ds_host,
+                              endpoint='',
+                              method='POST',
+                              json_request=None,
+                              request_name='Add document to DS (tenders)',
+                              entity=self.document,
+                              is_json=False,
+                              files=files)
 
     def add_document_from_ds_to_tender(self, tender_id_long, tender_token, json_with_document, message):
-        return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/documents?acc_token={}".format(tender_id_long, tender_token), 'POST', json_with_document, message, self.document)
+        return request_to_cdb(headers=tender_headers_patch_document_ds,
+                              host=self.host,
+                              endpoint="/{}/documents?acc_token={}".format(tender_id_long, tender_token),
+                              method='POST',
+                              json_request=json_with_document,
+                              request_name=message,
+                              entity=self.document)
 
     def add_document_from_ds_to_tender_bid(self, tender_id_long, bid_id, doc_type_url, bid_token, json_with_document, message):
-        return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/bids/{}/{}?acc_token={}".format(tender_id_long, bid_id, doc_type_url, bid_token), 'POST', json_with_document, message, self.document)
+        return request_to_cdb(headers=tender_headers_patch_document_ds,
+                              host=self.host,
+                              endpoint="/{}/bids/{}/{}?acc_token={}".format(tender_id_long, bid_id, doc_type_url, bid_token),
+                              method='POST',
+                              json_request=json_with_document,
+                              request_name=message,
+                              entity=self.document)
 
     def add_document_from_ds_to_entity(self, tender_id_long, entity_id, tender_token, json_with_document, message, entity):
-        return request_to_cdb(tender_headers_patch_document_ds, self.host, "/{}/{}/{}/documents?acc_token={}".format(tender_id_long, entity, entity_id, tender_token), 'POST', json_with_document, message, self.document)
+        return request_to_cdb(headers=tender_headers_patch_document_ds,
+                              host=self.host,
+                              endpoint="/{}/{}/{}/documents?acc_token={}".format(tender_id_long, entity, entity_id, tender_token),
+                              method='POST',
+                              json_request=json_with_document,
+                              request_name=message,
+                              entity=self.document)
 
 
 class AuctionRequests(object):
@@ -169,34 +273,77 @@ class AuctionRequests(object):
         self.__entity = 'auctions'
 
     def publish_auction(self, json_auction):
-        return request_to_cdb(auction_headers_request(self.cdb, json_auction), self.host, '', 'POST', json_auction, 'Publish auction', self.__entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_auction),
+                              host=self.host,
+                              endpoint='',
+                              method='POST',
+                              json_request=json_auction,
+                              request_name='Publish auction',
+                              entity=self.__entity)
 
     def activate_auction(self, auction_id_long, token):
-        return request_to_cdb(auction_headers_request(self.cdb, json_status_active_tendering), self.host, '/{}?acc_token={}'.format(auction_id_long, token),
-                              'PATCH', json_status_active_tendering, 'Activate auction', self.__entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_active_tendering),
+                              host=self.host,
+                              endpoint='/{}?acc_token={}'.format(auction_id_long, token),
+                              method='PATCH',
+                              json_request=json_status_active_tendering,
+                              request_name='Activate auction',
+                              entity=self.__entity)
 
     def make_bid_auction(self, auction_id_long, json_bid):
-        return request_to_cdb(auction_headers_request(self.cdb, json_bid), self.host, '/{}/bids'.format(auction_id_long),
-                              'POST', json_bid, 'Publish auction bid', self.__entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_bid),
+                              host=self.host,
+                              endpoint='/{}/bids'.format(auction_id_long),
+                              method='POST',
+                              json_request=json_bid,
+                              request_name='Publish auction bid',
+                              entity=self.__entity)
 
     def activate_auction_bid(self, auction_id_long, bid_id, bid_token):
-        return request_to_cdb(auction_headers_request(self.cdb, json_status_active), self.host, '/{}/bids/{}?acc_token={}'.format(auction_id_long, bid_id, bid_token),
-                              'PATCH', json_status_active, 'Activate auction bid', self.__entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_active),
+                              host=self.host,
+                              endpoint='/{}/bids/{}?acc_token={}'.format(auction_id_long, bid_id, bid_token),
+                              method='PATCH',
+                              json_request=json_status_active,
+                              request_name='Activate auction bid',
+                              entity=self.__entity)
 
     def get_auction_info(self, auction_id_long):
-        return request_to_cdb(None, self.host, '/{}'.format(auction_id_long), 'GET', None, 'Get auction info', self.__entity)
+        return request_to_cdb(headers=None,
+                              host=self.host,
+                              endpoint='/{}'.format(auction_id_long),
+                              method='GET',
+                              json_request=None,
+                              request_name='Get auction info',
+                              entity=self.__entity)
 
     def get_list_of_auctions(self):
         endpoint = ((datetime.now() - timedelta(minutes=60)).strftime('?offset=%Y-%m-%dT%Hx%Mx%S.104183y03x00&mode=_all_')).replace('x', '%3A').replace('y', '%2B')
-        return request_to_cdb(tender_headers_request(self.cdb, None), self.host, endpoint, 'GET', None, 'Get list of auctions', self.__entity)
+        return request_to_cdb(headers=tender_headers_request(self.cdb, None),
+                              host=self.host,
+                              endpoint=endpoint,
+                              method='GET',
+                              json_request=None,
+                              request_name='Get list of auctions',
+                              entity=self.__entity)
 
     def change_auction_ownership(self, auction_id_long, json_of_transfer):
-        return request_to_cdb(auction_headers_request(self.cdb, json_of_transfer), self.host, '/{}/ownership'.format(auction_id_long),
-                              'POST', json_of_transfer, 'Change auction ownership', self.__entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_of_transfer),
+                              host=self.host,
+                              endpoint='/{}/ownership'.format(auction_id_long),
+                              method='POST',
+                              json_request=json_of_transfer,
+                              request_name='Change auction ownership',
+                              entity=self.__entity)
 
     def activate_auction_privatization(self, auction_id_long, token):
-        return request_to_cdb(auction_headers_request(self.cdb, json_activate_auction_p(token)), self.host, '/{}'.format(auction_id_long),
-                              'PATCH', json_activate_auction_p(token), 'Activate auction privatization', self.__entity)
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_activate_auction_p(token)),
+                              host=self.host,
+                              endpoint='/{}'.format(auction_id_long),
+                              method='PATCH',
+                              json_request=json_activate_auction_p(token),
+                              request_name='Activate auction privatization',
+                              entity=self.__entity)
 
 
 class Privatization(AuctionRequests):
