@@ -114,7 +114,7 @@ def create_below_threshold(received_tender_status, response_json, response_code,
             get_t_info = tender.get_tender_info(tender_id_long)
 
             if get_t_info.json()['data']['status'] == 'active.tendering':
-                tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, add_documents_bid, json_tender)
+                tender_bid.make_bids(number_of_bids, tender_id_long, procurement_method, api_version, add_documents_bid, json_tender)
                 if received_tender_status == 'active.tendering':
                     response_json['tenderStatus'] = get_t_info.json()['data']['status']
                     return response_json, response_code
@@ -208,7 +208,7 @@ def creation_of_tender(tc_request, user_id):
 
     if procurement_method in above_threshold_procurement:
         time.sleep(2)
-        make_bid = tender_bid.run_cycle(number_of_bids, tender_id_long, procurement_method, api_version, add_documents_bid, json_tender)
+        make_bid = tender_bid.make_bids(number_of_bids, tender_id_long, procurement_method, api_version, add_documents_bid, json_tender)
 
         if received_tender_status == 'active.tendering':
             get_t_info = tender.get_tender_info(tender_id_long)
@@ -297,7 +297,7 @@ def creation_of_tender(tc_request, user_id):
                                             return response_json, response_code
 
                                         time.sleep(2)
-                                        tender_bid.make_bid_competitive(make_bid[1], second_stage_tender_id, api_version, procurement_method, add_documents_bid)  # make bids 2nd stage
+                                        tender_bid.make_bid_competitive(make_bid, second_stage_tender_id, api_version, procurement_method, add_documents_bid)  # make bids 2nd stage
 
                                         get_t_info = tender.get_tender_info(second_stage_tender_id)
 

@@ -159,10 +159,10 @@ def generate_json_bid(user_idf, tender_json, lot_number=False):
 
 
 # create and activate bid for created tender
-def run_cycle(bids_quantity, tender_id, procurement_method, api_version, if_docs, tender_json):
+def make_bids(bids_quantity, tender_id, procurement_method, api_version, if_docs, tender_json):
     tender = TenderRequests(api_version)
     activate_bid_body = determine_procedure_for_bid(procurement_method)
-    bids_json = []
+    # bids_json = []
     if bids_quantity == 0:
         print 'Bids haven\'t been made!'
         return {"description": "tender was created without bids"}
@@ -185,35 +185,19 @@ def run_cycle(bids_quantity, tender_id, procurement_method, api_version, if_docs
                 del bid_json["data"]["selfEligible"], bid_json["data"]["selfQualified"], bid_json["data"]["subcontractingDetails"]
             list_of_bids_json.append(bid_json)
 
-            attempts = 0
-            for every_bid in range(5):
-                attempts += 1
-                print '{}{}'.format('Publishing bid: Attempt ', attempts)
-                created_bid = tender.make_tender_bid(tender_id, bid_json, count)
-                if created_bid.status_code == 201:
-                    break
-                else:
-                    continue
+            created_bid = tender.make_tender_bid(tender_id, bid_json, count)
 
             bid_token = created_bid.json()['access']['token']
             bid_id = created_bid.json()['data']['id']
 
-            attempts = 0
-            for every_bid in range(5):  # activate bid
-                activate_created_bid = tender.activate_tender_bid(tender_id, bid_id, bid_token, activate_bid_body, count)
-                time.sleep(0.5)
-                if activate_created_bid.status_code == 200:
-                    break
-                else:
-                    attempts += 1
-                    print '{}{}'.format('Activating bid: Attempt ', attempts)
+            tender.activate_tender_bid(tender_id, bid_id, bid_token, activate_bid_body, count)
 
             bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
 
             if if_docs == 1:
                 print "Documents will be added to bid!"
                 document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, procurement_method, api_version)
-        return bids_json, list_of_bids_json
+        return list_of_bids_json
 
 
 def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_method, if_docs):
@@ -225,14 +209,7 @@ def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_metho
         for bid in range(len(list_of_bids)):
             count += 1
             bid_json = list_of_bids[bid]
-            attempts_create = 0
-            for x in range(5):
-                created_bid = tender.make_tender_bid(tender_id, bid_json, count)
-                if created_bid.status_code == 201:
-                    break
-                else:
-                    attempts_create += 1
-                    print '{}{}'.format('Publishing bid: Attempt ', attempts_create)
+            created_bid = tender.make_tender_bid(tender_id, bid_json, count)
             if procurement_method == 'competitiveDialogueUA':
                 activate_bid_body = {"data": {"status": "active"}}
             else:
@@ -240,14 +217,8 @@ def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_metho
             bid_token = created_bid.json()['access']['token']
             bid_id = created_bid.json()['data']['id']
             identifier = list_of_bids[bid]['data']['tenderers'][0]['identifier']['id']
-            attempts_activate = 0
-            for every_bid in range(5):  # activate bid
-                activate_created_bid = tender.activate_tender_bid(tender_id, bid_id, bid_token, activate_bid_body, count)
-                if activate_created_bid.status_code == 200:
-                    break
-                else:
-                    attempts_activate += 1
-                    print '{}{}'.format('Activating bid: Attempt ', attempts_activate)
+
+            tender.activate_tender_bid(tender_id, bid_id, bid_token, activate_bid_body, count)
 
             if if_docs == 1:
                 print "Documents will be added to bid!"
