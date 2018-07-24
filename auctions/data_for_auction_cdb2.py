@@ -93,7 +93,7 @@ def generate_items_for_auction(number_of_items, rent):
     return items
 
 
-def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifiedBids, rent, skip_auction):
+def generate_auction_json_cdb_2(procurement_method_type, number_of_items, accelerator, minNumberOfQualifiedBids, rent, skip_auction):
     values = auction_value()
     auction_data = {"data": {
                         "procurementMethod": "open",
@@ -103,7 +103,7 @@ def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifi
                         "tenderAttempts": randint(1, 4),
                         "guarantee": values[1],
                         "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
-                        "procurementMethodType": "dgfOtherAssets",
+                        "procurementMethodType": procurement_method_type,
                         "dgfID": "N-1234567890",
                         "submissionMethodDetails": "quick{}".format(skip_auction),
                         "items": generate_items_for_auction(number_of_items, rent),
@@ -137,6 +137,16 @@ def generate_auction_json_cdb_2(number_of_items, accelerator, minNumberOfQualifi
                         }
                     }
                     }
+    if procurement_method_type == 'propertyLease':
+        del auction_data['data']['dgfID']
+        auction_data['data']['lotIdentifier'] = 'Lot Identifier'
+        auction_data['data']['contractTerms'] = {
+                                                    "type": "lease",
+                                                    "leaseTerms": {
+                                                        "leaseDuration": "P1D"
+                                                    }
+                                                }
+
     if rent is True:
         auction_data["data"]["minNumberOfQualifiedBids"] = minNumberOfQualifiedBids
     return auction_data

@@ -37,7 +37,7 @@ def create_auction(ac_request, session):
     if cdb_version == 1:
         json_auction = generate_auction_json(procurement_method_type, number_of_items, accelerator, data['steps'], skip_auction)
     else:
-        json_auction = generate_auction_json_cdb_2(number_of_items, accelerator, data['min_number_of_qualified_bids'], data['rent'], skip_auction)
+        json_auction = generate_auction_json_cdb_2(procurement_method_type, number_of_items, accelerator, data['min_number_of_qualified_bids'], data['rent'], skip_auction)
 
     auction = AuctionRequests(cdb_version)
     a_publish = auction.publish_auction(json_auction)

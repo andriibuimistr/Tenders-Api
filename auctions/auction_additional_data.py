@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-auction_procurement_method_types = ['dgfFinancialAssets', 'dgfOtherAssets', 'dgfInsider']
+auction_procurement_method_types = ['dgfFinancialAssets', 'dgfOtherAssets', 'dgfInsider', 'propertyLease']
 
 cdb_versions = ['1', '2']
 
