@@ -297,7 +297,7 @@ def creation_of_tender(tc_request, user_id):
                                             return response_json, response_code
 
                                         time.sleep(2)
-                                        tender_bid.make_bid_competitive(make_bid[1], second_stage_tender_id, api_version, procurement_method)  # make bids 2nd stage
+                                        tender_bid.make_bid_competitive(make_bid[1], second_stage_tender_id, api_version, procurement_method, add_documents_bid)  # make bids 2nd stage
 
                                         get_t_info = tender.get_tender_info(second_stage_tender_id)
 

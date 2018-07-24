@@ -216,7 +216,7 @@ def run_cycle(bids_quantity, tender_id, procurement_method, api_version, if_docs
         return bids_json, list_of_bids_json
 
 
-def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_method):
+def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_method, if_docs):
     tender = TenderRequests(api_version)
     if len(list_of_bids) == 0:
         print 'Bids haven\'t been made!'
@@ -249,6 +249,9 @@ def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_metho
                     attempts_activate += 1
                     print '{}{}'.format('Activating bid: Attempt ', attempts_activate)
 
+            if if_docs == 1:
+                print "Documents will be added to bid!"
+                document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, '{}.stage2'.format(procurement_method), api_version)  # add .stage2 to procurementMethodType
             bid_to_db(bid_id, bid_token, identifier, tender_id)
 
 
