@@ -16,7 +16,7 @@ def extend_tender_period(api_version, accelerator, second_stage_tender_id):  # e
     tender_draft = TenderRequests(api_version).get_tender_info(second_stage_tender_id)
     new_tender_json = tender_draft.json()
     new_tender_json['data']['tenderPeriod']['endDate'] = str(
-        datetime.now() + timedelta(minutes=int(round(11 * (1440.0 / accelerator)) + 1))) + kiev_now
+        datetime.now() + timedelta(minutes=int(round(11 * (1440.0 / accelerator)) + 3))) + kiev_now
     return new_tender_json
 
 
