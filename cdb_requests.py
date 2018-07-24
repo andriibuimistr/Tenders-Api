@@ -30,7 +30,7 @@ def save_log(code, body, resp_header, host, endpoint, method, request_name, enti
 
 
 # Send request to cdb
-def request_to_cdb(headers, host, endpoint, method, json_request, request_name, entity, is_json=True, files=None):
+def request_to_cdb(headers, host, method, json_request, request_name, entity, endpoint='', is_json=True, files=None):
     if is_json:
         json_request = json.dumps(json_request)
     attempts = 0
@@ -92,7 +92,6 @@ class TenderRequests(object):
     def publish_tender(self, json_tender):
         return request_to_cdb(headers=tender_headers_request(self.cdb, json_tender),
                               host=self.host,
-                              endpoint='',
                               method='POST',
                               json_request=json_tender,
                               request_name='Publish tender',
@@ -211,7 +210,6 @@ class TenderRequests(object):
     def get_list_of_tenders(self):
         return request_to_cdb(headers=tender_headers_request(self.cdb, None),
                               host=self.host_public,
-                              endpoint='',
                               method='GET',
                               json_request=None,
                               request_name='Get list of tenders',
@@ -229,7 +227,6 @@ class TenderRequests(object):
     def add_tender_document_to_ds(self, files):
         return request_to_cdb(headers=tender_headers_add_document_ds,
                               host=self.ds_host,
-                              endpoint='',
                               method='POST',
                               json_request=None,
                               request_name='Add document to DS (tenders)',
@@ -275,7 +272,6 @@ class AuctionRequests(object):
     def publish_auction(self, json_auction):
         return request_to_cdb(headers=auction_headers_request(self.cdb, json_auction),
                               host=self.host,
-                              endpoint='',
                               method='POST',
                               json_request=json_auction,
                               request_name='Publish auction',
@@ -356,7 +352,6 @@ class Privatization(AuctionRequests):
     def publish_asset(self, json_asset):
         return request_to_cdb(headers=auction_headers_request(self.cdb, json_asset),
                               host=self.host_p,
-                              endpoint='',
                               method='POST',
                               json_request=json_asset,
                               request_name='Publish asset',
@@ -383,7 +378,6 @@ class Privatization(AuctionRequests):
     def publish_lot(self, json_lot):
         return request_to_cdb(headers=auction_headers_request(self.cdb, json_lot),
                               host=self.host_p,
-                              endpoint='',
                               method='POST',
                               json_request=json_lot,
                               request_name='Publish lot',
@@ -428,7 +422,6 @@ class Privatization(AuctionRequests):
     def get_list_of_lots(self):
         return request_to_cdb(headers=tender_headers_request(self.cdb, None),
                               host=self.host_p,
-                              endpoint='',
                               method='GET',
                               json_request=None,
                               request_name='Get list of lots',
@@ -437,7 +430,6 @@ class Privatization(AuctionRequests):
     def create_transfer(self):
         return request_to_cdb(headers=auction_headers_request(self.cdb, transfer_json),
                               host=self.host_p,
-                              endpoint='',
                               method='POST',
                               json_request=transfer_json,
                               request_name='Create transfer',
@@ -456,7 +448,6 @@ class Monitoring(object):
     def publish_monitoring(self, json_monitoring):
         return request_to_cdb(headers=self.headers,
                               host=self.host,
-                              endpoint='',
                               method='POST',
                               json_request=json_monitoring,
                               request_name='Publish monitoring',
@@ -519,7 +510,6 @@ class Monitoring(object):
     def get_list_of_monitorings(self):
         return request_to_cdb(headers=self.headers,
                               host=self.host,
-                              endpoint='',
                               method='GET',
                               json_request=None,
                               request_name='Get list of monitorings',
