@@ -94,8 +94,17 @@ def custom503(error):
 
 # Get actual time for template
 @app.context_processor
-def inject_now():
+def global_now():
     return {'now': datetime.utcnow()}
+
+
+@app.context_processor
+def global_user_data():
+    user_data = dict()
+    if 'logged_in' in session:
+        user_data['username'] = session['username']
+        user_data['user_role_id'] = session['user_role']
+    return user_data
 
 
 def get_user_role():
@@ -181,7 +190,7 @@ def main():
         return login_form()
     else:
         content = render_template('main_page.html', list_of_tenders=0, list_of_types=list_of_procurement_types)
-        return render_template('index.html', user_role_id=session['user_role'], content=content)
+        return render_template('index.html', content=content)
 
 
 # ################################################################ ADMIN ##############################################################
@@ -216,7 +225,7 @@ def check_if_superuser():
 def admin_pages(page):
     if check_if_admin() is not True:
         return check_if_admin()
-    admin_page = AdminPages(session['user_role'])
+    admin_page = AdminPages()
     if page == 'platforms':
         return admin_page.page_admin_platforms()
     elif page == 'users':
@@ -273,6 +282,8 @@ def jquery_delete_user(user_id):
         user_for_delete_role = Users.query.filter_by(id=user_id).first().user_role_id
         if user_for_delete_role == 1 and not check_if_superuser():
             return abort(403, 'You are not allowed to delete this user')
+        elif Users.query.filter_by(id=user_id).first().super_user == 1:
+            return abort(403, 'You can\'t delete super user')
         return jquery_requests.delete_user(user_id)
 
 
@@ -333,23 +344,23 @@ def get_bids_of_one_tender(tender_id_short):
 #                                                        ###### TENDER PAGES ######
 # Generate template for tender creation page
 @app.route("/tenders/create-tender")
-def page_create_tender():
+def page_create_tender():  # TODO Move to pages file
     if not session.get('logged_in'):
         return login_form()
     else:
         content = render_template('tenders/create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions,
                                   platforms=core.get_list_of_platforms(1), statuses=tender_status_list)
-        return render_template('index.html', user_role_id=session['user_role'], content=content)
+        return render_template('index.html', content=content)
 
 
 # Generate template for show page with list of bids for tender
 @app.route("/tenders/bids")
-def page_tender_bids():
+def page_tender_bids():  # TODO Move to pages file
     if not session.get('logged_in'):
         return login_form()
     else:
         content = render_template('tenders/tender_bids.html')
-        return render_template('index.html', user_role_id=session['user_role'], content=content)
+        return render_template('index.html', content=content)
 
 
 # ############################################################## AUCTIONS ##############################################################################
@@ -401,7 +412,7 @@ def page_create_auction():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return AuctionPages(session['user_role']).page_create_auction()
+        return AuctionPages().page_create_auction()
 
 
 # Generate template for show page with list of bids for auction
@@ -410,7 +421,7 @@ def page_auction_bids():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return AuctionPages(session['user_role']).page_auction_bids()
+        return AuctionPages().page_auction_bids()
 
 
 # ############################################################## TOOLS ##############################################################################
