@@ -18,7 +18,7 @@
                     <h3>Test.QA</h3>
                 </div>
                 <ul class="footer-menu">
-                     <li><a href="/">Главная</a></li>
+                     <li><a href="/">{{ lng.menu_main_page() }}</a></li>
                 </ul>
             </div>
         </div>
@@ -29,7 +29,7 @@
                     <h3>Популярные ссылки</h3>
                 </div>
                 <ul class="footer-menu">
-                     <li><a href="{{ url_for('page_create_tender')}}">Создать тендер</a></li>
+                     <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu_item_create_tender() }}</a></li>
                 </ul>
             </div>
         </div>

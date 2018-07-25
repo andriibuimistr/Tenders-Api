@@ -6,42 +6,57 @@ class RU(object):
     def __init__(self):
         pass
 
-    main_page = u'Главная'
+    menu_main_page = u'Главная'
     menu_tenders = u'Тендеры'
     menu_auctions = u'Аукционы'
     menu_tools = u'Инструменты'
     menu_admin = u'Админка'
     menu_exit = u'Выйти'
-    menu_create_tender = u'Создать тендер'
-    menu_tender_bids = u'Ставки тендера'
+    menu_item_create_tender = u'Создать тендер'
+    menu_item_tender_bids = u'Ставки тендера'
+    menu_item_create_auction = u'Создать аукцион'
+    menu_item_auction_bids = u'Ставки аукциона'
+    menu_item_platforms = u'Площадки'
+    menu_item_users = u'Пользователи'
+    menu_item_list_of_tenders = u'Список закупок'
 
 
 class EN(object):
     def __init__(self):
         pass
 
-    main_page = u'Main page'
+    menu_main_page = u'Main page'
     menu_tenders = u'Tenders'
     menu_auctions = u'Auctions'
     menu_tools = u'Tools'
     menu_admin = u'Admin'
     menu_exit = u'Sign out'
-    menu_create_tender = u'Create tender'
-    menu_tender_bids = u'Bids of tender'
+    menu_item_create_tender = u'Create tender'
+    menu_item_tender_bids = u'Bids of tender'
+    menu_item_create_auction = u'Create auction'
+    menu_item_auction_bids = u'Bids of auction'
+    menu_item_platforms = u'Platforms'
+    menu_item_users = u'Users'
+    menu_item_list_of_tenders = u'List of tenders'
 
 
 class ES(object):
     def __init__(self):
         pass
 
-    main_page = u'Inicio'
+    menu_main_page = u'Inicio'
     menu_tenders = u'Licitaciones'
     menu_auctions = u'Subastas'
     menu_tools = u'Herramientas'
     menu_admin = u'Administrador'
     menu_exit = u'Salir'
-    menu_create_tender = u'Crear licitación'
-    menu_tender_bids = u'Apuestas de licitación'
+    menu_item_create_tender = u'Crear licitación'
+    menu_item_tender_bids = u'Apuestas de licitación'
+    menu_item_create_auction = u'Crear subasta'
+    menu_item_auction_bids = u'Apuestas de subasta'
+    menu_item_platforms = u'Plataformas'
+    menu_item_users = u'Usuarios'
+    menu_item_list_of_tenders = u'Lista de licitaciones'
 
 
 class Translations(object):
@@ -57,8 +72,8 @@ class Translations(object):
                 }.get(self.lng, self.default_lng)
 
     # MAIN MENU TRANSLATIONS
-    def main_page(self):
-        return self.class_selector().main_page
+    def menu_main_page(self):
+        return self.class_selector().menu_main_page
 
     def menu_tenders(self):
         return self.class_selector().menu_tenders
@@ -75,11 +90,26 @@ class Translations(object):
     def menu_exit(self):
         return self.class_selector().menu_exit
 
-    def menu_create_tender(self):
-        return self.class_selector().menu_create_tender
+    def menu_item_create_tender(self):
+        return self.class_selector().menu_item_create_tender
 
-    def menu_tender_bids(self):
-        return self.class_selector().menu_tender_bids
+    def menu_item_tender_bids(self):
+        return self.class_selector().menu_item_tender_bids
+
+    def menu_item_create_auction(self):
+        return self.class_selector().menu_item_create_auction
+
+    def menu_item_auction_bids(self):
+        return self.class_selector().menu_item_auction_bids
+
+    def menu_item_platforms(self):
+        return self.class_selector().menu_item_platforms
+
+    def menu_item_users(self):
+        return self.class_selector().menu_item_users
+
+    def menu_item_list_of_tenders(self):
+        return self.class_selector().menu_item_list_of_tenders
 
 
-print Translations('es').menu_tender_bids()
+# print Translations('es').menu_tender_bids()

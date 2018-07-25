@@ -19,12 +19,12 @@
         <!-- Список ссылок, расположенных слева -->
         <ul class="nav navbar-nav">
             <!--Элемент с классом active отображает ссылку подсвеченной -->
-            <li><a href="/">{{ lng.main_page() }}<span class="sr-only">(current)</span></a></li>
+            <li><a href="/">{{ lng.menu_main_page() }}<span class="sr-only">(current)</span></a></li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu_tenders() }}<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu_create_tender() }}</a></li>
-                    <li><a href="{{ url_for('page_tender_bids')}}">{{ lng.menu_tender_bids() }}</a></li>
+                    <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu_item_create_tender() }}</a></li>
+                    <li><a href="{{ url_for('page_tender_bids')}}">{{ lng.menu_item_tender_bids() }}</a></li>
                     <li class="divider"></li>
                     <li><a href="#">...</a></li>
                 </ul>
@@ -33,8 +33,8 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu_auctions() }}<span class="caret"></span></a>
 
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('page_create_auction')}}">Создать аукцион</a></li>
-                    <li><a href="{{ url_for('page_auction_bids')}}">Ставки аукциона</a></li>
+                    <li><a href="{{ url_for('page_create_auction')}}">{{ lng.menu_item_create_auction() }}</a></li>
+                    <li><a href="{{ url_for('page_auction_bids')}}">{{ lng.menu_item_auction_bids() }}</a></li>
                     <li class="divider"></li>
                     <li><a href="#">...</a></li>
                 </ul>
@@ -50,9 +50,9 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu_admin() }}<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('admin_pages', page='platforms') }}">Площадки</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='users') }}">Пользователи</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='tenders') }}">Закупки</a></li>
+                    <li><a href="{{ url_for('admin_pages', page='platforms') }}">{{ lng.menu_item_platforms() }}</a></li>
+                    <li><a href="{{ url_for('admin_pages', page='users') }}">{{ lng.menu_item_users() }}</a></li>
+                    <li><a href="{{ url_for('admin_pages', page='tenders') }}">{{ lng.menu_item_list_of_tenders() }}</a></li>
                     <li class="divider"></li>
                 </ul>
             </li>
