@@ -15,6 +15,7 @@ from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
 from auctions.pages import AuctionPages
+from tenders.pages import TenderPages
 from tenders import tender_validators, tender
 import hashlib
 
@@ -225,7 +226,7 @@ def check_if_superuser():
 def admin_pages(page):
     if check_if_admin() is not True:
         return check_if_admin()
-    admin_page = AdminPages()
+    admin_page = AdminPages
     if page == 'platforms':
         return admin_page.page_admin_platforms()
     elif page == 'users':
@@ -344,23 +345,20 @@ def get_bids_of_one_tender(tender_id_short):
 #                                                        ###### TENDER PAGES ######
 # Generate template for tender creation page
 @app.route("/tenders/create-tender")
-def page_create_tender():  # TODO Move to pages file
+def page_create_tender():
     if not session.get('logged_in'):
         return login_form()
     else:
-        content = render_template('tenders/create_tender.html', list_of_types=list_of_procurement_types, api_versions=list_of_api_versions,
-                                  platforms=core.get_list_of_platforms(1), statuses=tender_status_list)
-        return render_template('index.html', content=content)
+        return TenderPages.page_create_tender()
 
 
 # Generate template for show page with list of bids for tender
 @app.route("/tenders/bids")
-def page_tender_bids():  # TODO Move to pages file
+def page_tender_bids():
     if not session.get('logged_in'):
         return login_form()
     else:
-        content = render_template('tenders/tender_bids.html')
-        return render_template('index.html', content=content)
+        return TenderPages.page_tender_bids()
 
 
 # ############################################################## AUCTIONS ##############################################################################
@@ -412,7 +410,7 @@ def page_create_auction():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return AuctionPages().page_create_auction()
+        return AuctionPages.page_create_auction()
 
 
 # Generate template for show page with list of bids for auction
@@ -421,7 +419,7 @@ def page_auction_bids():
     if not session.get('logged_in'):
         return login_form()
     else:
-        return AuctionPages().page_auction_bids()
+        return AuctionPages.page_auction_bids()
 
 
 # ############################################################## TOOLS ##############################################################################
