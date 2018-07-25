@@ -18,6 +18,7 @@ from auctions.pages import AuctionPages
 from tenders.pages import TenderPages
 from tenders import tender_validators, tender
 import hashlib
+from language.translations import Translations
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
@@ -106,6 +107,16 @@ def global_user_data():
         user_data['username'] = session['username']
         user_data['user_role_id'] = session['user_role']
     return user_data
+
+
+@app.context_processor
+def global_user_language():
+    translation = dict()
+    if 'language' in session:
+        translation['lng'] = Translations(session['language'])
+    else:
+        translation['lng'] = Translations('es')
+    return translation
 
 
 def get_user_role():
