@@ -7,3 +7,45 @@
     margin-top: -30px;
 	float: right;
 }
+
+.platform-info {
+    padding: 3px;
+    border: 1px solid #CCC;
+    display: inline-block;
+    width: 100%;
+}
+
+.platform-actions, .user-actions {
+    padding: 2px;
+}
+
+.user-info {
+    padding: 3px;
+    border: 1px solid #CCC;
+    display: inline-block;
+    width: 100%;
+}
+
+.tender-info {
+    padding: 3px;
+    border: 1px solid #CCC;
+    display: inline-block;
+    width: 100%;
+}
+
+.tender-info div span {
+    font-weight: bold;
+}
+/*Actions icons*/
+.platform-action-delete, .tender-action-delete, .user-action-delete {
+    background-image: url("../images/icons/delete_icon.png");
+    height: 16px;
+    width: 16px;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+}
+
+.platform-action-delete:hover, .tender-action-delete:hover, .user-action-delete:hover {
+    opacity: 1;
+    cursor: pointer;
+}

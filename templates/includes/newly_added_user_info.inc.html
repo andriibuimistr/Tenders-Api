@@ -1,7 +1,10 @@
-<div class="user-info">
+<div class="user-info" id="user-id-{{ user[0].id }}">
     <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">{{ user[0].id }}</div>
     <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">{{ user[0].user_login }}</div>
     <div class="col-lg-16 col-md-16 col-sm-10 col-xs-10">{{ user[0].user_password }}</div>
     <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">{{ user_roles[user[0].user_role_id] }}</div>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">{{ user[0].active }}</div>
+    <div class="user-actions col-lg-9 col-md-9 col-sm-6 col-xs-6">
+        <div class="user-action-delete" id="{{ user[0].id }}" title="Delete"></div>
+    </div>
 </div>

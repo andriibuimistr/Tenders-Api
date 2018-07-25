@@ -82,6 +82,26 @@ $(document).on("click",".tender-action-delete", function() {
 });
 
 
+//Delete user
+$(document).on("click",".user-action-delete", function() {
+        if(confirm("Are you sure you want to delete this user?")){
+            var id = $(this).attr('id');
+            $.ajax({
+                url: '/backend/jquery/users/' + id,
+                type: 'DELETE',
+                success: function() {
+                    $('#user-id-' + id).remove();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+        else {
+            return false;
+        }
+});
+
 //Delete all tenders from DB
 $(document).on("click","#delete-tenders", function() {
         if(confirm("Are you sure you want to delete all tenders?")){

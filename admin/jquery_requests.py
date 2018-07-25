@@ -93,6 +93,19 @@ def delete_tender(tender_id):
     return jsonify({"status": "Success"}), 200
 
 
+def delete_user(user_id):
+    existing_users_id = []
+    list_of_users_id_db = core.get_list_of_users()
+    for x in range(len(list_of_users_id_db)):
+        existing_users_id.append(str(list_of_users_id_db[x].id))
+    if user_id not in existing_users_id:
+        return abort(404, 'User with id {} does not exist'.format(user_id))
+    Users.query.filter_by(id=user_id).delete()
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "Success"}), 200
+
+
 def delete_tenders():
     Tenders.query.delete()
     db.session.commit()

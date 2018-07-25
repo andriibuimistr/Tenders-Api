@@ -104,6 +104,12 @@ def get_user_role():
     return user_role_id
 
 
+def get_super_user_flag():
+    super_user_flag = Users.query.filter_by(user_login=session['username']).first().super_user
+    db.session.remove()
+    return super_user_flag
+
+
 def get_user_id():
     user_id = Users.query.filter_by(user_login=session['username']).first().id
     db.session.remove()
@@ -153,6 +159,7 @@ def do_login():
                 session['username'] = request.form['username']
                 session['user_id'] = user_id
                 session['user_role'] = get_user_role()
+                session['super_user'] = get_super_user_flag()
                 return redirect(redirect_url())
             else:
                 return redirect(redirect_url())
@@ -192,9 +199,16 @@ def check_if_admin_jquery():  # check if user is admin before accept jquery requ
     if not session.get('logged_in'):
         return abort(401)
     elif session['user_role'] != 1:
-        return abort(403, 'U r not allowed to access this page')
+        return abort(403, 'U r not allowed to perform this action')
     else:
         return True
+
+
+def check_if_superuser():
+    if session['super_user'] == 1:
+        return True
+    else:
+        return False
 
 
 #                                                         ####### ADMIN PAGES ######
@@ -206,7 +220,7 @@ def admin_pages(page):
     if page == 'platforms':
         return admin_page.page_admin_platforms()
     elif page == 'users':
-        return admin_page.page_admin_users()
+        return admin_page.page_admin_users(session)
     elif page == 'tenders':
         return admin_page.page_admin_tenders()
     else:
@@ -248,6 +262,18 @@ def jquery_delete_tender(tender_id):
         return check_if_admin_jquery()
     else:
         return jquery_requests.delete_tender(tender_id)
+
+
+# Delete user (with jquery)
+@app.route('/backend/jquery/users/<user_id>', methods=['DELETE'])
+def jquery_delete_user(user_id):
+    if check_if_admin_jquery() is not True:
+        return check_if_admin_jquery()
+    else:
+        user_for_delete_role = Users.query.filter_by(id=user_id).first().user_role_id
+        if user_for_delete_role == 1 and not check_if_superuser():
+            return abort(403, 'You are not allowed to delete this user')
+        return jquery_requests.delete_user(user_id)
 
 
 # Delete all tenders from database (with jquery)
