@@ -249,6 +249,14 @@ def jquery_delete_tender(tender_id):
     else:
         return jquery_requests.delete_tender(tender_id)
 
+
+# Delete all tenders from database (with jquery)
+@app.route('/backend/jquery/tenders', methods=['DELETE'])
+def jquery_delete_tenders():
+    if check_if_admin_jquery() is not True:
+        return check_if_admin_jquery()
+    else:
+        return jquery_requests.delete_tenders()
 # ############################################################## ADMIN END #############################################################################
 
 

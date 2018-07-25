@@ -1,5 +1,5 @@
 import tenders.tender_additional_data
-from database import db, Platforms, Users, Tenders
+from database import db, Platforms, Users, Tenders, app
 from flask import render_template, abort, jsonify
 import validators
 import core
@@ -88,6 +88,13 @@ def delete_tender(tender_id):
         return abort(404, 'Tender does not exist')
 
     Tenders.query.filter_by(id=tender_id).delete()
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "Success"}), 200
+
+
+def delete_tenders():
+    Tenders.query.delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200

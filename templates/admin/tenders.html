@@ -3,6 +3,9 @@
 </div>
 <div class="section_content">
     <H4>Список тендеров</H4>
+    <div class="clear-list-section">
+        <button class="btn btn-danger btn-xs clear-list-button" id="delete-tenders" type="button">Clear tenders table</button>
+    </div>
     <div class="list-of-tenders" id="admin-list-of-tenders">
         {% if tenders|length == 0 %}
             <div>List of tenders is empty</div>

@@ -80,3 +80,24 @@ $(document).on("click",".tender-action-delete", function() {
             return false;
         }
 });
+
+
+//Delete all tenders from DB
+$(document).on("click","#delete-tenders", function() {
+        if(confirm("Are you sure you want to delete all tenders?")){
+            var id = $(this).attr('id');
+            $.ajax({
+                url: '/backend/jquery/tenders',
+                type: 'DELETE',
+                success: function() {
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+        else {
+            return false;
+        }
+});
