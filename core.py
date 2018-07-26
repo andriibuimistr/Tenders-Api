@@ -161,7 +161,7 @@ def get_bids_of_entity(id_short, entity):
     return list_of_bids
 
 
-# get list of platform (SQLA)
+# get list of platform ()
 def get_list_of_platforms(platform_role=False):
     if platform_role:  # if platform role is passed to function
         platforms_list = Platforms.query.filter_by(platform_role=platform_role).all()
@@ -191,7 +191,7 @@ def get_list_of_platform_urls(platform_role):
     return urls_list
 
 
-# get list of users
+# get list of user
 def get_list_of_users():
     users_list = Users.query.all()
     db.session.remove()
@@ -212,6 +212,13 @@ def get_list_of_tenders():
     tenders_list = Tenders.query.order_by("id desc").all()  # from last to first
     db.session.remove()
     return tenders_list
+
+
+# get list of platform (SQLA)
+def get_list_of_languages():
+    languages_list = Languages.query.all()
+    db.session.remove()
+    return languages_list
 
 
 def get_user_language(user_id):

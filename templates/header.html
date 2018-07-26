@@ -61,6 +61,7 @@
         <!-- Список ссылок, расположенный справа -->
         <ul class="nav navbar-nav navbar-right">
             <li><a>{{ username }}</a></li>
+            <li><a href="{{ url_for('page_user_preferences') }}">{{ lng.menu_item_preferences() }}</a></li>
             <li><a href="/logout">{{ lng.menu_exit() }}</a></li>
         </ul>
     </div>

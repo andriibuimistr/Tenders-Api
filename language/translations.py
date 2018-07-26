@@ -19,6 +19,7 @@ class RU(object):
     menu_item_platforms = u'Площадки'
     menu_item_users = u'Пользователи'
     menu_item_list_of_tenders = u'Список закупок'
+    menu_item_preferences = u'Настройки'
 
 
 class EN(object):
@@ -38,6 +39,7 @@ class EN(object):
     menu_item_platforms = u'Platforms'
     menu_item_users = u'Users'
     menu_item_list_of_tenders = u'List of tenders'
+    menu_item_preferences = u'Preferences'
 
 
 class ES(object):
@@ -57,6 +59,7 @@ class ES(object):
     menu_item_platforms = u'Plataformas'
     menu_item_users = u'Usuarios'
     menu_item_list_of_tenders = u'Lista de licitaciones'
+    menu_item_preferences = u'Preferencias'
 
 
 class Translations(object):
@@ -110,6 +113,9 @@ class Translations(object):
 
     def menu_item_list_of_tenders(self):
         return self.class_selector().menu_item_list_of_tenders
+
+    def menu_item_preferences(self):
+        return self.class_selector().menu_item_preferences
 
 
 # print Translations('es').menu_tender_bids()

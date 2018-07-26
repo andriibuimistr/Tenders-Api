@@ -14,6 +14,7 @@ from flask_cors import CORS, cross_origin
 from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
+from user.pages import UserPages
 from auctions.pages import AuctionPages
 from tenders.pages import TenderPages
 from tenders import tender_validators, tender
@@ -241,7 +242,7 @@ def admin_pages(page):
     admin_page = AdminPages
     if page == 'platforms':
         return admin_page.page_admin_platforms()
-    elif page == 'users':
+    elif page == 'user':
         return admin_page.page_admin_users(session)
     elif page == 'tenders':
         return admin_page.page_admin_tenders()
@@ -287,7 +288,7 @@ def jquery_delete_tender(tender_id):
 
 
 # Delete user (with jquery)
-@app.route('/backend/jquery/users/<user_id>', methods=['DELETE'])
+@app.route('/backend/jquery/user/<user_id>', methods=['DELETE'])
 def jquery_delete_user(user_id):
     if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
@@ -455,6 +456,18 @@ def jquery_get_tender_json(tender_id, api_version):
         return jquery_forbidden_login()
     else:
         return jsonify(jquery_requests.get_tender_json_from_cdb(tender_id, api_version)), 200
+
+
+# ############################################################## USERS ##############################################################################
+#                                                       ###### USER PAGES ######
+
+# Open user preferences page
+@app.route("/user/preferences")
+def page_user_preferences():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        return UserPages(session).page_preferences()
 
 
 if __name__ == '__main__':

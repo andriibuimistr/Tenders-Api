@@ -1,0 +1,17 @@
+<div class="heading main_title">
+    <h1>Настройки пользователя</h1>
+</div>
+<div class="section_content">
+CONTENT
+    <form class="form-user-preferences" id="user-preferences" role="form">
+        <select name="language" id="language" class="form-control" size="1">
+            {% for language in languages %}
+                    {% if language.system_name == user_language %}
+                        <option value="{{ language.system_name }}"  selected="selected">{{ language.name }}</option>
+                    {% else %}
+                        <option value="{{ language.system_name }}">{{ language.name }}</option>
+                    {% endif %}
+            {%endfor%}
+        </select>
+    </form>
+</div>
