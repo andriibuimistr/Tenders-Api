@@ -14,7 +14,7 @@ class AdminPages:
 
     @staticmethod
     def page_admin_users(session):  # generate page with list of user for admin
-        content = render_template('admin/user.html', users=core.get_list_of_users(), user_roles=core.get_list_of_user_roles(),
+        content = render_template('admin/users.html', users=core.get_list_of_users(), user_roles=core.get_list_of_user_roles(),
                                   super_user_flag=session['super_user'])
         return render_template('index.html', content=content)
 

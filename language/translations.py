@@ -21,6 +21,12 @@ class RU(object):
     menu_item_list_of_tenders = u'Список закупок'
     menu_item_preferences = u'Настройки'
 
+    page_title_main_page = u'Главная страница'
+    page_title_creation_of_tender = u'Создание закупки'
+    page_title_bids_of_tender = u'Ставки закупки'
+    page_title_creation_of_auction = u'Создание аукциона'
+    page_title_bids_of_auctions = u'Ставки аукциона'
+
 
 class EN(object):
     def __init__(self):
@@ -41,6 +47,12 @@ class EN(object):
     menu_item_list_of_tenders = u'List of tenders'
     menu_item_preferences = u'Preferences'
 
+    page_title_main_page = u'Main page'
+    page_title_creation_of_tender = u'Creation of tender'
+    page_title_bids_of_tender = u'Bids of tender'
+    page_title_creation_of_auction = u'Creation of auction'
+    page_title_bids_of_auctions = u'Bids of auction'
+
 
 class ES(object):
     def __init__(self):
@@ -60,6 +72,12 @@ class ES(object):
     menu_item_users = u'Usuarios'
     menu_item_list_of_tenders = u'Lista de licitaciones'
     menu_item_preferences = u'Preferencias'
+
+    page_title_main_page = u'Página de inicio'
+    page_title_creation_of_tender = u'Creación de licitación'
+    page_title_bids_of_tender = u'Apuestas de licitación'
+    page_title_creation_of_auction = u'Creación de subasta'
+    page_title_bids_of_auctions = u'Apuestas de subasta'
 
 
 class Translations(object):
@@ -117,5 +135,19 @@ class Translations(object):
     def menu_item_preferences(self):
         return self.class_selector().menu_item_preferences
 
+    # PAGES TITLES
+    def page_title_main_page(self):
+        return self.class_selector().page_title_main_page
 
+    def page_title_creation_of_tender(self):
+        return self.class_selector().page_title_creation_of_tender
+
+    def page_title_bids_of_tender(self):
+        return self.class_selector().page_title_bids_of_tender
+
+    def page_title_creation_of_auction(self):
+        return self.class_selector().page_title_creation_of_auction
+
+    def page_title_bids_of_auctions(self):
+        return self.class_selector().page_title_bids_of_auctions
 # print Translations('es').menu_tender_bids()

@@ -1,5 +1,5 @@
 import tenders.tender_additional_data
-from database import db, Platforms, Users, Tenders, app
+from database import db, Platforms, Users, Tenders
 from flask import render_template, abort, jsonify
 import validators
 import core
@@ -56,7 +56,7 @@ def add_user(request):
         return abort(422, 'We have this login yet')
 
     password = hashlib.md5(new_user_data['user-password'].encode('utf8')).hexdigest()
-    user_to_sql = Users(None, new_user_data['user-name'], password, new_user_data['user_role'], int(new_user_data['user_status']), None)
+    user_to_sql = Users(None, new_user_data['user-name'], password, new_user_data['user_role'], int(new_user_data['user_status']), None, None)
     db.session.add(user_to_sql)
     last_id = Users.query.order_by(Users.id.desc()).first().id
     newly_added_user_data = Users.query.filter_by(id=last_id)

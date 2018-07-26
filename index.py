@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from auctions.auction_validators import *
 from tenders.tender_validators import *
-from database import db, Users
 from auctions import auction
 from datetime import timedelta
 import core
 from tools.pages import Pages
-from flask import Flask, jsonify, request, abort, make_response, render_template, session, redirect, url_for, g
+from flask import Flask, jsonify, request, make_response, render_template, session, redirect, url_for, g
 from flask_httpauth import HTTPBasicAuth
 import os
 import flask_login
@@ -243,7 +242,7 @@ def admin_pages(page):
     admin_page = AdminPages
     if page == 'platforms':
         return admin_page.page_admin_platforms()
-    elif page == 'user':
+    elif page == 'users':
         return admin_page.page_admin_users(session)
     elif page == 'tenders':
         return admin_page.page_admin_tenders()
@@ -289,7 +288,7 @@ def jquery_delete_tender(tender_id):
 
 
 # Delete user (with jquery)
-@app.route('/backend/jquery/user/<user_id>', methods=['DELETE'])
+@app.route('/backend/jquery/users/<user_id>', methods=['DELETE'])
 def jquery_delete_user(user_id):
     if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
