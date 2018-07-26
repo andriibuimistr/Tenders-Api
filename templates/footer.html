@@ -7,7 +7,7 @@
 
         </ul>
     	<div class="rights">
-    	<p>TEST.QA {{ now.year }} ©<br>Все права защищены</p>
+    	<p>TEST.QA {{ now.year }} ©<br>{{ lng.message_all_rights_reserved() }}</p>
         </div>
     </div>
     <div class="footer_middle col-lg-24 col-md-24 hidden-sm hidden-xs">
@@ -26,7 +26,7 @@
             <div class="col-lg-14 col-md-14 col-sm-12 col-xs-12"></div>
             <div class="footer_list col-lg-34 col-md-34 col-sm-36 col-xs-36">
                 <div class="footer_sections_title">
-                    <h3>Популярные ссылки</h3>
+                    <h3>{{ lng.section_popular_links() }}</h3>
                 </div>
                 <ul class="footer-menu">
                      <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu_item_create_tender() }}</a></li>
@@ -39,7 +39,7 @@
         	<dl class="dl-horizontal">
               <dt>Email:</dt>
               <dd>info@test.qa</dd>
-              <dt>Телефон:</dt>
+              <dt>{{ lng.label_phone() }}:</dt>
               <dd>+1234567890</dd>
             </dl>
         </div>
