@@ -26,6 +26,10 @@ class RU(object):
     page_title_bids_of_tender = u'Ставки закупки'
     page_title_creation_of_auction = u'Создание аукциона'
     page_title_bids_of_auctions = u'Ставки аукциона'
+    page_title_platforms_management = u'Управление площадками'
+    page_title_users_management = u'Управление пользователями'
+    page_title_tenders_management = u'Управление закупками'
+    page_title_user_preferences = u'Настройки пользователя'
 
 
 class EN(object):
@@ -52,6 +56,10 @@ class EN(object):
     page_title_bids_of_tender = u'Bids of tender'
     page_title_creation_of_auction = u'Creation of auction'
     page_title_bids_of_auctions = u'Bids of auction'
+    page_title_platforms_management = u'Platforms management'
+    page_title_users_management = u'Users management'
+    page_title_tenders_management = u'Tenders management'
+    page_title_user_preferences = u'User Settings'
 
 
 class ES(object):
@@ -78,6 +86,10 @@ class ES(object):
     page_title_bids_of_tender = u'Apuestas de licitación'
     page_title_creation_of_auction = u'Creación de subasta'
     page_title_bids_of_auctions = u'Apuestas de subasta'
+    page_title_platforms_management = u'Gestión de plataformas'
+    page_title_users_management = u'Gestión de usuarios'
+    page_title_tenders_management = u'Gestión de licitaciones'
+    page_title_user_preferences = u'Configuración del usuario'
 
 
 class Translations(object):
@@ -150,4 +162,15 @@ class Translations(object):
 
     def page_title_bids_of_auctions(self):
         return self.class_selector().page_title_bids_of_auctions
-# print Translations('es').menu_tender_bids()
+
+    def page_title_platforms_management(self):
+        return self.class_selector().page_title_platforms_management
+
+    def page_title_users_management(self):
+        return self.class_selector().page_title_users_management
+
+    def page_title_tenders_management(self):
+        return self.class_selector().page_title_tenders_management
+
+    def page_title_user_preferences(self):
+        return self.class_selector().page_title_user_preferences
