@@ -690,3 +690,10 @@ footer {
 .form-view-json div {
     margin-bottom: 5px;
 }
+
+/*USERS*/
+
+.preferences-submit-button {
+    text-align: right;
+    margin-top: 15px;
+}

@@ -3,15 +3,21 @@
 </div>
 <div class="section_content">
     <form action="/user/preferences" method="post" class="form-user-preferences" id="user-preferences" role="form">
-        <select name="language" id="language" class="form-control" size="1">
-            {% for language in languages %}
-                    {% if language.system_name == user_language %}
-                        <option value="{{ language.system_name }}"  selected="selected">{{ language.name }}</option>
-                    {% else %}
-                        <option value="{{ language.system_name }}">{{ language.name }}</option>
-                    {% endif %}
-            {%endfor%}
-        </select>
-        <button class="btn btn-success save-preferences-button" id="savePreferences" type="submit">Сохранить</button>
+        <div class="preferences-submit-inputs col-lg-48 col-md-48 col-sm-48 col-xs-48">
+            <div class="language col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                <select name="language" id="language" class="form-control" size="1">
+                    {% for language in languages %}
+                            {% if language.system_name == user_language %}
+                                <option value="{{ language.system_name }}"  selected="selected">{{ language.name }}</option>
+                            {% else %}
+                                <option value="{{ language.system_name }}">{{ language.name }}</option>
+                            {% endif %}
+                    {%endfor%}
+                </select>
+            </div>
+        </div>
+        <div class="preferences-submit-button col-lg-48 col-md-48 col-sm-48 col-xs-48">
+            <button class="btn btn-success save-preferences-button" id="savePreferences" type="submit">Сохранить</button>
+        </div>
     </form>
 </div>
