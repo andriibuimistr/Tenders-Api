@@ -462,12 +462,18 @@ def jquery_get_tender_json(tender_id, api_version):
 #                                                       ###### USER PAGES ######
 
 # Open user preferences page
-@app.route("/user/preferences")
+@app.route("/user/preferences", methods=['GET', 'POST'])
 def page_user_preferences():
-    if not session.get('logged_in'):
-        return login_form()
-    else:
-        return UserPages(session).page_preferences()
+    if request.method == 'GET':
+        if not session.get('logged_in'):
+            return login_form()
+        else:
+            return UserPages(session).page_preferences()
+    elif request.method == 'POST':
+        if not session.get('logged_in'):
+            return jquery_forbidden_login()
+        else:
+            return UserPages(session).page_preferences()
 
 
 if __name__ == '__main__':

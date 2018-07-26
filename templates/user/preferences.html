@@ -3,7 +3,7 @@
 </div>
 <div class="section_content">
 CONTENT
-    <form class="form-user-preferences" id="user-preferences" role="form">
+    <form action="/user/preferences" method="post" class="form-user-preferences" id="user-preferences" role="form">
         <select name="language" id="language" class="form-control" size="1">
             {% for language in languages %}
                     {% if language.system_name == user_language %}
@@ -13,5 +13,6 @@ CONTENT
                     {% endif %}
             {%endfor%}
         </select>
+        <button class="btn btn-success save-preferences-button" id="savePreferences" type="submit">Сохранить</button>
     </form>
 </div>
