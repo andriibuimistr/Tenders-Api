@@ -197,3 +197,10 @@ class Users(db.Model):
         self.user_role_id = user_role_id
         self.active = active
         self.super_user = super_user
+
+
+class Languages(db.Model):
+    __tablename__ = 'languages'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    system_name = db.Column(db.String(255))
