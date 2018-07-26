@@ -1,8 +1,8 @@
 <div class="heading main_title">
-    <h1>{{ lng.page_title_users_management() }}</h1>
+    <h1>{{ lng.page_title('page_title_users_management') }}</h1>
 </div>
 <div class="section_content">
-    <H4>{{ lng.section_list_of_users() }}</H4>
+    <H4>{{ lng.section('section_list_of_users') }}</H4>
     <div class="list-of-users" id="admin-list-of-users">
         {% if users|length == 0 %}
             <div>List of users is empty</div>
@@ -16,7 +16,7 @@
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">{{ users[user].active }}</div>
                     <div class="user-actions col-lg-9 col-md-9 col-sm-6 col-xs-6">
                         {% if super_user_flag == 1 and users[user].super_user != 1 or users[user].user_role_id != 1 %}
-                            <div class="user-action-delete" id="{{ users[user].id }}" title="{{ lng.hint_delete() }}"></div>
+                            <div class="user-action-delete" id="{{ users[user].id }}" title="{{ lng.hint('hint_delete') }}"></div>
                         {% endif %}
                     </div>
                 </div>
@@ -28,10 +28,10 @@
             <form class="form-add-user" id="add-user-form" action="" role="form">
                 <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3"></div>
                 <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">
-                    <input type="text" name="user-name" class="form-control input-sm" placeholder="{{ lng.form_placeholder_username() }}" maxlength="25">
+                    <input type="text" name="user-name" class="form-control input-sm" placeholder="{{ lng.form('form_placeholder_username') }}" maxlength="25">
                 </div>
                 <div class="col-lg-13 col-md-13 col-sm-10 col-xs-10">
-                    <input type="text" name="user-password" class="form-control input-sm" placeholder="{{ lng.form_placeholder_password() }}" maxlength="25">
+                    <input type="text" name="user-password" class="form-control input-sm" placeholder="{{ lng.form('form_placeholder_password') }}" maxlength="25">
                 </div>
                 <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">
                     <select name="user_role" class="form-control input-sm" size="1">
@@ -48,7 +48,7 @@
                 </div>
 
 
-                <button class="btn btn-primary btn-sm add-user-button" form="add-user-form" type="button">{{ lng.button_add() }}</button>
+                <button class="btn btn-primary btn-sm add-user-button" form="add-user-form" type="button">{{ lng.button('button_add') }}</button>
             </form>
         </div>
     </div>

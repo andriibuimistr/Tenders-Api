@@ -19,28 +19,28 @@
         <!-- Список ссылок, расположенных слева -->
         <ul class="nav navbar-nav">
             <!--Элемент с классом active отображает ссылку подсвеченной -->
-            <li><a href="/">{{ lng.menu_main_page() }}<span class="sr-only">(current)</span></a></li>
+            <li><a href="/">{{ lng.menu('menu_main_page') }}<span class="sr-only">(current)</span></a></li>
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu_tenders() }}<span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_tenders') }}<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu_item_create_tender() }}</a></li>
-                    <li><a href="{{ url_for('page_tender_bids')}}">{{ lng.menu_item_tender_bids() }}</a></li>
+                    <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu('menu_item_create_tender') }}</a></li>
+                    <li><a href="{{ url_for('page_tender_bids')}}">{{ lng.menu('menu_item_tender_bids') }}</a></li>
                     <li class="divider"></li>
                     <li><a href="#">...</a></li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu_auctions() }}<span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_auctions') }}<span class="caret"></span></a>
 
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('page_create_auction')}}">{{ lng.menu_item_create_auction() }}</a></li>
-                    <li><a href="{{ url_for('page_auction_bids')}}">{{ lng.menu_item_auction_bids() }}</a></li>
+                    <li><a href="{{ url_for('page_create_auction')}}">{{ lng.menu('menu_item_create_auction') }}</a></li>
+                    <li><a href="{{ url_for('page_auction_bids')}}">{{ lng.menu('menu_item_auction_bids') }}</a></li>
                     <li class="divider"></li>
                     <li><a href="#">...</a></li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu_tools() }}<span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_tools') }}<span class="caret"></span></a>
 
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="{{ url_for('tools_pages', page='json-viewer') }}">JSON-Viewer</a></li>
@@ -48,11 +48,11 @@
             </li>
             {% if user_role_id == 1 %}
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu_admin() }}<span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_admin') }}<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('admin_pages', page='platforms') }}">{{ lng.menu_item_platforms() }}</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='users') }}">{{ lng.menu_item_users() }}</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='tenders') }}">{{ lng.menu_item_list_of_tenders() }}</a></li>
+                    <li><a href="{{ url_for('admin_pages', page='platforms') }}">{{ lng.menu('menu_item_platforms') }}</a></li>
+                    <li><a href="{{ url_for('admin_pages', page='users') }}">{{ lng.menu('menu_item_users') }}</a></li>
+                    <li><a href="{{ url_for('admin_pages', page='tenders') }}">{{ lng.menu('menu_item_list_of_tenders') }}</a></li>
                     <li class="divider"></li>
                 </ul>
             </li>
@@ -61,8 +61,8 @@
         <!-- Список ссылок, расположенный справа -->
         <ul class="nav navbar-nav navbar-right">
             <li><a>{{ username }}</a></li>
-            <li><a href="{{ url_for('page_user_preferences') }}">{{ lng.menu_item_preferences() }}</a></li>
-            <li><a href="/logout">{{ lng.menu_exit() }}</a></li>
+            <li><a href="{{ url_for('page_user_preferences') }}">{{ lng.menu('menu_item_preferences') }}</a></li>
+            <li><a href="/logout">{{ lng.menu('menu_exit') }}</a></li>
         </ul>
     </div>
 </nav>

@@ -198,99 +198,115 @@ class EN(object):
 
 class ES(object):
     def __init__(self):
-        pass
+        self.lang = 'ES'
 
     # Main menu
-    menu_main_page = u'Inicio'
-    menu_tenders = u'Licitaciones'
-    menu_auctions = u'Subastas'
-    menu_tools = u'Herramientas'
-    menu_admin = u'Administrador'
-    menu_exit = u'Salir'
-    menu_item_create_tender = u'Crear licitación'
-    menu_item_tender_bids = u'Apuestas de licitación'
-    menu_item_create_auction = u'Crear subasta'
-    menu_item_auction_bids = u'Apuestas de subasta'
-    menu_item_platforms = u'Plataformas'
-    menu_item_users = u'Usuarios'
-    menu_item_list_of_tenders = u'Lista de licitaciones'
-    menu_item_preferences = u'Preferencias'
+    @staticmethod
+    def menus(key):
+        return {'menu_main_page': u'Inicio',
+                'menu_tenders': u'Licitaciones',
+                'menu_auctions': u'Subastas',
+                'menu_tools': u'Herramientas',
+                'menu_admin': u'Administrador',
+                'menu_exit': u'Salir',
+                'menu_item_create_tender': u'Crear licitación',
+                'menu_item_tender_bids': u'Apuestas de licitación',
+                'menu_item_create_auction': u'Crear subasta',
+                'menu_item_auction_bids': u'Apuestas de subasta',
+                'menu_item_platforms': u'Plataformas',
+                'menu_item_users': u'Usuarios',
+                'menu_item_list_of_tenders': u'Lista de licitaciones',
+                'menu_item_preferences': u'Preferencias'}.get(key, key)
 
     # Pages titles
-    page_title_main_page = u'Página de inicio'
-    page_title_creation_of_tender = u'Creación de licitación'
-    page_title_bids_of_tender = u'Apuestas de licitación'
-    page_title_creation_of_auction = u'Creación de subasta'
-    page_title_bids_of_auctions = u'Apuestas de subasta'
-    page_title_platforms_management = u'Gestión de plataformas'
-    page_title_users_management = u'Gestión de usuarios'
-    page_title_tenders_management = u'Gestión de licitaciones'
-    page_title_user_preferences = u'Configuración del usuario'
+    @staticmethod
+    def page_titles(key):
+        return {'page_title_main_page': u'Página de inicio',
+                'page_title_creation_of_tender': u'Creación de licitación',
+                'page_title_bids_of_tender': u'Apuestas de licitación',
+                'page_title_creation_of_auction': u'Creación de subasta',
+                'page_title_bids_of_auctions': u'Apuestas de subasta',
+                'page_title_platforms_management': u'Gestión de plataformas',
+                'page_title_users_management': u'Gestión de usuarios',
+                'page_title_tenders_management': u'Gestión de licitaciones',
+                'page_title_user_preferences': u'Configuración del usuario'}.get(key, key)
 
     # Placeholders
-    form_placeholder_number_of_lots = u'Núm. de lotes'
-    form_placeholder_number_of_items = u'Núm. de artículos'
-    form_placeholder_number_of_bids = u'Núm. de apuestas'
-    form_placeholder_accelerator = u'Acelerador'
-    form_placeholder_company_id = u'ID de compañía'
-    form_placeholder_paste_json = u'Lugar para insertar JSON'
-    form_placeholder_platform_name = u'Nombre de plataforma'
-    form_placeholder_platform_url = u'URL de plataforma'
-    form_placeholder_username = u'Nombre de usuario'
-    form_placeholder_password = u'Contraseña'
-    form_checkbox_features = u'Características'
-    form_checkbox_skip_auction = u'Saltar subasta'
-    form_checkbox_documents_for_tender = u'Documentos de licitación'
-    form_checkbox_documents_for_bids = u'Documentos de apuestas'
-    form_checkbox_rent = u'Alquiler'
-    form_checkbox_one_bid = u'Una apuesta'
-    form_checkbox_insert_json = u'Insertar JSON'
-    form_checkbox_get_json_from_cdb = u'Obtener JSON de BCD'
+    @staticmethod
+    def forms(key):
+        return {'form_placeholder_number_of_lots': u'Núm. de lotes',
+                'form_placeholder_number_of_items': u'Núm. de artículos',
+                'form_placeholder_number_of_bids': u'Núm. de apuestas',
+                'form_placeholder_accelerator': u'Acelerador',
+                'form_placeholder_company_id': u'ID de compañía',
+                'form_placeholder_paste_json': u'Lugar para insertar JSON',
+                'form_placeholder_platform_name': u'Nombre de plataforma',
+                'form_placeholder_platform_url': u'URL de plataforma',
+                'form_placeholder_username': u'Nombre de usuario',
+                'form_placeholder_password': u'Contraseña',
+                'form_checkbox_features': u'Características',
+                'form_checkbox_skip_auction': u'Saltar subasta',
+                'form_checkbox_documents_for_tender': u'Documentos de licitación',
+                'form_checkbox_documents_for_bids': u'Documentos de apuestas',
+                'form_checkbox_rent': u'Alquiler',
+                'form_checkbox_one_bid': u'Una apuesta',
+                'form_checkbox_insert_json': u'Insertar JSON',
+                'form_checkbox_get_json_from_cdb': u'Obtener JSON de BCD'}.get(key, key)
 
     # Buttons
-    button_create_tender = u'Crear licitación'
-    button_create_auction = u'Crear subasta'
-    button_delete_alerts = u'Eliminar mensajes'
-    button_show_bids = u'Mostrar apuestas'
-    button_add_to_company = u'Añadir'
-    button_add = u'Añadir'
-    button_save = u'Guardar'
-    button_format_json = u'Formatear'
-    button_get_json = u'Obtener JSON'
-    button_delete_tenders = u'Eliminar licitaciones'
+    @staticmethod
+    def buttons(key):
+        return {'button_create_tender': u'Crear licitación',
+                'button_create_auction': u'Crear subasta',
+                'button_delete_alerts': u'Eliminar mensajes',
+                'button_show_bids': u'Mostrar apuestas',
+                'button_add_to_company': u'Añadir',
+                'button_add': u'Añadir',
+                'button_save': u'Guardar',
+                'button_format_json': u'Formatear',
+                'button_get_json': u'Obtener JSON',
+                'button_delete_tenders': u'Eliminar licitaciones'}.get(key, key)
 
     # Sections names
-    section_create_tender_response = u'Resultados de las solicitudes'
-    section_list_of_bids = u'Apuestas'
-    section_input_json = u'JSON original'
-    section_output_json = u'JSON formateado'
-    section_list_of_platforms = u'Lista de plataformas'
-    section_list_of_users = u'Lista de usuarios'
-    section_list_of_tenders = u'Lista de licitaciones'
-    section_popular_links = u'Enlaces populares'
+    @staticmethod
+    def sections(key):
+        return {'section_create_tender_response': u'Resultados de las solicitudes',
+                'section_list_of_bids': u'Apuestas',
+                'section_input_json': u'JSON original',
+                'section_output_json': u'JSON formateado',
+                'section_list_of_platforms': u'Lista de plataformas',
+                'section_list_of_users': u'Lista de usuarios',
+                'section_list_of_tenders': u'Lista de licitaciones',
+                'section_popular_links': u'Enlaces populares'}.get(key, key)
 
     # Labels
-    label_company_identifier = u'Identificador de compañía'
-    label_company_id = u'ID de compañía'
-    label_platform = u'Plataforma'
-    label_id_in_cdb = u'ID en BCD'
-    label_procurement_method_type = u'Tipo de licitación'
-    label_number_of_lots = u'Núm. de lotes'
-    label_creator = u'Creador'
-    label_api_version = u'Versión de API'
-    label_status = u'Estado'
-    label_added_to_site = u'En plataforma'
-    label_phone = u'Teléfono'
+    @staticmethod
+    def labels(key):
+        return {'label_company_identifier': u'Identificador de compañía',
+                'label_company_id': u'ID de compañía',
+                'label_platform': u'Plataforma',
+                'label_id_in_cdb': u'ID en BCD',
+                'label_procurement_method_type': u'Tipo de licitación',
+                'label_number_of_lots': u'Núm. de lotes',
+                'label_creator': u'Creador',
+                'label_api_version': u'Versión de API',
+                'label_status': u'Estado',
+                'label_added_to_site': u'En plataforma',
+                'label_phone': u'Teléfono'}.get(key, key)
 
     # Messages
-    message_tender_has_no_bids = u'No hay apuestas para esta licitación en la base de datos'
-    message_auction_has_no_bids = u'No hay apuestas para esta subasta en la base de datos'
-    message_rendered_json_will_appear_here = u'JSON formateado aparecerá aquí'
-    message_empty_list = u'La lista no contiene elementos'
-    message_all_rights_reserved = u'Todos los derechos reservados'
+    @staticmethod
+    def messages(key):
+        return {'message_tender_has_no_bids': u'No hay apuestas para esta licitación en la base de datos',
+                'message_auction_has_no_bids': u'No hay apuestas para esta subasta en la base de datos',
+                'message_rendered_json_will_appear_here': u'JSON formateado aparecerá aquí',
+                'message_empty_list': u'La lista no contiene elementos',
+                'message_all_rights_reserved': u'Todos los derechos reservados'}.get(key, key)
 
     # Hints
-    hint_delete = u'Borrar'
+    @staticmethod
+    def hints(key):
+        return {'hint_delete': u'Borrar'}.get(key, key)
 
 
 class Translations(object):
@@ -299,244 +315,40 @@ class Translations(object):
         self.lng = language
         self.default_lng = EN
 
-    def class_selector(self):  # Select class for translations
+    def language_selector(self):  # Select class for translations
         return {'ru': RU,
                 'en': EN,
                 'es': ES,
                 }.get(self.lng, self.default_lng)
 
     # MAIN MENU TRANSLATIONS
-    def menu_main_page(self):
-        return self.class_selector().menu_main_page
-
-    def menu_tenders(self):
-        return self.class_selector().menu_tenders
-
-    def menu_auctions(self):
-        return self.class_selector().menu_auctions
-
-    def menu_tools(self):
-        return self.class_selector().menu_tools
-
-    def menu_admin(self):
-        return self.class_selector().menu_admin
-
-    def menu_exit(self):
-        return self.class_selector().menu_exit
-
-    def menu_item_create_tender(self):
-        return self.class_selector().menu_item_create_tender
-
-    def menu_item_tender_bids(self):
-        return self.class_selector().menu_item_tender_bids
-
-    def menu_item_create_auction(self):
-        return self.class_selector().menu_item_create_auction
-
-    def menu_item_auction_bids(self):
-        return self.class_selector().menu_item_auction_bids
-
-    def menu_item_platforms(self):
-        return self.class_selector().menu_item_platforms
-
-    def menu_item_users(self):
-        return self.class_selector().menu_item_users
-
-    def menu_item_list_of_tenders(self):
-        return self.class_selector().menu_item_list_of_tenders
-
-    def menu_item_preferences(self):
-        return self.class_selector().menu_item_preferences
+    def menu(self, key):
+        return self.language_selector().menus(key)
 
     # PAGES TITLES
-    def page_title_main_page(self):
-        return self.class_selector().page_title_main_page
-
-    def page_title_creation_of_tender(self):
-        return self.class_selector().page_title_creation_of_tender
-
-    def page_title_bids_of_tender(self):
-        return self.class_selector().page_title_bids_of_tender
-
-    def page_title_creation_of_auction(self):
-        return self.class_selector().page_title_creation_of_auction
-
-    def page_title_bids_of_auctions(self):
-        return self.class_selector().page_title_bids_of_auctions
-
-    def page_title_platforms_management(self):
-        return self.class_selector().page_title_platforms_management
-
-    def page_title_users_management(self):
-        return self.class_selector().page_title_users_management
-
-    def page_title_tenders_management(self):
-        return self.class_selector().page_title_tenders_management
-
-    def page_title_user_preferences(self):
-        return self.class_selector().page_title_user_preferences
+    def page_title(self, key):
+        return self.language_selector().page_titles(key)
 
     # FORMS ELEMENTS
-    def form_placeholder_number_of_lots(self):
-        return self.class_selector().form_placeholder_number_of_lots
-
-    def form_placeholder_number_of_items(self):
-        return self.class_selector().form_placeholder_number_of_items
-
-    def form_placeholder_number_of_bids(self):
-        return self.class_selector().form_placeholder_number_of_bids
-
-    def form_placeholder_accelerator(self):
-        return self.class_selector().form_placeholder_accelerator
-
-    def form_placeholder_company_id(self):
-        return self.class_selector().form_placeholder_company_id
-
-    def form_placeholder_paste_json(self):
-        return self.class_selector().form_placeholder_paste_json
-
-    def form_placeholder_platform_name(self):
-        return self.class_selector().form_placeholder_platform_name
-
-    def form_placeholder_platform_url(self):
-        return self.class_selector().form_placeholder_platform_url
-
-    def form_placeholder_username(self):
-        return self.class_selector().form_placeholder_username
-
-    def form_placeholder_password(self):
-        return self.class_selector().form_placeholder_password
-
-    def form_checkbox_features(self):
-        return self.class_selector().form_checkbox_features
-
-    def form_checkbox_skip_auction(self):
-        return self.class_selector().form_checkbox_skip_auction
-
-    def form_checkbox_documents_for_tender(self):
-        return self.class_selector().form_checkbox_documents_for_tender
-
-    def form_checkbox_documents_for_bids(self):
-        return self.class_selector().form_checkbox_documents_for_bids
-
-    def form_checkbox_rent(self):
-        return self.class_selector().form_checkbox_rent
-
-    def form_checkbox_one_bid(self):
-        return self.class_selector().form_checkbox_one_bid
-
-    def form_checkbox_insert_json(self):
-        return self.class_selector().form_checkbox_insert_json
-
-    def form_checkbox_get_json_from_cdb(self):
-        return self.class_selector().form_checkbox_get_json_from_cdb
+    def form(self, key):
+        return self.language_selector().forms(key)
 
     # BUTTONS
-    def button_create_tender(self):
-        return self.class_selector().button_create_tender
-
-    def button_create_auction(self):
-        return self.class_selector().button_create_auction
-
-    def button_delete_alerts(self):
-        return self.class_selector().button_delete_alerts
-
-    def button_show_bids(self):
-        return self.class_selector().button_show_bids
-
-    def button_add_to_company(self):
-        return self.class_selector().button_add_to_company
-
-    def button_add(self):
-        return self.class_selector().button_add
-
-    def button_save(self):
-        return self.class_selector().button_save
-
-    def button_format_json(self):
-        return self.class_selector().button_format_json
-
-    def button_get_json(self):
-        return self.class_selector().button_get_json
-
-    def button_delete_tenders(self):
-        return self.class_selector().button_delete_tenders
+    def button(self, key):
+        return self.language_selector().buttons(key)
 
     # SECTIONS
-    def section_create_tender_response(self):
-        return self.class_selector().section_create_tender_response
-
-    def section_list_of_bids(self):
-        return self.class_selector().section_list_of_bids
-
-    def section_input_json(self):
-        return self.class_selector().section_input_json
-
-    def section_output_json(self):
-        return self.class_selector().section_output_json
-
-    def section_list_of_platforms(self):
-        return self.class_selector().section_list_of_platforms
-
-    def section_list_of_users(self):
-        return self.class_selector().section_list_of_users
-
-    def section_list_of_tenders(self):
-        return self.class_selector().section_list_of_tenders
-
-    def section_popular_links(self):
-        return self.class_selector().section_popular_links
+    def section(self, key):
+        return self.language_selector().sections(key)
 
     # LABELS
-    def label_company_identifier(self):
-        return self.class_selector().label_company_identifier
-
-    def label_company_id(self):
-        return self.class_selector().label_company_id
-
-    def label_platform(self):
-        return self.class_selector().label_platform
-
-    def label_id_in_cdb(self):
-        return self.class_selector().label_id_in_cdb
-
-    def label_procurement_method_type(self):
-        return self.class_selector().label_procurement_method_type
-
-    def label_number_of_lots(self):
-        return self.class_selector().label_number_of_lots
-
-    def label_creator(self):
-        return self.class_selector().label_creator
-
-    def label_api_version(self):
-        return self.class_selector().label_api_version
-
-    def label_status(self):
-        return self.class_selector().label_status
-
-    def label_added_to_site(self):
-        return self.class_selector().label_added_to_site
-
-    def label_phone(self):
-        return self.class_selector().label_phone
+    def label(self, key):
+        return self.language_selector().labels(key)
 
     # MESSAGES
-    def message_tender_has_no_bids(self):
-        return self.class_selector().message_tender_has_no_bids
-
-    def message_auction_has_no_bids(self):
-        return self.class_selector().message_auction_has_no_bids
-
-    def message_rendered_json_will_appear_here(self):
-        return self.class_selector().message_rendered_json_will_appear_here
-
-    def message_empty_list(self):
-        return self.class_selector().message_empty_list
-
-    def message_all_rights_reserved(self):
-        return self.class_selector().message_all_rights_reserved
+    def message(self, key):
+        return self.language_selector().messages(key)
 
     # HINTS
-    def hint_delete(self):
-        return self.class_selector().hint_delete
+    def hint(self, key):
+        return self.language_selector().hints(key)

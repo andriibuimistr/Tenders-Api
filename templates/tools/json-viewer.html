@@ -15,16 +15,16 @@
                     <h1>JSON Viewer</h1>
                 </div>
                 <div class="section_content">
-                    <H4>{{ lng.section_input_json() }}</H4>
+                    <H4>{{ lng.section('section_input_json') }}</H4>
                     <div class="json-viewer">
                         <div class="json_viewer_labels">
-                            <label><input type="radio" name="colorCheckbox" value="insert" checked> {{ lng.form_checkbox_insert_json() }}</label>
-                            <label><input type="radio" name="colorCheckbox" value="get"> {{ lng.form_checkbox_get_json_from_cdb() }}</label>
+                            <label><input type="radio" name="colorCheckbox" value="insert" checked> {{ lng.form('form_checkbox_insert_json') }}</label>
+                            <label><input type="radio" name="colorCheckbox" value="get"> {{ lng.form('form_checkbox_get_json_from_cdb') }}</label>
                         </div>
                         <div class="json_source json-insert">
                             <form class="form-view-json" id="form-view-json-insert" role="form">
-                                <textarea name="raw-json" id="raw_json_input" class="form-control" placeholder="{{ lng.form_placeholder_paste_json() }}"></textarea>
-                                <button class="btn btn-success render-json-button" id="render_json_insert" type="button">{{ lng.button_format_json() }}</button>
+                                <textarea name="raw-json" id="raw_json_input" class="form-control" placeholder="{{ lng.form('form_placeholder_paste_json') }}"></textarea>
+                                <button class="btn btn-success render-json-button" id="render_json_insert" type="button">{{ lng.button('button_format_json') }}</button>
                             </form>
                         </div>
                         <div class="json_source json-get">
@@ -41,11 +41,11 @@
                                     </select>
                                 </div>
                                 <div class="empty-div col-lg-15 col-md-48 col-sm-48 col-xs-48"></div>
-                                <button class="btn btn-success render-json-button" id="render_json_get" type="button">{{ lng.button_get_json() }}</button>
+                                <button class="btn btn-success render-json-button" id="render_json_get" type="button">{{ lng.button('button_get_json') }}</button>
                             </form>
                         </div>
-                        <H4>{{ lng.section_output_json() }}</H4>
-                        <pre id="json_output">{{ lng.message_rendered_json_will_appear_here() }}</pre>
+                        <H4>{{ lng.section('section_output_json') }}</H4>
+                        <pre id="json_output">{{ lng.message('message_rendered_json_will_appear_here') }}</pre>
                     </div>
 
                 </div>

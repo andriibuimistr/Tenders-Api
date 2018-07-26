@@ -5,6 +5,8 @@
     <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">{{ user_roles[user[0].user_role_id] }}</div>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">{{ user[0].active }}</div>
     <div class="user-actions col-lg-9 col-md-9 col-sm-6 col-xs-6">
-        <div class="user-action-delete" id="{{ user[0].id }}" title="Delete"></div>
+        {% if super_user_flag == 1 and user[0].super_user != 1 or user[0].user_role_id != 1 %}
+            <div class="user-action-delete" id="{{ user[0].id }}" title="{{ lng.hint('hint_delete') }}"></div>
+        {% endif %}
     </div>
 </div>

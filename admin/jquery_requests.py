@@ -38,7 +38,7 @@ def add_platform(request):
     return render_template('includes/newly_added_platform_info.inc.html', platform=newly_added_platform_data, platform_roles=core.get_list_of_platform_roles())
 
 
-def add_user(request):
+def add_user(request, session):
     new_user_data = request.form
     if len(request.form['user-name']) < 4:
         return abort(400, 'User name length can\'t be less than 4')
@@ -62,7 +62,8 @@ def add_user(request):
     newly_added_user_data = Users.query.filter_by(id=last_id)
     db.session.commit()
     db.session.remove()
-    return render_template('includes/newly_added_user_info.inc.html', user=newly_added_user_data, user_roles=core.get_list_of_user_roles())
+    return render_template('includes/newly_added_user_info.inc.html', user=newly_added_user_data, user_roles=core.get_list_of_user_roles(),
+                           super_user_flag=session['super_user'])
 
 
 def delete_platform(platform_id):

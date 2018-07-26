@@ -1,5 +1,5 @@
 <div class="heading main_title">
-    <h1>{{ lng.page_title_bids_of_auctions() }}</h1>
+    <h1>{{ lng.page_title('page_title_bids_of_auctions') }}</h1>
 </div>
 <div class="section_content">
         <div class="get-auction-bids main-form">
@@ -9,7 +9,7 @@
                         <input type="text" name="auction_id" class="form-control" placeholder="Auction ID ex. UA-2018-02-24-000062-b" maxlength="25">
                     </div>
                     <div class="get-bids-submit-button col-lg-20 col-md-20 col-sm-24 col-xs-48">
-                        <button class="btn btn-primary" id="get-auction-bids-button" type="button">{{ lng.button_show_bids() }}</button>
+                        <button class="btn btn-primary" id="get-auction-bids-button" type="button">{{ lng.button('button_show_bids') }}</button>
                     </div>
                 </div>
             </form>
@@ -17,7 +17,7 @@
         <div class="panel panel-default block-bids-of-auction">
         <!-- Default panel contents -->
         <div class="panel-heading block-bids-of-auction-title">
-            {{ lng.section_list_of_bids() }}
+            {{ lng.section('section_list_of_bids') }}
         </div>
         <div class="panel-body list-bids-of-auction">
             <div id="list-of-bids">

@@ -266,7 +266,7 @@ def jquery_add_user():
     if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
     else:
-        return jquery_requests.add_user(request)
+        return jquery_requests.add_user(request, session)
 
 
 # Delete platform (with jquery)
@@ -481,3 +481,5 @@ def page_user_preferences():
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
+
+# TODO Bug report, List of auctions

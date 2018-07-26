@@ -65,7 +65,7 @@ class Tenders(db.Model):
 
 
 class BidsTender(db.Model):
-    __tablename__ = 'bids'
+    __tablename__ = 'bids_tender'
     id = db.Column(db.Integer, primary_key=True)
     bid_id = db.Column(db.String(255))
     bid_token = db.Column(db.String(255))

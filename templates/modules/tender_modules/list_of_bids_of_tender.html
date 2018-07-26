@@ -2,14 +2,14 @@
     {% for bid in list_of_tender_bids %}
     <div class="bid_info col-lg-15 col-md-23 col-sm-48 col-xs-48">
         <div class="bid-id-short">{{ bid.id }}</div>
-        <div class="bid-company-identifier"><span>{{ lng.label_company_identifier() }}: </span>{{ bid.user_identifier }}</div>
+        <div class="bid-company-identifier"><span>{{ lng.label('label_company_identifier') }}: </span>{{ bid.user_identifier }}</div>
             <div class="bid-company">
-            <div class="bid-company-id col-lg-22 col-md-17 col-sm-17 col-xs-17">{{ lng.label_company_id() }}:</div>
+            <div class="bid-company-id col-lg-22 col-md-17 col-sm-17 col-xs-17">{{ lng.label('label_company_id') }}:</div>
             {% if bid.has_company == True %}
                 <div class="company-id-number col-lg-15 col-md-29 col-sm-29 col-xs-29">{{ bid.company_id }}</div>
                 <div class="bid-platform col-lg-48 col-md-48 col-sm-48 col-xs-48">
                     <div class="bid-platform-label">
-                        {{ lng.label_platform() }}:
+                        {{ lng.label('label_platform') }}:
                     </div>
                     <div><a href="{{ bid.bid_platform }}" target="_blank">{{ bid.bid_platform }}</a></div>
                 </div>
@@ -24,9 +24,9 @@
                         {%endfor%}
                     </select>
                     <div class="input-group input-group-sm">
-                        <input type="text" name="company-id" class="form-control bid-company-input" placeholder="{{ lng.form_placeholder_company_id() }}" maxlength="4">
+                        <input type="text" name="company-id" class="form-control bid-company-input" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
                         <div class="input-group-btn">
-                            <button class="btn btn-primary tender-bid-company-button" form="{{bid.id}}" type="button">{{ lng.button_add_to_company() }}</button>
+                            <button class="btn btn-primary tender-bid-company-button" form="{{bid.id}}" type="button">{{ lng.button('button_add_to_company') }}</button>
                         </div>
                     </div>
                 </div>
@@ -38,5 +38,5 @@
     </div>
     {% endfor %}
 {%else%}
-    <div>{{ lng.message_tender_has_no_bids() }}</div>
+    <div>{{ lng.message('message_tender_has_no_bids') }}</div>
 {%endif%}
