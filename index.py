@@ -112,10 +112,10 @@ def global_user_data():
 @app.context_processor
 def global_user_language():
     translation = dict()
-    if 'language' in session:
-        translation['lng'] = Translations(session['language'])
+    if 'user_id' in session:
+        translation['lng'] = Translations(session['language'])  # core.get_user_language(session['user_id']) for get language with every request
     else:
-        translation['lng'] = Translations('es')
+        translation['lng'] = Translations('en')
     return translation
 
 
@@ -181,6 +181,7 @@ def do_login():
                 session['user_id'] = user_id
                 session['user_role'] = get_user_role()
                 session['super_user'] = get_super_user_flag()
+                session['language'] = core.get_user_language(user_id)
                 return redirect(redirect_url())
             else:
                 return redirect(redirect_url())

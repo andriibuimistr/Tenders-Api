@@ -214,6 +214,19 @@ def get_list_of_tenders():
     return tenders_list
 
 
+def get_user_language(user_id):
+    user_lang_id = Users.query.filter_by(id=user_id).first().user_lang_id
+    languages = Languages.query.all()
+    list_of_languages = list()
+    for lang in range(len(languages)):
+        list_of_languages.append(languages[lang].id)
+    if user_lang_id not in list_of_languages:
+        user_lang_id = 2
+    language_system_name = Languages.query.filter_by(id=user_lang_id).first().system_name
+    db.session.remove()
+    return language_system_name
+
+
 def check_if_contract_exists(get_t_info):
     try:
         if get_t_info.json()['data']['contracts']:
