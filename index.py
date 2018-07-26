@@ -15,6 +15,7 @@ from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
 from user.pages import UserPages
+from user.helper import *
 from auctions.pages import AuctionPages
 from tenders.pages import TenderPages
 from tenders import tender_validators, tender
@@ -473,6 +474,9 @@ def page_user_preferences():
         if not session.get('logged_in'):
             return jquery_forbidden_login()
         else:
+            if not request.form:
+                abort(400)
+            save_user_preferences(request.form, session)
             return UserPages(session).page_preferences()
 
 
