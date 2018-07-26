@@ -6,6 +6,7 @@ class RU(object):
     def __init__(self):
         pass
 
+    # Main menu
     menu_main_page = u'Главная'
     menu_tenders = u'Тендеры'
     menu_auctions = u'Аукционы'
@@ -21,6 +22,7 @@ class RU(object):
     menu_item_list_of_tenders = u'Список закупок'
     menu_item_preferences = u'Настройки'
 
+    # Pages titles
     page_title_main_page = u'Главная страница'
     page_title_creation_of_tender = u'Создание закупки'
     page_title_bids_of_tender = u'Ставки закупки'
@@ -31,6 +33,7 @@ class RU(object):
     page_title_tenders_management = u'Управление закупками'
     page_title_user_preferences = u'Настройки пользователя'
 
+    # Placeholders
     form_placeholder_number_of_lots = u'Кол-во лотов'
     form_placeholder_number_of_items = u'Кол-во предметов'
     form_placeholder_number_of_bids = u'Кол-во ставок'
@@ -43,17 +46,32 @@ class RU(object):
     form_checkbox_rent = u'Аренда'
     form_checkbox_one_bid = u'Одна ставка'
 
+    # Buttons
     button_create_tender = u'Создать закупку'
     button_create_auction = u'Создать аукцион'
     button_delete_alerts = u'Удалить сообщения'
+    button_show_bids = u'Показать ставки'
+    button_add_to_company = u'Добавить'
 
+    # Sections names
     section_create_tender_response = u'Результаты запросов'
+    section_list_of_bids = u'Ставки'
+
+    # Labels
+    label_company_identifier = u'Идентификатор комп-и'
+    label_company_id = u'ID компании'
+    label_platform = u'Площадка'
+
+    # Messages
+    message_tender_has_no_bids = u'В базе данных нет ставок для данной закупки'
+    message_auction_has_no_bids = u'В базе данных нет ставок для данной закупки'
 
 
 class EN(object):
     def __init__(self):
         pass
 
+    # Main menu
     menu_main_page = u'Main page'
     menu_tenders = u'Tenders'
     menu_auctions = u'Auctions'
@@ -69,6 +87,7 @@ class EN(object):
     menu_item_list_of_tenders = u'List of tenders'
     menu_item_preferences = u'Preferences'
 
+    # Pages titles
     page_title_main_page = u'Main page'
     page_title_creation_of_tender = u'Creation of tender'
     page_title_bids_of_tender = u'Bids of tender'
@@ -79,6 +98,7 @@ class EN(object):
     page_title_tenders_management = u'Tenders management'
     page_title_user_preferences = u'User Settings'
 
+    # Placeholders
     form_placeholder_number_of_lots = u'Number of lots'
     form_placeholder_number_of_items = u'Number of items'
     form_placeholder_number_of_bids = u'Number of bids'
@@ -91,17 +111,32 @@ class EN(object):
     form_checkbox_rent = u'Rent'
     form_checkbox_one_bid = u'One bid'
 
+    # Buttons
     button_create_tender = u'Create tender'
     button_create_auction = u'Create auction'
     button_delete_alerts = u'Delete messages'
+    button_show_bids = u'Show bids'
+    button_add_to_company = u'Add'
 
+    # Sections names
     section_create_tender_response = u'Requests results'
+    section_list_of_bids = u'Bids'
+
+    # Labels
+    label_company_identifier = u'Company identifier'
+    label_company_id = u'Company ID'
+    label_platform = u'Platform'
+
+    # Messages
+    message_tender_has_no_bids = u'There are no bids for this tender in the database'
+    message_auction_has_no_bids = u'There are no bids for this auction in the database'
 
 
 class ES(object):
     def __init__(self):
         pass
 
+    # Main menu
     menu_main_page = u'Inicio'
     menu_tenders = u'Licitaciones'
     menu_auctions = u'Subastas'
@@ -117,6 +152,7 @@ class ES(object):
     menu_item_list_of_tenders = u'Lista de licitaciones'
     menu_item_preferences = u'Preferencias'
 
+    # Pages titles
     page_title_main_page = u'Página de inicio'
     page_title_creation_of_tender = u'Creación de licitación'
     page_title_bids_of_tender = u'Apuestas de licitación'
@@ -127,6 +163,7 @@ class ES(object):
     page_title_tenders_management = u'Gestión de licitaciones'
     page_title_user_preferences = u'Configuración del usuario'
 
+    # Placeholders
     form_placeholder_number_of_lots = u'Núm. de lotes'
     form_placeholder_number_of_items = u'Núm. de artículos'
     form_placeholder_number_of_bids = u'Núm. de apuestas'
@@ -139,11 +176,25 @@ class ES(object):
     form_checkbox_rent = u'Alquiler'
     form_checkbox_one_bid = u'Una apuesta'
 
+    # Buttons
     button_create_tender = u'Crear licitación'
     button_create_auction = u'Crear subasta'
     button_delete_alerts = u'Eliminar mensajes'
+    button_show_bids = u'Mostrar apuestas'
+    button_add_to_company = u'Añadir'
 
+    # Sections names
     section_create_tender_response = u'Resultados de las solicitudes'
+    section_list_of_bids = u'Apuestas'
+
+    # Labels
+    label_company_identifier = u'Identificador de compañía'
+    label_company_id = u'ID de compañía'
+    label_platform = u'Plataforma'
+
+    # Messages
+    message_tender_has_no_bids = u'No hay apuestas para esta licitación en la base de datos'
+    message_auction_has_no_bids = u'No hay apuestas para esta subasta en la base de datos'
 
 
 class Translations(object):
@@ -273,6 +324,32 @@ class Translations(object):
     def button_delete_alerts(self):
         return self.class_selector().button_delete_alerts
 
+    def button_show_bids(self):
+        return self.class_selector().button_show_bids
+
+    def button_add_to_company(self):
+        return self.class_selector().button_add_to_company
+
     # NAMES FOR SECTIONS
     def section_create_tender_response(self):
         return self.class_selector().section_create_tender_response
+
+    def section_list_of_bids(self):
+        return self.class_selector().section_list_of_bids
+
+    # LABELS
+    def label_company_identifier(self):
+        return self.class_selector().label_company_identifier
+
+    def label_company_id(self):
+        return self.class_selector().label_company_id
+
+    def label_platform(self):
+        return self.class_selector().label_platform
+
+    # MESSAGES
+    def message_tender_has_no_bids(self):
+        return self.class_selector().message_tender_has_no_bids
+
+    def message_auction_has_no_bids(self):
+        return self.class_selector().message_auction_has_no_bids
