@@ -7,96 +7,112 @@ class RU(object):
         pass
 
     # Main menu
-    menu_main_page = u'Главная'
-    menu_tenders = u'Тендеры'
-    menu_auctions = u'Аукционы'
-    menu_tools = u'Инструменты'
-    menu_admin = u'Админка'
-    menu_exit = u'Выйти'
-    menu_item_create_tender = u'Создать тендер'
-    menu_item_tender_bids = u'Ставки тендера'
-    menu_item_create_auction = u'Создать аукцион'
-    menu_item_auction_bids = u'Ставки аукциона'
-    menu_item_platforms = u'Площадки'
-    menu_item_users = u'Пользователи'
-    menu_item_list_of_tenders = u'Список закупок'
-    menu_item_preferences = u'Настройки'
+    @staticmethod
+    def menus(key):
+        return {'menu_main_page': u'Главная',
+                'menu_tenders': u'Тендеры',
+                'menu_auctions': u'Аукционы',
+                'menu_tools': u'Инструменты',
+                'menu_admin': u'Админка',
+                'menu_exit': u'Выйти',
+                'menu_item_create_tender': u'Создать тендер',
+                'menu_item_tender_bids': u'Ставки тендера',
+                'menu_item_create_auction': u'Создать аукцион',
+                'menu_item_auction_bids': u'Ставки аукциона',
+                'menu_item_platforms': u'Площадки',
+                'menu_item_users': u'Пользователи',
+                'menu_item_list_of_tenders': u'Список закупок',
+                'menu_item_preferences': u'Настройки'}.get(key, key)
 
     # Pages titles
-    page_title_main_page = u'Главная страница'
-    page_title_creation_of_tender = u'Создание закупки'
-    page_title_bids_of_tender = u'Ставки закупки'
-    page_title_creation_of_auction = u'Создание аукциона'
-    page_title_bids_of_auctions = u'Ставки аукциона'
-    page_title_platforms_management = u'Управление площадками'
-    page_title_users_management = u'Управление пользователями'
-    page_title_tenders_management = u'Управление закупками'
-    page_title_user_preferences = u'Настройки пользователя'
+    @staticmethod
+    def page_titles(key):
+        return {'page_title_main_page': u'Главная страница',
+                'page_title_creation_of_tender': u'Создание закупки',
+                'page_title_bids_of_tender': u'Ставки закупки',
+                'page_title_creation_of_auction': u'Создание аукциона',
+                'page_title_bids_of_auctions': u'Ставки аукциона',
+                'page_title_platforms_management': u'Управление площадками',
+                'page_title_users_management': u'Управление пользователями',
+                'page_title_tenders_management': u'Управление закупками',
+                'page_title_user_preferences': u'Настройки пользователя'}.get(key, key)
 
     # Placeholders
-    form_placeholder_number_of_lots = u'Кол-во лотов'
-    form_placeholder_number_of_items = u'Кол-во предметов'
-    form_placeholder_number_of_bids = u'Кол-во ставок'
-    form_placeholder_accelerator = u'Ускорение'
-    form_placeholder_company_id = u'ID компании'
-    form_placeholder_paste_json = u'Место для вставки JSON'
-    form_placeholder_platform_name = u'Имя площадки'
-    form_placeholder_platform_url = u'Адрес площадки'
-    form_placeholder_username = u'Имя пользователя'
-    form_placeholder_password = u'Пароль'
-    form_checkbox_features = u'Неценовые'
-    form_checkbox_skip_auction = u'Без аукциона'
-    form_checkbox_documents_for_tender = u'Документы к тендеру'
-    form_checkbox_documents_for_bids = u'Документы к ставке'
-    form_checkbox_rent = u'Аренда'
-    form_checkbox_one_bid = u'Одна ставка'
-    form_checkbox_insert_json = u'Вставить JSON'
-    form_checkbox_get_json_from_cdb = u'JSON из ЦБД'
+    @staticmethod
+    def forms(key):
+        return {'form_placeholder_number_of_lots': u'Кол-во лотов',
+                'form_placeholder_number_of_items': u'Кол-во предметов',
+                'form_placeholder_number_of_bids': u'Кол-во ставок',
+                'form_placeholder_accelerator': u'Ускорение',
+                'form_placeholder_company_id': u'ID компании',
+                'form_placeholder_paste_json': u'Место для вставки JSON',
+                'form_placeholder_platform_name': u'Имя площадки',
+                'form_placeholder_platform_url': u'Адрес площадки',
+                'form_placeholder_username': u'Имя пользователя',
+                'form_placeholder_password': u'Пароль',
+                'form_checkbox_features': u'Неценовые',
+                'form_checkbox_skip_auction': u'Без аукциона',
+                'form_checkbox_documents_for_tender': u'Документы к тендеру',
+                'form_checkbox_documents_for_bids': u'Документы к ставке',
+                'form_checkbox_rent': u'Аренда',
+                'form_checkbox_one_bid': u'Одна ставка',
+                'form_checkbox_insert_json': u'Вставить JSON',
+                'form_checkbox_get_json_from_cdb': u'JSON из ЦБД'}.get(key, key)
 
     # Buttons
-    button_create_tender = u'Создать закупку'
-    button_create_auction = u'Создать аукцион'
-    button_delete_alerts = u'Удалить сообщения'
-    button_show_bids = u'Показать ставки'
-    button_add_to_company = u'Добавить'
-    button_add = u'Добавить'
-    button_save = u'Сохранить'
-    button_format_json = u'Форматировать'
-    button_get_json = u'Получить JSON'
-    button_delete_tenders = u'Удалить закупки'
+    @staticmethod
+    def buttons(key):
+        return {'button_create_tender': u'Создать закупку',
+                'button_create_auction': u'Создать аукцион',
+                'button_delete_alerts': u'Удалить сообщения',
+                'button_show_bids': u'Показать ставки',
+                'button_add_to_company': u'Добавить',
+                'button_add': u'Добавить',
+                'button_save': u'Сохранить',
+                'button_format_json': u'Форматировать',
+                'button_get_json': u'Получить JSON',
+                'button_delete_tenders': u'Удалить закупки'}.get(key, key)
 
     # Sections names
-    section_create_tender_response = u'Результаты запросов'
-    section_list_of_bids = u'Ставки'
-    section_input_json = u'Оригинальный JSON'
-    section_output_json = u'Отформатированный JSON'
-    section_list_of_platforms = u'Список площадок'
-    section_list_of_users = u'Список пользователей'
-    section_list_of_tenders = u'Список Закупок'
-    section_popular_links = u'Популярные ссылки'
+    @staticmethod
+    def sections(key):
+        return {'section_create_tender_response': u'Результаты запросов',
+                'section_list_of_bids': u'Ставки',
+                'section_input_json': u'Оригинальный JSON',
+                'section_output_json': u'Отформатированный JSON',
+                'section_list_of_platforms': u'Список площадок',
+                'section_list_of_users': u'Список пользователей',
+                'section_list_of_tenders': u'Список Закупок',
+                'section_popular_links': u'Популярные ссылки'}.get(key, key)
 
     # Labels
-    label_company_identifier = u'Идентификатор комп-и'
-    label_company_id = u'ID компании'
-    label_platform = u'Площадка'
-    label_id_in_cdb = u'ID в ЦБД'
-    label_procurement_method_type = u'Тип процедуры'
-    label_number_of_lots = u'Кол-во лотов'
-    label_creator = u'Создатель'
-    label_api_version = u'Версия API'
-    label_status = u'Статус'
-    label_added_to_site = u'На сайте'
-    label_phone = u'Телефон'
+    @staticmethod
+    def labels(key):
+        return {'label_company_identifier': u'Идентификатор комп-и',
+                'label_company_id': u'ID компании',
+                'label_platform': u'Площадка',
+                'label_id_in_cdb': u'ID в ЦБД',
+                'label_procurement_method_type': u'Тип процедуры',
+                'label_number_of_lots': u'Кол-во лотов',
+                'label_creator': u'Создатель',
+                'label_api_version': u'Версия API',
+                'label_status': u'Статус',
+                'label_added_to_site': u'На сайте',
+                'label_phone': u'Телефон'}.get(key, key)
 
     # Messages
-    message_tender_has_no_bids = u'В базе данных нет ставок для данной закупки'
-    message_auction_has_no_bids = u'В базе данных нет ставок для данной закупки'
-    message_rendered_json_will_appear_here = u'Отформатированный JSON появится здесь'
-    message_empty_list = u'Список пуст'
-    message_all_rights_reserved = u'Все права защищены'
+    @staticmethod
+    def messages(key):
+        return {'message_tender_has_no_bids': u'В базе данных нет ставок для данной закупки',
+                'message_auction_has_no_bids': u'В базе данных нет ставок для данной закупки',
+                'message_rendered_json_will_appear_here': u'Отформатированный JSON появится здесь',
+                'message_empty_list': u'Список пуст',
+                'message_all_rights_reserved': u'Все права защищены'}.get(key, key)
 
     # Hints
-    hint_delete = u'Удалить'
+    @staticmethod
+    def hints(key):
+        return {'hint_delete': u'Удалить'}.get(key, key)
 
 
 class EN(object):
@@ -104,96 +120,112 @@ class EN(object):
         pass
 
     # Main menu
-    menu_main_page = u'Main page'
-    menu_tenders = u'Tenders'
-    menu_auctions = u'Auctions'
-    menu_tools = u'Tools'
-    menu_admin = u'Admin'
-    menu_exit = u'Sign out'
-    menu_item_create_tender = u'Create tender'
-    menu_item_tender_bids = u'Bids of tender'
-    menu_item_create_auction = u'Create auction'
-    menu_item_auction_bids = u'Bids of auction'
-    menu_item_platforms = u'Platforms'
-    menu_item_users = u'Users'
-    menu_item_list_of_tenders = u'List of tenders'
-    menu_item_preferences = u'Preferences'
+    @staticmethod
+    def menus(key):
+        return {'menu_main_page': u'Main page',
+                'menu_tenders': u'Tenders',
+                'menu_auctions': u'Auctions',
+                'menu_tools': u'Tools',
+                'menu_admin': u'Admin',
+                'menu_exit': u'Sign out',
+                'menu_item_create_tender': u'Create tender',
+                'menu_item_tender_bids': u'Bids of tender',
+                'menu_item_create_auction': u'Create auction',
+                'menu_item_auction_bids': u'Bids of auction',
+                'menu_item_platforms': u'Platforms',
+                'menu_item_users': u'Users',
+                'menu_item_list_of_tenders': u'List of tenders',
+                'menu_item_preferences': u'Preferences'}.get(key, key)
 
     # Pages titles
-    page_title_main_page = u'Main page'
-    page_title_creation_of_tender = u'Creation of tender'
-    page_title_bids_of_tender = u'Bids of tender'
-    page_title_creation_of_auction = u'Creation of auction'
-    page_title_bids_of_auctions = u'Bids of auction'
-    page_title_platforms_management = u'Platforms management'
-    page_title_users_management = u'Users management'
-    page_title_tenders_management = u'Tenders management'
-    page_title_user_preferences = u'User Settings'
+    @staticmethod
+    def page_titles(key):
+        return {'page_title_main_page': u'Main page',
+                'page_title_creation_of_tender': u'Creation of tender',
+                'page_title_bids_of_tender': u'Bids of tender',
+                'page_title_creation_of_auction': u'Creation of auction',
+                'page_title_bids_of_auctions': u'Bids of auction',
+                'page_title_platforms_management': u'Platforms management',
+                'page_title_users_management': u'Users management',
+                'page_title_tenders_management': u'Tenders management',
+                'page_title_user_preferences': u'User Settings'}.get(key, key)
 
     # Placeholders
-    form_placeholder_number_of_lots = u'Number of lots'
-    form_placeholder_number_of_items = u'Number of items'
-    form_placeholder_number_of_bids = u'Number of bids'
-    form_placeholder_accelerator = u'Accelerator'
-    form_placeholder_company_id = u'Company ID'
-    form_placeholder_paste_json = u'Paste your JSON here'
-    form_placeholder_platform_name = u'Platform name'
-    form_placeholder_platform_url = u'Platform url'
-    form_placeholder_username = u'Username'
-    form_placeholder_password = u'Password'
-    form_checkbox_features = u'Features'
-    form_checkbox_skip_auction = u'Skip auction'
-    form_checkbox_documents_for_tender = u'Documents for tender'
-    form_checkbox_documents_for_bids = u'Documents for bids'
-    form_checkbox_rent = u'Rent'
-    form_checkbox_one_bid = u'One bid'
-    form_checkbox_insert_json = u'Insert JSON'
-    form_checkbox_get_json_from_cdb = u'Get JSON from CDB'
+    @staticmethod
+    def forms(key):
+        return {'form_placeholder_number_of_lots': u'Number of lots',
+                'form_placeholder_number_of_items': u'Number of items',
+                'form_placeholder_number_of_bids': u'Number of bids',
+                'form_placeholder_accelerator': u'Accelerator',
+                'form_placeholder_company_id': u'Company ID',
+                'form_placeholder_paste_json': u'Paste your JSON here',
+                'form_placeholder_platform_name': u'Platform name',
+                'form_placeholder_platform_url': u'Platform url',
+                'form_placeholder_username': u'Username',
+                'form_placeholder_password': u'Password',
+                'form_checkbox_features': u'Features',
+                'form_checkbox_skip_auction': u'Skip auction',
+                'form_checkbox_documents_for_tender': u'Documents for tender',
+                'form_checkbox_documents_for_bids': u'Documents for bids',
+                'form_checkbox_rent': u'Rent',
+                'form_checkbox_one_bid': u'One bid',
+                'form_checkbox_insert_json': u'Insert JSON',
+                'form_checkbox_get_json_from_cdb': u'Get JSON from CDB'}.get(key, key)
 
     # Buttons
-    button_create_tender = u'Create tender'
-    button_create_auction = u'Create auction'
-    button_delete_alerts = u'Delete messages'
-    button_show_bids = u'Show bids'
-    button_add_to_company = u'Add'
-    button_add = u'Add'
-    button_save = u'Save'
-    button_format_json = u'Format'
-    button_get_json = u'Get JSON'
-    button_delete_tenders = u'Delete tenders'
+    @staticmethod
+    def buttons(key):
+        return {'button_create_tender': u'Create tender',
+                'button_create_auction': u'Create auction',
+                'button_delete_alerts': u'Delete messages',
+                'button_show_bids': u'Show bids',
+                'button_add_to_company': u'Add',
+                'button_add': u'Add',
+                'button_save': u'Save',
+                'button_format_json': u'Format',
+                'button_get_json': u'Get JSON',
+                'button_delete_tenders': u'Delete tenders'}.get(key, key)
 
     # Sections names
-    section_create_tender_response = u'Requests results'
-    section_list_of_bids = u'Bids'
-    section_input_json = u'Original JSON'
-    section_output_json = u'Output JSON'
-    section_list_of_platforms = u'List of platforms'
-    section_list_of_users = u'List of users'
-    section_list_of_tenders = u'List of tenders'
-    section_popular_links = u'Popular links'
+    @staticmethod
+    def sections(key):
+        return {'section_create_tender_response': u'Requests results',
+                'section_list_of_bids': u'Bids',
+                'section_input_json': u'Original JSON',
+                'section_output_json': u'Output JSON',
+                'section_list_of_platforms': u'List of platforms',
+                'section_list_of_users': u'List of users',
+                'section_list_of_tenders': u'List of tenders',
+                'section_popular_links': u'Popular links'}.get(key, key)
 
     # Labels
-    label_company_identifier = u'Company identifier'
-    label_company_id = u'Company ID'
-    label_platform = u'Platform'
-    label_id_in_cdb = u'ID in CDB'
-    label_procurement_method_type = u'Type of procurement'
-    label_number_of_lots = u'Number of lots'
-    label_creator = u'Creator'
-    label_api_version = u'API version'
-    label_status = u'Status'
-    label_added_to_site = u'Added to site'
-    label_phone = u'Phone number'
+    @staticmethod
+    def labels(key):
+        return {'label_company_identifier': u'Company identifier',
+                'label_company_id': u'Company ID',
+                'label_platform': u'Platform',
+                'label_id_in_cdb': u'ID in CDB',
+                'label_procurement_method_type': u'Type of procurement',
+                'label_number_of_lots': u'Number of lots',
+                'label_creator': u'Creator',
+                'label_api_version': u'API version',
+                'label_status': u'Status',
+                'label_added_to_site': u'Added to site',
+                'label_phone': u'Phone number'}.get(key, key)
 
     # Messages
-    message_tender_has_no_bids = u'There are no bids for this tender in the database'
-    message_auction_has_no_bids = u'There are no bids for this auction in the database'
-    message_rendered_json_will_appear_here = u'Formatted JSON will appear here'
-    message_empty_list = u'List is empty'
-    message_all_rights_reserved = u'All rights reserved'
+    @staticmethod
+    def messages(key):
+        return {'message_tender_has_no_bids': u'There are no bids for this tender in the database',
+                'message_auction_has_no_bids': u'There are no bids for this auction in the database',
+                'message_rendered_json_will_appear_here': u'Formatted JSON will appear here',
+                'message_empty_list': u'List is empty',
+                'message_all_rights_reserved': u'All rights reserved'}.get(key, key)
 
     # Hints
-    hint_delete = u'Delete'
+    @staticmethod
+    def hints(key):
+        return {'hint_delete': u'Delete'}.get(key, key)
 
 
 class ES(object):
