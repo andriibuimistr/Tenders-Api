@@ -499,7 +499,18 @@ def page_user_preferences():
             return UserPages(session).page_preferences()
 
 
+# ############################################################## MODAL WINDOWS ##############################################################################
+#                                                       ###### ADD REPORT WINDOW ######
+@app.route("/add_report", methods=['POST'])
+def add_report():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        core.save_report(request)
+    return jsonify(200, 'OK')
+
+
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
 
-# TODO Bug report, List of auctions
+# TODO Add report

@@ -4,6 +4,8 @@ import sys
 from tenders.data_for_tender import activate_contract_json
 from cdb_requests import *
 from document import *
+from werkzeug.utils import secure_filename
+import binascii
 
 
 def time_counter(waiting_time, message=''):
@@ -326,3 +328,18 @@ def run_activate_contract(api_version, tender_id_long, tender_token, list_of_con
         contract_id = list_of_contracts[contract]['id']
         add_document_to_entity(tender_id_long, contract_id, tender_token, api_version, 'contracts')
         tender.activate_award_contract(tender_id_long, 'contracts', contract_id, tender_token, json_activate_contract, contract_number)
+
+
+def save_report(request):
+    print(request.form)
+    print(request.files)
+    file_exists = False
+    if 'file' in request.files:
+        uploaded_file = request.files['file']
+        if uploaded_file.filename != '':
+            file_exists = True
+            filename = secure_filename(request.files['file'].filename)
+            local_filename = str(binascii.hexlify(os.urandom(16)))
+            file_extension = filename.split('.')[-1]
+            uploaded_file.save(os.path.join(ROOT_DIR, 'uploads', '{0}.{1}'.format(local_filename, file_extension)))
+    print(file_exists)

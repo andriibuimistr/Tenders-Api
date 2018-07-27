@@ -7,11 +7,11 @@
     <form class="form-add-report" id="addReportForm" role="form">
         <div class="form-group">
             <label for="reportTitle">{{ lng.label('label_report_title') }}</label>
-            <input type="text" class="form-control" id="reportTitle" maxlength="255">
+            <input name="reportTitle" id="reportTitle" type="text" class="form-control" maxlength="255">
         </div>
         <div class="form-group">
             <label for="reportType">{{ lng.label('label_report_type') }}</label>
-            <select class="form-control" id="reportType" name="reportType">
+            <select name="reportType" id="reportType" class="form-control">
                 <option value="bug">Bug</option>
             </select>
         </div>
@@ -19,9 +19,13 @@
             <label for="reportContent">{{ lng.label('label_report_content') }}</label>
             <textarea name="reportContent" id="reportContent" maxlength="2000"></textarea>
         </div>
+        <div class="form-group">
+            <label for="reportFile">{{ lng.label('label_report_file') }}</label>
+            <input name="reportFile" type="file" class="form-control-file" id="reportFile">
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" id="sendReportButton" type="button">{{ lng.button('button_send') }}</button>
+        </div>
     </form>
-  </div>
-  <div class="modal-footer">
-      <button class="btn btn-primary" id="sendReportButton" type="button">{{ lng.button('button_send') }}</button>
   </div>
 </div>

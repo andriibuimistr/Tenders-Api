@@ -214,3 +214,28 @@ $(function() {
     });
 });
 
+// Submit "Add report form"
+$(document).ready(function(){
+
+    $("#sendReportButton").click(function(){
+
+        var fd = new FormData();
+        var files = $('#reportFile')[0].files[0];
+        fd.append('file',files);
+        fd.append('reportTitle', $("#addReportForm input[name=reportTitle]").val());
+        fd.append('reportType', $("#addReportForm select[name=reportType]").val());
+        fd.append('reportContent', $("#addReportForm textarea[name=reportContent]").val());
+
+        $.ajax({
+            url: '/add_report',
+            dataType : 'json',
+            type: 'post',
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: function(response){
+                console.log(response)
+            },
+        });
+    });
+});
