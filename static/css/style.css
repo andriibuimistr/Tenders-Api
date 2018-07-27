@@ -702,9 +702,9 @@ footer {
 .modal-bug-report {
   display: none;
   position: fixed;
-  top: 30%;
+  top: 10%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0%);
   background-color: #fefefe;
   padding: 20px;
   width: 800px;
@@ -714,4 +714,9 @@ footer {
 
 .modal-footer {
     height: 100%;
+}
+
+#reportContent {
+    width: 100%;
+    min-height: 200px;
 }
