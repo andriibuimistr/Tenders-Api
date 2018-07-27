@@ -160,3 +160,14 @@ $(function() {
       $(disable_select);
       $("#procurementMethodType").change(disable_select);
 });
+
+
+// MODAL WINDOWS
+// Open modal window
+$(document).on("click","#bugReport", function(){
+        $('.modal').show();
+    });
+
+$(document).on("click",".close", function(){
+        $('.modal').hide();
+    });
