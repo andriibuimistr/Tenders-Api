@@ -73,7 +73,8 @@ class RU(object):
                 'button_format_json': u'Форматировать',
                 'button_get_json': u'Получить JSON',
                 'button_delete_tenders': u'Удалить закупки',
-                'button_delete_auctions': u'Удалить аукционы'}.get(key, key)
+                'button_delete_auctions': u'Удалить аукционы',
+                'button_send': u'Отправить'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -86,7 +87,8 @@ class RU(object):
                 'section_list_of_users': u'Список пользователей',
                 'section_list_of_tenders': u'Список закупок',
                 'section_list_of_auctions': u'Список аукционов',
-                'section_popular_links': u'Популярные ссылки'}.get(key, key)
+                'section_popular_links': u'Популярные ссылки',
+                'section_add_bug_report': u'Добавить отчет'}.get(key, key)
 
     # Labels
     @staticmethod
@@ -189,7 +191,8 @@ class EN(object):
                 'button_format_json': u'Format',
                 'button_get_json': u'Get JSON',
                 'button_delete_tenders': u'Delete tenders',
-                'button_delete_auctions': u'Delete auctions'}.get(key, key)
+                'button_delete_auctions': u'Delete auctions',
+                'button_send': u'Send'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -202,7 +205,8 @@ class EN(object):
                 'section_list_of_users': u'List of users',
                 'section_list_of_tenders': u'List of tenders',
                 'section_list_of_auctions': u'List of auctions',
-                'section_popular_links': u'Popular links'}.get(key, key)
+                'section_popular_links': u'Popular links',
+                'section_add_bug_report': u'Add report'}.get(key, key)
 
     # Labels
     @staticmethod
@@ -305,7 +309,8 @@ class ES(object):
                 'button_format_json': u'Formatear',
                 'button_get_json': u'Obtener JSON',
                 'button_delete_tenders': u'Eliminar licitaciones',
-                'button_delete_auctions': u'Eliminar subastas'}.get(key, key)
+                'button_delete_auctions': u'Eliminar subastas',
+                'button_send': u'Enviar'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -318,7 +323,8 @@ class ES(object):
                 'section_list_of_users': u'Lista de usuarios',
                 'section_list_of_tenders': u'Lista de licitaciones',
                 'section_list_of_auctions': u'Lista de subastas',
-                'section_popular_links': u'Enlaces populares'}.get(key, key)
+                'section_popular_links': u'Enlaces populares',
+                'section_add_bug_report': u'Añadir informe'}.get(key, key)
 
     # Labels
     @staticmethod

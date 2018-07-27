@@ -165,9 +165,9 @@ $(function() {
 // MODAL WINDOWS
 // Open modal window
 $(document).on("click","#bugReport", function(){
-        $('.modal').show();
+        $('.modal-bug-report').show();
     });
 
 $(document).on("click",".close", function(){
-        $('.modal').hide();
+        $('.modal-bug-report').hide();
     });
