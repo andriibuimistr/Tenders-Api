@@ -26,18 +26,18 @@
     width: 100%;
 }
 
-.tender-info {
+.tender-info, .auction-info {
     padding: 3px;
     border: 1px solid #CCC;
     display: inline-block;
     width: 100%;
 }
 
-.tender-info div span {
+.tender-info div span, .auction-info div span {
     font-weight: bold;
 }
 /*Actions icons*/
-.platform-action-delete, .tender-action-delete, .user-action-delete {
+.platform-action-delete, .tender-action-delete, .auction-action-delete, .user-action-delete {
     background-image: url("../images/icons/delete_icon.png");
     height: 16px;
     width: 16px;
@@ -45,7 +45,7 @@
     opacity: 0.5;
 }
 
-.platform-action-delete:hover, .tender-action-delete:hover, .user-action-delete:hover {
+.platform-action-delete:hover, .tender-action-delete:hover, .auction-action-delete:hover, .user-action-delete:hover {
     opacity: 1;
     cursor: pointer;
 }

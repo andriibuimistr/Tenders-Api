@@ -246,6 +246,8 @@ def admin_pages(page):
         return admin_page.page_admin_users(session)
     elif page == 'tenders':
         return admin_page.page_admin_tenders()
+    elif page == 'auctions':
+        return admin_page.page_admin_auctions()
     else:
         return abort(404)
 
@@ -287,6 +289,15 @@ def jquery_delete_tender(tender_id):
         return jquery_requests.delete_tender(tender_id)
 
 
+# Delete auction (with jquery)
+@app.route('/backend/jquery/auctions/<auction_id>', methods=['DELETE'])
+def jquery_delete_auction(auction_id):
+    if check_if_admin_jquery() is not True:
+        return check_if_admin_jquery()
+    else:
+        return jquery_requests.delete_auction(auction_id)
+
+
 # Delete user (with jquery)
 @app.route('/backend/jquery/users/<user_id>', methods=['DELETE'])
 def jquery_delete_user(user_id):
@@ -308,6 +319,15 @@ def jquery_delete_tenders():
         return check_if_admin_jquery()
     else:
         return jquery_requests.delete_tenders()
+
+
+# Delete all auctions from database (with jquery)
+@app.route('/backend/jquery/auctions', methods=['DELETE'])
+def jquery_delete_auctions():
+    if check_if_admin_jquery() is not True:
+        return check_if_admin_jquery()
+    else:
+        return jquery_requests.delete_auctions()
 # ############################################################## ADMIN END #############################################################################
 
 

@@ -1,5 +1,5 @@
 import tenders.tender_additional_data
-from database import db, Platforms, Users, Tenders
+from database import db, Platforms, Users, Tenders, Auctions
 from flask import render_template, abort, jsonify
 import validators
 import core
@@ -94,6 +94,20 @@ def delete_tender(tender_id):
     return jsonify({"status": "Success"}), 200
 
 
+def delete_auction(auction_id):
+    existing_auctions_id = []
+    list_of_auctions_id_db = core.get_list_of_tenders()
+    for x in range(len(list_of_auctions_id_db)):
+        existing_auctions_id.append(str(list_of_auctions_id_db[x].id))
+    if auction_id not in existing_auctions_id:
+        return abort(404, 'Tender does not exist')
+
+    Auctions.query.filter_by(id=auction_id).delete()
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "Success"}), 200
+
+
 def delete_user(user_id):
     existing_users_id = []
     list_of_users_id_db = core.get_list_of_users()
@@ -109,6 +123,13 @@ def delete_user(user_id):
 
 def delete_tenders():
     Tenders.query.delete()
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "Success"}), 200
+
+
+def delete_auctions():
+    Auctions.query.delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200

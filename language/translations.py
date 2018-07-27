@@ -35,6 +35,7 @@ class RU(object):
                 'page_title_platforms_management': u'Управление площадками',
                 'page_title_users_management': u'Управление пользователями',
                 'page_title_tenders_management': u'Управление закупками',
+                'page_title_auctions_management': u'Управление аукционами',
                 'page_title_user_preferences': u'Настройки пользователя'}.get(key, key)
 
     # Placeholders
@@ -71,7 +72,8 @@ class RU(object):
                 'button_save': u'Сохранить',
                 'button_format_json': u'Форматировать',
                 'button_get_json': u'Получить JSON',
-                'button_delete_tenders': u'Удалить закупки'}.get(key, key)
+                'button_delete_tenders': u'Удалить закупки',
+                'button_delete_auctions': u'Удалить аукционы'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -82,7 +84,8 @@ class RU(object):
                 'section_output_json': u'Отформатированный JSON',
                 'section_list_of_platforms': u'Список площадок',
                 'section_list_of_users': u'Список пользователей',
-                'section_list_of_tenders': u'Список Закупок',
+                'section_list_of_tenders': u'Список закупок',
+                'section_list_of_auctions': u'Список аукционов',
                 'section_popular_links': u'Популярные ссылки'}.get(key, key)
 
     # Labels
@@ -148,6 +151,7 @@ class EN(object):
                 'page_title_platforms_management': u'Platforms management',
                 'page_title_users_management': u'Users management',
                 'page_title_tenders_management': u'Tenders management',
+                'page_title_auctions_management': u'Auctions management',
                 'page_title_user_preferences': u'User Settings'}.get(key, key)
 
     # Placeholders
@@ -184,7 +188,8 @@ class EN(object):
                 'button_save': u'Save',
                 'button_format_json': u'Format',
                 'button_get_json': u'Get JSON',
-                'button_delete_tenders': u'Delete tenders'}.get(key, key)
+                'button_delete_tenders': u'Delete tenders',
+                'button_delete_auctions': u'Delete auctions'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -196,6 +201,7 @@ class EN(object):
                 'section_list_of_platforms': u'List of platforms',
                 'section_list_of_users': u'List of users',
                 'section_list_of_tenders': u'List of tenders',
+                'section_list_of_auctions': u'List of auctions',
                 'section_popular_links': u'Popular links'}.get(key, key)
 
     # Labels
@@ -261,6 +267,7 @@ class ES(object):
                 'page_title_platforms_management': u'Gestión de plataformas',
                 'page_title_users_management': u'Gestión de usuarios',
                 'page_title_tenders_management': u'Gestión de licitaciones',
+                'page_title_auctions_management': u'Gestión de subastas',
                 'page_title_user_preferences': u'Configuración del usuario'}.get(key, key)
 
     # Placeholders
@@ -297,7 +304,8 @@ class ES(object):
                 'button_save': u'Guardar',
                 'button_format_json': u'Formatear',
                 'button_get_json': u'Obtener JSON',
-                'button_delete_tenders': u'Eliminar licitaciones'}.get(key, key)
+                'button_delete_tenders': u'Eliminar licitaciones',
+                'button_delete_auctions': u'Eliminar subastas'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -309,6 +317,7 @@ class ES(object):
                 'section_list_of_platforms': u'Lista de plataformas',
                 'section_list_of_users': u'Lista de usuarios',
                 'section_list_of_tenders': u'Lista de licitaciones',
+                'section_list_of_auctions': u'Lista de subastas',
                 'section_popular_links': u'Enlaces populares'}.get(key, key)
 
     # Labels

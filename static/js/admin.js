@@ -63,7 +63,7 @@ $(document).on("click",".platform-action-delete", function() {
 
 //Delete tender
 $(document).on("click",".tender-action-delete", function() {
-        if(confirm("Are you sure you want to delete this?")){
+        if(confirm("Are you sure you want to delete this tender?")){
             var id = $(this).attr('id');
             $.ajax({
                 url: '/backend/jquery/tenders/' + id,
@@ -81,6 +81,25 @@ $(document).on("click",".tender-action-delete", function() {
         }
 });
 
+//Delete auction
+$(document).on("click",".auction-action-delete", function() {
+        if(confirm("Are you sure you want to delete this auction?")){
+            var id = $(this).attr('id');
+            $.ajax({
+                url: '/backend/jquery/auctions/' + id,
+                type: 'DELETE',
+                success: function() {
+                    $('#auction-id-' + id).remove();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+        else {
+            return false;
+        }
+});
 
 //Delete user
 $(document).on("click",".user-action-delete", function() {
@@ -108,6 +127,27 @@ $(document).on("click","#delete-tenders", function() {
             var id = $(this).attr('id');
             $.ajax({
                 url: '/backend/jquery/tenders',
+                type: 'DELETE',
+                success: function() {
+                    location.reload();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+        else {
+            return false;
+        }
+});
+
+
+//Delete all auctions from DB
+$(document).on("click","#delete-auctions", function() {
+        if(confirm("Are you sure you want to delete all auctions?")){
+            var id = $(this).attr('id');
+            $.ajax({
+                url: '/backend/jquery/auctions',
                 type: 'DELETE',
                 success: function() {
                     location.reload();

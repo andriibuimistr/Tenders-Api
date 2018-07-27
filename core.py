@@ -214,6 +214,12 @@ def get_list_of_tenders():
     return tenders_list
 
 
+def get_list_of_auctions():
+    auctions_list = Auctions.query.order_by("id desc").all()  # from last to first
+    db.session.remove()
+    return auctions_list
+
+
 # get list of platform (SQLA)
 def get_list_of_languages():
     languages_list = Languages.query.all()

@@ -1,0 +1,36 @@
+<div class="heading main_title">
+    <h1>{{ lng.page_title('page_title_auctions_management') }}</h1>
+</div>
+<div class="section_content">
+    <H4>{{ lng.section('section_list_of_auctions') }}</H4>
+    <div class="clear-list-section">
+        <button class="btn btn-danger btn-xs clear-list-button" id="delete-auctions" type="button">{{ lng.button('button_delete_auctions') }}</button>
+    </div>
+    <div class="list-of-auctions" id="admin-list-of-auctions">
+        {% if auctions|length == 0 %}
+            <div>{{ lng.message('message_empty_list') }}</div>
+        {% else %}
+            {% for auction in range(auctions|length) %}
+                <div class="auction-info" id="auction-id-{{ auctions[auction].id }}">
+                    <div class="col-lg-40 col-md-40 col-sm-40 col-xs-40">
+                        <div class="col-lg-5 col-md-5 col-sm-48 col-xs-48"><span>№: </span>{{ auction + 1 }}</div>
+                        <div class="col-lg-23 col-md-23 col-sm-48 col-xs-48"><span>UAID: </span>{{ auctions[auction].auction_id_short }}</div>
+                        <div class="col-lg-15 col-md-15 col-sm-48 col-xs-48"><span>{{ lng.label('label_creator') }}: </span>{{ auctions[auction].creator_id }}</div>
+                        <div class="col-lg-28 col-md-28 col-sm-48 col-xs-48"><span>{{ lng.label('label_id_in_cdb') }}: </span>{{ auctions[auction].auction_id_long }}</div>
+                        <div class="col-lg-15 col-md-9 col-sm-48 col-xs-48"><span>{{ lng.label('label_api_version') }}: </span>{{ auctions[auction].api_version }}</div>
+                        <!--<div class="col-lg-48 col-md-48 col-sm-48 col-xs-48"><span>Token: </span>{{ auctions[auction].auction_token }}</div>-->
+                        <div class="col-lg-28 col-md-28 col-sm-48 col-xs-48"><span>{{ lng.label('label_procurement_method_type') }}: </span>{{ auctions[auction].procurementMethodType }}</div>
+                        <div class="col-lg-20 col-md-20 col-sm-48 col-xs-48"><span>{{ lng.label('label_status') }}: </span>{{ auctions[auction].auction_status }}</div>
+                        <!--<div class="col-lg-9 col-md-9 col-sm-48 col-xs-48"><span>{{ lng.label('label_number_of_lots') }}: </span>{{ auctions[auction].n_lots }}</div>-->
+                        <div class="col-lg-10 col-md-10 col-sm-48 col-xs-48"><span>ID: </span>{{ auctions[auction].id }}</div>
+                        <div class="col-lg-18 col-md-18 col-sm-48 col-xs-48"><span>{{ lng.label('label_company_id') }}: </span>{{ auctions[auction].company_uid }}</div>
+                        <div class="col-lg-20 col-md-20 col-sm-48 col-xs-48"><span>{{ lng.label('label_added_to_site') }}: </span>{{ auctions[auction].added_to_site }}</div>
+                    </div>
+                    <div class="auction-actions col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                        <div class="auction-action-delete" id="{{ auctions[auction].id }}" title="{{ lng.hint('hint_delete') }}"></div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
