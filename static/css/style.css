@@ -700,19 +700,17 @@ footer {
 
 /*MODAL WINDOW*/
 .modal-bug-report {
-    display: none;
-    position: fixed;
-    top: 15%;
-    left: 50%;
-    z-index: 1;
-    background-color: #fefefe;
-    margin-left: -400px;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 800px;
-    max-width: 90%;
-    height: auto !important;
-}
+  display: none;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fefefe;
+  padding: 20px;
+  width: 800px;
+  max-width: 80%;
+  border: 1px solid #888;
+};
 
 .modal-footer {
     height: 100%;
