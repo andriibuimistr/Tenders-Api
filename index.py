@@ -104,7 +104,7 @@ def global_now():
 @app.context_processor
 def global_user_data():
     user_data = dict()
-    if 'logged_in' in session:
+    if 'username' in session:
         user_data['username'] = session['username']
         user_data['user_role_id'] = session['user_role']
     return user_data
@@ -506,11 +506,11 @@ def add_report():
     if not session.get('logged_in'):
         return login_form()
     else:
-        core.save_report(request)
+        core.save_report(request, session)
     return jsonify(200, 'OK')
 
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
 
-# TODO Add report
+# TODO Add report, Add various files to report

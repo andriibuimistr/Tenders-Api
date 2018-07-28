@@ -225,6 +225,7 @@ $(document).ready(function(){
         fd.append('reportTitle', $("#addReportForm input[name=reportTitle]").val());
         fd.append('reportType', $("#addReportForm select[name=reportType]").val());
         fd.append('reportContent', $("#addReportForm textarea[name=reportContent]").val());
+        fd.append('reportPriority', $("#addReportForm select[name=reportPriority]").val());
 
         $.ajax({
             url: '/add_report',

@@ -206,3 +206,56 @@ class Languages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     system_name = db.Column(db.String(255))
+
+    def __init__(self, id, name, system_name):
+        self.id = id
+        self.name = name
+        self.system_name = system_name
+
+
+class Reports(db.Model):
+    __tablename__ = 'reports'
+    id = db.Column(db.Integer, primary_key=True)
+    id_long = db.Column(db.String(255))
+    title = db.Column(db.String(255))
+    type_id = db.Column(db.String(255))
+    content = db.Column(db.String(255))
+    document = db.Column(db.LargeBinary)
+    author_id = db.Column(db.String(255))
+    priority_id = db.Column(db.Integer)
+
+    def __init__(self, id, id_long, title, type_id, content, document, author_id, priority_id):
+        self.id = id
+        self.id_long = id_long
+        self.title = title
+        self.type_id = type_id
+        self.content = content
+        self.document = document
+        self.author_id = author_id
+        self.priority_id = priority_id
+
+
+class ReportDocuments(db.Model):
+    __tablename__ = 'report_documents'
+    id = db.Column(db.Integer, primary_key=True)
+    id_long = db.Column(db.String(255))
+    filename = db.Column(db.String(255))
+    original_filename = db.Column(db.String(255))
+    related_report_id = db.Column(db.String(255))
+
+    def __init__(self, id, id_long, filename, original_filename, related_report_id):
+        self.id = id
+        self.id_long = id_long
+        self.filename = filename
+        self.original_filename = original_filename
+        self.related_report_id = related_report_id
+
+
+class ReportTypes(db.Model):
+    __tablename__ = 'report_types'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name

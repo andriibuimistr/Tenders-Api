@@ -4,8 +4,11 @@ import sys
 from tenders.data_for_tender import activate_contract_json
 from cdb_requests import *
 from document import *
-from werkzeug.utils import secure_filename
 import binascii
+
+
+def get_random_32():
+    return str(binascii.hexlify(os.urandom(16)))
 
 
 def time_counter(waiting_time, message=''):
@@ -330,16 +333,23 @@ def run_activate_contract(api_version, tender_id_long, tender_token, list_of_con
         tender.activate_award_contract(tender_id_long, 'contracts', contract_id, tender_token, json_activate_contract, contract_number)
 
 
-def save_report(request):
-    print(request.form)
-    print(request.files)
-    file_exists = False
+def save_report(request, session):
+    report_title = request.form['reportTitle']
+    report_type_id = int(request.form['reportType'])
+    report_content = request.form['reportContent']
+    report_priority = int(request.form['reportPriority'])
+    report_id_long = get_random_32()  # Generate id_long for report
+    add_report = Reports(None, report_id_long, report_title, report_type_id, report_content, None, session['user_id'], report_priority)
+    db.session.add(add_report)
+    db.session.commit()
     if 'file' in request.files:
         uploaded_file = request.files['file']
         if uploaded_file.filename != '':
-            file_exists = True
-            filename = secure_filename(request.files['file'].filename)
-            local_filename = str(binascii.hexlify(os.urandom(16)))
+            filename = request.files['file'].filename
+            local_filename = get_random_32()  # Generate id_long for document (local_filename == id_long)
             file_extension = filename.split('.')[-1]
+            # a = uploaded_file.stream.read()  # convert document to bytes
             uploaded_file.save(os.path.join(ROOT_DIR, 'uploads', '{0}.{1}'.format(local_filename, file_extension)))
-    print(file_exists)
+            add_document_to_db = ReportDocuments(None, local_filename, '{0}.{1}'.format(local_filename, file_extension), filename, report_id_long)
+            db.session.add(add_document_to_db)
+            db.session.commit()
