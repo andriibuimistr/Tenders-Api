@@ -501,13 +501,15 @@ def page_user_preferences():
 
 # ############################################################## MODAL WINDOWS ##############################################################################
 #                                                       ###### ADD REPORT WINDOW ######
-@app.route("/add_report", methods=['POST'])
+@app.route("/modal/add_report", methods=['GET', 'POST'])
 def add_report():
     if not session.get('logged_in'):
         return login_form()
+    if request.method == 'GET':
+        return render_template('modal_add_report.html')
     else:
         core.save_report(request, session)
-    return jsonify(200, 'OK')
+        return jsonify(200, 'OK')
 
 
 if __name__ == '__main__':

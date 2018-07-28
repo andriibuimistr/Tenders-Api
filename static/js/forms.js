@@ -165,9 +165,26 @@ $(function() {
 // MODAL WINDOWS
 // Open modal window
 $(document).on("click","#bugReport", function(){
-        $('.modal-bug-report').show();
-    });
+	$('#modalWindowContainer').empty();
+	$.ajax({
+		url: '/modal/add_report',
+//		dataType : 'json',
+		type: 'get',
+//		data: fd,
+//		contentType: false,
+//		processData: false,
+		success: function(data){
+			$('#modalWindowContainer').append(data);
+			$('.modal-bug-report').show();
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+		}
+	});	
+});
 
+// Close modal window
 $(document).on("click",".close", function(){
-        $('.modal-bug-report').hide();
-    });
+	$('.modal-bug-report').hide();
+	$('#modalWindowContainer').empty();
+});

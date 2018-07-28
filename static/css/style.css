@@ -684,7 +684,7 @@ footer {
 
 .empty-div {
     height: 34px;
-    padding: 6px; 12px;
+    padding: 6px 12px;
 }
 
 .form-view-json div {
@@ -710,7 +710,12 @@ footer {
   width: 800px;
   max-width: 80%;
   border: 1px solid #888;
-};
+}
+
+.modal-body {
+    overflow: auto;
+	max-height: 60vh;
+}
 
 .modal-footer {
     height: 100%;
@@ -719,4 +724,8 @@ footer {
 #reportContent {
     width: 100%;
     min-height: 200px;
+}
+
+.files-inputs input {
+    margin-bottom: 3px;
 }

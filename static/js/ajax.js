@@ -215,9 +215,7 @@ $(function() {
 });
 
 // Submit "Add report form"
-$(document).ready(function(){
-
-    $("#sendReportButton").click(function(){
+$(document).on("click","#sendReportButton", function(){
         var filesNumber = $('.form-control-file').length;  // Get number of files inputs
         var fd = new FormData();
         for (i = 0; i < filesNumber; i++) {
@@ -230,7 +228,7 @@ $(document).ready(function(){
 			fd.append(inputName, inputValue); // Append every input to FormData
 		}
         $.ajax({
-            url: '/add_report',
+            url: '/modal/add_report',
             dataType : 'json',
             type: 'post',
             data: fd,
@@ -239,6 +237,16 @@ $(document).ready(function(){
             success: function(response){
                 console.log(response);
             },
+			error: function (jqXHR, textStatus, errorThrown) {
+            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+            }
         });
     });
+
+
+// Add file input to report
+$(document).on("click","#addReportFileInput", function() {
+    var filesInputsNumber = $('.form-control-file').length;  // Get number of files inputs
+    $('#reportFiles').append('<input name="UploadedFile[' + filesInputsNumber +
+    '][file]" type="file" class="form-control-file" id="UploadedFile[' + filesInputsNumber + '][file]">');
 });
