@@ -344,7 +344,6 @@ def save_report(request, session):
     db.session.commit()
     if len(request.files.keys()) > 0:
         for f in range(len(request.files.keys())):
-            print request.files.keys()[f]
             file_key = request.files.keys()[f]  # file_key like 'file'
             uploaded_file = request.files[file_key]
             if uploaded_file.filename != '':

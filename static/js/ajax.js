@@ -223,11 +223,12 @@ $(document).ready(function(){
         for (i = 0; i < filesNumber; i++) {
             fd.append('file' + i, $("input[id='UploadedFile[" + i + "][file]']")[0].files[0]); // Append every file to FormData
         }
-        fd.append('reportTitle', $("#addReportForm input[name=reportTitle]").val());
-        fd.append('reportType', $("#addReportForm select[name=reportType]").val());
-        fd.append('reportContent', $("#addReportForm textarea[name=reportContent]").val());
-        fd.append('reportPriority', $("#addReportForm select[name=reportPriority]").val());
-        console.log($('#addReportForm').serialize());
+		var listOfInputs = JSON.parse(JSON.stringify($('#addReportForm').serializeArray()));  // Convert inputs into json {'name': 'value'}
+		for (i = 0; i < listOfInputs.length; i++){
+			var inputName = listOfInputs[i]['name'];
+			var inputValue = listOfInputs[i]['value'];
+			fd.append(inputName, inputValue); // Append every input to FormData
+		}
         $.ajax({
             url: '/add_report',
             dataType : 'json',
