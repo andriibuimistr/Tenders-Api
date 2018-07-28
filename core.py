@@ -342,14 +342,17 @@ def save_report(request, session):
     add_report = Reports(None, report_id_long, report_title, report_type_id, report_content, None, session['user_id'], report_priority)
     db.session.add(add_report)
     db.session.commit()
-    if 'file' in request.files:
-        uploaded_file = request.files['file']
-        if uploaded_file.filename != '':
-            filename = request.files['file'].filename
-            local_filename = get_random_32()  # Generate id_long for document (local_filename == id_long)
-            file_extension = filename.split('.')[-1]
-            # a = uploaded_file.stream.read()  # convert document to bytes
-            uploaded_file.save(os.path.join(ROOT_DIR, 'uploads', '{0}.{1}'.format(local_filename, file_extension)))
-            add_document_to_db = ReportDocuments(None, local_filename, '{0}.{1}'.format(local_filename, file_extension), filename, report_id_long)
-            db.session.add(add_document_to_db)
-            db.session.commit()
+    if len(request.files.keys()) > 0:
+        for f in range(len(request.files.keys())):
+            print request.files.keys()[f]
+            file_key = request.files.keys()[f]  # file_key like 'file'
+            uploaded_file = request.files[file_key]
+            if uploaded_file.filename != '':
+                filename = request.files[file_key].filename
+                local_filename = get_random_32()  # Generate id_long for document (local_filename == id_long)
+                file_extension = filename.split('.')[-1]
+                # a = uploaded_file.stream.read()  # convert document to bytes
+                uploaded_file.save(os.path.join(ROOT_DIR, 'uploads', '{0}.{1}'.format(local_filename, file_extension)))
+                add_document_to_db = ReportDocuments(None, local_filename, '{0}.{1}'.format(local_filename, file_extension), filename, report_id_long)
+                db.session.add(add_document_to_db)
+                db.session.commit()

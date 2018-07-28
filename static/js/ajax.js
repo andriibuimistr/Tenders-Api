@@ -218,15 +218,16 @@ $(function() {
 $(document).ready(function(){
 
     $("#sendReportButton").click(function(){
-
+        var filesNumber = $('.form-control-file').length;  // Get number of files inputs
         var fd = new FormData();
-        var files = $('#reportFile')[0].files[0];
-        fd.append('file',files);
+        for (i = 0; i < filesNumber; i++) {
+            fd.append('file' + i, $("input[id='UploadedFile[" + i + "][file]']")[0].files[0]); // Append every file to FormData
+        }
         fd.append('reportTitle', $("#addReportForm input[name=reportTitle]").val());
         fd.append('reportType', $("#addReportForm select[name=reportType]").val());
         fd.append('reportContent', $("#addReportForm textarea[name=reportContent]").val());
         fd.append('reportPriority', $("#addReportForm select[name=reportPriority]").val());
-
+        console.log($('#addReportForm').serialize());
         $.ajax({
             url: '/add_report',
             dataType : 'json',
@@ -235,7 +236,7 @@ $(document).ready(function(){
             contentType: false,
             processData: false,
             success: function(response){
-                console.log(response)
+                console.log(response);
             },
         });
     });
