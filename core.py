@@ -358,5 +358,4 @@ def save_report(request, session):
                 add_document_to_db = ReportDocuments(None, local_filename, '{0}.{1}'.format(local_filename, file_extension), filename, report_id_long)
                 db.session.add(add_document_to_db)
                 db.session.commit()
-                print ReportDocuments.query.filter_by(id=10).first().original_filename
     return True
