@@ -4,6 +4,18 @@
 <div class="section_content">
     <H4>{{ lng.section('section_list_of_reports') }}</H4>
     <div class="list-of-reports" id="admin-list-of-reports">
-        LIST OF REPORTS
+        {% if reports|length == 0 %}
+            <div>{{ lng.message('message_empty_list') }}</div>
+        {% else %}
+            {% for report in range(reports|length) %}
+                <div class="report-info" id="report-id-{{ reports[report].id }}">
+                    <div class="col-lg-2 col-md-2 col-sm-15 col-xs-15">{{ reports[report].id }}</div>
+                    <div class="col-lg-40 col-md-10 col-sm-33 col-xs-33">{{ reports[report].title }}</div>
+                    <div class="col-lg-2 col-md-16 col-sm-48 col-xs-48">{{ reports[report].type_id }}</div>
+                    <div class="col-lg-2 col-md-8 col-sm-20 col-xs-20">{{ reports[report].priority_id }}</div>
+                    <div class="col-lg-2 col-md-3 col-sm-12 col-xs-12">{{ reports[report].status_id }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </div>

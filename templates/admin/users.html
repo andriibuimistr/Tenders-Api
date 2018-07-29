@@ -5,7 +5,7 @@
     <H4>{{ lng.section('section_list_of_users') }}</H4>
     <div class="list-of-users" id="admin-list-of-users">
         {% if users|length == 0 %}
-            <div>List of users is empty</div>
+            <div>{{ lng.message('message_empty_list') }}</div>
         {% else %}
             {% for user in range(users|length) %}
                 <div class="user-info" id="user-id-{{ users[user].id }}">

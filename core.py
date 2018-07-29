@@ -225,6 +225,12 @@ def get_list_of_auctions():
     return auctions_list
 
 
+def get_list_of_reports():
+    reports_list = Reports.query.order_by("id asc").all()  # from last to first
+    db.session.remove()
+    return reports_list
+
+
 # get list of platform (SQLA)
 def get_list_of_languages():
     languages_list = Languages.query.all()
