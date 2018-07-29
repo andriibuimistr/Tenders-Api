@@ -28,3 +28,8 @@ class AdminPages:
         content = render_template('admin/auctions.html', auctions=core.get_list_of_auctions())
         return render_template('index.html', content=content)
 
+    @staticmethod
+    def page_admin_reports():  # generate page with list of user for admin
+        content = render_template('admin/reports.html')
+        return render_template('index.html', content=content)
+

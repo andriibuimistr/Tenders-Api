@@ -248,6 +248,8 @@ def admin_pages(page):
         return admin_page.page_admin_tenders()
     elif page == 'auctions':
         return admin_page.page_admin_auctions()
+    elif page == 'reports':
+        return admin_page.page_admin_reports()
     else:
         return abort(404)
 
