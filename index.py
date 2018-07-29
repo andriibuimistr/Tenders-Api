@@ -504,15 +504,16 @@ def page_user_preferences():
 @app.route("/modal/add_report", methods=['GET', 'POST'])
 def add_report():
     if not session.get('logged_in'):
-        return login_form()
+        return jquery_forbidden_login()
     if request.method == 'GET':
-        return render_template('modal_add_report.html')
+        return render_template('modal_windows/modal_add_report.html')
     else:
-        core.save_report(request, session)
-        return jsonify(200, 'OK')
+        if core.save_report(request, session):
+            return render_template('modal_windows/modal_add_report_success.html')
+        return jsonify('Something went wrong'), 400
 
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
 
-# TODO Add report, Add various files to report
+# TODO Add selects values to report from list, Error alerts

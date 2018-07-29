@@ -165,14 +165,14 @@ $(function() {
 // MODAL WINDOWS
 // Open modal window
 $(document).on("click","#bugReport", function(){
+	if ($('.modal-bug-report').length){
+		$('.modal-bug-report').show();
+	}
+	else{
 	$('#modalWindowContainer').empty();
 	$.ajax({
 		url: '/modal/add_report',
-//		dataType : 'json',
 		type: 'get',
-//		data: fd,
-//		contentType: false,
-//		processData: false,
 		success: function(data){
 			$('#modalWindowContainer').append(data);
 			$('.modal-bug-report').show();
@@ -180,7 +180,8 @@ $(document).on("click","#bugReport", function(){
 		error: function (jqXHR, textStatus, errorThrown) {
 			alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
 		}
-	});	
+	});
+	}
 });
 
 // Close modal window

@@ -74,7 +74,8 @@ class RU(object):
                 'button_get_json': u'Получить JSON',
                 'button_delete_tenders': u'Удалить закупки',
                 'button_delete_auctions': u'Удалить аукционы',
-                'button_send': u'Отправить'}.get(key, key)
+                'button_send': u'Отправить',
+                'button_add_file_input': u'+ файл'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -103,7 +104,12 @@ class RU(object):
                 'label_api_version': u'Версия API',
                 'label_status': u'Статус',
                 'label_added_to_site': u'На сайте',
-                'label_phone': u'Телефон'}.get(key, key)
+                'label_phone': u'Телефон',
+                'label_report_title': u'Тема',
+                'label_report_type': u'Тип отчета',
+                'label_report_content': u'Описание',
+                'label_report_priority': u'Приоритет',
+                'label_report_file': u'Вложения'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -118,6 +124,11 @@ class RU(object):
     @staticmethod
     def hints(key):
         return {'hint_delete': u'Удалить'}.get(key, key)
+
+    # Texts
+    @staticmethod
+    def texts(key):
+        return {'text_add_bug_report_success': u'Отчет был успешно отправлен!'}.get(key, key)
 
 
 class EN(object):
@@ -192,7 +203,8 @@ class EN(object):
                 'button_get_json': u'Get JSON',
                 'button_delete_tenders': u'Delete tenders',
                 'button_delete_auctions': u'Delete auctions',
-                'button_send': u'Send'}.get(key, key)
+                'button_send': u'Send',
+                'button_add_file_input': u'+ file'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -221,7 +233,12 @@ class EN(object):
                 'label_api_version': u'API version',
                 'label_status': u'Status',
                 'label_added_to_site': u'Added to site',
-                'label_phone': u'Phone number'}.get(key, key)
+                'label_phone': u'Phone number',
+                'label_report_title': u'Subject',
+                'label_report_type': u'Report type',
+                'label_report_content': u'Description',
+                'label_report_priority': u'Priority',
+                'label_report_file': u'Attachments'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -236,6 +253,11 @@ class EN(object):
     @staticmethod
     def hints(key):
         return {'hint_delete': u'Delete'}.get(key, key)
+
+    # Texts
+    @staticmethod
+    def texts(key):
+        return {'text_add_bug_report_success': u'Report was submitted successfully!'}.get(key, key)
 
 
 class ES(object):
@@ -310,7 +332,8 @@ class ES(object):
                 'button_get_json': u'Obtener JSON',
                 'button_delete_tenders': u'Eliminar licitaciones',
                 'button_delete_auctions': u'Eliminar subastas',
-                'button_send': u'Enviar'}.get(key, key)
+                'button_send': u'Enviar',
+                'button_add_file_input': u'+ archivo'}.get(key, key)
 
     # Sections names
     @staticmethod
@@ -339,7 +362,12 @@ class ES(object):
                 'label_api_version': u'Versión de API',
                 'label_status': u'Estado',
                 'label_added_to_site': u'En plataforma',
-                'label_phone': u'Teléfono'}.get(key, key)
+                'label_phone': u'Teléfono',
+                'label_report_title': u'Tema',
+                'label_report_type': u'Tipo de informe',
+                'label_report_content': u'Descripción',
+                'label_report_priority': u'Prioridad',
+                'label_report_file': u'Archivos adjuntos'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -354,6 +382,11 @@ class ES(object):
     @staticmethod
     def hints(key):
         return {'hint_delete': u'Borrar'}.get(key, key)
+
+    # Texts
+    @staticmethod
+    def texts(key):
+        return {'text_add_bug_report_success': u'El informe fue enviado con éxito!'}.get(key, key)
 
 
 class Translations(object):
@@ -399,3 +432,7 @@ class Translations(object):
     # HINTS
     def hint(self, key):
         return self.language_selector().hints(key)
+
+    # TEXTS
+    def text(self, key):
+        return self.language_selector().texts(key)

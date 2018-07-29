@@ -229,13 +229,14 @@ $(document).on("click","#sendReportButton", function(){
 		}
         $.ajax({
             url: '/modal/add_report',
-            dataType : 'json',
             type: 'post',
             data: fd,
             contentType: false,
             processData: false,
-            success: function(response){
-                console.log(response);
+            success: function(data){
+				$('.modal-body').empty();
+				$('.modal-body').append(data);
+				$('.modal-footer').remove();
             },
 			error: function (jqXHR, textStatus, errorThrown) {
             	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);

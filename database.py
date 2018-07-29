@@ -13,24 +13,6 @@ app.config['SQLALCHEMY_POOL_TIMEOUT'] = 60
 db = SQLAlchemy(app)
 
 
-class Companies(db.Model):
-    __tablename__ = 'companies'
-    id = db.Column(db.Integer, primary_key=True)
-    company_email = db.Column(db.String(255))
-    company_id = db.Column(db.String(255))
-    company_role_id = db.Column(db.String(255))
-    platform_id = db.Column(db.String(255))
-    company_identifier = db.Column(db.String(255))
-
-    def __init__(self, id, company_email, company_id, company_role_id, platform_id, company_identifier):
-        self.id = id
-        self.company_email = company_email
-        self.company_id = company_id
-        self.company_role_id = company_role_id
-        self.platform_id = platform_id
-        self.company_identifier = company_identifier
-
-
 class Tenders(db.Model):
     __tablename__ = 'tenders'
     id = db.Column(db.Integer, primary_key=True)
@@ -223,8 +205,9 @@ class Reports(db.Model):
     document = db.Column(db.LargeBinary)
     author_id = db.Column(db.String(255))
     priority_id = db.Column(db.Integer)
+    status_id = db.Column(db.Integer)
 
-    def __init__(self, id, id_long, title, type_id, content, document, author_id, priority_id):
+    def __init__(self, id, id_long, title, type_id, content, document, author_id, priority_id, status_id):
         self.id = id
         self.id_long = id_long
         self.title = title
@@ -233,6 +216,7 @@ class Reports(db.Model):
         self.document = document
         self.author_id = author_id
         self.priority_id = priority_id
+        self.status_id = status_id
 
 
 class ReportDocuments(db.Model):
@@ -253,6 +237,16 @@ class ReportDocuments(db.Model):
 
 class ReportTypes(db.Model):
     __tablename__ = 'report_types'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+
+
+class ReportStatus(db.Model):
+    __tablename__ = 'report_status'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
 

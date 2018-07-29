@@ -339,7 +339,7 @@ def save_report(request, session):
     report_content = request.form['reportContent']
     report_priority = int(request.form['reportPriority'])
     report_id_long = get_random_32()  # Generate id_long for report
-    add_report = Reports(None, report_id_long, report_title, report_type_id, report_content, None, session['user_id'], report_priority)
+    add_report = Reports(None, report_id_long, report_title, report_type_id, report_content, None, session['user_id'], report_priority, 1)
     db.session.add(add_report)
     db.session.commit()
     if len(request.files.keys()) > 0:
@@ -351,7 +351,12 @@ def save_report(request, session):
                 local_filename = get_random_32()  # Generate id_long for document (local_filename == id_long)
                 file_extension = filename.split('.')[-1]
                 # a = uploaded_file.stream.read()  # convert document to bytes
-                uploaded_file.save(os.path.join(ROOT_DIR, 'uploads', '{0}.{1}'.format(local_filename, file_extension)))
+                file_path = os.path.join(ROOT_DIR, 'uploads', '{0}.{1}'.format(local_filename, file_extension))
+                if not os.path.exists(os.path.dirname(file_path)):
+                    os.makedirs(os.path.dirname(file_path))
+                uploaded_file.save(file_path)
                 add_document_to_db = ReportDocuments(None, local_filename, '{0}.{1}'.format(local_filename, file_extension), filename, report_id_long)
                 db.session.add(add_document_to_db)
                 db.session.commit()
+                print ReportDocuments.query.filter_by(id=10).first().original_filename
+    return True
