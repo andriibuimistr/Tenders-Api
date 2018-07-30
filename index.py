@@ -471,7 +471,7 @@ def page_auction_bids():
 def tools_pages(page):
     if not session.get('logged_in'):
         return login_form()
-    pages = Pages(session['user_role'])
+    pages = Pages()
     if page == 'json-viewer':
         return pages.page_json_viewer()
     else:

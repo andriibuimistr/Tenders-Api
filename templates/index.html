@@ -9,12 +9,19 @@
 
 <!--Главный контейнер-->
         <div class="row main_container">
-        <!--Левая колонка-->
-        	<section class="col-lg-35 col-md-48 col-sm-48 col-xs-48 main_column">
-                {{ content|safe }}
-            </section>
-            <!--Правая колонка-->
-			{% include 'sidebar.html' %}
+            {% if not disable_sidebar %}
+                <!--Левая колонка-->
+                <section class="col-lg-35 col-md-48 col-sm-48 col-xs-48 main_column">
+                    {{ content|safe }}
+                </section>
+                <!--Правая колонка-->
+			    {% include 'sidebar.html' %}
+            {% else %}
+                <!--Левая колонка-->
+                <section class="col-lg-48 col-md-48 col-sm-48 col-xs-48 main_column">
+                    {{ content|safe }}
+                </section>
+            {% endif %}
 		</div>
     </div>
     <footer>

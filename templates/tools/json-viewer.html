@@ -1,63 +1,40 @@
-<!doctype html>
-<html>
-{% include 'head.html' %}
-<body>
-	<header>
-    {% include 'header.html' %}
-    </header>
-    <div class="wrapper container container_json_viewer">
-
-<!--Главный контейнер-->
-        <div class="row main_container">
-        <!--Левая колонка-->
-        	<section class="col-lg-48 col-md-48 col-sm-48 col-xs-48 main_column">
-                <div class="heading main_title">
-                    <h1>JSON Viewer</h1>
+<div class="heading main_title">
+    <h1>JSON Viewer</h1>
+</div>
+<div class="section_content">
+    <H4>{{ lng.section('section_input_json') }}</H4>
+    <div class="json-viewer">
+        <div class="json_viewer_labels">
+            <label><input type="radio" name="colorCheckbox" value="insert" checked> {{ lng.form('form_checkbox_insert_json') }}</label>
+            <label><input type="radio" name="colorCheckbox" value="get"> {{ lng.form('form_checkbox_get_json_from_cdb') }}</label>
+        </div>
+        <div class="json_source json-insert">
+            <form class="form-view-json" id="form-view-json-insert" role="form">
+                <textarea name="raw-json" id="raw_json_input" class="form-control" placeholder="{{ lng.form('form_placeholder_paste_json') }}"></textarea>
+                <button class="btn btn-success render-json-button" id="render_json_insert" type="button">{{ lng.button('button_format_json') }}</button>
+            </form>
+        </div>
+        <div class="json_source json-get">
+            <form class="form-view-json" id="form-view-json-get" role="form">
+                <div class="empty-div col-lg-15 col-md-48 col-sm-48 col-xs-48"></div>
+                <div class="get-json-tender-id-long col-lg-12 col-md-36 col-sm-48 col-xs-48">
+                    <input type="text" name="tender_id_long" class="form-control" placeholder="Tender ID ex. 0f219944081d4548929a81afe10a8804" maxlength="32">
                 </div>
-                <div class="section_content">
-                    <H4>{{ lng.section('section_input_json') }}</H4>
-                    <div class="json-viewer">
-                        <div class="json_viewer_labels">
-                            <label><input type="radio" name="colorCheckbox" value="insert" checked> {{ lng.form('form_checkbox_insert_json') }}</label>
-                            <label><input type="radio" name="colorCheckbox" value="get"> {{ lng.form('form_checkbox_get_json_from_cdb') }}</label>
-                        </div>
-                        <div class="json_source json-insert">
-                            <form class="form-view-json" id="form-view-json-insert" role="form">
-                                <textarea name="raw-json" id="raw_json_input" class="form-control" placeholder="{{ lng.form('form_placeholder_paste_json') }}"></textarea>
-                                <button class="btn btn-success render-json-button" id="render_json_insert" type="button">{{ lng.button('button_format_json') }}</button>
-                            </form>
-                        </div>
-                        <div class="json_source json-get">
-                            <form class="form-view-json" id="form-view-json-get" role="form">
-                                <div class="empty-div col-lg-15 col-md-48 col-sm-48 col-xs-48"></div>
-                                <div class="get-json-tender-id-long col-lg-12 col-md-36 col-sm-48 col-xs-48">
-                                    <input type="text" name="tender_id_long" class="form-control" placeholder="Tender ID ex. 0f219944081d4548929a81afe10a8804" maxlength="32">
-                                </div>
-                                <div class="api-version col-lg-6 col-md-12 col-sm-48 col-xs-48">
-                                    <select name="api_version" class="form-control" size="1">
-                                    {% for version in api_versions %}
-                                        <option value="{{api_versions[version]}}">{{version}}</option>
-                                    {%endfor%}
-                                    </select>
-                                </div>
-                                <div class="empty-div col-lg-15 col-md-48 col-sm-48 col-xs-48"></div>
-                                <button class="btn btn-success render-json-button" id="render_json_get" type="button">{{ lng.button('button_get_json') }}</button>
-                            </form>
-                        </div>
-                        <H4>{{ lng.section('section_output_json') }}</H4>
-                        <pre id="json_output">{{ lng.message('message_rendered_json_will_appear_here') }}</pre>
-                    </div>
-
+                <div class="api-version col-lg-6 col-md-12 col-sm-48 col-xs-48">
+                    <select name="api_version" class="form-control" size="1">
+                    {% for version in api_versions %}
+                        <option value="{{api_versions[version]}}">{{version}}</option>
+                    {%endfor%}
+                    </select>
                 </div>
-            </section>
-		</div>
+                <div class="empty-div col-lg-15 col-md-48 col-sm-48 col-xs-48"></div>
+                <button class="btn btn-success render-json-button" id="render_json_get" type="button">{{ lng.button('button_get_json') }}</button>
+            </form>
+        </div>
+        <H4>{{ lng.section('section_output_json') }}</H4>
+        <pre id="json_output">{{ lng.message('message_rendered_json_will_appear_here') }}</pre>
     </div>
-    <footer>
-        {% include 'footer.html' %}
-        {% include 'modal.html' %}
-    </footer>
-    <div id="scrollup"><img alt="Прокрутить вверх" src="../static/images/design/up.png"></div>
-    <script type='text/javascript' src='../static/js/jquery.json-viewer.js'></script>
-    <link rel="stylesheet" href="../static/css/jquery.json-viewer.css">
-</body>
-</html>
+
+</div>
+
+

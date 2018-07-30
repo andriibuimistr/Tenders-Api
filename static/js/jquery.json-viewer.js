@@ -155,7 +155,7 @@ function selectForm() {
   $("div.json-" + $("input:checked").val()).show();
 }
 selectForm();
-$("input").click(function(){selectForm()});
+$(document).on("click", "input", function(){selectForm()});
 
 //Render JSON from CDB
 $(function() {
