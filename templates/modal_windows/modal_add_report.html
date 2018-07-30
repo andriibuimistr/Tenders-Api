@@ -12,7 +12,9 @@
         <div class="form-group">
             <label for="reportType">{{ lng.label('label_report_type') }}</label>
             <select name="reportType" class="form-control" id="reportType">
-                <option value="1">Bug</option>
+                {% for type in range(report_types|length) %}
+                    <option value="{{ report_types[type].id }}">{{ lng.report_type('report_type_' + report_types[type].name) }}</option>
+                {% endfor %}
             </select>
         </div>
         <div class="form-group required">
