@@ -23,7 +23,9 @@
         <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_content') }}</label>
         <div class="block-info-in-frame col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.content }}</div>
         {% for document in range(report_documents|length) %}
-            <a class="col-lg-48 col-md-48 col-sm-48 col-xs-48" target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}">{{ report_documents[document].original_filename }}</a>
+            <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">
+                <a target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}">{{ report_documents[document].original_filename }}</a>
+            </div>
         {% endfor %}
     </div>
 </div>
