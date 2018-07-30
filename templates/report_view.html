@@ -4,6 +4,16 @@
 <div class="section_content">
     <H4>{{ lng.section('section_report_view_info') }}</H4>
     <div class="report-view-info" id="report-view-info">
-        INFO OF REPORT
+        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.id }}</div>
+        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_title') }}</label>
+        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.title }}</div>
+        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_type') }}</label>
+        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report_types[report.type_id] }}</div>
+        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_content') }}</label>
+        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.content }}</div>
+        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_priority') }}</label>
+        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.priority_id }}</div>
+        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_status') }}</label>
+        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.status_id }}</div>
     </div>
 </div>

@@ -35,6 +35,5 @@ class AdminPages:
 
     @staticmethod
     def page_admin_report_view(report_id):
-        content = render_template('report_view.html', reports=core.get_report_info(report_id))
+        content = render_template('report_view.html', report=core.get_report_info(report_id), report_types=core.get_list_of_report_types())
         return render_template('index.html', content=content)
-

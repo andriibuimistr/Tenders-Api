@@ -213,6 +213,16 @@ def get_list_of_user_roles():
     return roles_dict
 
 
+# get list of report types
+def get_list_of_report_types():
+    report_types = ReportTypes.query.all()
+    db.session.remove()
+    types_dict = dict()
+    for report_type in range(len(report_types)):
+        types_dict[report_types[report_type].id] = report_types[report_type].name
+    return types_dict
+
+
 def get_list_of_tenders():
     tenders_list = Tenders.query.order_by("id desc").all()  # from last to first
     db.session.remove()

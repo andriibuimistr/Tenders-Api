@@ -123,7 +123,7 @@ class RU(object):
     # Hints
     @staticmethod
     def hints(key):
-        return {'hint_delete': u'Удалить'}.get(key, key)
+        return {'hint_delete': u'Удалить'}.get(key, key)  # + hint_button_up
 
     # Texts
     @staticmethod
