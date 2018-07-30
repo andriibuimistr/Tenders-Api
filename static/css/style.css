@@ -747,3 +747,11 @@ footer {
     border: 1px solid #CCC;
     border-radius: 3px;
 }
+
+.report-info {
+    clear: both;
+    padding: 3px;
+    border: 1px solid #CCC;
+    display: inline-block;
+    width: 100%;
+}

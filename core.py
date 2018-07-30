@@ -5,6 +5,7 @@ from tenders.data_for_tender import activate_contract_json
 from cdb_requests import *
 from document import *
 import binascii
+from config import *
 
 
 def get_random_32():
@@ -301,6 +302,13 @@ def get_report_info(report_id):
     return report
 
 
+def get_report_documents(report_id):
+    report_id_long = Reports.query.filter_by(id=report_id).first().id_long
+    report_docs = ReportDocuments.query.filter_by(related_report_id=report_id_long).all()
+    db.session.remove()
+    return report_docs
+
+
 def check_if_contract_exists(get_t_info):
     try:
         if get_t_info.json()['data']['contracts']:
@@ -407,7 +415,7 @@ def save_report(request, session):
                 local_filename = get_random_32()  # Generate id_long for document (local_filename == id_long)
                 file_extension = filename.split('.')[-1]
                 # a = uploaded_file.stream.read()  # convert document to bytes
-                file_path = os.path.join(ROOT_DIR, 'uploads', '{0}.{1}'.format(local_filename, file_extension))
+                file_path = os.path.join(REPORTS_DOCS_DIR, '{0}.{1}'.format(local_filename, file_extension))
                 if not os.path.exists(os.path.dirname(file_path)):
                     os.makedirs(os.path.dirname(file_path))
                 uploaded_file.save(file_path)

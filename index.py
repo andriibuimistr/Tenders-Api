@@ -5,7 +5,7 @@ from auctions import auction
 from datetime import timedelta
 import core
 from tools.pages import Pages
-from flask import Flask, jsonify, request, make_response, render_template, session, redirect, url_for, g
+from flask import Flask, jsonify, request, make_response, render_template, session, redirect, url_for, g, send_from_directory
 from flask_httpauth import HTTPBasicAuth
 import os
 import flask_login
@@ -20,6 +20,7 @@ from tenders.pages import TenderPages
 from tenders import tender_validators, tender
 import hashlib
 from language.translations import Translations
+from config import REPORTS_DOCS_DIR
 
 auth = HTTPBasicAuth()
 app = Flask(__name__,)
@@ -524,7 +525,17 @@ def add_report():
         return jsonify('Something went wrong'), 400
 
 
+@app.route('/files/<entity>/<filename>', methods=['GET'])
+def download_file(entity, filename):
+    if not session.get('logged_in'):
+        return jquery_forbidden_login()
+    if entity == 'report':
+        return send_from_directory(REPORTS_DOCS_DIR, filename)
+
+
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
 
-# TODO Add selects values to report from list, Error alerts
+# TODO Add selects values to report from list, Error alerts, Translations and status/type/creator name instead of id on reports list page
+
+
