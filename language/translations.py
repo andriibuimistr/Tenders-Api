@@ -36,6 +36,7 @@ class RU(object):
                 'page_title_users_management': u'Управление пользователями',
                 'page_title_tenders_management': u'Управление закупками',
                 'page_title_auctions_management': u'Управление аукционами',
+                'page_title_reports_management': u'Управление отчетами',
                 'page_title_user_preferences': u'Настройки пользователя',
                 'page_title_report_info': u'Управление отчетом'}.get(key, key)
 
@@ -90,7 +91,8 @@ class RU(object):
                 'section_list_of_tenders': u'Список закупок',
                 'section_list_of_auctions': u'Список аукционов',
                 'section_popular_links': u'Популярные ссылки',
-                'section_add_bug_report': u'Добавить отчет'}.get(key, key)
+                'section_add_bug_report': u'Добавить отчет',
+                'section_list_of_reports': u'Список отчетов'}.get(key, key)
 
     # Labels
     @staticmethod
@@ -112,7 +114,8 @@ class RU(object):
                 'label_report_priority': u'Приоритет',
                 'label_report_file': u'Вложения',
                 'label_report_status': u'Статус',
-                'label_report_id': u'ID'}.get(key, key)
+                'label_report_id': u'ID',
+                'label_user_interface_language': u'Язык'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -188,6 +191,7 @@ class EN(object):
                 'page_title_users_management': u'Users management',
                 'page_title_tenders_management': u'Tenders management',
                 'page_title_auctions_management': u'Auctions management',
+                'page_title_reports_management': u'Reports management',
                 'page_title_user_preferences': u'User Settings',
                 'page_title_report_info': u'Report management'}.get(key, key)
 
@@ -242,7 +246,8 @@ class EN(object):
                 'section_list_of_tenders': u'List of tenders',
                 'section_list_of_auctions': u'List of auctions',
                 'section_popular_links': u'Popular links',
-                'section_add_bug_report': u'Add report'}.get(key, key)
+                'section_add_bug_report': u'Add report',
+                'section_list_of_reports': u'List of reports'}.get(key, key)
 
     # Labels
     @staticmethod
@@ -264,7 +269,8 @@ class EN(object):
                 'label_report_priority': u'Priority',
                 'label_report_file': u'Attachments',
                 'label_report_status': u'Status',
-                'label_report_id': u'ID'}.get(key, key)
+                'label_report_id': u'ID',
+                'label_user_interface_language': u'Language'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -340,6 +346,7 @@ class ES(object):
                 'page_title_users_management': u'Gestión de usuarios',
                 'page_title_tenders_management': u'Gestión de licitaciones',
                 'page_title_auctions_management': u'Gestión de subastas',
+                'page_title_reports_management': u'Gestión de informes',
                 'page_title_user_preferences': u'Configuración del usuario',
                 'page_title_report_info': u'Gestión de informe'}.get(key, key)
 
@@ -394,7 +401,8 @@ class ES(object):
                 'section_list_of_tenders': u'Lista de licitaciones',
                 'section_list_of_auctions': u'Lista de subastas',
                 'section_popular_links': u'Enlaces populares',
-                'section_add_bug_report': u'Añadir informe'}.get(key, key)
+                'section_add_bug_report': u'Añadir informe',
+                'section_list_of_reports': u'Lista de informes'}.get(key, key)
 
     # Labels
     @staticmethod
@@ -416,7 +424,8 @@ class ES(object):
                 'label_report_priority': u'Prioridad',
                 'label_report_file': u'Archivos adjuntos',
                 'label_report_status': u'Estado',
-                'label_report_id': u'ID'}.get(key, key)
+                'label_report_id': u'ID',
+                'label_user_interface_language': u'Idioma'}.get(key, key)
 
     # Messages
     @staticmethod

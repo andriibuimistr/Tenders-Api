@@ -4,6 +4,7 @@
 <div class="section_content">
     <form action="/user/preferences" method="post" class="form-user-preferences" id="user-preferences" role="form">
         <div class="preferences-submit-inputs col-lg-48 col-md-48 col-sm-48 col-xs-48">
+            <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_user_interface_language') }}</label>
             <div class="language col-lg-6 col-md-6 col-sm-6 col-xs-6">
                 <select name="language" id="language" class="form-control" size="1">
                     {% for language in languages %}
