@@ -5,7 +5,7 @@
   </div>
   <div class="modal-body">
     <form class="form-add-report" id="addReportForm" role="form">
-        <div class="form-group">
+        <div class="form-group required">
             <label for="reportTitle">{{ lng.label('label_report_title') }}</label>
             <input name="reportTitle" class="form-control" id="reportTitle" type="text"  maxlength="255">
         </div>
@@ -15,7 +15,7 @@
                 <option value="2">Bug</option>
             </select>
         </div>
-        <div class="form-group">
+        <div class="form-group required">
             <label for="reportContent">{{ lng.label('label_report_content') }}</label>
             <textarea name="reportContent" class="form-control" id="reportContent" maxlength="2000"></textarea>
         </div>

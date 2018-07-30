@@ -731,3 +731,8 @@ footer {
 .files-inputs input {
     margin-bottom: 3px;
 }
+
+.form-group.required label:after {
+    content:"*";
+    color:red;
+}
