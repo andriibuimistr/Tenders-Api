@@ -147,7 +147,11 @@ class RU(object):
     # Report priorities
     @staticmethod
     def report_priorities(key):
-        return {'report_priority_highest': u'Оч. высокий'}.get(key, key)
+        return {'report_priority_highest': u'Оч. высокий',
+                'report_priority_high': u'Высокий',
+                'report_priority_medium': u'Средний',
+                'report_priority_low': u'Низкий',
+                'report_priority_lowest': u'Оч. низкий'}.get(key, key)
 
 
 class EN(object):
@@ -295,7 +299,11 @@ class EN(object):
     # Report priorities
     @staticmethod
     def report_priorities(key):
-        return {'report_priority_highest': u'Highest'}.get(key, key)
+        return {'report_priority_highest': u'Highest',
+                'report_priority_high': u'High',
+                'report_priority_medium': u'Medium',
+                'report_priority_low': u'Low',
+                'report_priority_lowest': u'Lowest'}.get(key, key)
 
 
 class ES(object):
@@ -443,7 +451,11 @@ class ES(object):
     # Report priorities
     @staticmethod
     def report_priorities(key):
-        return {'report_priority_highest': u'Muy alta'}.get(key, key)
+        return {'report_priority_highest': u'Muy alta',
+                'report_priority_high': u'Alta',
+                'report_priority_medium': u'Media',
+                'report_priority_low': u'Baja',
+                'report_priority_lowest': u'Muy baja'}.get(key, key)
 
 
 class Translations(object):
