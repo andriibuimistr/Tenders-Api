@@ -33,3 +33,8 @@ class AdminPages:
         content = render_template('admin/reports.html', reports=core.get_list_of_reports())
         return render_template('index.html', content=content)
 
+    @staticmethod
+    def page_admin_report_view(report_id):
+        content = render_template('report_view.html', reports=core.get_report_info(report_id))
+        return render_template('index.html', content=content)
+

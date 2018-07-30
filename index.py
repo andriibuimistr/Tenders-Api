@@ -254,6 +254,14 @@ def admin_pages(page):
         return abort(404)
 
 
+@app.route('/admin/reports/<report_id>', methods=['GET'])  # generate custom page for admin
+def admin_report_view(report_id):
+    if check_if_admin() is not True:
+        return check_if_admin()
+    else:
+        return AdminPages.page_admin_report_view(report_id)
+
+
 #                                                       ###### ADMIN JQUERY REQUESTS ######
 # Add platform (with jquery)
 @app.route('/backend/jquery/add_platform', methods=['POST'])

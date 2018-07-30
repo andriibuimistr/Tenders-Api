@@ -226,7 +226,7 @@ def get_list_of_auctions():
 
 
 def get_list_of_reports():
-    reports_list = Reports.query.order_by("id asc").all()  # from last to first
+    reports_list = Reports.query.order_by("id asc").all()  # from first to last
     db.session.remove()
     return reports_list
 
@@ -249,6 +249,12 @@ def get_user_language(user_id):
     language_system_name = Languages.query.filter_by(id=user_lang_id).first().system_name
     db.session.remove()
     return language_system_name
+
+
+def get_report_info(report_id):
+    report = Reports.query.filter_by(id=report_id).first()
+    db.session.remove()
+    return report
 
 
 def check_if_contract_exists(get_t_info):
