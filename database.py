@@ -200,10 +200,10 @@ class Reports(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     id_long = db.Column(db.String(255))
     title = db.Column(db.String(255))
-    type_id = db.Column(db.String(255))
+    type_id = db.Column(db.Integer)
     content = db.Column(db.String(255))
     document = db.Column(db.LargeBinary)
-    author_id = db.Column(db.String(255))
+    author_id = db.Column(db.Integer)
     priority_id = db.Column(db.Integer)
     status_id = db.Column(db.Integer)
 
