@@ -222,6 +222,7 @@ function validateInputs(list){  // Validate if all inputs from list are filled
                 return false;
             }
         }
+        return true
 }
 
 // Submit "Add report form"
@@ -230,7 +231,7 @@ $(document).on("click","#sendReportButton", function(){
         if (!validateInputs(inputs)){
             return false
             }
-        else{
+        else {
             var filesNumber = $('.form-control-file').length;  // Get number of files inputs
             var fd = new FormData();
             for (i = 0; i < filesNumber; i++) {
