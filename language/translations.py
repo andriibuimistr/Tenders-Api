@@ -36,7 +36,8 @@ class RU(object):
                 'page_title_users_management': u'Управление пользователями',
                 'page_title_tenders_management': u'Управление закупками',
                 'page_title_auctions_management': u'Управление аукционами',
-                'page_title_user_preferences': u'Настройки пользователя'}.get(key, key)
+                'page_title_user_preferences': u'Настройки пользователя',
+                'page_title_report_info': u'Управление отчетом'}.get(key, key)
 
     # Placeholders
     @staticmethod
@@ -109,7 +110,9 @@ class RU(object):
                 'label_report_type': u'Тип отчета',
                 'label_report_content': u'Описание',
                 'label_report_priority': u'Приоритет',
-                'label_report_file': u'Вложения'}.get(key, key)
+                'label_report_file': u'Вложения',
+                'label_report_status': u'Статус',
+                'label_report_id': u'ID'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -129,6 +132,21 @@ class RU(object):
     @staticmethod
     def texts(key):
         return {'text_add_bug_report_success': u'Отчет был успешно отправлен!'}.get(key, key)
+
+    # Report statuses
+    @staticmethod
+    def report_statuses(key):
+        return {'report_status_new': u'Новый'}.get(key, key)
+
+    # Report types
+    @staticmethod
+    def report_types(key):
+        return {'report_type_bug': u'Ошибка'}.get(key, key)
+
+    # Report priorities
+    @staticmethod
+    def report_priorities(key):
+        return {'report_priority_highest': u'Оч. высокий'}.get(key, key)
 
 
 class EN(object):
@@ -165,7 +183,8 @@ class EN(object):
                 'page_title_users_management': u'Users management',
                 'page_title_tenders_management': u'Tenders management',
                 'page_title_auctions_management': u'Auctions management',
-                'page_title_user_preferences': u'User Settings'}.get(key, key)
+                'page_title_user_preferences': u'User Settings',
+                'page_title_report_info': u'Report management'}.get(key, key)
 
     # Placeholders
     @staticmethod
@@ -238,7 +257,9 @@ class EN(object):
                 'label_report_type': u'Report type',
                 'label_report_content': u'Description',
                 'label_report_priority': u'Priority',
-                'label_report_file': u'Attachments'}.get(key, key)
+                'label_report_file': u'Attachments',
+                'label_report_status': u'Status',
+                'label_report_id': u'ID'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -258,6 +279,21 @@ class EN(object):
     @staticmethod
     def texts(key):
         return {'text_add_bug_report_success': u'Report was submitted successfully!'}.get(key, key)
+
+    # Report statuses
+    @staticmethod
+    def report_statuses(key):
+        return {'report_status_new': u'New'}.get(key, key)
+
+    # Report types
+    @staticmethod
+    def report_types(key):
+        return {'report_type_bug': u'Bug'}.get(key, key)
+
+    # Report priorities
+    @staticmethod
+    def report_priorities(key):
+        return {'report_priority_highest': u'Highest'}.get(key, key)
 
 
 class ES(object):
@@ -294,7 +330,8 @@ class ES(object):
                 'page_title_users_management': u'Gestión de usuarios',
                 'page_title_tenders_management': u'Gestión de licitaciones',
                 'page_title_auctions_management': u'Gestión de subastas',
-                'page_title_user_preferences': u'Configuración del usuario'}.get(key, key)
+                'page_title_user_preferences': u'Configuración del usuario',
+                'page_title_report_info': u'Gestión de informe'}.get(key, key)
 
     # Placeholders
     @staticmethod
@@ -367,7 +404,9 @@ class ES(object):
                 'label_report_type': u'Tipo de informe',
                 'label_report_content': u'Descripción',
                 'label_report_priority': u'Prioridad',
-                'label_report_file': u'Archivos adjuntos'}.get(key, key)
+                'label_report_file': u'Archivos adjuntos',
+                'label_report_status': u'Estado',
+                'label_report_id': u'ID'}.get(key, key)
 
     # Messages
     @staticmethod
@@ -387,6 +426,21 @@ class ES(object):
     @staticmethod
     def texts(key):
         return {'text_add_bug_report_success': u'El informe fue enviado con éxito!'}.get(key, key)
+
+    # Report statuses
+    @staticmethod
+    def report_statuses(key):
+        return {'report_status_new': u'Nuevo'}.get(key, key)
+
+    # Report types
+    @staticmethod
+    def report_types(key):
+        return {'report_type_bug': u'Error'}.get(key, key)
+
+    # Report priorities
+    @staticmethod
+    def report_priorities(key):
+        return {'report_priority_highest': u'Muy alta'}.get(key, key)
 
 
 class Translations(object):
@@ -436,3 +490,15 @@ class Translations(object):
     # TEXTS
     def text(self, key):
         return self.language_selector().texts(key)
+
+    # REPORT STATUS
+    def report_status(self, key):
+        return self.language_selector().report_statuses(key)
+
+    # REPORT TYPE
+    def report_type(self, key):
+        return self.language_selector().report_types(key)
+
+    # REPORT PRIORITY
+    def report_priority(self, key):
+        return self.language_selector().report_priorities(key)

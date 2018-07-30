@@ -2,18 +2,25 @@
     <h1>{{ lng.page_title('page_title_report_info') }}</h1>
 </div>
 <div class="section_content">
-    <H4>{{ lng.section('section_report_view_info') }}</H4>
+    <H4>{{ report.title }}</H4>
     <div class="report-view-info" id="report-view-info">
-        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.id }}</div>
-        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_title') }}</label>
-        <div class="block-info-in-frame col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.title }}</div>
-        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_type') }}</label>
-        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report_types[report.type_id] }}</div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-24">
+            <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_id') }}</label>
+            <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.id }}</div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-24">
+            <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_type') }}</label>
+            <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.report_type('report_type_' + report_types[report.type_id]) }}</div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-24">
+            <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_priority') }}</label>
+            <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.report_priority('report_priority_' + report_priorities[report.priority_id]) }}</div>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-24">
+            <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_status') }}</label>
+            <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.report_status('report_status_' + report_status[report.status_id]) }}</div>
+        </div>
         <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_content') }}</label>
         <div class="block-info-in-frame col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.content }}</div>
-        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_priority') }}</label>
-        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.priority_id }}</div>
-        <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_status') }}</label>
-        <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.status_id }}</div>
     </div>
 </div>
