@@ -755,3 +755,42 @@ footer {
     display: inline-block;
     width: 100%;
 }
+
+.report-type-improvement, .report-type-bug, .report-type-task,
+.report-priority-highest, .report-priority-high, .report-priority-medium,
+.report-priority-low, .report-priority-lowest {
+    height: 20px;
+    width: 20px;
+    background-repeat: no-repeat;
+}
+
+.report-type-improvement {
+    background-image: url("../images/icons/report_type_improvement.png");
+}
+
+.report-type-bug {
+    background-image: url("../images/icons/report_type_bug.png");
+}
+
+.report-type-task {
+    background-image: url("../images/icons/report_type_task.png");
+}
+
+.report-priority-highest {
+    background-image: url("../images/icons/report_priority_highest.png");
+}
+
+.report-priority-high {
+    background-image: url("../images/icons/report_priority_high.png");
+}
+
+.report-priority-medium {
+    background-image: url("../images/icons/report_priority_medium.png");
+}
+.report-priority-low {
+    background-image: url("../images/icons/report_priority_low.png");
+}
+
+.report-priority-lowest {
+    background-image: url("../images/icons/report_priority_lowest.png");
+}
