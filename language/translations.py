@@ -141,7 +141,8 @@ class RU(object):
     # Report types
     @staticmethod
     def report_types(key):
-        return {'report_type_bug': u'Ошибка'}.get(key, key)
+        return {'report_type_bug': u'Ошибка',
+                'report_type_improvement': u'Улучшение'}.get(key, key)
 
     # Report priorities
     @staticmethod
@@ -288,7 +289,8 @@ class EN(object):
     # Report types
     @staticmethod
     def report_types(key):
-        return {'report_type_bug': u'Bug'}.get(key, key)
+        return {'report_type_bug': u'Bug',
+                'report_type_improvement': u'Improvement'}.get(key, key)
 
     # Report priorities
     @staticmethod
@@ -435,7 +437,8 @@ class ES(object):
     # Report types
     @staticmethod
     def report_types(key):
-        return {'report_type_bug': u'Error'}.get(key, key)
+        return {'report_type_bug': u'Error',
+                'report_type_improvement': u'Mejora'}.get(key, key)
 
     # Report priorities
     @staticmethod
