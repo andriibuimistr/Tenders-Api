@@ -22,7 +22,9 @@
         <div class="form-group">
             <label for="reportPriority">{{ lng.label('label_report_priority') }}</label>
             <select name="reportPriority" class="form-control" id="reportPriority">
-                <option value="1">Highest</option>
+                {% for priority in range(report_priorities|length) %}
+                    <option value="{{ report_priorities[priority].id }}">{{ lng.report_priority('report_priority_' + report_priorities[priority].name) }}</option>
+                {% endfor %}
             </select>
         </div>
         <div class="form-group files-inputs" id="reportFiles">

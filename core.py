@@ -223,6 +223,13 @@ def get_list_of_report_types():
     return types_dict
 
 
+# get list of report types as object
+def get_list_of_report_types_as_object():
+    report_types = ReportTypes.query.all()
+    db.session.remove()
+    return report_types
+
+
 # get list of report types
 def get_list_of_report_statuses():
     report_statuses = ReportStatus.query.all()
@@ -233,7 +240,7 @@ def get_list_of_report_statuses():
     return statuses_dict
 
 
-# get list of report types
+# get list of report priorities
 def get_list_of_report_priorities():
     report_priorities = ReportPriorities.query.all()
     db.session.remove()
@@ -241,6 +248,13 @@ def get_list_of_report_priorities():
     for report_priority in range(len(report_priorities)):
         priorities_dict[report_priorities[report_priority].id] = report_priorities[report_priority].name
     return priorities_dict
+
+
+# get list of report priorities as object
+def get_list_of_report_priorities_as_object():
+    report_priorities = ReportPriorities.query.all()
+    db.session.remove()
+    return report_priorities
 
 
 def get_list_of_tenders():
@@ -283,7 +297,6 @@ def get_user_language(user_id):
 
 def get_report_info(report_id):
     report = Reports.query.filter_by(id=report_id).first()
-    print(type(report.type_id))
     db.session.remove()
     return report
 

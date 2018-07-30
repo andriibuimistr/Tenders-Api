@@ -516,7 +516,8 @@ def add_report():
     if not session.get('logged_in'):
         return jquery_forbidden_login()
     if request.method == 'GET':
-        return render_template('modal_windows/modal_add_report.html')
+        return render_template('modal_windows/modal_add_report.html', report_types=core.get_list_of_report_types_as_object(),
+                               report_priorities=core.get_list_of_report_priorities_as_object())
     else:
         if core.save_report(request, session):
             return render_template('modal_windows/modal_add_report_success.html')
