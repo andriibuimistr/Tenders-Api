@@ -215,15 +215,31 @@ $(function() {
 });
 
 function validateInputs(list){  // Validate if all inputs from list are filled
+        var status = true
         for (i = 0; i < list.length; i++){
             if (list[i].val().trim() === "") {
-                alert("Please fill required fields");
-                list[i].focus();
-                return false;
+                list[i].addClass('input-invalid');
+//                list[i].focus();
+                var status = false;
             }
         }
-        return true
+        if (!status){
+            alert("Please fill required fields");
+        }
+        return status
 }
+
+$(document).on("blur", '.class-required', function() {
+  if ($(this).val().trim() === "") { // not email
+   $(this).addClass('input-invalid');
+  }
+});
+
+$(document).on("focus", '.class-required', function() {
+  if ($(this).val().trim() === "") { // not email
+   $(this).removeClass('input-invalid');
+  }
+});
 
 // Submit "Add report form"
 $(document).on("click","#sendReportButton", function(){
