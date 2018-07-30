@@ -7,21 +7,21 @@
     <form class="form-add-report" id="addReportForm" role="form">
         <div class="form-group">
             <label for="reportTitle">{{ lng.label('label_report_title') }}</label>
-            <input name="reportTitle" id="reportTitle" type="text" class="form-control" maxlength="255">
+            <input name="reportTitle" class="form-control" id="reportTitle" type="text"  maxlength="255">
         </div>
         <div class="form-group">
             <label for="reportType">{{ lng.label('label_report_type') }}</label>
-            <select name="reportType" id="reportType" class="form-control">
+            <select name="reportType" class="form-control" id="reportType">
                 <option value="2">Bug</option>
             </select>
         </div>
         <div class="form-group">
             <label for="reportContent">{{ lng.label('label_report_content') }}</label>
-            <textarea name="reportContent" id="reportContent" maxlength="2000"></textarea>
+            <textarea name="reportContent" class="form-control" id="reportContent" maxlength="2000"></textarea>
         </div>
         <div class="form-group">
             <label for="reportPriority">{{ lng.label('label_report_priority') }}</label>
-            <select name="reportPriority" id="reportPriority" class="form-control">
+            <select name="reportPriority" class="form-control" id="reportPriority">
                 <option value="1">High</option>
             </select>
         </div>

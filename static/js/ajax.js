@@ -214,34 +214,50 @@ $(function() {
     });
 });
 
+function validateInputs(list){  // Validate if all inputs from list are filled
+        for (i = 0; i < list.length; i++){
+            if (list[i].val().trim() === "") {
+                alert("Please fill required fields");
+                list[i].focus();
+                return false;
+            }
+        }
+}
+
 // Submit "Add report form"
 $(document).on("click","#sendReportButton", function(){
-        var filesNumber = $('.form-control-file').length;  // Get number of files inputs
-        var fd = new FormData();
-        for (i = 0; i < filesNumber; i++) {
-            fd.append('file' + i, $("input[id='UploadedFile[" + i + "][file]']")[0].files[0]); // Append every file to FormData
-        }
-		var listOfInputs = JSON.parse(JSON.stringify($('#addReportForm').serializeArray()));  // Convert inputs into json {'name': 'value'}
-		for (i = 0; i < listOfInputs.length; i++){
-			var inputName = listOfInputs[i]['name'];
-			var inputValue = listOfInputs[i]['value'];
-			fd.append(inputName, inputValue); // Append every input to FormData
-		}
-        $.ajax({
-            url: '/modal/add_report',
-            type: 'post',
-            data: fd,
-            contentType: false,
-            processData: false,
-            success: function(data){
-				$('.modal-body').empty();
-				$('.modal-body').append(data);
-				$('.modal-footer').remove();
-            },
-			error: function (jqXHR, textStatus, errorThrown) {
-            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+        var inputs = [$('#reportTitle'), $('#reportContent')]; // List of required inputs
+        if (!validateInputs(inputs)){
+            return false
             }
-        });
+        else{
+            var filesNumber = $('.form-control-file').length;  // Get number of files inputs
+            var fd = new FormData();
+            for (i = 0; i < filesNumber; i++) {
+                fd.append('file' + i, $("input[id='UploadedFile[" + i + "][file]']")[0].files[0]); // Append every file to FormData
+            }
+            var listOfInputs = JSON.parse(JSON.stringify($('#addReportForm').serializeArray()));  // Convert inputs into json {'name': 'value'}
+            for (i = 0; i < listOfInputs.length; i++){
+                var inputName = listOfInputs[i]['name'];
+                var inputValue = listOfInputs[i]['value'];
+                fd.append(inputName, inputValue); // Append every input to FormData
+            }
+            $.ajax({
+                url: '/modal/add_report',
+                type: 'post',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    $('.modal-body').empty();
+                    $('.modal-body').append(data);
+                    $('.modal-footer').remove();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
     });
 
 
