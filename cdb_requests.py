@@ -366,6 +366,15 @@ class Privatization(AuctionRequests):
                               request_name='Activate asset',
                               entity=self.entity)
 
+    def add_decisions_to_asset(self, asset_id_long, token, decision_json):
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_pending),
+                              host=self.host_p,
+                              endpoint='/{}/decisions?acc_token={}'.format(asset_id_long, token),
+                              method='POST',
+                              json_request=decision_json,
+                              request_name='Add decision to asset',
+                              entity=self.entity)
+
     def get_asset_info(self, asset_id_long):
         return request_to_cdb(headers=None,
                               host=self.host_p,
@@ -390,6 +399,15 @@ class Privatization(AuctionRequests):
                               method='PATCH',
                               json_request=json_status_composing,
                               request_name='Lot to composing',
+                              entity=self.entity)
+
+    def add_decision_to_lot(self, lot_id_long, token, decision_json):
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_status_composing),
+                              host=self.host_p,
+                              endpoint='/{}/decisions?acc_token={}'.format(lot_id_long, token),
+                              method='POST',
+                              json_request=decision_json,
+                              request_name='Add decision to lot',
                               entity=self.entity)
 
     def lot_to_verification(self, lot_id_long, token):

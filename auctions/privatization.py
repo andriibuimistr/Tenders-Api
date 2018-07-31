@@ -5,7 +5,8 @@ from core import *
 
 
 def create_asset(items):
-    json_asset = generate_asset_json(items, accelerator=1)
+    decision = generate_decision()
+    json_asset = generate_asset_json(items, accelerator=1, decision=decision)
 
     asset = Privatization('asset')
     asset_publish = asset.publish_asset(json_asset)
@@ -13,6 +14,8 @@ def create_asset(items):
     asset_id_long = asset_publish.json()['data']['id']
     asset_token = asset_publish.json()['access']['token']
     # asset_id_short = asset_publish.json()['data']['assetID']
+    decision_to_asset = asset.add_decisions_to_asset(asset_id_long, asset_token, decision)
+    print(decision_to_asset.json())
 
     asset.activate_asset(asset_id_long, asset_token)
 
@@ -33,6 +36,7 @@ def create_asset(items):
         index = auction + 1
         lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(auction + 1, accelerator=1440, lot_accelerator=1440), auction_id_long, index)
 
+    lot.add_decision_to_lot(lot_id_long, lot_token, decision)
     lot.lot_to_verification(lot_id_long, lot_token)
 
     time_counter(60, '"Check lot pending status"')

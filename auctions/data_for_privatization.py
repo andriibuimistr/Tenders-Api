@@ -59,15 +59,19 @@ def generate_items_for_asset(number_of_items):
     return items
 
 
-def generate_asset_json(number_of_items, accelerator):
+def generate_decision():
+    decisions = {"data": {
+                            "decisionID": "1637-10",
+                            "title": fake.text(50).replace('\n', ' '),
+                            "decisionDate": decision_date(),
+                        }
+                 }
+    return decisions
+
+
+def generate_asset_json(number_of_items, accelerator, decision):
     asset_data = {"data": {
-                        "decisions": [
-                            {
-                                "decisionID": "1637-10",
-                                "title": fake.text(50).replace('\n', ' '),
-                                "decisionDate": decision_date(),
-                            }
-                        ],
+                        "decisions": [decision['data']],
                         "sandboxParameters": "quick, accelerator={}".format(accelerator),
                         "status": "draft",
                         "assetType": "domain",
