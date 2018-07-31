@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from auctions.data_for_privatization import *
-from config import kiev_now
 from core import *
 
 
@@ -30,7 +29,7 @@ def create_asset(items):
 
     lot.lot_to_composing(lot_id_long, lot_token)
 
-    lot_auctions = lot_publish.json()['data']['auctions']
+    lot_auctions = lot_publish.json()['data']['auctions']  # Get list of auctions from lot
     for auction in range(len(lot_auctions)):
         auction_id_long = lot_auctions[auction]['id']
         index = auction + 1
