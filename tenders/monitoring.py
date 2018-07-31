@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from tenders.data_for_tender import *
 from tenders.data_for_monitoring import *
-from pprint import pprint
 from core import *
 from tenders.tender import tender_to_db
 import core
@@ -79,7 +78,7 @@ def creation_of_monitoring(data, user_id):
             return response_json, response_code
         else:
             abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
-    monitoring_owner_token = monitoring.get_monitoring_token(monitoring_id_long, tender_token).json()['access']['token']
+
     monitoring.add_post(monitoring_id_long, generate_json_for_post(api_version, add_documents_monitoring))  # Add post to monitoring
 
     if received_monitoring_status in monitoring_status_list_violation_false:  # If received monitoring status is in "monitoring_status_list_violation_false" list
@@ -122,6 +121,7 @@ def creation_of_monitoring(data, user_id):
             else:
                 abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
 
+        monitoring_owner_token = monitoring.get_monitoring_token(monitoring_id_long, tender_token).json()['access']['token']
         monitoring.add_elimination_report(monitoring_id_long, monitoring_owner_token, elimination_report(api_version, add_documents_monitoring))  # Add elimination report
         monitoring.patch_monitoring(monitoring_id_long, elimination_resolution(api_version, add_documents_monitoring), 'Add eliminationResolution to monitoring')  # Add add elimination resolution
 
