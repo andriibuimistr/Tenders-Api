@@ -17,6 +17,7 @@ from user.pages import UserPages
 from user.helper import *
 from auctions.pages import AuctionPages
 from tenders.pages import TenderPages
+from tenders import monitoring
 from tenders import tender_validators, tender
 import hashlib
 from language.translations import Translations
@@ -339,14 +340,40 @@ def jquery_delete_auctions():
         return check_if_admin_jquery()
     else:
         return jquery_requests.delete_auctions()
+
+
 # ############################################################## ADMIN END #############################################################################
+
+# ############################################################## MONITORINGS ##############################################################################
+#                                                   ###### MONITORING JQUERY REQUESTS ######
+# Create tender
+@app.route('/api/monitorings', methods=['POST'])
+# @cross_origin(resources=r'/api/*')
+def create_monitoring_function():
+    if not session.get('logged_in'):
+        return jquery_forbidden_login()
+    if not request.form:
+        abort(400)
+    # tender_validators.validator_create_tender(request.form)  # validate input data
+    result = monitoring.creation_of_monitoring(request.form, session['user_id'])
+    return jsonify(result[0]), result[1]
+
+
+#                                                        ###### MONITORING PAGES ######
+# Generate template for tender creation page
+@app.route("/tenders/create-monitoring")
+def page_create_monitoring():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        return TenderPages.page_create_monitoring()
 
 
 # ############################################################## TENDERS ##############################################################################
 #                                                   ###### TENDER JQUERY REQUESTS ######
 # Create tender
 @app.route('/api/tenders', methods=['POST'])
-@cross_origin(resources=r'/api/*')
+# @cross_origin(resources=r'/api/*')
 def create_tender_function():
     if not session.get('logged_in'):
         return jquery_forbidden_login()
@@ -537,5 +564,3 @@ if __name__ == '__main__':
     app.run(debug=True, threaded=True)
 
 # TODO Add selects values to report from list, Error alerts, Translations and status/type/creator name instead of id on reports list page
-
-

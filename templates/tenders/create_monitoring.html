@@ -1,0 +1,54 @@
+<div class="heading main_title">
+                    <h1>{{ lng.page_title('page_title_creation_of_monitoring') }}</h1>
+                </div>
+                <div class="section_content">
+                    <div class="create-monitoring-form main-form">
+                        <form class="form-create-monitoring" id="create-monitoring" role="form">
+                        <div class="create-monitoring-form-inputs">
+                            <div class="procurement-method-type col-lg-15 col-md-48 col-sm-48 col-xs-48">
+                                <select name="procurementMethodType" id="procurementMethodType" class="form-control" size="1">
+                                    {% for type in list_of_types %}
+                                  <option value="{{type}}">{{type}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="accelerator col-lg-6 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="accelerator" class="form-control" placeholder="{{ lng.form('form_placeholder_accelerator') }}" maxlength="5">
+                            </div>
+                            <div class="company_id col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="company_id" class="form-control" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
+                            </div>
+                            <div class="monitoring-status col-lg-15 col-md-48 col-sm-48 col-xs-48">
+                                <select name="monitoringStatus" id="monitoringStatus" class="form-control" size="1">
+                                    {% for status in statuses %}
+                                  <option value="{{status}}">{{status}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="docs_for_bids" id="docs_for_bids" value="1"> {{ lng.form('form_checkbox_documents_for_monitoring') }}<br>
+                            </label>
+                        </div>
+                            <div class="create-monitoring-button-div">
+                            <button class="btn btn-success create-monitoring-button" id="createMonitoring" type="button">{{ lng.button('button_create_monitoring') }}</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel panel-default panel-created-monitoring">
+                      <!-- Default panel contents -->
+                      <div class="panel-heading response-json-header">
+                          <div class="response-json-title">
+                              {{ lng.section('section_create_monitoring_response') }}
+                          </div>
+                          <div class="clear-alerts-button">
+                              <button class="btn btn-warning btn-xs" id="clear-createMonitoring-response" type="button">{{ lng.button('button_delete_alerts') }}</button>
+                          </div>
+                      </div>
+                      <div class="panel-body panel-created-monitoring-json">
+                        <div id="created_monitoring_json" class="response-json"></div>
+                          <div class="response-json-bottom">
+
+                          </div>
+                      </div>
+                    </div>
+                </div>

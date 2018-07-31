@@ -354,10 +354,10 @@ footer {
 	font-weight: bold;
 }
 .json-string { color: #02009a; }
-.panel-created-tender-json {
+.panel-created-tender-json, .panel-created-monitoring-json {
 	padding: 0 !important;
 }
-.panel-created-tender, .block-bids-of-tender, .block-bids-of-auction {
+.panel-created-tender, .block-bids-of-tender, .block-bids-of-auction, .panel-created-monitoring {
 	margin: 6px 0 !important;
 }
 
@@ -386,14 +386,14 @@ footer {
 	padding: 6px;
 	border: 1px solid #CCC;
 }
-.create-tender-form-inputs, .get-tender-bids-inputs, .get-auction-bids-inputs {
+.create-tender-form-inputs, .get-tender-bids-inputs, .get-auction-bids-inputs, .create-monitoring-form-inputs {
 	display: inline-block;
 	height: auto;
 }
 .create-tender-form-inputs div {
 	margin-bottom: 5px;
 }
-.create-tender-form-inputs label {
+.create-tender-form-inputs label, .create-monitoring-form-inputs label {
 	margin-left: 3px;
 }
 
@@ -413,13 +413,13 @@ footer {
 	min-height: 30px;
 	background-color: #FFFFFF !important;
 }
-.create-tender-button-div {
+.create-tender-button-div, .create-monitoring-button-div {
 	display: block;
 	clear: both;
 	margin-top: 6px;
 	padding-left: 3px;
 }
-.procurement-method-type select, .api-version select, .platform-host select, .tender-status select, .cdb-version select {
+.procurement-method-type select, .api-version select, .platform-host select, .tender-status select, .cdb-version select, .monitoring-status select {
 	height: 34px !important;
 }
 
