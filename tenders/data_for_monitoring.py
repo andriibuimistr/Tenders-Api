@@ -149,3 +149,14 @@ def elimination_report(cdb, add_documents):
         document['data']['title'] = 'Документ до Оприлюднення інформації про усунення порушень (Document of eliminationReport)'
         report['data']['documents'] = [document['data']]
     return report
+
+
+def monitoring_to_cancelled_json():
+    data = {"data": {
+                    "status": "cancelled",
+                    "cancellation": {
+                      "description": fake.text(200).replace('\n', ' ')
+                    }
+                  }
+            }
+    return data
