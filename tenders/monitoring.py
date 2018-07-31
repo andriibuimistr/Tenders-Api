@@ -29,8 +29,8 @@ def creation_of_monitoring(data, user_id):
     if 'tender_id_long' in data and len(data['tender_id_long']) > 0:
         if received_monitoring_status == 'completed':
             abort(422, 'Can\'t create monitoring in "completed" status for existent tender')
-        get_t_info = tender.get_tender_info(data['tender_id_long'])
         tender_id_long = data['tender_id_long']
+        get_t_info = tender.get_tender_info(tender_id_long)
         tender_token = None
         tender_id_short = get_t_info.json()['data']['tenderID']
         response_json['tender_to_company'] = '', '#'
