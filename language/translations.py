@@ -22,6 +22,8 @@ class RU(object):
                 'menu_item_platforms': u'Площадки',
                 'menu_item_users': u'Пользователи',
                 'menu_item_list_of_tenders': u'Список закупок',
+                'menu_item_list_of_auctions': u'Список аукционов',
+                'menu_item_list_of_reports': u'Список отчетов',
                 'menu_item_preferences': u'Настройки'}.get(key, key)
 
     # Pages titles
@@ -129,7 +131,9 @@ class RU(object):
     # Hints
     @staticmethod
     def hints(key):
-        return {'hint_delete': u'Удалить'}.get(key, key)  # + hint_button_up
+        return {'hint_delete': u'Удалить',
+                'hint_add_report': u'Добавить отчет',
+                'hint_project_on_github': u'Проект на GitHub'}.get(key, key)  # + hint_button_up
 
     # Texts
     @staticmethod
@@ -145,7 +149,8 @@ class RU(object):
     @staticmethod
     def report_types(key):
         return {'report_type_bug': u'Ошибка',
-                'report_type_improvement': u'Улучшение'}.get(key, key)
+                'report_type_improvement': u'Улучшение',
+                'report_type_task': u'Задача'}.get(key, key)
 
     # Report priorities
     @staticmethod
@@ -177,6 +182,8 @@ class EN(object):
                 'menu_item_platforms': u'Platforms',
                 'menu_item_users': u'Users',
                 'menu_item_list_of_tenders': u'List of tenders',
+                'menu_item_list_of_auctions': u'List of auctions',
+                'menu_item_list_of_reports': u'List of reports',
                 'menu_item_preferences': u'Preferences'}.get(key, key)
 
     # Pages titles
@@ -284,7 +291,9 @@ class EN(object):
     # Hints
     @staticmethod
     def hints(key):
-        return {'hint_delete': u'Delete'}.get(key, key)
+        return {'hint_delete': u'Delete',
+                'hint_add_report': u'Add report',
+                'hint_project_on_github': u'Project on GitHub'}.get(key, key)
 
     # Texts
     @staticmethod
@@ -300,7 +309,8 @@ class EN(object):
     @staticmethod
     def report_types(key):
         return {'report_type_bug': u'Bug',
-                'report_type_improvement': u'Improvement'}.get(key, key)
+                'report_type_improvement': u'Improvement',
+                'report_type_task': u'Task'}.get(key, key)
 
     # Report priorities
     @staticmethod
@@ -332,6 +342,8 @@ class ES(object):
                 'menu_item_platforms': u'Plataformas',
                 'menu_item_users': u'Usuarios',
                 'menu_item_list_of_tenders': u'Lista de licitaciones',
+                'menu_item_list_of_auctions': u'Lista de subastas',
+                'menu_item_list_of_reports': u'Lista de informes',
                 'menu_item_preferences': u'Preferencias'}.get(key, key)
 
     # Pages titles
@@ -439,7 +451,9 @@ class ES(object):
     # Hints
     @staticmethod
     def hints(key):
-        return {'hint_delete': u'Borrar'}.get(key, key)
+        return {'hint_delete': u'Borrar',
+                'hint_add_report': u'Añadir informe',
+                'hint_project_on_github': u'Proyecto en GitHub'}.get(key, key)
 
     # Texts
     @staticmethod
@@ -455,7 +469,8 @@ class ES(object):
     @staticmethod
     def report_types(key):
         return {'report_type_bug': u'Error',
-                'report_type_improvement': u'Mejora'}.get(key, key)
+                'report_type_improvement': u'Mejora',
+                'report_type_task': u'Tarea'}.get(key, key)
 
     # Report priorities
     @staticmethod
