@@ -16,6 +16,7 @@ class RU(object):
                 'menu_admin': u'Админка',
                 'menu_exit': u'Выйти',
                 'menu_item_create_tender': u'Создать тендер',
+                'menu_item_create_monitoring': u'Создать мониторинг',
                 'menu_item_tender_bids': u'Ставки тендера',
                 'menu_item_create_auction': u'Создать аукцион',
                 'menu_item_auction_bids': u'Ставки аукциона',
@@ -32,6 +33,7 @@ class RU(object):
         return {'page_title_main_page': u'Главная страница',
                 'page_title_creation_of_tender': u'Создание закупки',
                 'page_title_bids_of_tender': u'Ставки закупки',
+                'page_title_creation_of_monitoring': u'Создание мониторинга',
                 'page_title_creation_of_auction': u'Создание аукциона',
                 'page_title_bids_of_auctions': u'Ставки аукциона',
                 'page_title_platforms_management': u'Управление площадками',
@@ -58,6 +60,7 @@ class RU(object):
                 'form_checkbox_features': u'Неценовые',
                 'form_checkbox_skip_auction': u'Без аукциона',
                 'form_checkbox_documents_for_tender': u'Документы к тендеру',
+                'form_checkbox_documents_for_monitoring': u'Документы к мониторингу',
                 'form_checkbox_documents_for_bids': u'Документы к ставке',
                 'form_checkbox_rent': u'Аренда',
                 'form_checkbox_one_bid': u'Одна ставка',
@@ -68,6 +71,7 @@ class RU(object):
     @staticmethod
     def buttons(key):
         return {'button_create_tender': u'Создать закупку',
+                'button_create_monitoring': u'Создать мониторинг',
                 'button_create_auction': u'Создать аукцион',
                 'button_delete_alerts': u'Удалить сообщения',
                 'button_show_bids': u'Показать ставки',
@@ -85,6 +89,7 @@ class RU(object):
     @staticmethod
     def sections(key):
         return {'section_create_tender_response': u'Результаты запросов',
+                'section_create_monitoring_response': u'Результаты запросов',
                 'section_list_of_bids': u'Ставки',
                 'section_input_json': u'Оригинальный JSON',
                 'section_output_json': u'Отформатированный JSON',
@@ -176,6 +181,7 @@ class EN(object):
                 'menu_admin': u'Admin',
                 'menu_exit': u'Sign out',
                 'menu_item_create_tender': u'Create tender',
+                'menu_item_create_monitoring': u'Create monitoring',
                 'menu_item_tender_bids': u'Bids of tender',
                 'menu_item_create_auction': u'Create auction',
                 'menu_item_auction_bids': u'Bids of auction',
@@ -192,6 +198,7 @@ class EN(object):
         return {'page_title_main_page': u'Main page',
                 'page_title_creation_of_tender': u'Creation of tender',
                 'page_title_bids_of_tender': u'Bids of tender',
+                'page_title_creation_of_monitoring': u'Creation of monitoring',
                 'page_title_creation_of_auction': u'Creation of auction',
                 'page_title_bids_of_auctions': u'Bids of auction',
                 'page_title_platforms_management': u'Platforms management',
@@ -218,6 +225,7 @@ class EN(object):
                 'form_checkbox_features': u'Features',
                 'form_checkbox_skip_auction': u'Skip auction',
                 'form_checkbox_documents_for_tender': u'Documents for tender',
+                'form_checkbox_documents_for_monitoring': u'Documents for monitoring',
                 'form_checkbox_documents_for_bids': u'Documents for bids',
                 'form_checkbox_rent': u'Rent',
                 'form_checkbox_one_bid': u'One bid',
@@ -228,6 +236,7 @@ class EN(object):
     @staticmethod
     def buttons(key):
         return {'button_create_tender': u'Create tender',
+                'button_create_monitoring': u'Create monitoring',
                 'button_create_auction': u'Create auction',
                 'button_delete_alerts': u'Delete messages',
                 'button_show_bids': u'Show bids',
@@ -245,6 +254,7 @@ class EN(object):
     @staticmethod
     def sections(key):
         return {'section_create_tender_response': u'Requests results',
+                'section_create_monitoring_response': u'Requests results',
                 'section_list_of_bids': u'Bids',
                 'section_input_json': u'Original JSON',
                 'section_output_json': u'Output JSON',
@@ -336,6 +346,7 @@ class ES(object):
                 'menu_admin': u'Administrador',
                 'menu_exit': u'Salir',
                 'menu_item_create_tender': u'Crear licitación',
+                'menu_item_create_monitoring': u'Crear supervisión',
                 'menu_item_tender_bids': u'Apuestas de licitación',
                 'menu_item_create_auction': u'Crear subasta',
                 'menu_item_auction_bids': u'Apuestas de subasta',
@@ -352,6 +363,7 @@ class ES(object):
         return {'page_title_main_page': u'Página de inicio',
                 'page_title_creation_of_tender': u'Creación de licitación',
                 'page_title_bids_of_tender': u'Apuestas de licitación',
+                'page_title_creation_of_monitoring': u'Creación de supervisión',
                 'page_title_creation_of_auction': u'Creación de subasta',
                 'page_title_bids_of_auctions': u'Apuestas de subasta',
                 'page_title_platforms_management': u'Gestión de plataformas',
@@ -378,6 +390,7 @@ class ES(object):
                 'form_checkbox_features': u'Características',
                 'form_checkbox_skip_auction': u'Saltar subasta',
                 'form_checkbox_documents_for_tender': u'Documentos de licitación',
+                'form_checkbox_documents_for_monitoring': u'Documentos de supervisión',
                 'form_checkbox_documents_for_bids': u'Documentos de apuestas',
                 'form_checkbox_rent': u'Alquiler',
                 'form_checkbox_one_bid': u'Una apuesta',
@@ -388,6 +401,7 @@ class ES(object):
     @staticmethod
     def buttons(key):
         return {'button_create_tender': u'Crear licitación',
+                'button_create_monitoring': u'Crear supervisión',
                 'button_create_auction': u'Crear subasta',
                 'button_delete_alerts': u'Eliminar mensajes',
                 'button_show_bids': u'Mostrar apuestas',
@@ -405,6 +419,7 @@ class ES(object):
     @staticmethod
     def sections(key):
         return {'section_create_tender_response': u'Resultados de las solicitudes',
+                'section_create_monitoring_response': u'Resultados de las solicitudes',
                 'section_list_of_bids': u'Apuestas',
                 'section_input_json': u'JSON original',
                 'section_output_json': u'JSON formateado',
