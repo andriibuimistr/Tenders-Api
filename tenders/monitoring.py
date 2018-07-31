@@ -20,9 +20,11 @@ def creation_of_monitoring(data, user_id):
     received_monitoring_status = data['monitoringStatus']
     print(data)
 
-    add_documents_monitoring = 0
+    add_documents_monitoring = False
     if 'docs_for_monitoring' in data:
-        add_documents_monitoring = 1
+        add_documents_monitoring = True
+
+    response_json = dict()
 
     json_tender = generate_tender_json(procurement_method, number_of_lots=0, number_of_items=3, accelerator=1, received_tender_status='active.tendering', list_of_lots_id=[], if_features=0, skip_auction=True)
     tender = TenderRequests(api_version)
@@ -36,7 +38,12 @@ def creation_of_monitoring(data, user_id):
     t_activate = tender.activate_tender(tender_id_long, tender_token, procurement_method)
     print(t_activate.json()['data']['tenderID'])
     tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, 'active.tendering', 0, user_id, api_version)
-    core.add_one_tender_company(company_id, platform_host, tender_id_long, tender_token, 'tender')
+    add_tender_company = core.add_one_tender_company(company_id, platform_host, tender_id_long, tender_token, 'tender')
+    response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', add_tender_company[2])
+    response_json['id'] = tender_id_short
+    response_code = 201
+    response_json['status'] = 'SUCCESS'
+    response_json['monitoringStatus'] = 'TENDER STATUS'
 
     json_monitoring = generate_monitoring_json(tender_id_long, accelerator=monitoring_accelerator)
     monitoring = Monitoring(api_version)
@@ -45,7 +52,7 @@ def creation_of_monitoring(data, user_id):
 
     add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(api_version, add_documents_monitoring), 'Add decision to monitoring')
     a_monitoring = monitoring.patch_monitoring(monitoring_id, json_status_active, 'Activate monitoring')
-
+    return response_json, response_code
     monitoring_owner_token = monitoring.get_monitoring_token(monitoring_id, tender_token).json()['access']['token']
 
     add_post = monitoring.add_post(monitoring_id, generate_json_for_post(document(api_version)))
@@ -61,4 +68,4 @@ def creation_of_monitoring(data, user_id):
     time_counter(waiting_time, 'Wait for eliminationPeriod endDate')
     monitoring_to_completed = monitoring.patch_monitoring(monitoring_id, json_status_completed, 'Change monitoring status to completed')
     pprint(monitoring_to_completed.json())
-    return 1, 1
+    return response_json, response_code

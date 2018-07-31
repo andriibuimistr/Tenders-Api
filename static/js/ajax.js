@@ -227,7 +227,7 @@ $(function() {
                                 '<div class="wait-tender-status"><span>Expected Monitoring Status: </span>' + expected_status + '</div>' +
                             '</div>'
                             ;
-        $('#created_tender_json').prepend('<div class="response-content response-content-waiting" id="' + request_id + '">' + html_for_wait + '</div>');
+        $('#created_monitoring_json').prepend('<div class="response-content response-content-waiting" id="' + request_id + '">' + html_for_wait + '</div>');
         $.ajax({
             url: '/api/monitorings',
             dataType : 'json',
@@ -237,7 +237,7 @@ $(function() {
             success: function(data, textStatus, xhr) {
                 console.log(data)
                 var operation_status = data.status;
-                var monitoring_status = data.tenderStatus;
+                var monitoring_status = data.monitoringStatus;
                 var tender_to_company_status = data.tender_to_company[0].status;
                 var tender_id = data.id;
                 var tender_link = data.tender_to_company[1];

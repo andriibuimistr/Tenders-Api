@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
-# from tenders.tender_additional_data import *
 from faker import Faker
-
 from config import kiev_now
 from document import *
+from pprint import pprint
 
 fake = Faker('uk_UA')
 
@@ -66,9 +65,10 @@ def generate_decision(cdb, add_documents):
         documents = list()
         for doc in range(5):
             document = add_document_to_tender_ds(cdb)
-            document['data']['title'] = 'Документ для рішення про початок моніторингу (Document for decision) - {}'.format(doc)
+            document['data']['title'] = 'Документ для рішення про початок моніторингу (Document for decision) - {}'.format(doc + 1)
             documents.append(document['data'])
-        decision['documents'] = documents
+        decision['data']['decision']['documents'] = documents
+    pprint(decision)
     return decision
 
 
