@@ -4,6 +4,7 @@ from tenders.data_for_monitoring import *
 from pprint import pprint
 from core import *
 from tenders.tender import tender_to_db
+import core
 
 
 def document(api_version):
@@ -16,7 +17,8 @@ def creation_of_monitoring(data, user_id):
     company_id = int(data['company_id'])
     platform_host = data['platform_host']
     api_version = data['api_version']
-    received_monitoring_status = data['tenderStatus']
+    received_monitoring_status = data['monitoringStatus']
+    print(data)
 
     add_documents_monitoring = 0
     if 'docs_for_monitoring' in data:
@@ -34,6 +36,7 @@ def creation_of_monitoring(data, user_id):
     t_activate = tender.activate_tender(tender_id_long, tender_token, procurement_method)
     print(t_activate.json()['data']['tenderID'])
     tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_method, 'active.tendering', 0, user_id, api_version)
+    core.add_one_tender_company(company_id, platform_host, tender_id_long, tender_token, 'tender')
 
     json_monitoring = generate_monitoring_json(tender_id_long, accelerator=monitoring_accelerator)
     monitoring = Monitoring(api_version)

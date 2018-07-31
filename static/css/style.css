@@ -390,7 +390,7 @@ footer {
 	display: inline-block;
 	height: auto;
 }
-.create-tender-form-inputs div {
+.create-tender-form-inputs div, .create-monitoring-form-inputs div {
 	margin-bottom: 5px;
 }
 .create-tender-form-inputs label, .create-monitoring-form-inputs label {
@@ -421,6 +421,10 @@ footer {
 }
 .procurement-method-type select, .api-version select, .platform-host select, .tender-status select, .cdb-version select, .monitoring-status select {
 	height: 34px !important;
+}
+
+.create-monitoring-form-inputs .checkbox-inline {
+    transform: translateY(30%);
 }
 
 .checkbox-tender-create {

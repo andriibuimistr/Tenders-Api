@@ -7,6 +7,14 @@ $(function() {
 });
 
 
+//Clear created tender response json
+$(function() {
+    $('#clear-createMonitoring-response').click(function() {
+        $("#created_monitoring_json").empty();
+    });
+});
+
+
 //Delete alert in "console"
 $(document).on("click",".delete-alert", function(){
     $(this).closest('div').remove();

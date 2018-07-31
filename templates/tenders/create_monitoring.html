@@ -12,21 +12,35 @@
                                     {%endfor%}
                                 </select>
                             </div>
-                            <div class="accelerator col-lg-6 col-md-48 col-sm-48 col-xs-48">
+                            <div class="accelerator col-lg-8 col-md-48 col-sm-48 col-xs-48">
                                 <input type="text" name="accelerator" class="form-control" placeholder="{{ lng.form('form_placeholder_accelerator') }}" maxlength="5">
                             </div>
-                            <div class="company_id col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                            <div class="company_id col-lg-8 col-md-48 col-sm-48 col-xs-48">
                                 <input type="text" name="company_id" class="form-control" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
                             </div>
-                            <div class="monitoring-status col-lg-15 col-md-48 col-sm-48 col-xs-48">
+                            <div class="api-version col-lg-5 col-md-48 col-sm-48 col-xs-48">
+                                <select name="api_version" class="form-control" size="1">
+                                    {% for version in api_versions %}
+                                  <option value="{{version}}">{{version}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="monitoring-status col-lg-12 col-md-48 col-sm-48 col-xs-48">
                                 <select name="monitoringStatus" id="monitoringStatus" class="form-control" size="1">
                                     {% for status in statuses %}
                                   <option value="{{status}}">{{status}}</option>
                                     {%endfor%}
                                 </select>
                             </div>
+                            <div class="platform-host col-lg-15 col-md-48 col-sm-48 col-xs-48">
+                                <select name="platform_host" class="form-control" size="1">
+                                    {% for platform in range(platforms|length) %}
+                                  <option value="{{platforms[platform].platform_url}}">{{platforms[platform].platform_name}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
                             <label class="checkbox-inline">
-                                <input type="checkbox" name="docs_for_bids" id="docs_for_bids" value="1"> {{ lng.form('form_checkbox_documents_for_monitoring') }}<br>
+                                <input type="checkbox" name="docs_for_monitoring" id="docs_for_monitoring" value="1"> {{ lng.form('form_checkbox_documents_for_monitoring') }}<br>
                             </label>
                         </div>
                             <div class="create-monitoring-button-div">
