@@ -7,6 +7,12 @@ from tenders.tender import tender_to_db
 import core
 
 
+def wait_for_elimination_period_end_date(monitoring, monitoring_id_long, api_version):
+    elimination_period = monitoring.get_monitoring_info(monitoring_id_long).json()['data']['eliminationPeriod']['endDate']
+    waiting_time = count_waiting_time(elimination_period, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now), api_version, 'monitoring')
+    time_counter(waiting_time, 'Wait for eliminationPeriod endDate')
+
+
 def creation_of_monitoring(data, user_id):
     procurement_method = data["procurementMethodType"]
     monitoring_accelerator = int(data["accelerator"])
@@ -66,7 +72,7 @@ def creation_of_monitoring(data, user_id):
     monitoring_owner_token = monitoring.get_monitoring_token(monitoring_id_long, tender_token).json()['access']['token']
     monitoring.add_post(monitoring_id_long, generate_json_for_post(api_version, add_documents_monitoring))  # Add post to monitoring
 
-    if received_monitoring_status in monitoring_status_list_violation_false:
+    if received_monitoring_status in monitoring_status_list_violation_false:  # If received monitoring status is in "monitoring_status_list_violation_false" list
         monitoring.patch_monitoring(monitoring_id_long, generate_conclusion_false(api_version, add_documents_monitoring), 'Add conclusion FALSE to monitoring')  # Add conclusion FALSE to monitoring
         monitoring.patch_monitoring(monitoring_id_long, json_status_declined, 'Monitoring to declined status')  # Change monitoring status to "declined"
         if received_monitoring_status == 'declined':
@@ -77,6 +83,15 @@ def creation_of_monitoring(data, user_id):
             else:
                 abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
         # If received monitoring status is not "declined"
+        if received_monitoring_status == 'closed':
+            wait_for_elimination_period_end_date(monitoring, monitoring_id_long, api_version)
+            monitoring.patch_monitoring(monitoring_id_long, json_status_closed, 'Monitoring to closed status')  # Change monitoring status to "closed"
+            get_m_info = monitoring.get_monitoring_info(monitoring_id_long)
+            if get_m_info.json()['data']['status'] == 'closed':
+                response_json['monitoringStatus'] = get_m_info.json()['data']['status']
+                return response_json, response_code
+            else:
+                abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
     else:
         monitoring.patch_monitoring(monitoring_id_long, generate_conclusion_true(api_version, add_documents_monitoring), 'Add conclusion TRUE to monitoring')  # Add conclusion TRUE to monitoring
         monitoring.patch_monitoring(monitoring_id_long, json_status_addressed, 'Monitoring to addressed status')  # Change monitoring status to addressed
@@ -91,9 +106,7 @@ def creation_of_monitoring(data, user_id):
         monitoring.add_elimination_report(monitoring_id_long, monitoring_owner_token, elimination_report(api_version, add_documents_monitoring))  # Add elimination report
         monitoring.patch_monitoring(monitoring_id_long, elimination_resolution(api_version, add_documents_monitoring), 'Add eliminationResolution to monitoring')  # Add add elimination resolution
 
-        elimination_period = monitoring.get_monitoring_info(monitoring_id_long).json()['data']['eliminationPeriod']['endDate']
-        waiting_time = count_waiting_time(elimination_period, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now), api_version, 'monitoring')
-        time_counter(waiting_time, 'Wait for eliminationPeriod endDate')
+        wait_for_elimination_period_end_date(monitoring, monitoring_id_long, api_version)
         monitoring.patch_monitoring(monitoring_id_long, json_status_completed, 'Change monitoring status to completed')  # Monitoring to "completed" status
         if received_monitoring_status == 'completed':
             get_m_info = monitoring.get_monitoring_info(monitoring_id_long)

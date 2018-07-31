@@ -147,4 +147,9 @@ json_status_addressed = {"data": {
 json_status_declined = {"data": {
                                 "status": "declined"
                               }
-                         }
+                        }
+
+json_status_closed = {"data": {
+                                "status": "closed"
+                              }
+                      }
