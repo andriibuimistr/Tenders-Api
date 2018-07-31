@@ -45,8 +45,6 @@ def creation_of_monitoring(data, user_id):
     mn = monitoring.publish_monitoring(json_monitoring)
     monitoring_id_long = mn.json()['data']['id']
 
-    monitoring.patch_monitoring(monitoring_id_long, generate_decision(api_version, add_documents_monitoring), 'Add decision to monitoring')  # Add decision to monitoring in "draft" status
-
     if received_monitoring_status == 'cancelled':
         monitoring.patch_monitoring(monitoring_id_long, monitoring_to_cancelled_json(), 'Monitoring to cancelled status')  # Change monitoring status to "cancelled"
         get_m_info = monitoring.get_monitoring_info(monitoring_id_long)
@@ -56,6 +54,7 @@ def creation_of_monitoring(data, user_id):
         else:
             abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
 
+    monitoring.patch_monitoring(monitoring_id_long, generate_decision(api_version, add_documents_monitoring), 'Add decision to monitoring')  # Add decision to monitoring in "draft" status
     monitoring.patch_monitoring(monitoring_id_long, json_status_active, 'Activate monitoring')  # Activate monitoring
     if received_monitoring_status == 'active':
         get_m_info = monitoring.get_monitoring_info(monitoring_id_long)
