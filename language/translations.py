@@ -57,6 +57,7 @@ class RU(object):
                 'form_placeholder_platform_url': u'Адрес площадки',
                 'form_placeholder_username': u'Имя пользователя',
                 'form_placeholder_password': u'Пароль',
+                'form_placeholder_tender_id_long': u'ID закупки',
                 'form_checkbox_features': u'Неценовые',
                 'form_checkbox_skip_auction': u'Без аукциона',
                 'form_checkbox_documents_for_tender': u'Документы к тендеру',
@@ -65,7 +66,8 @@ class RU(object):
                 'form_checkbox_rent': u'Аренда',
                 'form_checkbox_one_bid': u'Одна ставка',
                 'form_checkbox_insert_json': u'Вставить JSON',
-                'form_checkbox_get_json_from_cdb': u'JSON из ЦБД'}.get(key, key)
+                'form_checkbox_get_json_from_cdb': u'JSON из ЦБД',
+                'form_checkbox_enable_tender_id_input': u'Новая закупка'}.get(key, key)
 
     # Buttons
     @staticmethod
@@ -222,6 +224,7 @@ class EN(object):
                 'form_placeholder_platform_url': u'Platform url',
                 'form_placeholder_username': u'Username',
                 'form_placeholder_password': u'Password',
+                'form_placeholder_tender_id_long': u'Tender ID',
                 'form_checkbox_features': u'Features',
                 'form_checkbox_skip_auction': u'Skip auction',
                 'form_checkbox_documents_for_tender': u'Documents for tender',
@@ -230,7 +233,8 @@ class EN(object):
                 'form_checkbox_rent': u'Rent',
                 'form_checkbox_one_bid': u'One bid',
                 'form_checkbox_insert_json': u'Insert JSON',
-                'form_checkbox_get_json_from_cdb': u'Get JSON from CDB'}.get(key, key)
+                'form_checkbox_get_json_from_cdb': u'Get JSON from CDB',
+                'form_checkbox_enable_tender_id_input': u'New tender'}.get(key, key)
 
     # Buttons
     @staticmethod
@@ -387,6 +391,7 @@ class ES(object):
                 'form_placeholder_platform_url': u'URL de plataforma',
                 'form_placeholder_username': u'Nombre de usuario',
                 'form_placeholder_password': u'Contraseña',
+                'form_placeholder_tender_id_long': u'ID de licitación',
                 'form_checkbox_features': u'Características',
                 'form_checkbox_skip_auction': u'Saltar subasta',
                 'form_checkbox_documents_for_tender': u'Documentos de licitación',
@@ -395,7 +400,8 @@ class ES(object):
                 'form_checkbox_rent': u'Alquiler',
                 'form_checkbox_one_bid': u'Una apuesta',
                 'form_checkbox_insert_json': u'Insertar JSON',
-                'form_checkbox_get_json_from_cdb': u'Obtener JSON de BCD'}.get(key, key)
+                'form_checkbox_get_json_from_cdb': u'Obtener JSON de BCD',
+                'form_checkbox_enable_tender_id_input': u'Nueva licitación'}.get(key, key)
 
     # Buttons
     @staticmethod

@@ -169,6 +169,27 @@ $(function() {
       $("#procurementMethodType").change(disable_select);
 });
 
+//Disable unnecessary inputs on monitoring creation page
+$(function() {
+	$('#showTenderIdInput').prop('checked', true);
+    var disable_input = function () {
+        if ($('#showTenderIdInput').is(':checked')) {
+            $("#tender_id_long").prop('disabled', true);
+			$('#monitoringStatus option[value="completed"]').prop('disabled', false);
+        }
+        else {
+            $("#tender_id_long").prop('disabled', false);
+			$('#monitoringStatus option[value="completed"]').prop('disabled', true);
+        }
+		
+		if ($('#monitoringStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
+		$('#monitoringStatus').children('option:enabled').eq(0).prop('selected',true);  //select first enabled element
+		console.log('select was changed!');
+        }
+      };
+      $(disable_input);
+      $("#showTenderIdInput").change(disable_input);
+});
 
 // MODAL WINDOWS
 // Open modal window

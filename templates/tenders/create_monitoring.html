@@ -13,10 +13,10 @@
                                 </select>
                             </div>
                             <div class="accelerator col-lg-8 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="accelerator" class="form-control" placeholder="{{ lng.form('form_placeholder_accelerator') }}" maxlength="5">
+                                <input type="text" name="accelerator" id="accelerator" class="form-control class-required" placeholder="{{ lng.form('form_placeholder_accelerator') }}" maxlength="5">
                             </div>
-                            <div class="company_id col-lg-8 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="company_id" class="form-control" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
+                            <div class="company_id col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="company_id" id="company_id" class="form-control class-required" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
                             </div>
                             <div class="api-version col-lg-5 col-md-48 col-sm-48 col-xs-48">
                                 <select name="api_version" class="form-control" size="1">
@@ -25,7 +25,7 @@
                                     {%endfor%}
                                 </select>
                             </div>
-                            <div class="monitoring-status col-lg-12 col-md-48 col-sm-48 col-xs-48">
+                            <div class="monitoring-status col-lg-11 col-md-48 col-sm-48 col-xs-48">
                                 <select name="monitoringStatus" id="monitoringStatus" class="form-control" size="1">
                                     {% for status in statuses %}
                                   <option value="{{status}}">{{status}}</option>
@@ -39,7 +39,13 @@
                                     {%endfor%}
                                 </select>
                             </div>
-                            <label class="checkbox-inline">
+                            <div class="tender_id_long col-lg-17 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="tender_id_long" id="tender_id_long" class="form-control" placeholder="{{ lng.form('form_placeholder_tender_id_long') }}" maxlength="32">
+                            </div>
+                            <label class="checkbox-inline col-lg-8 col-md-48 col-sm-48 col-xs-48">
+                                <input type="checkbox" name="showTenderIdInput" id="showTenderIdInput" value="1"> {{ lng.form('form_checkbox_enable_tender_id_input') }}<br>
+                            </label>
+                            <label class="checkbox-inline col-lg-17 col-md-48 col-sm-48 col-xs-48">
                                 <input type="checkbox" name="docs_for_monitoring" id="docs_for_monitoring" value="1"> {{ lng.form('form_checkbox_documents_for_monitoring') }}<br>
                             </label>
                         </div>
