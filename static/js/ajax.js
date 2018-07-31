@@ -249,7 +249,7 @@ $(function() {
                                                 '<div class="id-of-tender"><span>Tender ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
                                                 '<div class="actual-tender-status"><span>procurementMethodType: </span>' + procedure + '</div>' +
                                                 '<div class="actual-tender-status"><span>Monitoring status: </span>' + monitoring_status + '</div>' +
-                                                '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
+//                                                '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
                                                 '<div class="tender-to-company-status"><span>Add to company status: </span>' + tender_to_company_status + '</div>' +
                                             '</div>'
                                             );

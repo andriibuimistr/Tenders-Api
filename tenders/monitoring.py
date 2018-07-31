@@ -37,7 +37,7 @@ def creation_of_monitoring(data, user_id):
     response_json['tender_to_company'] = add_tender_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', add_tender_company[2])
     response_json['id'] = tender_id_short
     response_code = 201
-    response_json['status'] = 'ERROR'
+    response_json['status'] = 'success'
     response_json['monitoringStatus'] = 'MONITORING INITIAL STATUS'
 
     json_monitoring = generate_monitoring_json(tender_id_long, accelerator=monitoring_accelerator)
