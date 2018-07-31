@@ -563,4 +563,4 @@ def download_file(entity, filename):
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
 
-# TODO Add selects values to report from list, Error alerts, Translations and status/type/creator name instead of id on reports list page
+# TODO Add selects values to report from list, Error alerts, Translations and status/type/creator name instead of id on reports list page, Create function for generate statuses for tenders/monitorings

@@ -143,3 +143,8 @@ json_status_addressed = {"data": {
                                 "status": "addressed"
                               }
                          }
+
+json_status_declined = {"data": {
+                                "status": "declined"
+                              }
+                         }
