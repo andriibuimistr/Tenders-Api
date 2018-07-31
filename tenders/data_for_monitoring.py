@@ -68,12 +68,10 @@ def generate_decision(cdb, add_documents):
             document['data']['title'] = 'Документ для рішення про початок моніторингу (Document for decision) - {}'.format(doc + 1)
             documents.append(document['data'])
         decision['data']['decision']['documents'] = documents
-    pprint(decision)
     return decision
 
 
-def generate_conclusion_true(document):
-    document['data']['title'] = 'Документ для висновку. Порушення виявлені (Document for conclusion, status TRUE)'
+def generate_conclusion_true(cdb, add_documents):
     conclusion = {"data": {
                         "conclusion": {
                               "violationType": [
@@ -84,38 +82,45 @@ def generate_conclusion_true(document):
                               "stringsAttached": fake.text(50).replace('\n', ' '),
                               "auditFinding": fake.text(50).replace('\n', ' '),
                               "violationOccurred": True,
-                              "documents": [document['data']]
                             }
                         }
                   }
+    if add_documents:
+        document = add_document_to_tender_ds(cdb)
+        document['data']['title'] = 'Документ для висновку. Порушення виявлені (Document for conclusion, status TRUE)'
+        conclusion['data']['conclusion']['documents'] = [document['data']]
     return conclusion
 
 
-def generate_conclusion_false(document):
-    document['data']['title'] = 'Документ для висновку. Порушення не виявлені (Document for conclusion, status FALSE)'
+def generate_conclusion_false(cdb, add_documents):
     conclusion = {"data": {
                         "conclusion": {
                           "violationOccurred": False,
-                          "documents": [document['data']]
                         }
                       }
                   }
+    if add_documents:
+        document = add_document_to_tender_ds(cdb)
+        document['data']['title'] = 'Документ для висновку. Порушення не виявлені (Document for conclusion, status FALSE)'
+        conclusion['data']['conclusion']['documents'] = [document['data']]
     return conclusion
 
 
-def generate_json_for_post(document):
-    document['data']['title'] = 'Документ для пояснення (Document for post)'
+def generate_json_for_post(cdb, add_documents):
     post = {"data": {
                     "title": fake.text(50).replace('\n', ' '),
                     "description": fake.text(200).replace('\n', ' '),
-                    "documents": [document['data']]
                   }
             }
+    if add_documents:
+        document = add_document_to_tender_ds(cdb)
+        document['data']['title'] = 'Документ для пояснення (Document for post)'
+        post['data']['documents'] = [document['data']]
     return post
 
 
-def elimination_resolution(document):
-    document['data']['title'] = 'Документ про Підтвердження факту усунення порушення (Document of eliminationResolution)'
+def elimination_resolution(cdb, add_documents):
+
     resolution = {"data": {
                         "eliminationResolution": {
                           "description": fake.text(200).replace('\n', ' '),
@@ -123,19 +128,24 @@ def elimination_resolution(document):
                             "corruptionAwarded": "not_eliminated",
                             "documentsForm": "eliminated"
                           },
-                          "documents": [document['data']],
                           "result": "partly"
                         }
                       }
                   }
+    if add_documents:
+        document = add_document_to_tender_ds(cdb)
+        document['data']['title'] = 'Документ про Підтвердження факту усунення порушення (Document of eliminationResolution)'
+        resolution['data']['eliminationResolution']['documents'] = [document['data']]
     return resolution
 
 
-def elimination_report(document):
-    document['data']['title'] = 'Документ до Оприлюднення інформації про усунення порушень (Document of eliminationReport)'
+def elimination_report(cdb, add_documents):
     report = {"data": {
-                "documents": [document['data']],
                 "description": "The procurement requirements have been fixed and the changes are attached."
               }
               }
+    if add_documents:
+        document = add_document_to_tender_ds(cdb)
+        document['data']['title'] = 'Документ до Оприлюднення інформації про усунення порушень (Document of eliminationReport)'
+        report['data']['documents'] = [document['data']]
     return report

@@ -7,10 +7,6 @@ from tenders.tender import tender_to_db
 import core
 
 
-def document(api_version):
-    return add_document_to_tender_ds(api_version)
-
-
 def creation_of_monitoring(data, user_id):
     procurement_method = data["procurementMethodType"]
     monitoring_accelerator = int(data["accelerator"])
@@ -18,7 +14,6 @@ def creation_of_monitoring(data, user_id):
     platform_host = data['platform_host']
     api_version = data['api_version']
     received_monitoring_status = data['monitoringStatus']
-    print(data)
 
     add_documents_monitoring = False
     if 'docs_for_monitoring' in data:
@@ -52,20 +47,20 @@ def creation_of_monitoring(data, user_id):
 
     add_decision = monitoring.patch_monitoring(monitoring_id, generate_decision(api_version, add_documents_monitoring), 'Add decision to monitoring')
     a_monitoring = monitoring.patch_monitoring(monitoring_id, json_status_active, 'Activate monitoring')
-    return response_json, response_code
+    # return response_json, response_code
     monitoring_owner_token = monitoring.get_monitoring_token(monitoring_id, tender_token).json()['access']['token']
 
-    add_post = monitoring.add_post(monitoring_id, generate_json_for_post(document(api_version)))
+    add_post = monitoring.add_post(monitoring_id, generate_json_for_post(api_version, add_documents_monitoring))
 
-    add_conclusion = monitoring.patch_monitoring(monitoring_id, generate_conclusion_true(document(api_version)), 'Add conclusion to monitoring')
+    add_conclusion = monitoring.patch_monitoring(monitoring_id, generate_conclusion_true(api_version, add_documents_monitoring), 'Add conclusion to monitoring')
     monitoring_to_addressed = monitoring.patch_monitoring(monitoring_id, json_status_addressed, 'Monitoring to addressed status')
 
-    add_elimination_report = monitoring.add_elimination_report(monitoring_id, monitoring_owner_token, elimination_report(document(api_version)))
-    add_elimination_resolution = monitoring.patch_monitoring(monitoring_id, elimination_resolution(document(api_version)), 'Add eliminationResolution to monitoring')
+    add_elimination_report = monitoring.add_elimination_report(monitoring_id, monitoring_owner_token, elimination_report(api_version, add_documents_monitoring))
+    add_elimination_resolution = monitoring.patch_monitoring(monitoring_id, elimination_resolution(api_version, add_documents_monitoring), 'Add eliminationResolution to monitoring')
 
     elimination_period = monitoring.get_monitoring_info(monitoring_id).json()['data']['eliminationPeriod']['endDate']
     waiting_time = count_waiting_time(elimination_period, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now), api_version, 'monitoring')
     time_counter(waiting_time, 'Wait for eliminationPeriod endDate')
     monitoring_to_completed = monitoring.patch_monitoring(monitoring_id, json_status_completed, 'Change monitoring status to completed')
-    pprint(monitoring_to_completed.json())
+    # pprint(monitoring_to_completed.json())
     return response_json, response_code
