@@ -62,6 +62,16 @@ def creation_of_monitoring(data, user_id):
 
     monitoring.patch_monitoring(monitoring_id_long, generate_decision(api_version, add_documents_monitoring), 'Add decision to monitoring')  # Add decision to monitoring in "draft" status
     monitoring.patch_monitoring(monitoring_id_long, json_status_active, 'Activate monitoring')  # Activate monitoring
+
+    if received_monitoring_status == 'active.stopped':
+        monitoring.patch_monitoring(monitoring_id_long, monitoring_to_stopped_json(), 'Monitoring to stopped status')  # Change monitoring status from "active" to "stopped"
+        get_m_info = monitoring.get_monitoring_info(monitoring_id_long)
+        if get_m_info.json()['data']['status'] == 'stopped':
+            response_json['monitoringStatus'] = get_m_info.json()['data']['status']
+            return response_json, response_code
+        else:
+            abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
+
     if received_monitoring_status == 'active':
         get_m_info = monitoring.get_monitoring_info(monitoring_id_long)
         if get_m_info.json()['data']['status'] == 'active':
@@ -92,6 +102,15 @@ def creation_of_monitoring(data, user_id):
                 return response_json, response_code
             else:
                 abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
+
+        if received_monitoring_status == 'declined.stopped':
+            monitoring.patch_monitoring(monitoring_id_long, monitoring_to_stopped_json(), 'Monitoring to stopped status')  # Change monitoring status from "active" to "stopped"
+            get_m_info = monitoring.get_monitoring_info(monitoring_id_long)
+            if get_m_info.json()['data']['status'] == 'stopped':
+                response_json['monitoringStatus'] = get_m_info.json()['data']['status']
+                return response_json, response_code
+            else:
+                abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
     else:
         monitoring.patch_monitoring(monitoring_id_long, generate_conclusion_true(api_version, add_documents_monitoring), 'Add conclusion TRUE to monitoring')  # Add conclusion TRUE to monitoring
         monitoring.patch_monitoring(monitoring_id_long, json_status_addressed, 'Monitoring to addressed status')  # Change monitoring status to addressed
@@ -105,6 +124,15 @@ def creation_of_monitoring(data, user_id):
 
         monitoring.add_elimination_report(monitoring_id_long, monitoring_owner_token, elimination_report(api_version, add_documents_monitoring))  # Add elimination report
         monitoring.patch_monitoring(monitoring_id_long, elimination_resolution(api_version, add_documents_monitoring), 'Add eliminationResolution to monitoring')  # Add add elimination resolution
+
+        if received_monitoring_status == 'addressed.stopped':
+            monitoring.patch_monitoring(monitoring_id_long, monitoring_to_stopped_json(), 'Monitoring to stopped status')  # Change monitoring status from "active" to "stopped"
+            get_m_info = monitoring.get_monitoring_info(monitoring_id_long)
+            if get_m_info.json()['data']['status'] == 'stopped':
+                response_json['monitoringStatus'] = get_m_info.json()['data']['status']
+                return response_json, response_code
+            else:
+                abort(422, 'Monitoring status: '.format(get_m_info.json()['data']['status']))
 
         wait_for_elimination_period_end_date(monitoring, monitoring_id_long, api_version)
         monitoring.patch_monitoring(monitoring_id_long, json_status_completed, 'Change monitoring status to completed')  # Monitoring to "completed" status

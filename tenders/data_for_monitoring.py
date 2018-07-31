@@ -160,3 +160,14 @@ def monitoring_to_cancelled_json():
                   }
             }
     return data
+
+
+def monitoring_to_stopped_json():
+    data = {"data": {
+                "status": "stopped",
+                "cancellation": {
+                  "description": fake.text(200).replace('\n', ' ')
+                }
+              }
+            }
+    return data

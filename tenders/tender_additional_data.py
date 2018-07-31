@@ -39,5 +39,5 @@ list_of_api_versions = ['2.4', 'dev']
 document_types_for_award = ['notice', 'evaluationReports', 'winningBid', 'complaints']
 document_types_for_contract = ['notice', 'contractSigned', 'contractArrangements', 'contractSchedule', 'contractAnnexe', 'contractGuarantees', 'subContract']
 
-monitoring_status_list = ['active', 'addressed', 'completed', 'cancelled', 'declined', 'closed']
-monitoring_status_list_violation_false = ['declined', 'closed', 'stopped']
+monitoring_status_list = ['active', 'addressed', 'completed', 'cancelled', 'declined', 'closed', 'active.stopped', 'addressed.stopped', 'declined.stopped']
+monitoring_status_list_violation_false = ['declined', 'closed', 'stopped', 'declined.stopped']
