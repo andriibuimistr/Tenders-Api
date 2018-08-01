@@ -342,10 +342,20 @@ def jquery_delete_auctions():
         return jquery_requests.delete_auctions()
 
 
+# Delete report document (with jquery)
+@app.route('/backend/jquery/report/files/<file_id>', methods=['DELETE'])
+def jquery_delete_report_document(file_id):
+    if check_if_admin_jquery() is not True:
+        return check_if_admin_jquery()
+    else:
+        return jquery_requests.delete_report_file(file_id)
+
 # ############################################################## ADMIN END #############################################################################
 
 # ############################################################## MONITORINGS ##############################################################################
 #                                                   ###### MONITORING JQUERY REQUESTS ######
+
+
 # Create tender
 @app.route('/api/monitorings', methods=['POST'])
 # @cross_origin(resources=r'/api/*')

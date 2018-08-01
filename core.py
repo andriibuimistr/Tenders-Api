@@ -224,6 +224,13 @@ def get_list_of_report_types():
     return types_dict
 
 
+# get list of user
+def get_list_of_report_files():
+    files_list = ReportDocuments.query.all()
+    db.session.remove()
+    return files_list
+
+
 # get list of report types as object
 def get_list_of_report_types_as_object():
     report_types = ReportTypes.query.all()

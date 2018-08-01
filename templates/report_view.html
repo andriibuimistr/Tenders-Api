@@ -28,6 +28,8 @@
                 <a target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}">{{ report_documents[document].original_filename }}</a>
             </div>
         {% endfor %}
-        <button class="btn btn-link" id="editReportButton" type="button">{{ lng.button('button_edit') }}</button>
+        <div class="report-actions col-lg-48 col-md-48 col-sm-48 col-xs-48">
+            <button class="btn btn-warning" id="editReportButton" type="button">{{ lng.button('button_edit') }}</button>
+        </div>
     </div>
 </div>

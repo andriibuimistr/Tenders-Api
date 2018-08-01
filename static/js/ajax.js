@@ -300,9 +300,10 @@ $(function() {
 
 
 // Submit "Add new report form"
-$(document).on("click","#sendReportButton", function(){
+$(document).on("click","#addReportButton", function(){
         var inputs = [$('#reportTitle'), $('#reportContent')]; // List of required inputs
         if (!validateInputs(inputs)){
+            console.log('BAD')
             return false
             }
         else {
@@ -380,6 +381,27 @@ $(document).on("click","#addReportFileInput", function() {
     '][file]" type="file" class="form-control-file" id="UploadedFile[' + filesInputsNumber + '][file]">');
 });
 
+//Delete file from report
+$(document).on("click",".report-document-action-delete", function() {
+        if(confirm("Are you sure you want to delete this document?")){
+            var id = $(this).attr('id');
+            $.ajax({
+                url: '/backend/jquery/report/files/' + id,
+                type: 'DELETE',
+                success: function() {
+                    $('#document-id-' + id).remove();
+                    $('.close').addClass('doReload')
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+        else {
+            return false;
+        }
+});
+
 // Validate if all inputs from list are filled
 function validateInputs(list){
         var status = true
@@ -442,6 +464,6 @@ $(document).on("blur", '.class-int', function() { // Check on blur if input valu
     }
 });
 
-$(document).on("blur", 'input', function() { // Trim input value
+$(document).on("blur", 'input:text', function() { // Trim input value
     $(this).val($(this).val().trim())
 });

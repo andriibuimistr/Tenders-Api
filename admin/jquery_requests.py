@@ -1,11 +1,12 @@
 import tenders.tender_additional_data
-from database import db, Platforms, Users, Tenders, Auctions
+from database import db, Platforms, Users, Tenders, Auctions, ReportDocuments
 from flask import render_template, abort, jsonify
 import validators
 import core
 from auctions import auction_additional_data
 from cdb_requests import TenderRequests, AuctionRequests
 import hashlib
+from config import *
 
 
 def add_platform(request):
@@ -116,6 +117,21 @@ def delete_user(user_id):
     if user_id not in existing_users_id:
         return abort(404, 'User with id {} does not exist'.format(user_id))
     Users.query.filter_by(id=user_id).delete()
+    db.session.commit()
+    db.session.remove()
+    return jsonify({"status": "Success"}), 200
+
+
+def delete_report_file(file_id):
+    existing_files_id = []
+    list_of_files_id_db = core.get_list_of_report_files()
+    for x in range(len(list_of_files_id_db)):
+        existing_files_id.append(str(list_of_files_id_db[x].id))
+    if file_id not in existing_files_id:
+        return abort(404, 'User with id {} does not exist'.format(file_id))
+    filename = ReportDocuments.query.filter_by(id=file_id).first().filename
+    os.remove(os.path.join(REPORTS_DOCS_DIR, filename))
+    ReportDocuments.query.filter_by(id=file_id).delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200

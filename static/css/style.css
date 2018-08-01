@@ -799,3 +799,25 @@ footer {
 .report-priority-lowest {
     background-image: url("../images/icons/report_priority_lowest.png");
 }
+
+.report-actions {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.report-document-action-delete {
+    background-image: url("../images/icons/delete_icon.png");
+    height: 16px;
+    width: 16px;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+}
+
+.report-document-action-delete:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.report-files, .report-files-item, .report-files-item div {
+    padding: 0px !important;
+}
