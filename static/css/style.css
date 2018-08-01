@@ -810,6 +810,34 @@ footer {
     margin-top: 15px;
 }
 
+.report-file {
+    margin-top: 6px;
+}
+
+.report-file a {
+    display: block;
+    margin-top: 5px;
+}
+
+.report-document-type-icon {
+    background-size: 30px 30px;
+    background-repeat: no-repeat;
+    float: left;
+    width: 30px;
+    height: 30px;
+}
+.report-document-type-icon-pdf {
+    background-image: url("../images/icons/document_types/pdf.png");
+}
+
+.report-document-type-icon-jpg {
+    background-image: url("../images/icons/document_types/jpg.png");
+}
+
+.report-document-type-icon-zip {
+    background-image: url("../images/icons/document_types/zip.png");
+}
+
 .report-document-action-delete {
     background-image: url("../images/icons/delete_icon.png");
     height: 16px;

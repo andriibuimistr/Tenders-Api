@@ -593,3 +593,4 @@ if __name__ == '__main__':
 # TODO Add validator to create monitoring page
 # TODO Disable Docs for bids checkbox for limited
 # TODO Add status_id when editing report!!!
+# TODO Add universal image for file types of report
