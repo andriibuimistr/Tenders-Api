@@ -67,14 +67,14 @@ $(function() {
         if (jQuery.inArray($("#procurementMethodType").val(), limited)!='-1') {
             $("#if_features").prop('disabled', true).prop('checked', false);
             $("#skip_tender_auction").prop('disabled', true).prop('checked', false);
-            $("#docs_for_bids").prop('disabled', true).prop('checked', false);
-            $('#number_of_bids').prop('disabled', true);
+//            $("#docs_for_bids").prop('disabled', true).prop('checked', false);
+            $('#numberOfBids').prop('disabled', true);
         }
         else {
             $("#if_features").prop('disabled', false);
             $("#skip_tender_auction").prop('disabled', false).prop('checked', true);
-            $("#docs_for_bids").prop('disabled', false).prop('checked', true);
-            $('#number_of_bids').prop('disabled', false);
+//            $("#docs_for_bids").prop('disabled', false).prop('checked', true);
+            $('#numberOfBids').prop('disabled', false);
         }
       };
       $(disable_select);
@@ -145,10 +145,10 @@ $(function() {
                     });
 					var disable_lots_reporting = function (){
 				        if ($("#procurementMethodType").val() === 'reporting') {
-							$('#number_of_lots').prop('disabled', true);
+							$('#numberOfLots').prop('disabled', true);
 						}
 						else {
-							$('#number_of_lots').prop('disabled', false);
+							$('#numberOfLots').prop('disabled', false);
 						}
                     };
                     $(disable_lots_reporting);
@@ -167,6 +167,20 @@ $(function() {
 
       $(disable_select);
       $("#procurementMethodType").change(disable_select);
+});
+
+// Delete invalid class if input "number of lots" is disabled
+$(function() {
+    var delete_class = function () {
+        if ($('input').is(':disabled')) {
+            $(this).removeClass('input-invalid');
+        }
+        else {
+            $(this).addClass('input-invalid');
+        }
+      };
+      $(delete_class);
+      $("#procurementMethodType").change(delete_class);
 });
 
 //Disable unnecessary inputs on monitoring creation page

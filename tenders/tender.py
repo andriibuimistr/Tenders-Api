@@ -153,7 +153,8 @@ def creation_of_tender(tc_request, user_id):
 
     number_of_lots = 0
     if "number_of_lots" in tc_request:
-        number_of_lots = int(tc_request["number_of_lots"])
+        if len(tc_request["number_of_lots"]) > 0:
+            number_of_lots = int(tc_request["number_of_lots"])
 
     number_of_bids = 0
     if "number_of_bids" in tc_request and len(tc_request["number_of_bids"]) > 0:

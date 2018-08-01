@@ -18,9 +18,7 @@ def validator_create_tender(data):
     api_version = data['api_version']
     platform_host = data['platform_host']
 
-    if data["procurementMethodType"] != 'reporting':
-        if "number_of_lots" not in data:
-            abort(400, "Number of lots is required")
+    if 'number_of_lots' in data and len(data["number_of_lots"]) > 0:
         number_of_lots = data["number_of_lots"]
         if str(number_of_lots).isdigit() is False:
             abort(400, 'Number of lots must be integer')

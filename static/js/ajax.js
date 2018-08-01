@@ -12,54 +12,64 @@ var randomString = function(length) {
 //Create tender
 $(function() {
     $('#createTender').click(function() {
-        var form = $("#create-tender");
-        var request_id = randomString(32);
-        var procedure = $("#create-tender select[name=procurementMethodType]").val();
-        var expected_status = $("#create-tender select[name=tenderStatus]").val();
-        var html_for_wait = '<div class="alert-response-status">Waiting for response</div>' +
-                            '<div class="alert-response-description">' +
-                                '<div class="wait-procedure-type"><span>Procedure: </span>' + procedure + '</div>' +
-                                '<div class="wait-tender-status"><span>Expected Tender Status: </span>' + expected_status + '</div>' +
-                            '</div>'
-                            ;
-        $('#created_tender_json').prepend('<div class="response-content response-content-waiting" id="' + request_id + '">' + html_for_wait + '</div>');
-        $.ajax({
-            url: '/api/tenders',
-            dataType : 'json',
-            crossDomain: true,
-            data: form.serialize(),
-            type: 'POST',
-            success: function(data, textStatus, xhr) {
-                console.log(data)
-                var operation_status = data.status;
-                var tender_status = data.tenderStatus;
-                var tender_to_company_status = data.tender_to_company[0].status;
-                var tender_id = data.id;
-                var tender_link = data.tender_to_company[1];
-                $('#' + request_id).addClass('response-content-success').toggleClass( "response-content-waiting" );
-                $('#' + request_id).empty();
-                $('#' + request_id).prepend('<button class="delete-alert" type="button">x</button>' +
-                                            '<div class="alert-response-status">' + xhr.status + ' ' + textStatus + '</div>' +
-                                            '<div class="alert-response-description">' +
-                                                '<div class="id-of-tender"><span>Tender ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
-                                                '<div class="actual-tender-status"><span>procurementMethodType: </span>' + procedure + '</div>' +
-                                                '<div class="actual-tender-status"><span>Tender status: </span>' + tender_status + '</div>' +
-                                                '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
-                                                '<div class="tender-to-company-status"><span>Add to company status: </span>' + tender_to_company_status + '</div>' +
-                                            '</div>'
-                                            );
-            },
-            error: function (jqXHR) {
-				var error_description = JSON.parse(jqXHR.responseText).description
-				var error_type = JSON.parse(jqXHR.responseText).error
-                $('#' + request_id).addClass('response-content-error').toggleClass( "response-content-waiting" );
-                $('#' + request_id).empty();
-                $('#' + request_id).append('<button class="delete-alert" type="button">x</button>' +
-				'<div class="alert-response-status">' + error_type + '</div>' +
-				'<div class="alert-response-description">' + error_description + '</div>'
-				);
+        var inputsRequired = [$('#numberOfItems'), $('#accelerator'), $('#companyId')]; // List of required inputs
+        var inputsInteger = [$('#numberOfLots'), $('#numberOfItems'), $('#accelerator'), $('#companyId'), $('#numberOfBids')]; // List of Integer inputs
+        if (!validateInputs(inputsRequired)){
+            return false;
             }
-        });
+        else if (!validateInputsInteger(inputsInteger)){
+            return false;
+            }
+        else {
+            var form = $("#create-tender");
+            var request_id = randomString(32);
+            var procedure = $("#create-tender select[name=procurementMethodType]").val();
+            var expected_status = $("#create-tender select[name=tenderStatus]").val();
+            var html_for_wait = '<div class="alert-response-status">Waiting for response</div>' +
+                                '<div class="alert-response-description">' +
+                                    '<div class="wait-procedure-type"><span>Procedure: </span>' + procedure + '</div>' +
+                                    '<div class="wait-tender-status"><span>Expected Tender Status: </span>' + expected_status + '</div>' +
+                                '</div>'
+                                ;
+            $('#created_tender_json').prepend('<div class="response-content response-content-waiting" id="' + request_id + '">' + html_for_wait + '</div>');
+            $.ajax({
+                url: '/api/tenders',
+                dataType : 'json',
+                crossDomain: true,
+                data: form.serialize(),
+                type: 'POST',
+                success: function(data, textStatus, xhr) {
+                    console.log(data)
+                    var operation_status = data.status;
+                    var tender_status = data.tenderStatus;
+                    var tender_to_company_status = data.tender_to_company[0].status;
+                    var tender_id = data.id;
+                    var tender_link = data.tender_to_company[1];
+                    $('#' + request_id).addClass('response-content-success').toggleClass( "response-content-waiting" );
+                    $('#' + request_id).empty();
+                    $('#' + request_id).prepend('<button class="delete-alert" type="button">x</button>' +
+                                                '<div class="alert-response-status">' + xhr.status + ' ' + textStatus + '</div>' +
+                                                '<div class="alert-response-description">' +
+                                                    '<div class="id-of-tender"><span>Tender ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
+                                                    '<div class="actual-tender-status"><span>procurementMethodType: </span>' + procedure + '</div>' +
+                                                    '<div class="actual-tender-status"><span>Tender status: </span>' + tender_status + '</div>' +
+                                                    '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
+                                                    '<div class="tender-to-company-status"><span>Add to company status: </span>' + tender_to_company_status + '</div>' +
+                                                '</div>'
+                                                );
+                },
+                error: function (jqXHR) {
+                    var error_description = JSON.parse(jqXHR.responseText).description
+                    var error_type = JSON.parse(jqXHR.responseText).error
+                    $('#' + request_id).addClass('response-content-error').toggleClass( "response-content-waiting" );
+                    $('#' + request_id).empty();
+                    $('#' + request_id).append('<button class="delete-alert" type="button">x</button>' +
+                    '<div class="alert-response-status">' + error_type + '</div>' +
+                    '<div class="alert-response-description">' + error_description + '</div>'
+                    );
+                }
+            });
+        };
     });
 });
 
@@ -116,9 +126,9 @@ $(function() {
 //Create auction
 $(function() {
     $('#createAuction').click(function() {
-    		var inputs = [$('#numberOfItems'), $('#accelerator'), $('#companyId')]; // List of required inputs
-    		var inputsInteger = [$('#numberOfItems'), $('#accelerator'), $('#companyId'), $('#numberOfBids')]; // List of Integer inputs
-        if (!validateInputs(inputs)){
+        var inputsRequired = [$('#numberOfItems'), $('#accelerator'), $('#companyId')]; // List of required inputs
+        var inputsInteger = [$('#numberOfItems'), $('#accelerator'), $('#companyId'), $('#numberOfBids')]; // List of Integer inputs
+        if (!validateInputs(inputsRequired)){
             return false;
             }
         else if (!validateInputsInteger(inputsInteger)){
@@ -227,9 +237,9 @@ $(function() {
 //Create Monitoring
 $(function() {
     $('#createMonitoring').click(function() {
-		var inputs = [$('#accelerator'), $('#company_id')]; // List of required inputs
+		var inputsRequired = [$('#accelerator'), $('#company_id')]; // List of required inputs
 		var inputsInteger = [$('#accelerator'), $('#company_id')]; // List of int inputs
-        if (!validateInputs(inputs)){
+        if (!validateInputs(inputsRequired)){
             return false;
             }
         else if (!validateInputsInteger(inputsInteger)){
@@ -337,7 +347,7 @@ $(document).on("click","#addReportFileInput", function() {
 function validateInputs(list){
         var status = true
         for (i = 0; i < list.length; i++){
-            if (list[i].val().trim() === "") {
+            if (list[i].val().trim() === "" && list[i].is(":not(:disabled)")) {
                 list[i].addClass('input-invalid');
 //                list[i].focus();
                 var status = false;

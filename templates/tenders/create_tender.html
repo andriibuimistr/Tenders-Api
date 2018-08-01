@@ -13,13 +13,13 @@
                             </select>
                             </div>
                             <div class="number-of-lots col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="number_of_lots" id="number_of_lots" class="form-control" placeholder="{{ lng.form('form_placeholder_number_of_lots') }}" maxlength="2">
+                                <input type="text" name="number_of_lots" id="numberOfLots" class="form-control class-int" placeholder="{{ lng.form('form_placeholder_number_of_lots') }}" maxlength="2">
                             </div>
                             <div class="number-of-items col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="number_of_items" class="form-control" placeholder="{{ lng.form('form_placeholder_number_of_items') }}" maxlength="2">
+                                <input type="text" name="number_of_items" id="numberOfItems" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_number_of_items') }}" maxlength="2">
                             </div>
                             <div class="number-of-bids col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="number_of_bids" id="number_of_bids" class="form-control" placeholder="{{ lng.form('form_placeholder_number_of_bids') }}" maxlength="2">
+                                <input type="text" name="number_of_bids" id="numberOfBids" class="form-control class-int" placeholder="{{ lng.form('form_placeholder_number_of_bids') }}" maxlength="2">
                             </div>
                             <div class="api-version col-lg-6 col-md-48 col-sm-48 col-xs-48">
                                 <select name="api_version" class="form-control" size="1">
@@ -29,10 +29,10 @@
                                 </select>
                             </div>
                             <div class="accelerator col-lg-6 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="accelerator" class="form-control" placeholder="{{ lng.form('form_placeholder_accelerator') }}" maxlength="5">
+                                <input type="text" name="accelerator" id="accelerator" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_accelerator') }}" maxlength="5">
                             </div>
                             <div class="company_id col-lg-9 col-md-48 col-sm-48 col-xs-48">
-                                <input type="text" name="company_id" class="form-control" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
+                                <input type="text" name="company_id" id="companyId" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
                             </div>
                             <div class="platform-host col-lg-18 col-md-48 col-sm-48 col-xs-48">
                                 <select name="platform_host" class="form-control" size="1">

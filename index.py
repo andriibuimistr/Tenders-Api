@@ -566,3 +566,4 @@ if __name__ == '__main__':
 # TODO Add selects values to report from list, Error alerts,
 # TODO Translations and status/type/creator name instead of id on reports list page, Create function for generate statuses for tenders/monitorings
 # TODO Add validator to create monitoring page
+# TODO Disable Docs for bids checkbox for limited
