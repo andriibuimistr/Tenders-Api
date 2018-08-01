@@ -10,6 +10,8 @@ def validator_create_auction(data):
         if create_auction_required_fields[field] not in data:
             abort(400, "Field '{}' is required. List of required fields: {}".format(create_auction_required_fields[field], create_auction_required_fields))
 
+    valid_data = dict()
+
     if 'procurementMethodType' not in data:
         abort(400, 'procurementMethodType is required')
     if data['procurementMethodType'] not in auction_procurement_method_types:
@@ -20,10 +22,14 @@ def validator_create_auction(data):
     if 1 > int(data['number_of_items']) or int(data['number_of_items']) > 20:
         abort(422, 'Number of items must be between 1 and 20')
 
-    if str(data["number_of_bids"]).isdigit() is False:
-        abort(400, 'Number of bids must be integer')
-    if 0 > int(data["number_of_bids"]) or int(data["number_of_bids"]) > 10:
-        abort(422, 'Number of bids must be between 0 and 10')
+    if len(data["number_of_bids"]) != 0:
+        if str(data["number_of_bids"]).isdigit() is False:
+            abort(400, 'Number of bids must be integer')
+        if 0 > int(data["number_of_bids"]) or int(data["number_of_bids"]) > 10:
+            abort(422, 'Number of bids must be between 0 and 10')
+        valid_data["number_of_bids"] = data["number_of_bids"]
+    else:
+        valid_data["number_of_bids"] = '0'
 
     if str(data['accelerator']).isdigit() is False:
         abort(400, 'Accelerator must be integer')
@@ -58,8 +64,6 @@ def validator_create_auction(data):
         if data['auctionStatus'] != 'active.tendering':
             abort(422, 'Accelerator value can be less than 30 for "active.tendering" status only')
 
-    valid_data = dict()
-
     valid_data['min_number_of_qualified_bids'] = 2
     if 'minNumberOfQualifiedBids' in data:
         if data['minNumberOfQualifiedBids'] == '1':
@@ -68,7 +72,8 @@ def validator_create_auction(data):
             abort(422, 'minNumberOfQualifiedBids value must de "1" or empty')
 
     for field in data:
-        valid_data[field] = data[field]
+        if field != 'number_of_bids':
+            valid_data[field] = data[field]
 
     if 'skip_auction' in data:
         valid_data['skip_auction'] = '(mode:no-auction)'
