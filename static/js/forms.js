@@ -254,3 +254,10 @@ $(document).on("click",".close", function(){
 	$('.modal-bug-report').hide();
 	$('#modalWindowContainer').empty();
 });
+
+// Close modal window and reload page
+$(document).on("click",".doReload", function(){
+	$('.modal-bug-report').hide();
+	$('#modalWindowContainer').empty();
+	location.reload();
+});

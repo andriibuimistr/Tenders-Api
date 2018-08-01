@@ -397,15 +397,7 @@ def run_activate_contract(api_version, tender_id_long, tender_token, list_of_con
         tender.activate_award_contract(tender_id_long, 'contracts', contract_id, tender_token, json_activate_contract, contract_number)
 
 
-def add_report(request, session):
-    report_title = request.form['reportTitle']
-    report_type_id = int(request.form['reportType'])
-    report_content = request.form['reportContent']
-    report_priority = int(request.form['reportPriority'])
-    report_id_long = get_random_32()  # Generate id_long for report
-    add_report = Reports(None, report_id_long, report_title, report_type_id, report_content, None, session['user_id'], report_priority, 1)
-    db.session.add(add_report)
-    db.session.commit()
+def save_documents_for_report(request, report_id_long):
     if len(request.files.keys()) > 0:
         for f in range(len(request.files.keys())):
             file_key = request.files.keys()[f]  # file_key like 'file'
@@ -422,8 +414,28 @@ def add_report(request, session):
                 add_document_to_db = ReportDocuments(None, local_filename, '{0}.{1}'.format(local_filename, file_extension), filename, report_id_long)
                 db.session.add(add_document_to_db)
                 db.session.commit()
+
+
+def add_new_report(request, session):
+    report_title = request.form['reportTitle']
+    report_type_id = int(request.form['reportType'])
+    report_content = request.form['reportContent']
+    report_priority = int(request.form['reportPriority'])
+    report_id_long = get_random_32()  # Generate id_long for report
+    add_report = Reports(None, report_id_long, report_title, report_type_id, report_content, None, session['user_id'], report_priority, 1)
+    db.session.add(add_report)
+    db.session.commit()
+    save_documents_for_report(request, report_id_long)
     return True
 
 
-def save_edited_report(request, session):
-    pass
+def save_edited_report(request, report_data):
+    report_title = request.form['reportTitle']
+    report_type_id = int(request.form['reportType'])
+    report_content = request.form['reportContent']
+    report_priority = int(request.form['reportPriority'])
+    Reports.query.filter_by(id=report_data.id).update(dict(title=report_title, type_id=report_type_id, content=report_content, priority_id=report_priority, status_id=1))
+    db.session.commit()
+    db.session.remove()
+    save_documents_for_report(request, report_data.id_long)
+    return True

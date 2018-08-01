@@ -299,7 +299,7 @@ $(function() {
 });
 
 
-// Submit "Add report form"
+// Submit "Add new report form"
 $(document).on("click","#sendReportButton", function(){
         var inputs = [$('#reportTitle'), $('#reportContent')]; // List of required inputs
         if (!validateInputs(inputs)){
@@ -335,6 +335,43 @@ $(document).on("click","#sendReportButton", function(){
         }
     });
 
+// Submit "Save edited report form"
+$(document).on("click","#saveReportButton", function(){
+        var inputs = [$('#reportTitle'), $('#reportContent')]; // List of required inputs
+        if (!validateInputs(inputs)){
+            return false
+            }
+        else {
+            var report_id =  $('#reportId').val()
+            var filesNumber = $('.form-control-file').length;  // Get number of files inputs
+            var fd = new FormData();
+            for (i = 0; i < filesNumber; i++) {
+                fd.append('file' + i, $("input[id='UploadedFile[" + i + "][file]']")[0].files[0]); // Append every file to FormData
+            }
+            var listOfInputs = JSON.parse(JSON.stringify($('#editReportForm').serializeArray()));  // Convert inputs into json {'name': 'value'}
+            for (i = 0; i < listOfInputs.length; i++){
+                var inputName = listOfInputs[i]['name'];
+                var inputValue = listOfInputs[i]['value'];
+                fd.append(inputName, inputValue); // Append every input to FormData
+            }
+            $.ajax({
+                url: '/modal/edit_report/' + report_id,
+                type: 'post',
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    $('.modal-body').empty();
+                    $('.modal-body').append(data);
+                    $('.modal-footer').remove();
+                    $('.close').addClass('doReload')
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                }
+            });
+        }
+    });
 
 // Add file input to report
 $(document).on("click","#addReportFileInput", function() {

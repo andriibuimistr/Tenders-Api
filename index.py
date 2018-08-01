@@ -547,8 +547,8 @@ def add_report():
         return render_template('modal_windows/modal_add_report.html', report_types=core.get_list_of_report_types_as_object(),
                                report_priorities=core.get_list_of_report_priorities_as_object())
     else:
-        if core.add_report(request, session):
-            return render_template('modal_windows/modal_add_report_success.html', action='add')
+        if core.add_new_report(request, session):
+            return render_template('modal_windows/modal_report_success.html', action='add')
         return jsonify('Something went wrong'), 400
 
 
@@ -556,13 +556,14 @@ def add_report():
 def edit_report(report_id):
     if not session.get('logged_in'):
         return jquery_forbidden_login()
+    report_data = core.get_report_info(report_id)
     if request.method == 'GET':
-        report_data = core.get_report_info(report_id)
         return render_template('modal_windows/modal_edit_report.html', report_types=core.get_list_of_report_types_as_object(),
-                               report_priorities=core.get_list_of_report_priorities_as_object(), report_data=report_data)
+                               report_priorities=core.get_list_of_report_priorities_as_object(), report_data=report_data,
+                               report_documents=core.get_report_documents(report_id))
     else:
-        if core.save_edited_report(request, session):
-            return render_template('modal_windows/modal_edit_report_success.html', action='edit')
+        if core.save_edited_report(request, report_data):
+            return render_template('modal_windows/modal_report_success.html', action='edit')
         return jsonify('Something went wrong'), 400
 
 
@@ -581,3 +582,4 @@ if __name__ == '__main__':
 # TODO Translations and status/type/creator name instead of id on reports list page, Create function for generate statuses for tenders/monitorings
 # TODO Add validator to create monitoring page
 # TODO Disable Docs for bids checkbox for limited
+# TODO Add status_id when editing report!!!
