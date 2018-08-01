@@ -1,3 +1,9 @@
-<div class="modal-response-success" id="modalAddReportSuccess">
-    {{ lng.text('text_add_bug_report_success') }}
-</div>
+{% if action == 'add' %}
+    <div class="modal-response-success" id="modalAddReportSuccess">
+        {{ lng.text('text_add_bug_report_success') }}
+    </div>
+{% elif action == 'edit' %}
+    <div class="modal-response-success" id="modalEditReportSuccess">
+        {{ lng.text('text_edit_bug_report_success') }}
+    </div>
+{% endif %}

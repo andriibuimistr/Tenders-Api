@@ -206,7 +206,7 @@ $(function() {
 });
 
 // MODAL WINDOWS
-// Open modal window
+// Open modal window for add new report
 $(document).on("click","#bugReport", function(){
 	if ($('.modal-bug-report').length){
 		$('.modal-bug-report').show();
@@ -216,6 +216,28 @@ $(document).on("click","#bugReport", function(){
 	$.ajax({
 		url: '/modal/add_report',
 		type: 'get',
+		success: function(data){
+			$('#modalWindowContainer').append(data);
+			$('.modal-bug-report').show();
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+		}
+	});
+	}
+});
+
+// Open modal window for edit report
+$(document).on("click","#editReportButton", function(){
+	if ($('.modal-bug-report').length){
+		$('.modal-bug-report').show();
+	}
+	else{
+    var report_id = $('#reportId').val()
+	$('#modalWindowContainer').empty();
+	$.ajax({
+		url: '/modal/edit_report/' + report_id,
+		type: 'GET',
 		success: function(data){
 			$('#modalWindowContainer').append(data);
 			$('.modal-bug-report').show();

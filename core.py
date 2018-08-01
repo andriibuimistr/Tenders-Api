@@ -397,7 +397,7 @@ def run_activate_contract(api_version, tender_id_long, tender_token, list_of_con
         tender.activate_award_contract(tender_id_long, 'contracts', contract_id, tender_token, json_activate_contract, contract_number)
 
 
-def save_report(request, session):
+def add_report(request, session):
     report_title = request.form['reportTitle']
     report_type_id = int(request.form['reportType'])
     report_content = request.form['reportContent']
@@ -423,3 +423,7 @@ def save_report(request, session):
                 db.session.add(add_document_to_db)
                 db.session.commit()
     return True
+
+
+def save_edited_report(request, session):
+    pass

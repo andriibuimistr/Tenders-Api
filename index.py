@@ -547,8 +547,22 @@ def add_report():
         return render_template('modal_windows/modal_add_report.html', report_types=core.get_list_of_report_types_as_object(),
                                report_priorities=core.get_list_of_report_priorities_as_object())
     else:
-        if core.save_report(request, session):
-            return render_template('modal_windows/modal_add_report_success.html')
+        if core.add_report(request, session):
+            return render_template('modal_windows/modal_add_report_success.html', action='add')
+        return jsonify('Something went wrong'), 400
+
+
+@app.route("/modal/edit_report/<report_id>", methods=['GET', 'POST'])
+def edit_report(report_id):
+    if not session.get('logged_in'):
+        return jquery_forbidden_login()
+    if request.method == 'GET':
+        report_data = core.get_report_info(report_id)
+        return render_template('modal_windows/modal_edit_report.html', report_types=core.get_list_of_report_types_as_object(),
+                               report_priorities=core.get_list_of_report_priorities_as_object(), report_data=report_data)
+    else:
+        if core.save_edited_report(request, session):
+            return render_template('modal_windows/modal_edit_report_success.html', action='edit')
         return jsonify('Something went wrong'), 400
 
 

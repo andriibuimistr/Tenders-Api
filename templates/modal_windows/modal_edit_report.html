@@ -1,0 +1,53 @@
+<div class="modal-bug-report" id="modalBugReport">
+  <div class="modal-header">
+    <a class="close">×</a>
+    <h3>{{ lng.section('section_edit_bug_report') }}</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-edit-report" id="editReportForm" role="form">
+        <div class="form-group required">
+            <label for="reportTitle">{{ lng.label('label_report_title') }}</label>
+            <input name="reportTitle" class="form-control class-required" id="reportTitle" type="text" value="{{ report_data.title }}" maxlength="255">
+        </div>
+        <div class="form-group">
+            <label for="reportType">{{ lng.label('label_report_type') }}</label>
+            <select name="reportType" class="form-control" id="reportType">
+                {% for type in range(report_types|length) %}
+                    {% if report_types[type].id == report_data.type_id %}
+                        <option value="{{ report_types[type].id }}" selected="selected">{{ lng.report_type('report_type_' + report_types[type].name) }}</option>
+                    {% else %}
+                        <option value="{{ report_types[type].id }}">{{ lng.report_type('report_type_' + report_types[type].name) }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group required">
+            <label for="reportContent">{{ lng.label('label_report_content') }}</label>
+            <textarea name="reportContent" class="form-control class-required" id="reportContent" maxlength="2000">{{ report_data.content }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="reportPriority">{{ lng.label('label_report_priority') }}</label>
+            <select name="reportPriority" class="form-control" id="reportPriority">
+                {% for priority in range(report_priorities|length) %}
+                    {% if report_priorities[priority].id == report_data.priority_id %}
+                        <option value="{{ report_priorities[priority].id }}" selected="selected">{{ lng.report_priority('report_priority_' + report_priorities[priority].name) }}</option>
+                    {% else %}
+                        <option value="{{ report_priorities[priority].id }}">{{ lng.report_priority('report_priority_' + report_priorities[priority].name) }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group files-inputs" id="reportFiles">
+            ADD DELETE FILES + STATUS
+            <label for="UploadedFile[0][file]">{{ lng.label('label_report_file') }}</label>
+            <input name="UploadedFile[0][file]" type="file" class="form-control-file" id="UploadedFile[0][file]">
+        </div>
+        <div class="add-file-input">
+            <button class="btn btn-primary btn-xs" id="addReportFileInput" type="button">{{ lng.button('button_add_file_input') }}</button>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+      <button class="btn btn-primary" id="saveReportButton" type="button">{{ lng.button('button_save') }}</button>
+  </div>
+</div>
