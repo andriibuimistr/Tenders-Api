@@ -228,7 +228,11 @@ $(function() {
 $(function() {
     $('#createMonitoring').click(function() {
 		var inputs = [$('#accelerator'), $('#company_id')]; // List of required inputs
+		var inputsInteger = [$('#accelerator'), $('#company_id')]; // List of int inputs
         if (!validateInputs(inputs)){
+            return false;
+            }
+        else if (!validateInputsInteger(inputsInteger)){
             return false;
             }
 		else {
@@ -339,9 +343,9 @@ function validateInputs(list){
                 var status = false;
             }
         }
-        if (!status){
-            alert("Please fill required fields");
-        }
+//        if (!status){
+//            alert("Please fill required fields");
+//        }
         return status
 }
 
@@ -361,7 +365,7 @@ $(document).on("focus", '.class-required', function() {
 function validateInputsInteger(list){
         var status = true
         for (i = 0; i < list.length; i++){
-                if (!Number.isInteger(list[i]) && list[i].val().trim().length > 0) {
+                if (isNaN(list[i].val().trim()) && list[i].val().trim().length > 0) {
                     list[i].addClass('input-invalid');
                     var status = false;
                 }
@@ -385,9 +389,12 @@ $(document).on("focus", '.input-invalid', function() {
    $(this).removeClass('input-invalid');
 });
 
-$(document).on("blur", '.class-int', function() {
-    console.log(isNaN($(this).val()))
-  if (isNaN($(this).val())) {
-   $(this).addClass('input-invalid');
-  }
+$(document).on("blur", '.class-int', function() { // Check on blur if input value is integer
+    if (isNaN($(this).val())) {
+        $(this).addClass('input-invalid');
+    }
+});
+
+$(document).on("blur", 'input', function() { // Trim input value
+    $(this).val($(this).val().trim())
 });
