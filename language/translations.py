@@ -85,6 +85,7 @@ class RU(object):
                 'button_delete_tenders': u'Удалить закупки',
                 'button_delete_auctions': u'Удалить аукционы',
                 'button_send': u'Отправить',
+                'button_edit': u'Редактировать',
                 'button_add_file_input': u'+ файл'}.get(key, key)
 
     # Sections names
@@ -101,6 +102,7 @@ class RU(object):
                 'section_list_of_auctions': u'Список аукционов',
                 'section_popular_links': u'Популярные ссылки',
                 'section_add_bug_report': u'Добавить отчет',
+                'section_edit_bug_report': u'Редактирование отчета',
                 'section_list_of_reports': u'Список отчетов'}.get(key, key)
 
     # Labels
@@ -145,7 +147,8 @@ class RU(object):
     # Texts
     @staticmethod
     def texts(key):
-        return {'text_add_bug_report_success': u'Отчет был успешно отправлен!'}.get(key, key)
+        return {'text_add_bug_report_success': u'Отчет был успешно отправлен!',
+                'text_edit_bug_report_success': u'Изменения были успешно сохранены!'}.get(key, key)
 
     # Report statuses
     @staticmethod
@@ -252,6 +255,7 @@ class EN(object):
                 'button_delete_tenders': u'Delete tenders',
                 'button_delete_auctions': u'Delete auctions',
                 'button_send': u'Send',
+                'button_edit': u'Edit',
                 'button_add_file_input': u'+ file'}.get(key, key)
 
     # Sections names
@@ -268,6 +272,7 @@ class EN(object):
                 'section_list_of_auctions': u'List of auctions',
                 'section_popular_links': u'Popular links',
                 'section_add_bug_report': u'Add report',
+                'section_edit_bug_report': u'Edit report',
                 'section_list_of_reports': u'List of reports'}.get(key, key)
 
     # Labels
@@ -312,7 +317,8 @@ class EN(object):
     # Texts
     @staticmethod
     def texts(key):
-        return {'text_add_bug_report_success': u'Report was submitted successfully!'}.get(key, key)
+        return {'text_add_bug_report_success': u'Report was submitted successfully!',
+                'text_edit_bug_report_success': u'The changes have been successfully saved!'}.get(key, key)
 
     # Report statuses
     @staticmethod
@@ -419,6 +425,7 @@ class ES(object):
                 'button_delete_tenders': u'Eliminar licitaciones',
                 'button_delete_auctions': u'Eliminar subastas',
                 'button_send': u'Enviar',
+                'button_edit': u'Editar',
                 'button_add_file_input': u'+ archivo'}.get(key, key)
 
     # Sections names
@@ -435,6 +442,7 @@ class ES(object):
                 'section_list_of_auctions': u'Lista de subastas',
                 'section_popular_links': u'Enlaces populares',
                 'section_add_bug_report': u'Añadir informe',
+                'section_edit_bug_report': u'Editar informe',
                 'section_list_of_reports': u'Lista de informes'}.get(key, key)
 
     # Labels
@@ -479,7 +487,8 @@ class ES(object):
     # Texts
     @staticmethod
     def texts(key):
-        return {'text_add_bug_report_success': u'El informe fue enviado con éxito!'}.get(key, key)
+        return {'text_add_bug_report_success': u'El informe fue enviado con éxito!',
+                'text_edit_bug_report_success': u'Los cambios se han guardado con éxito!'}.get(key, key)
 
     # Report statuses
     @staticmethod

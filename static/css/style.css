@@ -717,6 +717,11 @@ footer {
 	border-radius: 3px;
 }
 
+.modal-bug-report .modal-header {
+    padding-bottom: 5px;
+    padding-left: 10px;
+}
+
 .modal-body {
     overflow: auto;
 	max-height: 60vh;

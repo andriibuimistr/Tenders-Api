@@ -130,7 +130,10 @@ def delete_report_file(file_id):
     if file_id not in existing_files_id:
         return abort(404, 'User with id {} does not exist'.format(file_id))
     filename = ReportDocuments.query.filter_by(id=file_id).first().filename
-    os.remove(os.path.join(REPORTS_DOCS_DIR, filename))
+    try:
+        os.remove(os.path.join(REPORTS_DOCS_DIR, filename))
+    except Exception as e:
+        print(str(e))
     ReportDocuments.query.filter_by(id=file_id).delete()
     db.session.commit()
     db.session.remove()
