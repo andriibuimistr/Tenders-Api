@@ -74,7 +74,6 @@ def delete_platform(platform_id):
         existing_platforms_id.append(str(list_of_platforms_id_db[x].id))
     if platform_id not in existing_platforms_id:
         return abort(404, 'Platform does not exist')
-
     Platforms.query.filter_by(id=platform_id).delete()
     db.session.commit()
     db.session.remove()
@@ -88,8 +87,7 @@ def delete_tender(tender_id):
         existing_tenders_id.append(str(list_of_tenders_id_db[x].id))
     if tender_id not in existing_tenders_id:
         return abort(404, 'Tender does not exist')
-
-    Tenders.query.filter_by(id=tender_id).delete()
+    Tenders.query.filter_by(id=tender_id).delete()  # TODO Delete related bids
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
@@ -102,8 +100,7 @@ def delete_auction(auction_id):
         existing_auctions_id.append(str(list_of_auctions_id_db[x].id))
     if auction_id not in existing_auctions_id:
         return abort(404, 'Tender does not exist')
-
-    Auctions.query.filter_by(id=auction_id).delete()
+    Auctions.query.filter_by(id=auction_id).delete()  # TODO Delete related bids
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
@@ -141,14 +138,14 @@ def delete_report_file(file_id):
 
 
 def delete_tenders():
-    Tenders.query.delete()
+    Tenders.query.delete()  # TODO Delete related bids
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
 
 
 def delete_auctions():
-    Auctions.query.delete()
+    Auctions.query.delete()  # TODO Delete related bids
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
