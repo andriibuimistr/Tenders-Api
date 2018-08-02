@@ -815,7 +815,7 @@ footer {
 }
 
 .report-file a {
-    display: block;
+    display: inline-block;
     margin-top: 5px;
 }
 
