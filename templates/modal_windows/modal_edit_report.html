@@ -41,7 +41,7 @@
             {% for document in range(report_documents|length) %}
                 <div class="report-file report-files-item col-lg-48 col-md-48 col-sm-48 col-xs-48" id="{{ 'document-id-' + report_documents[document].id|string }}">
                     <div class="col-lg-46 col-md-46 col-sm-46 col-xs-46">
-                        <div class="report-document-type-icon report-document-type-icon-{{ report_documents[document].original_filename.split('.')[-1] }}"></div>
+                        <div class="report-document-type-icon report-document-type-icon-{{ report_documents[document].original_filename.split('.')[-1].replace('jpeg', 'jpg') }}"></div>
                         <a target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}">{{ report_documents[document].original_filename }}</a>
                     </div>
                     <div class="report-document-actions col-lg-2 col-md-2 col-sm-2 col-xs-2">

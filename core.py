@@ -412,7 +412,10 @@ def save_documents_for_report(request, report_id_long):
             if uploaded_file.filename != '':
                 filename = request.files[file_key].filename
                 local_filename = get_random_32()  # Generate id_long for document (local_filename == id_long)
-                file_extension = filename.split('.')[-1]
+                if filename.split('.')[-1] == 'gz' and filename.split('.')[-2] == 'tar':
+                    file_extension = 'tar.gz'
+                else:
+                    file_extension = filename.split('.')[-1]
                 # a = uploaded_file.stream.read()  # convert document to bytes
                 file_path = os.path.join(REPORTS_DOCS_DIR, '{0}.{1}'.format(local_filename, file_extension))
                 if not os.path.exists(os.path.dirname(file_path)):

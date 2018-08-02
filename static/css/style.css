@@ -834,14 +834,6 @@ padding-left: 0px !important;
     background-image: url("../images/icons/document_types/avi.png");
 }
 
-.report-document-type-icon-mp3 {
-    background-image: url("../images/icons/document_types/mp3.png");
-}
-
-.report-document-type-icon-mp4 {
-    background-image: url("../images/icons/document_types/mp4.png");
-}
-
 .report-document-type-icon-css {
     background-image: url("../images/icons/document_types/css.png");
 }
@@ -858,10 +850,17 @@ padding-left: 0px !important;
     background-image: url("../images/icons/document_types/docx.png");
 }
 
+.report-document-type-icon-gif {
+    background-image: url("../images/icons/document_types/gif.png");
+}
+
 .report-document-type-icon-html {
     background-image: url("../images/icons/document_types/html.png");
 }
 
+.report-document-type-icon-jar {
+    background-image: url("../images/icons/document_types/jar.png");
+}
 
 .report-document-type-icon-jpg {
     background-image: url("../images/icons/document_types/jpg.png");
@@ -875,6 +874,14 @@ padding-left: 0px !important;
     background-image: url("../images/icons/document_types/json.png");
 }
 
+
+.report-document-type-icon-mp3 {
+    background-image: url("../images/icons/document_types/mp3.png");
+}
+
+.report-document-type-icon-mp4 {
+    background-image: url("../images/icons/document_types/mp4.png");
+}
 
 .report-document-type-icon-pdf {
     background-image: url("../images/icons/document_types/pdf.png");

@@ -27,7 +27,7 @@
         <div class="block-info-in-frame report-view-content col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.content }}</div>
         {% for document in range(report_documents|length) %}
             <div class="report-file col-lg-48 col-md-48 col-sm-48 col-xs-48">
-                <div class="report-document-type-icon report-document-type-icon-{{ report_documents[document].original_filename.split('.')[-1] }}"></div>
+                <div class="report-document-type-icon report-document-type-icon-{{ report_documents[document].original_filename.split('.')[-1].replace('jpeg', 'jpg') }}"></div>
                 <a target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}">{{ report_documents[document].original_filename }}</a>
             </div>
         {% endfor %}
