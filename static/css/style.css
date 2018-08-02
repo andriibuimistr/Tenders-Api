@@ -825,13 +825,83 @@ footer {
     float: left;
     width: 30px;
     height: 30px;
+    background-image: url("../images/icons/document_types/file.png");
 }
+
+.report-document-type-icon-avi {
+    background-image: url("../images/icons/document_types/avi.png");
+}
+
+.report-document-type-icon-mp3 {
+    background-image: url("../images/icons/document_types/mp3.png");
+}
+
+.report-document-type-icon-mp4 {
+    background-image: url("../images/icons/document_types/mp4.png");
+}
+
+.report-document-type-icon-css {
+    background-image: url("../images/icons/document_types/css.png");
+}
+
+.report-document-type-icon-csv {
+    background-image: url("../images/icons/document_types/csv.png");
+}
+
+.report-document-type-icon-doc {
+    background-image: url("../images/icons/document_types/doc.png");
+}
+
+.report-document-type-icon-html {
+    background-image: url("../images/icons/document_types/html.png");
+}
+
+
+.report-document-type-icon-jpg {
+    background-image: url("../images/icons/document_types/jpg.png");
+}
+
+.report-document-type-icon-js {
+    background-image: url("../images/icons/document_types/js.png");
+}
+
+.report-document-type-icon-json {
+    background-image: url("../images/icons/document_types/json.png");
+}
+
+
 .report-document-type-icon-pdf {
     background-image: url("../images/icons/document_types/pdf.png");
 }
 
-.report-document-type-icon-jpg {
-    background-image: url("../images/icons/document_types/jpg.png");
+
+.report-document-type-icon-png {
+    background-image: url("../images/icons/document_types/png.png");
+}
+
+
+.report-document-type-icon-ppt {
+    background-image: url("../images/icons/document_types/ppt.png");
+}
+
+
+.report-document-type-icon-svg {
+    background-image: url("../images/icons/document_types/svg.png");
+}
+
+
+.report-document-type-icon-txt {
+    background-image: url("../images/icons/document_types/txt.png");
+}
+
+
+.report-document-type-icon-xls {
+    background-image: url("../images/icons/document_types/xls.png");
+}
+
+
+.report-document-type-icon-xml {
+    background-image: url("../images/icons/document_types/xml.png");
 }
 
 .report-document-type-icon-zip {
