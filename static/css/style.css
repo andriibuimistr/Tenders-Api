@@ -755,6 +755,7 @@ footer {
     padding: 5px !important;
     border: 1px solid #CCC;
     border-radius: 3px;
+    margin-bottom: 6px;
 }
 
 .report-info {
@@ -811,10 +812,11 @@ footer {
 }
 
 .report-file {
-    margin-top: 6px;
+    margin-bottom: 6px;
+padding-left: 0px !important;
 }
 
-.report-file a {
+.report-file a, .report-file .report-document-actions {
     display: inline-block;
     margin-top: 5px;
 }
@@ -850,6 +852,10 @@ footer {
 
 .report-document-type-icon-doc {
     background-image: url("../images/icons/document_types/doc.png");
+}
+
+.report-document-type-icon-docx {
+    background-image: url("../images/icons/document_types/docx.png");
 }
 
 .report-document-type-icon-html {
