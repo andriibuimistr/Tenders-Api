@@ -1,5 +1,5 @@
 import tenders.tender_additional_data
-from database import db, Platforms, Users, Tenders, Auctions, ReportDocuments
+from database import *
 from flask import render_template, abort, jsonify
 import validators
 import core
@@ -138,14 +138,16 @@ def delete_report_file(file_id):
 
 
 def delete_tenders():
-    Tenders.query.delete()  # TODO Delete related bids
+    Tenders.query.delete()
+    BidsTender.query.delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
 
 
 def delete_auctions():
-    Auctions.query.delete()  # TODO Delete related bids
+    Auctions.query.delete()
+    BidsAuction.query.delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
