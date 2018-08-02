@@ -4,6 +4,7 @@ from random import randint
 from datetime import datetime, timedelta
 import binascii
 import os
+from math import ceil
 
 from config import kiev_now
 
@@ -15,11 +16,8 @@ def decision_date():
 
 
 def auction_period_start_date(lot_accelerator):
-    return (datetime.now() + timedelta(minutes=8*(1440/lot_accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
-
-
-def auction_period_end_date(accelerator):
-    return (datetime.now() + timedelta(minutes=1000*(1440/accelerator))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
+    print (datetime.now() + timedelta(minutes=5*int(ceil(1440/float(lot_accelerator))))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
+    return (datetime.now() + timedelta(minutes=5*int(ceil(1440/float(lot_accelerator))))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
 
 
 def generate_id_for_item():
@@ -167,7 +165,7 @@ def generate_lot_json(asset_id, accelerator):
     return lot_json
 
 
-def fill_auction_data(number, accelerator, lot_accelerator):
+def fill_auction_data(number, auction_accelerator, lot_accelerator):
     if number == 1:
         auction_data = {"data": {
                             "minimalStep": {
@@ -192,7 +190,7 @@ def fill_auction_data(number, accelerator, lot_accelerator):
                               "amount": 700
                             },
                             "submissionMethodDetails": "quick",
-                            "procurementMethodDetails": "quick, accelerator={}".format(accelerator),
+                            "procurementMethodDetails": "quick, accelerator={}".format(auction_accelerator),
                             "bankAccount": {
                                 "accountIdentification": [
                                     {

@@ -45,7 +45,7 @@ def json_for_bid_auction(procurement_method_type, identifier):
                     ]
                   }
                 }
-    if procurement_method_type in ['dgfOtherAssets', 'propertyLease']:
+    if procurement_method_type in ['dgfOtherAssets', 'propertyLease', 'sellout.english']:
         del(json_bid['data']['eligible'])
     return json_bid
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from auctions.data_for_privatization import *
 from core import *
+from auction import *
 
 
 def create_asset(items):
@@ -13,8 +14,7 @@ def create_asset(items):
     asset_id_long = asset_publish.json()['data']['id']
     asset_token = asset_publish.json()['access']['token']
     # asset_id_short = asset_publish.json()['data']['assetID']
-    decision_to_asset = asset.add_decisions_to_asset(asset_id_long, asset_token, decision)
-    print(decision_to_asset.json())
+    asset.add_decisions_to_asset(asset_id_long, asset_token, decision)
 
     asset.activate_asset(asset_id_long, asset_token)
 
@@ -26,14 +26,15 @@ def create_asset(items):
     lot_token = lot_publish.json()['access']['token']
     # lot_id_short = lot_publish.json()['data']['lotID']
     lot_transfer = lot_publish.json()['access']['transfer']
+    print(lot_id_long)
 
     lot.lot_to_composing(lot_id_long, lot_token)
 
     lot_auctions = lot_publish.json()['data']['auctions']  # Get list of auctions from lot
-    for auction in range(len(lot_auctions)):
+    for auction in range(len(lot_auctions)):  # Fill auctions data in lot
         auction_id_long = lot_auctions[auction]['id']
         index = auction + 1
-        lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(auction + 1, accelerator=1440, lot_accelerator=1440), auction_id_long, index)
+        lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(auction + 1, auction_accelerator=360, lot_accelerator=720), auction_id_long, index)
 
     lot.add_decision_to_lot(lot_id_long, lot_token, decision)
     lot.lot_to_verification(lot_id_long, lot_token)
@@ -74,14 +75,24 @@ def create_asset(items):
 
     au_id_long = lot.get_lot_info(lot_id_long).json()['data']['auctions'][0]['relatedProcessID']
     transfer = Privatization('transfer').create_transfer().json()
+    auction_token = transfer['access']['token']
     print(transfer)
     json_of_transfer = {"data": {
                                 "id": transfer['data']['id'],
                                 "transfer": lot_transfer
     }}
     Privatization().change_auction_ownership(au_id_long, json_of_transfer).json()
-    activate_auction = Privatization().activate_auction_privatization(au_id_long, transfer['access']['token'])
-    print(activate_auction.json())
+    activate_auction = Privatization().activate_auction_privatization(au_id_long, auction_token)
+    auction_id_long = activate_auction.json()['data']['id']
+    auction_id_short = activate_auction.json()['data']['auctionID']
+    procurement_method_type = activate_auction.json()['data']['procurementMethodType']
+    auction_status = activate_auction.json()['data']['status']
+
+    auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method_type, auction_status, 1, cdb_version=2)  # add auction data to database
+    core.add_one_tender_company(company_id=306, company_platform_host='http://eauction-dev.byustudio.in.ua', entity_id_long=auction_id_long, entity_token=auction_token, entity='auction')  # add auction to local database
+    create_bids(cdb=2, auction_id_long=auction_id_long, procurement_method_type=procurement_method_type, number_of_bids=1)  # make bids
+
+    print('Long: {} Short: {}'.format(auction_id_long, auction_id_short))
     print('c\'est fini')
 
 
