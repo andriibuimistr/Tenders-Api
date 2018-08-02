@@ -124,9 +124,9 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id, entity):
                     return {'status': 'success'}, 201
                 elif 'Bid exist' in add_to_site_response['error']:
                     if entity == 'tender':
-                        BidsTender.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
+                        BidsTender.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
                     else:
-                        BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1))  # set added to site=1
+                        BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
                     db.session.commit()
                     db.session.remove()
                     print 'Bid has company'
