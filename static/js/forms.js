@@ -172,12 +172,18 @@ $(function() {
 // Delete invalid class if input "number of lots" is disabled
 $(function() {
     var delete_class = function () {
-        if ($('input').is(':disabled')) {
-            $(this).removeClass('input-invalid');
+        if ($('#numberOfLots').is(':disabled')) {
+            $('#numberOfLots').removeClass('input-invalid');
         }
-        else {
-            $(this).addClass('input-invalid');
+//        else {
+//            $('#numberOfLots').addClass('input-invalid');
+//        }
+        if ($('#numberOfBids').is(':disabled')) {
+            $('#numberOfBids').removeClass('input-invalid');
         }
+//        else {
+//            $('#numberOfBids').addClass('input-invalid');
+//        }
       };
       $(delete_class);
       $("#procurementMethodType").change(delete_class);

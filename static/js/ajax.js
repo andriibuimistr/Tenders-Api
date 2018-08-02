@@ -434,7 +434,7 @@ $(document).on("focus", '.class-required', function() {
 function validateInputsInteger(list){
         var status = true
         for (i = 0; i < list.length; i++){
-                if (isNaN(list[i].val().trim()) && list[i].val().trim().length > 0) {
+                if (isNaN(list[i].val().trim()) && list[i].val().trim().length > 0 && list[i].is(':enabled')) {
                     list[i].addClass('input-invalid');
                     var status = false;
                 }
