@@ -2,6 +2,7 @@
 from auctions.auction_validators import *
 from tenders.tender_validators import *
 from auctions import auction
+from auctions import privatization
 from datetime import timedelta
 import core
 from tools.pages import Pages
@@ -9,7 +10,7 @@ from flask import Flask, jsonify, request, make_response, render_template, sessi
 from flask_httpauth import HTTPBasicAuth
 import os
 import flask_login
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
@@ -446,13 +447,25 @@ def page_tender_bids():
 #                                                   ###### AUCTION JQUERY REQUESTS ######
 # Create auction
 @app.route('/api/auctions', methods=['POST'])
-@cross_origin(resources=r'/api/*')
+# @cross_origin(resources=r'/api/*')
 def create_auction_function():
     if not session.get('logged_in'):
         return jquery_forbidden_login()
     if not request.form:
         abort(400, 'Form wasn\'t submitted')
     result = auction.create_auction(request.form, session)
+    return jsonify(result[0]), result[1]
+
+
+# Create privatization
+@app.route('/api/privatization', methods=['POST'])
+# @cross_origin(resources=r'/api/*')
+def create_privatization_function():
+    if not session.get('logged_in'):
+        return jquery_forbidden_login()
+    if not request.form:
+        abort(400, 'Form wasn\'t submitted')
+    result = privatization.create_privatization(request.form, session)
     return jsonify(result[0]), result[1]
 
 
@@ -600,6 +613,5 @@ if __name__ == '__main__':
 # TODO Add selects values to report from list, Error alerts,
 # TODO Translations and status/type/creator name instead of id on reports list page, Create function for generate statuses for tenders/monitorings
 # TODO Add validator to create monitoring page
-# TODO Disable Docs for bids checkbox for limited
 # TODO Add status_id when editing report!!!
 # TODO Add universal image for file types of report

@@ -4,9 +4,22 @@ from core import *
 from auction import *
 
 
-def create_asset(items, bids, platform_host, company, asset_accelerator, lot_accelerator, auction_accelerator):
+def create_privatization(ac_request, session):
+    data = ac_request
+    # def create_asset(ac_request, session):
+    # data = auction_validators.validator_create_privatization(pr_request)  # validator of request data
+    number_of_items = int(data['number_of_items'])
+    accelerator_asset = int(data['acceleratorAsset'])
+    accelerator_lot = int(data['acceleratorLot'])
+    accelerator = int(data['accelerator'])
+    company_id = int(data['company_id'])
+    platform_host = data['platform_host']
+    received_auction_status = data['auctionStatus']
+    number_of_bids = int(data['number_of_bids'])
+    # skip_auction = data['skip_auction']!!!
+
     decision = generate_decision()
-    json_asset = generate_asset_json(items, asset_accelerator=asset_accelerator, decision=decision)
+    json_asset = generate_asset_json(number_of_items, asset_accelerator=accelerator_asset, decision=decision)
 
     asset = Privatization('asset')
     asset_publish = asset.publish_asset(json_asset)
@@ -34,7 +47,7 @@ def create_asset(items, bids, platform_host, company, asset_accelerator, lot_acc
     for auction in range(len(lot_auctions)):  # Fill auctions data in lot
         auction_id_long = lot_auctions[auction]['id']
         index = auction + 1
-        lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(index, lot_accelerator=lot_accelerator, auction_accelerator=auction_accelerator), auction_id_long, index)
+        lot.patch_lot_auction(lot_id_long, lot_token, fill_auction_data(index, lot_accelerator=accelerator_lot, auction_accelerator=accelerator), auction_id_long, index)
 
     lot.add_decision_to_lot(lot_id_long, lot_token, decision)
     lot.lot_to_verification(lot_id_long, lot_token)
@@ -89,12 +102,27 @@ def create_asset(items, bids, platform_host, company, asset_accelerator, lot_acc
     auction_status = activate_auction.json()['data']['status']
 
     auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_method_type, auction_status, 1, cdb_version=2)  # add auction data to database
-    core.add_one_tender_company(company_id=company, company_platform_host=platform_host,
-                                entity_id_long=auction_id_long, entity_token=auction_token, entity='auction')  # add auction to local database
-    create_bids(cdb=2, auction_id_long=auction_id_long, procurement_method_type=procurement_method_type, number_of_bids=bids)  # make bids
+    add_auction_to_company = core.add_one_tender_company(company_id=company_id, company_platform_host=platform_host,
+                                                         entity_id_long=auction_id_long, entity_token=auction_token, entity='auction')  # add auction to local database
+    create_bids(cdb=2, auction_id_long=auction_id_long, procurement_method_type=procurement_method_type, number_of_bids=number_of_bids)  # make bids
 
     print('Long: {} Short: {}'.format(auction_id_long, auction_id_short))
-    print('c\'est fini')
+
+    # Initial 'Response JSON' data
+    response_json = dict()
+    response_json['tender_to_company'] = add_auction_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', auction_id_short)
+    response_json['id'] = auction_id_short
+    response_json['status'] = 'error'
+    response_code = 0
+    response_json['auctionStatus'] = 'undefined'
+
+    if received_auction_status == 'active.tendering':
+        if auction_status == 'active.tendering':
+            response_json['auctionStatus'] = auction_status
+            response_json['status'] = 'success'
+            response_code = 201
+
+    return response_json, response_code
 
 
-create_asset(items=2, bids=1, platform_host='http://eauction-dev.byustudio.in.ua', company=306, asset_accelerator=1, lot_accelerator=720, auction_accelerator=360)
+# create_privatization(items=2, bids=1, platform_host='http://eauction-dev.byustudio.in.ua', company=306, asset_accelerator=1, lot_accelerator=720, auction_accelerator=360)

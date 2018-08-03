@@ -186,6 +186,65 @@ $(function() {
 });
 
 
+//Create privatization
+$(function() {
+    $('#createAuctionPrivatization').click(function() {
+        var inputsRequired = [$('#numberOfItems'), $('#numberOfBids'), $('#acceleratorAsset'), $('#acceleratorLot'), $('#accelerator'), $('#companyId')]; // List of required inputs
+        if (!validateInputs(inputsRequired)){
+            return false;
+            }
+        else if (!validateInputsInteger(inputsRequired)){  // all required inputs are integer
+            return false;
+            }
+		else {
+            var form = $("#create-tender");
+            var request_id = randomString(32);
+            var expected_status = $("#create-tender select[name=auctionStatus]").val();
+            var html_for_wait = '<div class="alert-response-status">Waiting for response</div>' +
+                                '<div class="alert-response-description">' +
+                                    '<div class="wait-tender-status"><span>Expected Auction Status: </span>' + expected_status + '</div>' +
+                                '</div>'
+                                ;
+            $('#created_tender_json').prepend('<div class="response-content response-content-waiting" id="' + request_id + '">' + html_for_wait + '</div>');
+            $.ajax({
+                url: '/api/privatization',
+                dataType : 'json',
+                crossDomain: true,
+                data: form.serialize(),
+                type: 'POST',
+                success: function(data, textStatus, xhr) {
+                    var operation_status = data.status;
+                    var tender_status = data.auctionStatus;
+                    var tender_to_company_status = data.tender_to_company[0].status;
+                    var tender_id = data.id;
+                    var tender_link = data.tender_to_company[1];
+                    $('#' + request_id).addClass('response-content-success').toggleClass( "response-content-waiting" );
+                    $('#' + request_id).empty();
+                    $('#' + request_id).prepend('<button class="delete-alert" type="button">x</button>' +
+                                                '<div class="alert-response-status">' + xhr.status + ' ' + textStatus + '</div>' +
+                                                '<div class="alert-response-description">' +
+                                                    '<div class="id-of-tender"><span>Auction ID: </span><a href="' + tender_link + '" target="_blank">' + tender_id + '</a></div>' +
+                                                    '<div class="actual-tender-status"><span>Auction status: </span>' + tender_status + '</div>' +
+                                                    '<div class="operation-status"><span>Request status: </span>' + operation_status + '</div>' +
+                                                    '<div class="tender-to-company-status"><span>Add to company status: </span>' + tender_to_company_status + '</div>' +
+                                                '</div>'
+                                                );
+                },
+                error: function (jqXHR) {
+                    var error_description = JSON.parse(jqXHR.responseText).description;
+                    var error_type = JSON.parse(jqXHR.responseText).error;
+                    $('#' + request_id).addClass('response-content-error').toggleClass( "response-content-waiting" );
+                    $('#' + request_id).empty();
+                    $('#' + request_id).append('<button class="delete-alert" type="button">x</button>' +
+                    '<div class="alert-response-status">' + error_type + '</div>' +
+                    '<div class="alert-response-description">' + error_description + '</div>'
+                    );
+                }
+            });
+        };
+    });
+});
+
 //Add auction bid to company
 $(document).on("click",".auction-bid-company-button", function() {
         $(this).prop('disabled', true);
