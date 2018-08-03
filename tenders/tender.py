@@ -290,6 +290,13 @@ def creation_of_tender(tc_request, user_id):
 
                                         tender.activate_2nd_stage(second_stage_tender_id, second_stage_token, procurement_method)
 
+                                        add_2nd_stage_to_company = core.add_one_tender_company(company_id, platform_host, second_stage_tender_id, second_stage_token, 'tender')
+                                        response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
+                                        response_json['tender_to_company'] = add_2nd_stage_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', add_2nd_stage_to_company[2])
+
+                                        if add_documents_tender == 1:
+                                            add_documents_to_tender(second_stage_tender_id, second_stage_token, list_of_id_lots, api_version)
+
                                         time.sleep(1)
                                         if received_tender_status == 'active.tendering.stage2':
                                             get_t_info = tender.get_tender_info(second_stage_tender_id)
@@ -356,10 +363,6 @@ def creation_of_tender(tc_request, user_id):
                                                             continue
                                                         else:
                                                             abort(422, 'Invalid tender status: {}'.format(get_t_info.json()['data']['status']))
-
-                                        add_2nd_stage_to_company = core.add_one_tender_company(company_id, platform_host, second_stage_tender_id, second_stage_token, 'tender')
-                                        response_json['second_stage_to_company'] = add_2nd_stage_to_company[0]
-                                        response_json['tender_to_company'] = add_2nd_stage_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', add_2nd_stage_to_company[2])
                                         break
                                     else:
                                         if attempt_counter < 50:

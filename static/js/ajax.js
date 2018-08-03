@@ -434,7 +434,7 @@ $(document).on("focus", '.class-required', function() {
 function validateInputsInteger(list){
         var status = true
         for (i = 0; i < list.length; i++){
-                if (isNaN(list[i].val().trim()) && list[i].val().trim().length > 0 && list[i].is(':enabled')) {
+                if ((isNaN(list[i].val().trim()) && list[i].val().trim().length > 0 && list[i].is(':enabled')) || list[i].val().includes('.') && list[i].is(':enabled')) {
                     list[i].addClass('input-invalid');
                     var status = false;
                 }
@@ -459,7 +459,7 @@ $(document).on("focus", '.input-invalid', function() {
 });
 
 $(document).on("blur", '.class-int', function() { // Check on blur if input value is integer
-    if (isNaN($(this).val())) {
+    if (isNaN($(this).val()) || $(this).val().includes('.')) {
         $(this).addClass('input-invalid');
     }
 });
