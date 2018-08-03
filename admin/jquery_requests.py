@@ -43,12 +43,8 @@ def add_user(request, session):
     new_user_data = request.form
     if len(request.form['user-name']) < 4:
         return abort(400, 'User name length can\'t be less than 4')
-    if ' ' in request.form['user-name']:
-        return abort(422, 'U can\'t use spaces in username')
     if len(request.form['user-password']) < 4:
         return abort(400, 'User password length can\'t be less than 4')
-    if ' ' in request.form['user-password']:
-        return abort(422, 'U can\'t use spaces in password')
     all_users = core.get_list_of_users()
     list_login = []
     for x in range(len(all_users)):

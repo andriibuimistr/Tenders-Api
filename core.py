@@ -370,7 +370,7 @@ def pass_pre_qualification(qualifications, tender_id_long, tender_token, api_ver
         else:
             time.sleep(1)
             add_document_to_entity(tender_id_long, qualification_id, tender_token, api_version, 'qualifications', False)
-            tender.approve_prequalification(tender_id_long, qualification_id, tender_token, prequalification_decline_bid_json)
+            tender.approve_prequalification(tender_id_long, qualification_id, tender_token, json_status('unsuccessful'))
 
 
 def pass_second_pre_qualification(qualifications, tender_id, tender_token, api_version):
@@ -385,7 +385,7 @@ def pass_second_pre_qualification(qualifications, tender_id, tender_token, api_v
 def run_activate_award(api_version, tender_id_long, tender_token, list_of_awards, procurement_method):
     tender = TenderRequests(api_version)
     award_number = 0
-    activate_award_json = activate_award_json_select(procurement_method)
+    activate_award_json = activate_award_limited_json(procurement_method)
     for award in range(len(list_of_awards)):
         award_number += 1
         award_id = list_of_awards[award]['id']
