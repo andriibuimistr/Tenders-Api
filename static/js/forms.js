@@ -67,13 +67,13 @@ $(function() {
         if (jQuery.inArray($("#procurementMethodType").val(), limited)!='-1') {
             $("#if_features").prop('disabled', true).prop('checked', false);
             $("#skip_tender_auction").prop('disabled', true).prop('checked', false);
-//            $("#docs_for_bids").prop('disabled', true).prop('checked', false);
+            $("#docs_for_bids").prop('disabled', true)
             $('#numberOfBids').prop('disabled', true);
         }
         else {
             $("#if_features").prop('disabled', false);
             $("#skip_tender_auction").prop('disabled', false).prop('checked', true);
-//            $("#docs_for_bids").prop('disabled', false).prop('checked', true);
+            $("#docs_for_bids").prop('disabled', false)
             $('#numberOfBids').prop('disabled', false);
         }
       };
