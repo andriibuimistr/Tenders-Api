@@ -16,6 +16,12 @@ class AuctionPages:
         return render_template('index.html', content=content)
 
     @staticmethod
+    def page_create_privatization():
+        content = render_template('auctions/create_privatization.html', platforms=core.get_list_of_platforms(2),
+                                  statuses=auction_status_to_create)
+        return render_template('index.html', content=content)
+
+    @staticmethod
     def page_auction_bids():
         content = render_template('auctions/auction_bids.html')
         return render_template('index.html', content=content)

@@ -67,10 +67,10 @@ def generate_decision():
     return decisions
 
 
-def generate_asset_json(number_of_items, accelerator, decision):
+def generate_asset_json(number_of_items, asset_accelerator, decision):
     asset_data = {"data": {
                         "decisions": [decision['data']],
-                        "sandboxParameters": "quick, accelerator={}".format(accelerator),
+                        "sandboxParameters": "quick, accelerator={}".format(asset_accelerator),
                         "status": "draft",
                         "assetType": "domain",
                         "description": fake.text(200).replace('\n', ' '),
@@ -165,7 +165,7 @@ def generate_lot_json(asset_id, accelerator):
     return lot_json
 
 
-def fill_auction_data(number, auction_accelerator, lot_accelerator):
+def fill_auction_data(number, lot_accelerator, auction_accelerator):
     if number == 1:
         auction_data = {"data": {
                             "minimalStep": {

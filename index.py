@@ -494,6 +494,15 @@ def page_create_auction():
         return AuctionPages.page_create_auction()
 
 
+# Generate template for privatization creation page
+@app.route("/auctions/create-privatization")
+def page_create_privatization():
+    if not session.get('logged_in'):
+        return login_form()
+    else:
+        return AuctionPages.page_create_privatization()
+
+
 # Generate template for show page with list of bids for auction
 @app.route("/auctions/bids")
 def page_auction_bids():

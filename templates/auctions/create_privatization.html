@@ -1,0 +1,66 @@
+<div class="heading main_title">
+                    <h1>{{ lng.page_title('page_title_creation_of_privatization') }}</h1>
+                </div>
+                <div class="section_content">
+                    <div class="create-tender-form main-form">
+                        <form class="form-create-tender" id="create-tender" role="form">
+                        <div class="create-tender-form-inputs">
+                            <div class="number-of-items col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="number_of_items" id="numberOfItems" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_number_of_items') }}" maxlength="2">
+                            </div>
+                            <div class="number-of-bids col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="number_of_bids" id="numberOfBids" class="form-control class-int" placeholder="{{ lng.form('form_placeholder_number_of_bids') }}" maxlength="2">
+                            </div>
+                            <div class="accelerator col-lg-6 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="acceleratorAsset" id="acceleratorAsset" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_accelerator_asset') }}" maxlength="5">
+                            </div>
+                            <div class="accelerator col-lg-6 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="acceleratorLot" id="acceleratorLot" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_accelerator_lot') }}" maxlength="5">
+                            </div>
+                            <div class="accelerator col-lg-6 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="accelerator" id="accelerator" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_accelerator') }}" maxlength="5">
+                            </div>
+                            <div class="company_id col-lg-9 col-md-48 col-sm-48 col-xs-48">
+                                <input type="text" name="company_id" id="companyId" class="form-control class-required class-int" placeholder="{{ lng.form('form_placeholder_company_id') }}" maxlength="4">
+                            </div>
+                            <div class="platform-host col-lg-18 col-md-48 col-sm-48 col-xs-48">
+                                <select name="platform_host" class="form-control" size="1">
+                                    {% for platform in range(platforms|length) %}
+                                  <option value="{{platforms[platform].platform_url}}">{{platforms[platform].platform_name}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="tender-status col-lg-15 col-md-48 col-sm-48 col-xs-48">
+                                <select name="auctionStatus" class="form-control" size="1">
+                                    {% for status in statuses %}
+                                  <option value="{{status}}">{{status}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="skip_auction" id="skip_auction" value="1"> {{ lng.form('form_checkbox_skip_auction') }}<br>
+                            </label>
+                        </div>
+                            <div class="create-tender-button-div">
+                                <button class="btn btn-success create-tender-button" id="createAuctionPrivatization" type="button">{{ lng.button('button_create_auction') }}</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel panel-default panel-created-tender">
+                      <!-- Default panel contents -->
+                      <div class="panel-heading response-json-header">
+                          <div class="response-json-title">
+                              {{ lng.section('section_create_tender_response') }}
+                          </div>
+                          <div class="clear-alerts-button">
+                              <button class="btn btn-warning btn-xs" id="clear-createTender-response" type="button">{{ lng.button('button_delete_alerts') }}</button>
+                          </div>
+                      </div>
+                      <div class="panel-body panel-created-tender-json">
+                        <div id="created_tender_json" class="response-json"></div>
+                          <div class="response-json-bottom">
+
+                          </div>
+                      </div>
+                    </div>
+                </div>
