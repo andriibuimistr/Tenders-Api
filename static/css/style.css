@@ -768,7 +768,8 @@ footer {
 
 .report-type-improvement, .report-type-bug, .report-type-task,
 .report-priority-highest, .report-priority-high, .report-priority-medium,
-.report-priority-low, .report-priority-lowest {
+.report-priority-low, .report-priority-lowest, .report-status-new,
+.report-status-reopened, .report-status-done {
     height: 20px;
     width: 20px;
     background-repeat: no-repeat;
@@ -804,6 +805,18 @@ footer {
 
 .report-priority-lowest {
     background-image: url("../images/icons/report_priority_lowest.png");
+}
+
+.report-status-new {
+    background-image: url("../images/icons/report_status_new.png");
+}
+
+.report-status-reopened {
+    background-image: url("../images/icons/report_status_reopened.png");
+}
+
+.report-status-done {
+    background-image: url("../images/icons/report_status_done.png");
 }
 
 .report-actions {

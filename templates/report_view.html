@@ -21,7 +21,8 @@
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-24">
             <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_status') }}</label>
-            <div class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.report_status('report_status_' + report_status[report.status_id]) }}</div>
+            <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5 {{ 'report-status-' + report_status[report.status_id] }}"></div>
+            <div class="col-lg-41 col-md-41 col-sm-41 col-xs-41">{{ lng.report_status('report_status_' + report_status[report.status_id]) }}</div>
         </div>
         <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_content') }}</label>
         <div class="block-info-in-frame report-view-content col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.content }}</div>
