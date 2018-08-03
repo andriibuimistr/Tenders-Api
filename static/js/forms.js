@@ -193,13 +193,18 @@ $(function() {
 $(function() {
 	$('#showTenderIdInput').prop('checked', true);
     var disable_input = function () {
-        if ($('#showTenderIdInput').is(':checked')) {
+        if ($('#showTenderIdInput').is(':checked')) {  // If is checked
             $("#tender_id_long").prop('disabled', true);
+            $("#company_id").prop('disabled', false);
 			$('#monitoringStatus option[value="completed"]').prop('disabled', false);
         }
         else {
             $("#tender_id_long").prop('disabled', false);
+            $("#company_id").prop('disabled', true);
 			$('#monitoringStatus option[value="completed"]').prop('disabled', true);
+			if ($('#company_id').is(':disabled')) {
+                $('#company_id').removeClass('input-invalid');
+            }
         }
 		
 		if ($('#monitoringStatus option:selected').is(':disabled')){  // select first enabled option only if current option is disabled
