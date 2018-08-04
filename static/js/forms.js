@@ -276,6 +276,31 @@ $(document).on("click",".doReload", function(){
 	location.reload();
 });
 
+$(document).on("blur", '.class-required', function() {
+  if ($(this).val().trim() === "") {
+   $(this).addClass('input-invalid');
+  }
+});
+
+$(document).on("focus", '.class-required', function() {
+  if ($(this).val().trim() === "") {
+   $(this).removeClass('input-invalid');
+  }
+});
+
+$(document).on("focus", '.input-invalid', function() {
+   $(this).removeClass('input-invalid');
+});
+
+$(document).on("blur", '.class-int', function() { // Check on blur if input value is integer
+    if (isNaN($(this).val()) || $(this).val().includes('.')) {
+        $(this).addClass('input-invalid');
+    }
+});
+
+$(document).on("blur", 'input:text', function() { // Trim input value
+    $(this).val($(this).val().trim())
+});
 
 // Convert text into html
 //function parseTextToHtml(locator) {

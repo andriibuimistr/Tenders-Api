@@ -363,8 +363,11 @@ $(document).on("click","#addReportButton", function(){
         var inputs = [$('#reportTitle'), $('#reportContent')]; // List of required inputs
         if (!validateInputs(inputs)){
             console.log('BAD')
-            return false
+            if ($('#reportContent').hasClass('input-invalid')) {
+                $('.note-editor').addClass('input-invalid')
             }
+            return false
+        }
         else {
             var filesNumber = $('.form-control-file').length;  // Get number of files inputs
             var fd = new FormData();
@@ -399,8 +402,11 @@ $(document).on("click","#addReportButton", function(){
 $(document).on("click","#saveReportButton", function(){
         var inputs = [$('#reportTitle'), $('#reportContent')]; // List of required inputs
         if (!validateInputs(inputs)){
-            return false
+            if ($('#reportContent').hasClass('input-invalid')) {
+                $('.note-editor').addClass('input-invalid')
             }
+            return false
+        }
         else {
             var report_id =  $('#reportId').val()
             var filesNumber = $('.form-control-file').length;  // Get number of files inputs
@@ -500,29 +506,3 @@ function validateInputsInteger(list){
             }
         return status
 }
-
-$(document).on("blur", '.class-required', function() {
-  if ($(this).val().trim() === "") {
-   $(this).addClass('input-invalid');
-  }
-});
-
-$(document).on("focus", '.class-required', function() {
-  if ($(this).val().trim() === "") {
-   $(this).removeClass('input-invalid');
-  }
-});
-
-$(document).on("focus", '.input-invalid', function() {
-   $(this).removeClass('input-invalid');
-});
-
-$(document).on("blur", '.class-int', function() { // Check on blur if input value is integer
-    if (isNaN($(this).val()) || $(this).val().includes('.')) {
-        $(this).addClass('input-invalid');
-    }
-});
-
-$(document).on("blur", 'input:text', function() { // Trim input value
-    $(this).val($(this).val().trim())
-});
