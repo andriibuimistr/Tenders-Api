@@ -261,7 +261,7 @@ $(document).on("click","#editReportButton", function(){
 });
 
 // Close modal window
-$(document).on("click",".close", function(){
+$(document).on("click","#closeModal", function(){
 	$('.modal-bug-report').hide();
 	$('#modalWindowContainer').empty();
 });
@@ -271,4 +271,22 @@ $(document).on("click",".doReload", function(){
 	$('.modal-bug-report').hide();
 	$('#modalWindowContainer').empty();
 	location.reload();
+});
+
+
+// Convert text into html
+function parseTextToHtml(locator) {
+	"use strict";
+	var str;
+	var html;
+    str = locator.text();
+	html = $.parseHTML(str);
+	locator.empty();
+	locator.append(html);
+}
+
+// Convert content (text) of report into html
+$( document ).ready(function() {
+	"use strict";
+	parseTextToHtml($('.report-view-content'));
 });

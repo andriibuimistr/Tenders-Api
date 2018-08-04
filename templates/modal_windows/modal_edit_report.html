@@ -1,6 +1,9 @@
+<!-- include summernote editor css/js -->
+<script src='/../static/plugins/summernote_editor/summernote.js'></script>
+<link rel="stylesheet" href='/../static/plugins/summernote_editor/summernote.css'>
 <div class="modal-bug-report" id="modalBugReport">
   <div class="modal-header">
-    <a class="close">×</a>
+    <a class="close" id="closeModal">×</a>
     <h3>{{ lng.section('section_edit_bug_report') }}</h3>
   </div>
   <div class="modal-body">
@@ -63,3 +66,8 @@
       <button class="btn btn-primary" id="saveReportButton" type="button">{{ lng.button('button_save') }}</button>
   </div>
 </div>
+<script>
+    $(document).ready(function() {
+        $('#reportContent').summernote({height: 200});
+    });
+</script>

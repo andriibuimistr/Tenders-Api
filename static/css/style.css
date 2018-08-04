@@ -715,6 +715,7 @@ footer {
 	max-width: 80%;
 	border: 1px solid #DDD;
 	border-radius: 3px;
+	z-index: 2000;
 }
 
 .modal-bug-report .modal-header {
@@ -752,10 +753,11 @@ footer {
 
 /*REPORTS*/
 .block-info-in-frame {
-    padding: 5px !important;
+    padding: 10px !important;
     border: 1px solid #CCC;
     border-radius: 3px;
     margin-bottom: 6px;
+    white-space: pre-wrap;
 }
 
 .report-info {

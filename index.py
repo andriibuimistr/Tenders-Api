@@ -10,7 +10,7 @@ from flask import Flask, jsonify, request, make_response, render_template, sessi
 from flask_httpauth import HTTPBasicAuth
 import os
 import flask_login
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
@@ -572,6 +572,7 @@ def page_user_preferences():
 # ############################################################## MODAL WINDOWS ##############################################################################
 #                                                       ###### ADD REPORT WINDOW ######
 @app.route("/modal/add_report", methods=['GET', 'POST'])
+@cross_origin(resources=r'/modal/*')
 def add_report():
     if not session.get('logged_in'):
         return jquery_forbidden_login()
@@ -585,6 +586,7 @@ def add_report():
 
 
 @app.route("/modal/edit_report/<report_id>", methods=['GET', 'POST'])
+@cross_origin(resources=r'/modal/*')
 def edit_report(report_id):
     if not session.get('logged_in'):
         return jquery_forbidden_login()

@@ -14,7 +14,7 @@
                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-16 {{ 'report-type-' + report_types[reports[report].type_id] }}" title="{{ lng.report_type('report_type_' + report_types[reports[report].type_id]) }}"></div>
                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-16 {{ 'report-priority-' + report_priorities[reports[report].priority_id] }}"
                          title="{{ lng.report_priority('report_priority_' + report_priorities[reports[report].priority_id]) }}"></div>
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-16 {{ 'report-status-' + report_status[reports[report].status_id] }}"></div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-16 {{ 'report-status-' + report_status[reports[report].status_id] }}" title="{{ lng.report_status('report_status_' + report_status[reports[report].status_id]) }}"></div>
                 </div>
             {% endfor %}
         {% endif %}
