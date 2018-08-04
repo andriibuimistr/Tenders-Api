@@ -6,6 +6,7 @@ from cdb_requests import *
 from document import *
 import binascii
 from config import *
+from sqlalchemy import asc, desc
 
 
 def get_random_32():
@@ -273,19 +274,19 @@ def get_list_of_report_statuses_as_object():
 
 
 def get_list_of_tenders():
-    tenders_list = Tenders.query.order_by("id desc").all()  # from last to first
+    tenders_list = Tenders.query.order_by(desc(Tenders.id)).all()  # from last to first
     db.session.remove()
     return tenders_list
 
 
 def get_list_of_auctions():
-    auctions_list = Auctions.query.order_by("id desc").all()  # from last to first
+    auctions_list = Auctions.query.order_by(desc(Auctions.id)).all()  # from last to first (can de just "id desc" instead of desc(Auctions.id))
     db.session.remove()
     return auctions_list
 
 
 def get_list_of_reports():
-    reports_list = Reports.query.order_by("id asc").all()  # from first to last
+    reports_list = Reports.query.order_by(asc(Reports.id)).all()  # from first to last
     db.session.remove()
     return reports_list
 

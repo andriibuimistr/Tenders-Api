@@ -165,7 +165,7 @@ def generate_lot_json(asset_id, accelerator):
     return lot_json
 
 
-def fill_auction_data(number, lot_accelerator, auction_accelerator):
+def fill_auction_data(number, lot_accelerator, auction_accelerator, skip_auction):
     if number == 1:
         auction_data = {"data": {
                             "minimalStep": {
@@ -189,7 +189,7 @@ def fill_auction_data(number, lot_accelerator, auction_accelerator):
                               "currency": "UAH",
                               "amount": 700
                             },
-                            "submissionMethodDetails": "quick",
+                            "submissionMethodDetails": "quick{}".format(skip_auction),
                             "procurementMethodDetails": "quick, accelerator={}".format(auction_accelerator),
                             "bankAccount": {
                                 "accountIdentification": [

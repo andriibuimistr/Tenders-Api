@@ -83,7 +83,9 @@ def delete_tender(tender_id):
         existing_tenders_id.append(str(list_of_tenders_id_db[x].id))
     if tender_id not in existing_tenders_id:
         return abort(404, 'Tender does not exist')
-    Tenders.query.filter_by(id=tender_id).delete()  # TODO Delete related bids
+    tender_id_long = Tenders.query.filter_by(id=tender_id).first().tender_id_long
+    BidsTender.query.filter_by(tender_id=tender_id_long).delete()
+    Tenders.query.filter_by(id=tender_id).delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200
@@ -91,12 +93,14 @@ def delete_tender(tender_id):
 
 def delete_auction(auction_id):
     existing_auctions_id = []
-    list_of_auctions_id_db = core.get_list_of_tenders()
+    list_of_auctions_id_db = core.get_list_of_auctions()
     for x in range(len(list_of_auctions_id_db)):
         existing_auctions_id.append(str(list_of_auctions_id_db[x].id))
     if auction_id not in existing_auctions_id:
-        return abort(404, 'Tender does not exist')
-    Auctions.query.filter_by(id=auction_id).delete()  # TODO Delete related bids
+        return abort(404, 'Auction does not exist')
+    auction_id_long = Auctions.query.filter_by(id=auction_id).first().auction_id_long
+    BidsAuction.query.filter_by(auction_id=auction_id_long).delete()
+    Auctions.query.filter_by(id=auction_id).delete()
     db.session.commit()
     db.session.remove()
     return jsonify({"status": "Success"}), 200

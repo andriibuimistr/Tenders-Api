@@ -19,6 +19,7 @@ class RU(object):
                 'menu_item_create_monitoring': u'Создать мониторинг',
                 'menu_item_tender_bids': u'Ставки тендера',
                 'menu_item_create_auction': u'Создать аукцион',
+                'menu_item_create_privatization': u'Создать аукцион МП',
                 'menu_item_auction_bids': u'Ставки аукциона',
                 'menu_item_platforms': u'Площадки',
                 'menu_item_users': u'Пользователи',
@@ -35,6 +36,7 @@ class RU(object):
                 'page_title_bids_of_tender': u'Ставки закупки',
                 'page_title_creation_of_monitoring': u'Создание мониторинга',
                 'page_title_creation_of_auction': u'Создание аукциона',
+                'page_title_creation_of_privatization': u'Создание аукциона МП',
                 'page_title_bids_of_auctions': u'Ставки аукциона',
                 'page_title_platforms_management': u'Управление площадками',
                 'page_title_users_management': u'Управление пользователями',
@@ -51,6 +53,8 @@ class RU(object):
                 'form_placeholder_number_of_items': u'Кол-во предметов',
                 'form_placeholder_number_of_bids': u'Кол-во ставок',
                 'form_placeholder_accelerator': u'Ускорение',
+                'form_placeholder_accelerator_asset': u'Ускорение актива',
+                'form_placeholder_accelerator_lot': u'Ускорение лота',
                 'form_placeholder_company_id': u'ID компании',
                 'form_placeholder_paste_json': u'Место для вставки JSON',
                 'form_placeholder_platform_name': u'Имя площадки',
@@ -153,7 +157,10 @@ class RU(object):
     # Report statuses
     @staticmethod
     def report_statuses(key):
-        return {'report_status_new': u'Новый'}.get(key, key)
+        return {'report_status_new': u'Новый',
+                'report_status_inprogress': u'В работе',
+                'report_status_reopened': u'Переоткрыт',
+                'report_status_done': u'Готово'}.get(key, key)
 
     # Report types
     @staticmethod
@@ -189,6 +196,7 @@ class EN(object):
                 'menu_item_create_monitoring': u'Create monitoring',
                 'menu_item_tender_bids': u'Bids of tender',
                 'menu_item_create_auction': u'Create auction',
+                'menu_item_create_privatization': u'Create auction SP',
                 'menu_item_auction_bids': u'Bids of auction',
                 'menu_item_platforms': u'Platforms',
                 'menu_item_users': u'Users',
@@ -206,6 +214,7 @@ class EN(object):
                 'page_title_creation_of_monitoring': u'Creation of monitoring',
                 'page_title_creation_of_auction': u'Creation of auction',
                 'page_title_bids_of_auctions': u'Bids of auction',
+                'page_title_creation_of_privatization': u'Creation of auction SP',
                 'page_title_platforms_management': u'Platforms management',
                 'page_title_users_management': u'Users management',
                 'page_title_tenders_management': u'Tenders management',
@@ -221,6 +230,8 @@ class EN(object):
                 'form_placeholder_number_of_items': u'Number of items',
                 'form_placeholder_number_of_bids': u'Number of bids',
                 'form_placeholder_accelerator': u'Accelerator',
+                'form_placeholder_accelerator_asset': u'Asset accelerator',
+                'form_placeholder_accelerator_lot': u'Lot accelerator',
                 'form_placeholder_company_id': u'Company ID',
                 'form_placeholder_paste_json': u'Paste your JSON here',
                 'form_placeholder_platform_name': u'Platform name',
@@ -323,7 +334,10 @@ class EN(object):
     # Report statuses
     @staticmethod
     def report_statuses(key):
-        return {'report_status_new': u'New'}.get(key, key)
+        return {'report_status_new': u'New',
+                'report_status_inprogress': u'In progress',
+                'report_status_reopened': u'Re-opened',
+                'report_status_done': u'Done'}.get(key, key)
 
     # Report types
     @staticmethod
@@ -359,6 +373,7 @@ class ES(object):
                 'menu_item_create_monitoring': u'Crear supervisión',
                 'menu_item_tender_bids': u'Apuestas de licitación',
                 'menu_item_create_auction': u'Crear subasta',
+                'menu_item_create_privatization': u'Crear subasta PP',
                 'menu_item_auction_bids': u'Apuestas de subasta',
                 'menu_item_platforms': u'Plataformas',
                 'menu_item_users': u'Usuarios',
@@ -376,6 +391,7 @@ class ES(object):
                 'page_title_creation_of_monitoring': u'Creación de supervisión',
                 'page_title_creation_of_auction': u'Creación de subasta',
                 'page_title_bids_of_auctions': u'Apuestas de subasta',
+                'page_title_creation_of_privatization': u'Creación de subasta PP',
                 'page_title_platforms_management': u'Gestión de plataformas',
                 'page_title_users_management': u'Gestión de usuarios',
                 'page_title_tenders_management': u'Gestión de licitaciones',
@@ -391,6 +407,8 @@ class ES(object):
                 'form_placeholder_number_of_items': u'Núm. de artículos',
                 'form_placeholder_number_of_bids': u'Núm. de apuestas',
                 'form_placeholder_accelerator': u'Acelerador',
+                'form_placeholder_accelerator_asset': u'Acelerador del activo',
+                'form_placeholder_accelerator_lot': u'Acelerador del lote',
                 'form_placeholder_company_id': u'ID de compañía',
                 'form_placeholder_paste_json': u'Lugar para insertar JSON',
                 'form_placeholder_platform_name': u'Nombre de plataforma',
@@ -493,7 +511,10 @@ class ES(object):
     # Report statuses
     @staticmethod
     def report_statuses(key):
-        return {'report_status_new': u'Nuevo'}.get(key, key)
+        return {'report_status_new': u'Nuevo',
+                'report_status_inprogress': u'En curso',
+                'report_status_reopened': u'Reabierto',
+                'report_status_done': u'Listo'}.get(key, key)
 
     # Report types
     @staticmethod
