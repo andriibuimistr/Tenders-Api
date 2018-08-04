@@ -33,7 +33,7 @@ class AdminPages:
     @staticmethod
     def page_admin_reports():  # generate page with list of user for admin
         content = render_template('admin/reports.html', report_types=core.get_list_of_report_types(),
-                                  report_status=core.get_list_of_report_statuses(),
+                                  report_statuses=core.get_list_of_report_statuses(),
                                   report_priorities=core.get_list_of_report_priorities(),
                                   reports=core.get_list_of_reports())
         return render_template('index.html', content=content)
@@ -42,7 +42,7 @@ class AdminPages:
     def page_admin_report_view(report_id):
         content = render_template('report_view.html', report=core.get_report_info(report_id),
                                   report_types=core.get_list_of_report_types(),
-                                  report_status=core.get_list_of_report_statuses(),
+                                  report_statuses=core.get_list_of_report_statuses(),
                                   report_priorities=core.get_list_of_report_priorities(),
                                   report_documents=core.get_report_documents(report_id))
         return render_template('index.html', content=content)

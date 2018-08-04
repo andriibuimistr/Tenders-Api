@@ -40,6 +40,18 @@
                 {% endfor %}
             </select>
         </div>
+        <div class="form-group">
+            <label for="reportStatus">{{ lng.label('label_report_status') }}</label>
+            <select name="reportStatus" class="form-control" id="reportStatus">
+                {% for status in range(report_statuses|length) %}
+                    {% if report_statuses[status].id == report_data.status_id %}
+                        <option value="{{ report_statuses[status].id }}" selected="selected">{{ lng.report_status('report_status_' + report_statuses[status].name) }}</option>
+                    {% else %}
+                        <option value="{{ report_statuses[status].id }}">{{ lng.report_status('report_status_' + report_statuses[status].name) }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
         <div class="report-files col-lg-48 col-md-48 col-sm-48 col-xs-48">
             {% for document in range(report_documents|length) %}
                 <div class="report-file report-files-item col-lg-48 col-md-48 col-sm-48 col-xs-48" id="{{ 'document-id-' + report_documents[document].id|string }}">

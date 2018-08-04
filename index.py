@@ -25,7 +25,7 @@ from language.translations import Translations
 from config import REPORTS_DOCS_DIR
 
 auth = HTTPBasicAuth()
-app = Flask(__name__,)
+app = Flask(__name__)
 app.secret_key = os.urandom(32)
 CORS(app)
 
@@ -592,8 +592,11 @@ def edit_report(report_id):
         return jquery_forbidden_login()
     report_data = core.get_report_info(report_id)
     if request.method == 'GET':
-        return render_template('modal_windows/modal_edit_report.html', report_types=core.get_list_of_report_types_as_object(),
-                               report_priorities=core.get_list_of_report_priorities_as_object(), report_data=report_data,
+        return render_template('modal_windows/modal_edit_report.html',
+                               report_types=core.get_list_of_report_types_as_object(),
+                               report_priorities=core.get_list_of_report_priorities_as_object(),
+                               report_statuses=core.get_list_of_report_statuses_as_object(),
+                               report_data=report_data,
                                report_documents=core.get_report_documents(report_id))
     else:
         if core.save_edited_report(request, report_data):

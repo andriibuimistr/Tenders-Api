@@ -265,6 +265,13 @@ def get_list_of_report_priorities_as_object():
     return report_priorities
 
 
+# get list of report statuses as object
+def get_list_of_report_statuses_as_object():
+    report_statuses = ReportStatus.query.all()
+    db.session.remove()
+    return report_statuses
+
+
 def get_list_of_tenders():
     tenders_list = Tenders.query.order_by("id desc").all()  # from last to first
     db.session.remove()
@@ -446,7 +453,8 @@ def save_edited_report(request, report_data):
     report_type_id = int(request.form['reportType'])
     report_content = request.form['reportContent']
     report_priority = int(request.form['reportPriority'])
-    Reports.query.filter_by(id=report_data.id).update(dict(title=report_title, type_id=report_type_id, content=report_content, priority_id=report_priority, status_id=1))
+    report_status = int(request.form['reportStatus'])
+    Reports.query.filter_by(id=report_data.id).update(dict(title=report_title, type_id=report_type_id, content=report_content, priority_id=report_priority, status_id=report_status))
     db.session.commit()
     db.session.remove()
     save_documents_for_report(request, report_data.id_long)
