@@ -41,3 +41,5 @@ document_types_for_contract = ['notice', 'contractSigned', 'contractArrangements
 
 monitoring_status_list = ['active', 'addressed', 'completed', 'cancelled', 'declined', 'closed', 'active.stopped', 'addressed.stopped', 'declined.stopped']
 monitoring_status_list_violation_false = ['declined', 'closed', 'stopped', 'declined.stopped']
+create_monitoring_required_fields = ['procurementMethodType', 'accelerator', 'platform_host', 'api_version', 'monitoringStatus']
+monitoring_status_list_with_high_acceleration = ['closed', 'completed']

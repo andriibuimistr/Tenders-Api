@@ -197,6 +197,9 @@ $(function() {
             $("#tender_id_long").prop('disabled', true);
             $("#company_id").prop('disabled', false);
 			$('#monitoringStatus option[value="completed"]').prop('disabled', false);
+            if ($('#tender_id_long').is(':disabled')) {
+                $('#tender_id_long').removeClass('input-invalid');
+            }
         }
         else {
             $("#tender_id_long").prop('disabled', false);

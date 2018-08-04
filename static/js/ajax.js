@@ -296,7 +296,7 @@ $(function() {
 //Create Monitoring
 $(function() {
     $('#createMonitoring').click(function() {
-		var inputsRequired = [$('#accelerator'), $('#company_id')]; // List of required inputs
+		var inputsRequired = [$('#accelerator'), $('#company_id'), $('#tender_id_long')]; // List of required inputs
 		var inputsInteger = [$('#accelerator'), $('#company_id')]; // List of int inputs
         if (!validateInputs(inputsRequired)){
             return false;

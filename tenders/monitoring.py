@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from tenders.data_for_tender import *
+from tenders.tender_validators import validator_create_monitoring
 from tenders.data_for_monitoring import *
 from core import *
 from tenders.tender import tender_to_db
@@ -13,9 +14,9 @@ def wait_for_elimination_period_end_date(monitoring, monitoring_id_long, api_ver
 
 
 def creation_of_monitoring(data, user_id):
+    validator_create_monitoring(data)
     procurement_method = data["procurementMethodType"]
     monitoring_accelerator = int(data["accelerator"])
-    company_id = int(data['company_id'])
     platform_host = data['platform_host']
     api_version = data['api_version']
     received_monitoring_status = data['monitoringStatus']
@@ -33,8 +34,9 @@ def creation_of_monitoring(data, user_id):
         get_t_info = tender.get_tender_info(tender_id_long)
         tender_token = None
         tender_id_short = get_t_info.json()['data']['tenderID']
-        response_json['tender_to_company'] = '', '#'
+        response_json['tender_to_company'] = {'status': 'unknown company'}, '{}{}{}'.format(platform_host, '/buyer/tender/view/', tender_id_short)
     else:
+        company_id = int(data['company_id'])
         json_tender = generate_tender_json(procurement_method, number_of_lots=0, number_of_items=3,
                                            accelerator=1, received_tender_status='active.tendering',
                                            list_of_lots_id=[], if_features=0, skip_auction=True)

@@ -102,6 +102,15 @@ def validator_create_tender(data):
             abort(422, 'For {} accelerator value can be less than 30 for the following status only: {}'.format('"belowThreshold"', 'active.enquiries'))
 
 
+def validator_create_monitoring(data):
+    for field in range(len(create_monitoring_required_fields)):
+        if create_monitoring_required_fields[field] not in data:
+            abort(400, "Field '{}' is required. List of required fields: {}".format(create_monitoring_required_fields[field], create_monitoring_required_fields))
+
+    if data['monitoringStatus'] in monitoring_status_list_with_high_acceleration and int(data['accelerator']) < 1440:
+        abort(422, 'Accelerator can\'t be less than 1440 for "{}" status'.format(data['monitoringStatus']))
+
+
 def validator_add_tender_bid_to_company(bid_id, data):
     list_of_bids = BidsTender.query.all()
     list_bid = []
