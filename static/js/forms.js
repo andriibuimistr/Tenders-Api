@@ -275,18 +275,12 @@ $(document).on("click",".doReload", function(){
 
 
 // Convert text into html
-function parseTextToHtml(locator) {
-	"use strict";
-	var str;
-	var html;
-    str = locator.text();
-	html = $.parseHTML(str);
-	locator.empty();
-	locator.append(html);
-}
-
-// Convert content (text) of report into html
-$( document ).ready(function() {
-	"use strict";
-	parseTextToHtml($('.report-view-content'));
-});
+//function parseTextToHtml(locator) {
+//	"use strict";
+//	var str;
+//	var html;
+//    str = locator.text();
+//	html = $.parseHTML(str);
+//	locator.empty();
+//	locator.append(html);
+//}

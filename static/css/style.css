@@ -771,7 +771,7 @@ footer {
 .report-type-improvement, .report-type-bug, .report-type-task,
 .report-priority-highest, .report-priority-high, .report-priority-medium,
 .report-priority-low, .report-priority-lowest, .report-status-new,
-.report-status-reopened, .report-status-done {
+.report-status-reopened, .report-status-done, .report-status-inprogress {
     height: 20px;
     width: 20px;
     background-repeat: no-repeat;
@@ -819,6 +819,10 @@ footer {
 
 .report-status-done {
     background-image: url("../images/icons/report_status_done.png");
+}
+
+.report-status-inprogress {
+    background-image: url("../images/icons/report_status_inprogress.png");
 }
 
 .report-actions {

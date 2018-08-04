@@ -6,7 +6,8 @@ from auctions import privatization
 from datetime import timedelta
 import core
 from tools.pages import Pages
-from flask import Flask, jsonify, request, make_response, render_template, session, redirect, url_for, g, send_from_directory
+from flask import Flask, jsonify, request, make_response,\
+    render_template, session, redirect, url_for, g, send_from_directory
 from flask_httpauth import HTTPBasicAuth
 import os
 import flask_login
@@ -178,7 +179,8 @@ def do_login():
         else:
             user_id = Users.query.filter_by(user_login=request.form['username']).first().id
             user_password_db = Users.query.filter_by(id=user_id).first().user_password
-            if hashlib.md5(request.form['password'].encode('utf8')).hexdigest() == user_password_db and Users.query.filter_by(id=user_id).first().active != 0:
+            if hashlib.md5(request.form['password'].encode('utf8')).hexdigest() == user_password_db\
+                    and Users.query.filter_by(id=user_id).first().active != 0:
                 db.session.remove()
                 session['logged_in'] = True
                 session['username'] = request.form['username']
@@ -206,7 +208,8 @@ def main():
     if not session.get('logged_in'):
         return login_form()
     else:
-        content = render_template('main_page.html', list_of_tenders=0, list_of_types=list_of_procurement_types)
+        content = render_template('main_page.html', list_of_tenders=0,
+                                  list_of_types=list_of_procurement_types)
         return render_template('index.html', content=content)
 
 
@@ -372,7 +375,7 @@ def create_monitoring_function():
 
 #                                                        ###### MONITORING PAGES ######
 # Generate template for tender creation page
-@app.route("/tenders/create-monitoring")
+@app.route("/tenders/create-monitoring", methods=['GET'])
 def page_create_monitoring():
     if not session.get('logged_in'):
         return login_form()
@@ -426,7 +429,7 @@ def get_bids_of_one_tender(tender_id_short):
 
 #                                                        ###### TENDER PAGES ######
 # Generate template for tender creation page
-@app.route("/tenders/create-tender")
+@app.route("/tenders/create-tender", methods=['GET'])
 def page_create_tender():
     if not session.get('logged_in'):
         return login_form()
@@ -435,7 +438,7 @@ def page_create_tender():
 
 
 # Generate template for show page with list of bids for tender
-@app.route("/tenders/bids")
+@app.route("/tenders/bids", methods=['GET'])
 def page_tender_bids():
     if not session.get('logged_in'):
         return login_form()
@@ -499,7 +502,7 @@ def get_bids_of_one_auction(auction_id_short):
 
 #                                                        ###### AUCTION PAGES ######
 # Generate template for auction creation page
-@app.route("/auctions/create-auction")
+@app.route("/auctions/create-auction", methods=['GET'])
 def page_create_auction():
     if not session.get('logged_in'):
         return login_form()
@@ -508,7 +511,7 @@ def page_create_auction():
 
 
 # Generate template for privatization creation page
-@app.route("/auctions/create-privatization")
+@app.route("/auctions/create-privatization", methods=['GET'])
 def page_create_privatization():
     if not session.get('logged_in'):
         return login_form()
@@ -517,7 +520,7 @@ def page_create_privatization():
 
 
 # Generate template for show page with list of bids for auction
-@app.route("/auctions/bids")
+@app.route("/auctions/bids", methods=['GET'])
 def page_auction_bids():
     if not session.get('logged_in'):
         return login_form()
@@ -615,8 +618,6 @@ def download_file(entity, filename):
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
 
-# TODO Add selects values to report from list, Error alerts,
-# TODO Translations and status/type/creator name instead of id on reports list page, Create function for generate statuses for tenders/monitorings
+# TODO Error alerts,
+# TODO Translations and status/type/creator name instead of id on reports list page
 # TODO Add validator to create monitoring page
-# TODO Add status_id when editing report!!!
-# TODO Add universal image for file types of report

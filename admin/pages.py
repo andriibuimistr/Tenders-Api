@@ -1,5 +1,5 @@
 import core
-from flask import render_template
+from flask import render_template, render_template_string
 
 
 class AdminPages:
@@ -40,7 +40,9 @@ class AdminPages:
 
     @staticmethod
     def page_admin_report_view(report_id):
-        content = render_template('report_view.html', report=core.get_report_info(report_id),
+        report = core.get_report_info(report_id)
+        content = render_template('report_view.html', report=report,
+                                  report_content=render_template_string(report.content),  # Convert report content to HTML
                                   report_types=core.get_list_of_report_types(),
                                   report_statuses=core.get_list_of_report_statuses(),
                                   report_priorities=core.get_list_of_report_priorities(),

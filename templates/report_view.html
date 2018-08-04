@@ -25,7 +25,7 @@
             <div class="col-lg-41 col-md-41 col-sm-41 col-xs-41">{{ lng.report_status('report_status_' + report_statuses[report.status_id]) }}</div>
         </div>
         <label class="col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ lng.label('label_report_content') }}</label>
-        <div class="block-info-in-frame report-view-content col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report.content }}</div>
+        <div class="block-info-in-frame report-view-content col-lg-48 col-md-48 col-sm-48 col-xs-48">{{ report_content|safe }}</div>
         {% for document in range(report_documents|length) %}
             <div class="report-file col-lg-48 col-md-48 col-sm-48 col-xs-48">
                 <div class="report-document-type-icon report-document-type-icon-{{ report_documents[document].original_filename.split('.')[-1].replace('jpeg', 'jpg') }}"></div>
