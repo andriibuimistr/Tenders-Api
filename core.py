@@ -424,6 +424,7 @@ def save_documents_for_report(request, report_id_long):
                 add_document_to_db = ReportDocuments(None, local_filename, '{0}.{1}'.format(local_filename, file_extension), filename, report_id_long)
                 db.session.add(add_document_to_db)
                 db.session.commit()
+                db.session.remove()
 
 
 def add_new_report(request, session):
@@ -435,6 +436,7 @@ def add_new_report(request, session):
     add_report = Reports(None, report_id_long, report_title, report_type_id, report_content, None, session['user_id'], report_priority, 1)
     db.session.add(add_report)
     db.session.commit()
+    db.session.remove()
     save_documents_for_report(request, report_id_long)
     return True
 
