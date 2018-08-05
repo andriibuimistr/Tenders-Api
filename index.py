@@ -260,7 +260,7 @@ def admin_pages(page):
         return abort(404)
 
 
-@app.route('/admin/reports/<report_id>', methods=['GET'])  # generate custom page for admin
+@app.route('/admin/reports/<report_id>', methods=['GET'])
 def admin_report_view(report_id):
     if check_if_admin() is not True:
         return check_if_admin()
@@ -287,63 +287,37 @@ def jquery_add_user():
         return jquery_requests.add_user(request, session)
 
 
-# Delete platform (with jquery)
-@app.route('/backend/jquery/platforms/<platform_id>', methods=['DELETE'])
-def jquery_delete_platform(platform_id):
+# Delete platform/tender/auction/user (with jquery)
+@app.route('/backend/jquery/<entity>/<entity_id>', methods=['DELETE'])
+def jquery_delete_entity(entity, entity_id):
     if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
     else:
-        return jquery_requests.delete_platform(platform_id)
+        if entity == 'platforms':
+            return jquery_requests.delete_platform(entity_id)
+        elif entity == 'tenders':
+            return jquery_requests.delete_tender(entity_id)
+        elif entity == 'auctions':
+            return jquery_requests.delete_auction(entity_id)
+        elif entity == 'users':
+            user_for_delete_role = Users.query.filter_by(id=entity_id).first().user_role_id
+            if user_for_delete_role == 1 and not check_if_superuser():
+                return abort(403, 'You are not allowed to delete this user')
+            elif Users.query.filter_by(id=entity_id).first().super_user == 1:
+                return abort(403, 'You can\'t delete super user')
+            return jquery_requests.delete_user(entity_id)
 
 
-# Delete tender (with jquery)
-@app.route('/backend/jquery/tenders/<tender_id>', methods=['DELETE'])
-def jquery_delete_tender(tender_id):
+# Delete all tenders/auctions from database (with jquery)
+@app.route('/backend/jquery/<entity>', methods=['DELETE'])
+def jquery_delete_tenders(entity):
     if check_if_admin_jquery() is not True:
         return check_if_admin_jquery()
     else:
-        return jquery_requests.delete_tender(tender_id)
-
-
-# Delete auction (with jquery)
-@app.route('/backend/jquery/auctions/<auction_id>', methods=['DELETE'])
-def jquery_delete_auction(auction_id):
-    if check_if_admin_jquery() is not True:
-        return check_if_admin_jquery()
-    else:
-        return jquery_requests.delete_auction(auction_id)
-
-
-# Delete user (with jquery)
-@app.route('/backend/jquery/users/<user_id>', methods=['DELETE'])
-def jquery_delete_user(user_id):
-    if check_if_admin_jquery() is not True:
-        return check_if_admin_jquery()
-    else:
-        user_for_delete_role = Users.query.filter_by(id=user_id).first().user_role_id
-        if user_for_delete_role == 1 and not check_if_superuser():
-            return abort(403, 'You are not allowed to delete this user')
-        elif Users.query.filter_by(id=user_id).first().super_user == 1:
-            return abort(403, 'You can\'t delete super user')
-        return jquery_requests.delete_user(user_id)
-
-
-# Delete all tenders from database (with jquery)
-@app.route('/backend/jquery/tenders', methods=['DELETE'])
-def jquery_delete_tenders():
-    if check_if_admin_jquery() is not True:
-        return check_if_admin_jquery()
-    else:
-        return jquery_requests.delete_tenders()
-
-
-# Delete all auctions from database (with jquery)
-@app.route('/backend/jquery/auctions', methods=['DELETE'])
-def jquery_delete_auctions():
-    if check_if_admin_jquery() is not True:
-        return check_if_admin_jquery()
-    else:
-        return jquery_requests.delete_auctions()
+        if entity == 'tenders':
+            return jquery_requests.delete_tenders()
+        elif entity == 'auctions':
+            return jquery_requests.delete_auctions()
 
 
 # Delete report document (with jquery)
@@ -357,20 +331,6 @@ def jquery_delete_report_document(file_id):
 # ############################################################## ADMIN END #############################################################################
 
 # ############################################################## MONITORINGS ##############################################################################
-#                                                   ###### MONITORING JQUERY REQUESTS ######
-
-
-# Create tender
-@app.route('/api/monitorings', methods=['POST'])
-# @cross_origin(resources=r'/api/*')
-def create_monitoring_function():
-    if not session.get('logged_in'):
-        return jquery_forbidden_login()
-    if not request.form:
-        abort(400)
-    # tender_validators.validator_create_tender(request.form)  # validate input data
-    result = monitoring.creation_of_monitoring(request.form, session['user_id'])
-    return jsonify(result[0]), result[1]
 
 
 #                                                        ###### MONITORING PAGES ######
@@ -385,17 +345,6 @@ def page_create_monitoring():
 
 # ############################################################## TENDERS ##############################################################################
 #                                                   ###### TENDER JQUERY REQUESTS ######
-# Create tender
-@app.route('/api/tenders', methods=['POST'])
-# @cross_origin(resources=r'/api/*')
-def create_tender_function():
-    if not session.get('logged_in'):
-        return jquery_forbidden_login()
-    if not request.form:
-        abort(400)
-    tender_validators.validator_create_tender(request.form)  # validate input data
-    result = tender.creation_of_tender(request.form, session['user_id'])
-    return jsonify(result[0]), result[1]
 
 
 # Add one tender bid to company
@@ -448,27 +397,25 @@ def page_tender_bids():
 
 # ############################################################## AUCTIONS ##############################################################################
 #                                                   ###### AUCTION JQUERY REQUESTS ######
-# Create auction
-@app.route('/api/auctions', methods=['POST'])
-# @cross_origin(resources=r'/api/*')
-def create_auction_function():
+# Create tender/auction/privatization/monitoring
+@app.route('/api/<entity>', methods=['POST'])
+def create_entity_function(entity):
     if not session.get('logged_in'):
         return jquery_forbidden_login()
     if not request.form:
         abort(400, 'Form wasn\'t submitted')
-    result = auction.create_auction(request.form, session)
-    return jsonify(result[0]), result[1]
-
-
-# Create privatization
-@app.route('/api/privatization', methods=['POST'])
-# @cross_origin(resources=r'/api/*')
-def create_privatization_function():
-    if not session.get('logged_in'):
-        return jquery_forbidden_login()
-    if not request.form:
-        abort(400, 'Form wasn\'t submitted')
-    result = privatization.create_privatization(request.form, session)
+    if entity == 'auctions':
+        result = auction.create_auction(request.form, session)
+    elif entity == 'privatization':
+        result = privatization.create_privatization(request.form, session)
+    elif entity == 'tenders':
+        tender_validators.validator_create_tender(request.form)  # validate input data
+        result = tender.creation_of_tender(request.form, session['user_id'])
+    elif entity == 'monitorings':
+        # tender_validators.validator_create_tender(request.form)  # validate input data
+        result = monitoring.creation_of_monitoring(request.form, session['user_id'])
+    else:
+        result = 'ERROR', 422
     return jsonify(result[0]), result[1]
 
 
