@@ -535,7 +535,7 @@ def add_report():
         return jsonify('Something went wrong'), 400
 
 
-@app.route("/modal/edit_report/<report_id>", methods=['GET', 'POST'])
+@app.route("/modal/edit_report/<report_id>", methods=['GET', 'PATCH'])
 @cross_origin(resources=r'/modal/*')
 def edit_report(report_id):
     if not session.get('logged_in'):

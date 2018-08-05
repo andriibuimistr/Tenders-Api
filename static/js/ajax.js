@@ -422,7 +422,7 @@ $(document).on("click","#saveReportButton", function(){
             }
             $.ajax({
                 url: '/modal/edit_report/' + report_id,
-                type: 'post',
+                type: 'patch',
                 data: fd,
                 contentType: false,
                 processData: false,
