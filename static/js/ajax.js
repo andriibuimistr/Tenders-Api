@@ -111,10 +111,7 @@ $(function() {
                 $('#get-tender-bids-button').removeAttr("disabled");
             },
             error: function (jqXHR) {
-				var error_description = JSON.parse(jqXHR.responseText).description
-				var error_type = JSON.parse(jqXHR.responseText).error
-                $('#list-of-bids').empty();
-                $('#list-of-bids').append(jqXHR.responseText);
+				getHtmlFromResponseError(jqXHR.responseText);
                 $('#get-tender-bids-button').removeAttr("disabled");
             }
         });

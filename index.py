@@ -22,7 +22,7 @@ from tenders.pages import TenderPages
 from tenders import monitoring
 from tenders import tender_validators, tender
 import hashlib
-from language.translations import Translations
+from language.translations import Translations, alert
 from config import REPORTS_DOCS_DIR
 
 auth = HTTPBasicAuth()
@@ -39,10 +39,16 @@ def custom400(error):
         {'error': '400 Bad Request', 'description': error.description}), 400)
 
 
-@auth.error_handler  # 401 Error
-def unauthorized():
-    return make_response(jsonify({'error': '401 Unauthorized access', 'description':
-                                 'You are not authorized to access this resource'}), 401)
+# @auth.error_handler  # 401 Error
+# def unauthorized():
+#     return make_response(jsonify({'error': '401 Unauthorized access', 'description':
+#                                  'You are not authorized to access this resource'}), 401)
+
+
+@app.errorhandler(401)
+def custom401(error):
+    return make_response(jsonify(
+        {'error': '401 Unauthorized', 'description': error.description}), 401)
 
 
 @app.errorhandler(403)
@@ -158,7 +164,7 @@ def login_form():
 
 # Forbidden error for jquery requests
 def jquery_forbidden_login():
-    return abort(403, "You are not logged in")
+    return abort(403, alert.error_403_forbidden('alert_error_403_general'))
 
 
 # Redirect to previous url

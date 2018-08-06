@@ -183,7 +183,8 @@ class RU(object):
     @staticmethod
     def alerts(key):
         return {'alert_error_404_no_auction_id': u'Аукцион с данным ID отсутствует в локальной базе данных',
-                'alert_error_404_no_tender_id': u'Закупка с данным ID отсутствует в локальной базе данных'}.get(key, key)
+                'alert_error_404_no_tender_id': u'Закупка с данным ID отсутствует в локальной базе данных',
+                'alert_error_403_general': u'У вас недостаточно прав на выполнение данной операции'}.get(key, key)
 
 
 class EN(object):
@@ -366,7 +367,8 @@ class EN(object):
     @staticmethod
     def alerts(key):
         return {'alert_error_404_no_auction_id': u'Auction with this ID doesn\'t exist in the local database',
-                'alert_error_404_no_tender_id': u'Tender with this ID doesn\'t exist in the local database'}.get(key, key)
+                'alert_error_404_no_tender_id': u'Tender with this ID doesn\'t exist in the local database',
+                'alert_error_403_general': u'You are not allowed to perform this action'}.get(key, key)
 
 
 class ES(object):
@@ -506,7 +508,7 @@ class ES(object):
                 'message_auction_has_no_bids': u'No hay apuestas para esta subasta en la base de datos',
                 'message_rendered_json_will_appear_here': u'JSON formateado aparecerá aquí',
                 'message_empty_list': u'La lista no contiene elementos',
-                'message_all_rights_reserved': u'Todos los derechos reservados'}.get(key, key)
+                'message_all_rights_reserved': u'Necesita permiso para realizar esta acción'}.get(key, key)
 
     # Hints
     @staticmethod
@@ -549,7 +551,8 @@ class ES(object):
     @staticmethod
     def alerts(key):
         return {'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local',
-                'alert_error_404_no_tender_id': u'Licitación con este ID no existe en la base de datos local'}.get(key, key)
+                'alert_error_404_no_tender_id': u'Licitación con este ID no existe en la base de datos local',
+                'alert_error_403_general': u'You are not allowed to perform this action'}.get(key, key)
 
 
 class Translations(object):
@@ -624,7 +627,11 @@ class Alerts(object):
 
     @staticmethod
     def error_404_not_found(message_key):
-        return render_template('alerts/error/error_not_found.html', alert_text=message_key)
+        return render_template('alerts/error/error_404_not_found.html', alert_text=message_key)
+
+    @staticmethod
+    def error_403_forbidden(message_key):
+        return render_template('alerts/error/error_403_forbidden.html', alert_text=message_key)
 
 
 alert = Alerts()

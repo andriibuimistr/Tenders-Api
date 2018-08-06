@@ -3,6 +3,7 @@ from auction_additional_data import *
 from flask import abort
 import core
 from database import BidsAuction, Auctions, db
+from language.translations import alert
 
 
 def validator_create_auction(data):
@@ -119,5 +120,5 @@ def validator_if_auction_id_short_in_db(auction_id_short):
         db.session.remove()
         list_tid.append(list_of_auctions[tid].auction_id_short)
     if auction_id_short not in list_tid:
-        abort(404, 'Tender id was not found in database')
+        abort(404, alert.error_404_not_found('alert_error_404_no_auction_id'))
     return True

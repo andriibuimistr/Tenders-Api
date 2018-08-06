@@ -3,6 +3,7 @@ from tender_additional_data import *
 from flask import abort
 import core
 from database import BidsTender, Tenders, db
+from language.translations import alert
 
 
 def validator_create_tender(data):
@@ -138,5 +139,5 @@ def validator_if_tender_id_short_in_db(tender_id_short):
         db.session.remove()
         list_tid.append(list_of_tenders[tid].tender_id_short)
     if tender_id_short not in list_tid:
-        abort(404, 'Tender id was not found in database')
+        abort(404, alert.error_404_not_found('alert_error_404_no_tender_id'))
     return True
