@@ -83,7 +83,7 @@ def delete_tender(tender_id):
     for x in range(len(list_of_tenders_id_db)):
         existing_tenders_id.append(str(list_of_tenders_id_db[x].id))
     if tender_id not in existing_tenders_id:
-        return abort(404, 'Tender does not exist')
+        return abort(404, alert.error_404_not_found('alert_error_404_no_tender_id'))
     tender_id_long = Tenders.query.filter_by(id=tender_id).first().tender_id_long
     BidsTender.query.filter_by(tender_id=tender_id_long).delete()
     Tenders.query.filter_by(id=tender_id).delete()

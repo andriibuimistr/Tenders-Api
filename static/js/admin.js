@@ -72,7 +72,7 @@ $(document).on("click",".tender-action-delete", function() {
                     $('#tender-id-' + id).remove();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                    getHtmlFromResponseError(jqXHR.responseText);
                 }
             });
         }

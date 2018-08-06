@@ -182,7 +182,8 @@ class RU(object):
     # Alerts
     @staticmethod
     def alerts(key):
-        return {'alert_error_404_no_auction_id': u'Аукцион с данным ID отсутствует в локальной базе данных'}.get(key, key)
+        return {'alert_error_404_no_auction_id': u'Аукцион с данным ID отсутствует в локальной базе данных',
+                'alert_error_404_no_tender_id': u'Закупка с данным ID отсутствует в локальной базе данных'}.get(key, key)
 
 
 class EN(object):
@@ -364,7 +365,8 @@ class EN(object):
     # Alerts
     @staticmethod
     def alerts(key):
-        return {'alert_error_404_no_auction_id': u'Auction with this ID doesn\'t exist in the local database'}.get(key, key)
+        return {'alert_error_404_no_auction_id': u'Auction with this ID doesn\'t exist in the local database',
+                'alert_error_404_no_tender_id': u'Tender with this ID doesn\'t exist in the local database'}.get(key, key)
 
 
 class ES(object):
@@ -546,7 +548,8 @@ class ES(object):
     # Alerts
     @staticmethod
     def alerts(key):
-        return {'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local'}.get(key, key)
+        return {'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local',
+                'alert_error_404_no_tender_id': u'Licitación con este ID no existe en la base de datos local'}.get(key, key)
 
 
 class Translations(object):
@@ -620,8 +623,8 @@ class Alerts(object):
         pass
 
     @staticmethod
-    def error_404_not_found(message):
-        return render_template('alerts/error/error_not_found.html', alert_text=message)
+    def error_404_not_found(message_key):
+        return render_template('alerts/error/error_not_found.html', alert_text=message_key)
 
 
 alert = Alerts()
