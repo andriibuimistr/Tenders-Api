@@ -9,6 +9,19 @@ import hashlib
 from config import *
 
 
+class Alerts(object):
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def error_not_found(message):
+        return render_template('alerts/error/error_not_found.html', alert_text=message)
+
+
+alert = Alerts()
+
+
 def add_platform(request):
     if len(request.form['platform-name']) == 0:
         return abort(400, 'Platform name can\'t be empty')
@@ -97,7 +110,7 @@ def delete_auction(auction_id):
     for x in range(len(list_of_auctions_id_db)):
         existing_auctions_id.append(str(list_of_auctions_id_db[x].id))
     if auction_id not in existing_auctions_id:
-        return abort(404, 'Auction does not exist')
+        return abort(404, alert.error_not_found('Auction with this id does not exist'))
     auction_id_long = Auctions.query.filter_by(id=auction_id).first().auction_id_long
     BidsAuction.query.filter_by(auction_id=auction_id_long).delete()
     Auctions.query.filter_by(id=auction_id).delete()

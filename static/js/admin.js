@@ -92,7 +92,8 @@ $(document).on("click",".auction-action-delete", function() {
                     $('#auction-id-' + id).remove();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+//                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                      getHtmlFromResponseError(jqXHR.responseText);
                 }
             });
         }
@@ -161,3 +162,15 @@ $(document).on("click","#delete-auctions", function() {
             return false;
         }
 });
+
+
+// Get HTML from alert ERROR
+function getHtmlFromResponseError(value) {
+	"use strict";
+	var body;
+	var html;
+	body = JSON.parse(value).description
+	html = $.parseHTML(body);
+	$('#alertContainer').append(html);
+    return html
+};

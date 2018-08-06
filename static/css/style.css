@@ -627,6 +627,61 @@ footer {
 	}
 }
 
+/*Alerts in alertContainer*/
+
+#alertContainer {
+    display: block;
+    position: fixed;
+    right: 0;
+    top: 60px;
+}
+
+.alert-container {
+    border-radius: 2px;
+}
+
+.alert-error {
+    display: block;
+    width: 300px;
+    max-width: 90%;
+    background: #FFF7F7;
+	border: 1px solid #FF6264;
+	color: #c30000;
+	margin-bottom: 10px;
+	-moz-box-shadow: 0 0 10px #FF6264;
+    -webkit-box-shadow: 0 0 10px #FF6264;
+    box-shadow: 0 0 10px #FF6264;
+}
+
+.alert-error .alert-title {
+	display: block;
+	background-color: #FF6264;
+	font-size: 12px;
+	color: #fff;
+	padding: 2px 3px 2px 8px;
+	height: 20px;
+}
+
+.alert-error .alert-description {
+	padding: 5px 8px;
+	font-size: 12px;
+}
+
+.alert-error .delete-alert {
+    border: none;
+    background: transparent;
+    color: #ffaeae;
+    font-size: 16px !important;
+    font-weight: bold;
+	display: block;
+	float: right;
+	margin-top: -3px;
+}
+
+.alert-error .delete-alert:hover {
+    color: #ffe8e8;
+}
+
 /*LOGIN*/
 .login-form {
     width: 350px;
