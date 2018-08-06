@@ -7,19 +7,7 @@ from auctions import auction_additional_data
 from cdb_requests import TenderRequests, AuctionRequests
 import hashlib
 from config import *
-
-
-class Alerts(object):
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def error_404_not_found(message):
-        return render_template('alerts/error/error_not_found.html', alert_text=message)
-
-
-alert = Alerts()
+from language.translations import alert
 
 
 def add_platform(request):

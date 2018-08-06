@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from flask import render_template
 
 
 class RU(object):
@@ -611,3 +612,16 @@ class Translations(object):
     # ALERTS
     def alert(self, key):
         return self.language_selector().alerts(key)
+
+
+class Alerts(object):
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def error_404_not_found(message):
+        return render_template('alerts/error/error_not_found.html', alert_text=message)
+
+
+alert = Alerts()
