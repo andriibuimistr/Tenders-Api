@@ -70,7 +70,7 @@ def delete_platform(platform_id):
     for x in range(len(list_of_platforms_id_db)):
         existing_platforms_id.append(str(list_of_platforms_id_db[x].id))
     if platform_id not in existing_platforms_id:
-        return abort(404, 'Platform does not exist')
+        return abort(404, alert.error_404_not_found('alert_error_404_no_platform_id'))
     Platforms.query.filter_by(id=platform_id).delete()
     db.session.commit()
     db.session.remove()
@@ -107,13 +107,18 @@ def delete_auction(auction_id):
     return jsonify({"status": "Success"}), 200
 
 
-def delete_user(user_id):
+def delete_user(user_id, is_superuser):
     existing_users_id = []
     list_of_users_id_db = core.get_list_of_users()
     for x in range(len(list_of_users_id_db)):
         existing_users_id.append(str(list_of_users_id_db[x].id))
     if user_id not in existing_users_id:
-        return abort(404, 'User with id {} does not exist'.format(user_id))
+        return abort(404, alert.error_404_not_found('alert_error_404_no_user_id'))
+    user_for_delete_role = Users.query.filter_by(id=user_id).first().user_role_id
+    if user_for_delete_role == 1 and not is_superuser:
+        return abort(403, 'You are not allowed to delete this user')
+    elif Users.query.filter_by(id=user_id).first().super_user == 1:
+        return abort(403, 'You can\'t delete super user')
     Users.query.filter_by(id=user_id).delete()
     db.session.commit()
     db.session.remove()

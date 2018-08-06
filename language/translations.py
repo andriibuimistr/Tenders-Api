@@ -182,9 +182,12 @@ class RU(object):
     # Alerts
     @staticmethod
     def alerts(key):
-        return {'alert_error_404_no_auction_id': u'Аукцион с данным ID отсутствует в локальной базе данных',
+        return {'alert_error_401_general': u'Вы не вошли в систему',
+                'alert_error_403_general': u'У вас недостаточно прав на выполнение данной операции',
+                'alert_error_404_no_auction_id': u'Аукцион с данным ID отсутствует в локальной базе данных',
                 'alert_error_404_no_tender_id': u'Закупка с данным ID отсутствует в локальной базе данных',
-                'alert_error_403_general': u'У вас недостаточно прав на выполнение данной операции'}.get(key, key)
+                'alert_error_404_no_user_id': u'Пользователь с данным ID отсутствует в базе данных',
+                'alert_error_404_no_platform_id': u'Площадка с данным ID отсутствует в базе данных'}.get(key, key)
 
 
 class EN(object):
@@ -366,9 +369,12 @@ class EN(object):
     # Alerts
     @staticmethod
     def alerts(key):
-        return {'alert_error_404_no_auction_id': u'Auction with this ID doesn\'t exist in the local database',
+        return {'alert_error_401_general': u'You are not logged in',
+                'alert_error_403_general': u'You are not allowed to perform this action',
+                'alert_error_404_no_auction_id': u'Auction with this ID doesn\'t exist in the local database',
                 'alert_error_404_no_tender_id': u'Tender with this ID doesn\'t exist in the local database',
-                'alert_error_403_general': u'You are not allowed to perform this action'}.get(key, key)
+                'alert_error_404_no_user_id': u'User with this ID doesn\'t exist in the database',
+                'alert_error_404_no_platform_id': u'Platform with this ID doesn\'t exist in the database'}.get(key, key)
 
 
 class ES(object):
@@ -550,9 +556,12 @@ class ES(object):
     # Alerts
     @staticmethod
     def alerts(key):
-        return {'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local',
+        return {'alert_error_401_general': u'Usted no se ha identificado',
+                'alert_error_403_general': u'You are not allowed to perform this action',
+                'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local',
                 'alert_error_404_no_tender_id': u'Licitación con este ID no existe en la base de datos local',
-                'alert_error_403_general': u'You are not allowed to perform this action'}.get(key, key)
+                'alert_error_404_no_user_id': u'Usuario con este ID no existe en la base de datos',
+                'alert_error_404_no_platform_id': u'Plataforma con este ID no existe en la base de datos'}.get(key, key)
 
 
 class Translations(object):
@@ -626,12 +635,16 @@ class Alerts(object):
         pass
 
     @staticmethod
-    def error_404_not_found(message_key):
-        return render_template('alerts/error/error_404_not_found.html', alert_text=message_key)
+    def error_401_unauthorized(message_key):
+        return render_template('alerts/error/error_401_unauthorized.html', alert_text=message_key)
 
     @staticmethod
     def error_403_forbidden(message_key):
         return render_template('alerts/error/error_403_forbidden.html', alert_text=message_key)
+
+    @staticmethod
+    def error_404_not_found(message_key):
+        return render_template('alerts/error/error_404_not_found.html', alert_text=message_key)
 
 
 alert = Alerts()

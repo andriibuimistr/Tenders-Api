@@ -204,7 +204,7 @@ def do_login():
 # Logout
 @app.route("/logout")
 def logout():
-    session['logged_in'] = False
+    session.clear()
     return redirect(url_for('main'))
 
 
@@ -232,9 +232,9 @@ def check_if_admin():  # check if user is admin before generate a page
 
 def check_if_admin_jquery():  # check if user is admin before accept jquery request
     if not session.get('logged_in'):
-        return abort(401)
+        return abort(401, alert.error_401_unauthorized('alert_error_401_general'))
     elif session['user_role'] != 1:
-        return abort(403, 'U r not allowed to perform this action')
+        return abort(403, alert.error_403_forbidden('alert_error_403_general'))
     else:
         return True
 
@@ -306,12 +306,7 @@ def jquery_delete_entity(entity, entity_id):
         elif entity == 'auctions':
             return jquery_requests.delete_auction(entity_id)
         elif entity == 'users':
-            user_for_delete_role = Users.query.filter_by(id=entity_id).first().user_role_id
-            if user_for_delete_role == 1 and not check_if_superuser():
-                return abort(403, 'You are not allowed to delete this user')
-            elif Users.query.filter_by(id=entity_id).first().super_user == 1:
-                return abort(403, 'You can\'t delete super user')
-            return jquery_requests.delete_user(entity_id)
+            return jquery_requests.delete_user(entity_id, check_if_superuser())
 
 
 # Delete all tenders/auctions from database (with jquery)

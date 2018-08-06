@@ -14,7 +14,7 @@ $(function() {
                 $('.add-platform-button').removeAttr("disabled");
             },
             error: function (jqXHR, textStatus, errorThrown) {
-            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+            	getHtmlFromResponseError(jqXHR.responseText);
                 $('.add-platform-button').removeAttr("disabled");
             }
         });
@@ -34,7 +34,7 @@ $(function() {
                 $('.add-user-button').removeAttr("disabled");
             },
             error: function (jqXHR, textStatus, errorThrown) {
-            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+            	getHtmlFromResponseError(jqXHR.responseText);
                 $('.add-user-button').removeAttr("disabled");
             }
         });
@@ -52,7 +52,7 @@ $(document).on("click",".platform-action-delete", function() {
                     $('#platform-id-' + id).remove();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                    getHtmlFromResponseError(jqXHR.responseText);
                 }
             });
         }
@@ -112,7 +112,7 @@ $(document).on("click",".user-action-delete", function() {
                     $('#user-id-' + id).remove();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                    getHtmlFromResponseError(jqXHR.responseText);
                 }
             });
         }
@@ -132,7 +132,7 @@ $(document).on("click","#delete-tenders", function() {
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                    getHtmlFromResponseError(jqXHR.responseText);
                 }
             });
         }
@@ -153,7 +153,7 @@ $(document).on("click","#delete-auctions", function() {
                     location.reload();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
+                    getHtmlFromResponseError(jqXHR.responseText);
                 }
             });
         }
