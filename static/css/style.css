@@ -638,10 +638,10 @@ footer {
 
 .alert-container {
     border-radius: 2px;
+    display: none;
 }
 
 .alert-error {
-    display: block;
     width: 300px;
     max-width: 90%;
     background: #FFF7F7;

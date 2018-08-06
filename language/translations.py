@@ -178,6 +178,11 @@ class RU(object):
                 'report_priority_low': u'Низкий',
                 'report_priority_lowest': u'Оч. низкий'}.get(key, key)
 
+    # Alerts
+    @staticmethod
+    def alerts(key):
+        return {'alert_error_404_no_auction_id': u'Аукцион с данным ID отсутствует в локальной базе данных'}.get(key, key)
+
 
 class EN(object):
     def __init__(self):
@@ -354,6 +359,11 @@ class EN(object):
                 'report_priority_medium': u'Medium',
                 'report_priority_low': u'Low',
                 'report_priority_lowest': u'Lowest'}.get(key, key)
+
+    # Alerts
+    @staticmethod
+    def alerts(key):
+        return {'alert_error_404_no_auction_id': u'Auction with this ID doesn\'t exist in the local database'}.get(key, key)
 
 
 class ES(object):
@@ -532,6 +542,11 @@ class ES(object):
                 'report_priority_low': u'Baja',
                 'report_priority_lowest': u'Muy baja'}.get(key, key)
 
+    # Alerts
+    @staticmethod
+    def alerts(key):
+        return {'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local'}.get(key, key)
+
 
 class Translations(object):
 
@@ -592,3 +607,7 @@ class Translations(object):
     # REPORT PRIORITY
     def report_priority(self, key):
         return self.language_selector().report_priorities(key)
+
+    # ALERTS
+    def alert(self, key):
+        return self.language_selector().alerts(key)

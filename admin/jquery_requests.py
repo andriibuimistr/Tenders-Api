@@ -15,7 +15,7 @@ class Alerts(object):
         pass
 
     @staticmethod
-    def error_not_found(message):
+    def error_404_not_found(message):
         return render_template('alerts/error/error_not_found.html', alert_text=message)
 
 
@@ -110,7 +110,7 @@ def delete_auction(auction_id):
     for x in range(len(list_of_auctions_id_db)):
         existing_auctions_id.append(str(list_of_auctions_id_db[x].id))
     if auction_id not in existing_auctions_id:
-        return abort(404, alert.error_not_found('Auction with this id does not exist'))
+        return abort(404, alert.error_404_not_found('alert_error_404_no_auction_id'))
     auction_id_long = Auctions.query.filter_by(id=auction_id).first().auction_id_long
     BidsAuction.query.filter_by(auction_id=auction_id_long).delete()
     Auctions.query.filter_by(id=auction_id).delete()

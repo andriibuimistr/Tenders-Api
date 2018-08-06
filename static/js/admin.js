@@ -92,7 +92,6 @@ $(document).on("click",".auction-action-delete", function() {
                     $('#auction-id-' + id).remove();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-//                    alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
                       getHtmlFromResponseError(jqXHR.responseText);
                 }
             });
@@ -172,5 +171,6 @@ function getHtmlFromResponseError(value) {
 	body = JSON.parse(value).description
 	html = $.parseHTML(body);
 	$('#alertContainer').append(html);
+	$('#alertContainer div:last-child').fadeIn(600);
     return html
 };
