@@ -59,8 +59,17 @@ def custom403(error):
 
 @app.errorhandler(404)
 def custom404(error):
-    return make_response(jsonify(
-        {'error': '404 Not Found', 'description': error.description}), 404)
+    # return make_response(jsonify(
+    #     {'error': '404 Not Found', 'description': error.description}), 404)
+    if 'response_error' in error.description:
+        return make_response(jsonify(
+                         {'error': '404 Not Found', 'description': error.description['response_error']}), 404)
+    elif '</' in error.description and '>' in error.description:
+        return make_response(jsonify(
+            {'error': '404 Not Found', 'description': error.description}), 404)
+    else:
+        return make_response(jsonify(
+            {'error': '404 Not Found', 'description': 'standard error 404'}), 404)
 
 
 @app.errorhandler(405)
