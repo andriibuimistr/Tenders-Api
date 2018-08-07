@@ -68,15 +68,15 @@ def request_to_cdb(headers, host, method, json_request, request_name, entity, en
                 continue
             else:
                 save_log(503, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
-                abort(503, '{} error: {}'.format(request_name, e))
+                abort(503, {'response_error': '{} error: {}'.format(request_name, e)})
         except requests.exceptions.MissingSchema as e:
             print 'MissingSchema Exception'
             save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
-            abort(500, '{} error: {}'.format(request_name, e))
+            abort(500, {'response_error': '{} error: {}'.format(request_name, e)})
         except Exception as e:
             print 'General Exception'
             save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
-            abort(500, '{} error: {}'.format(request_name, e))
+            abort(500, {'response_error': '{} error: {}'.format(request_name, e)})
 
 
 class TenderRequests(object):
