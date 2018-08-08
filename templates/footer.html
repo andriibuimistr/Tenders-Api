@@ -1,47 +1,51 @@
 <div class="col-lg-12 col-md-12 col-sm-24 col-xs-24 footer_sections">
-    	<ul class="list-inline">
-            <li><a href="https://github.com/andriibuimistr/Tenders-Api" target="_blank" title="{{ lng.hint('hint_project_on_github') }}"><img src="/../static/images/github.png" width="32" height="32"></a></li>
-            {% if user_role_id == 1 %}
-                <li><a id="bugReport" title="{{ lng.hint('hint_add_report') }}"><img src="/../static/images/bug.png" width="32" height="32"></a></li>
-            {% endif %}
+    <ul class="list-inline">
+        <li><a href="https://github.com/andriibuimistr/Tenders-Api" target="_blank" title="{{ lng.hint('hint_project_on_github') }}"><img src="/../static/images/github.png" width="32" height="32"></a></li>
+        {% if user_role_id == 1 %}
+            <li><a id="bugReport" title="{{ lng.hint('hint_add_report') }}"><img src="/../static/images/bug.png" width="32" height="32"></a></li>
+        {% endif %}
 
-        </ul>
-    	<div class="rights">
-    	<p>TEST.QA {{ now.year }} ©<br>{{ lng.message('message_all_rights_reserved') }}</p>
-        </div>
+    </ul>
+    <div class="rights">
+    <p>TEST.QA {{ now.year }} ©<br>{{ lng.message('message_all_rights_reserved') }}</p>
     </div>
-    <div class="footer_middle col-lg-24 col-md-24 hidden-sm hidden-xs">
-        <div class="col-lg-24 col-md-24 col-sm-24 col-xs-24 footer_sections">
-            <div class="col-lg-14 col-md-14 col-sm-12 col-xs-12"></div>
-            <div class="footer_list col-lg-34 col-md-34 col-sm-36 col-xs-36">
+</div>
+<div class="footer_middle col-lg-24 col-md-24 hidden-sm hidden-xs">
+    <div class="col-lg-24 col-md-24 col-sm-24 col-xs-24 footer_sections">
+        <div class="col-lg-14 col-md-14 col-sm-12 col-xs-12"></div>
+        <div class="footer_list col-lg-34 col-md-34 col-sm-36 col-xs-36">
+            {% if logged_in %}
                 <div class="footer_sections_title">
                     <h3>Test.QA</h3>
                 </div>
                 <ul class="footer-menu">
                      <li><a href="/">{{ lng.menu('menu_main_page') }}</a></li>
                 </ul>
-            </div>
+            {% endif %}
         </div>
-        <div class="col-lg-24 col-md-24 col-sm-24 col-xs-24 footer_sections">
-            <div class="col-lg-14 col-md-14 col-sm-12 col-xs-12"></div>
-            <div class="footer_list col-lg-34 col-md-34 col-sm-36 col-xs-36">
+    </div>
+    <div class="col-lg-24 col-md-24 col-sm-24 col-xs-24 footer_sections">
+        <div class="col-lg-14 col-md-14 col-sm-12 col-xs-12"></div>
+        <div class="footer_list col-lg-34 col-md-34 col-sm-36 col-xs-36">
+            {% if logged_in %}
                 <div class="footer_sections_title">
                     <h3>{{ lng.section('section_popular_links') }}</h3>
                 </div>
                 <ul class="footer-menu">
                      <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu('menu_item_create_tender') }}</a></li>
                 </ul>
-            </div>
+            {% endif %}
         </div>
     </div>
-    <div class="col-lg-12 col-md-12 col-sm-24 col-xs-24 footer_sections social_section">
-		<div class="contact">
-        	<dl class="dl-horizontal">
-              <dt>Email:</dt>
-              <dd>info@test.qa</dd>
-              <dt>{{ lng.label('label_phone') }}:</dt>
-              <dd>+1234567890</dd>
-            </dl>
-        </div>
+</div>
+<div class="col-lg-12 col-md-12 col-sm-24 col-xs-24 footer_sections social_section">
+    <div class="contact">
+        <dl class="dl-horizontal">
+          <dt>Email:</dt>
+          <dd>info@test.qa</dd>
+          <dt>{{ lng.label('label_phone') }}:</dt>
+          <dd>+1234567890</dd>
+        </dl>
     </div>
-	 <script type='text/javascript' src='/../static/js/jquery.json-viewer.js'></script>
+</div>
+<script type='text/javascript' src='/../static/js/jquery.json-viewer.js'></script>

@@ -4,69 +4,79 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <!-- Бренд и переключатель, который вызывает меню на мобильных устройствах -->
     <div class="navbar-header">
-        <!-- Кнопка с полосочками, которая открывает меню на мобильных устройствах -->
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
+        {% if not disable_sign_in_link %}
+            <!-- Кнопка с полосочками, которая открывает меню на мобильных устройствах -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        {% endif %}
         <!-- Бренд или логотип фирмы (обычно содержит ссылку на главную страницу) -->
         <a href="/" class="navbar-brand">TEST.QA</a>
     </div>
     <!-- Содержимое меню (коллекция навигационных ссылок, формы и др.) -->
     <div class="collapse navbar-collapse" id="main-menu" >
         <!-- Список ссылок, расположенных слева -->
-        <ul class="nav navbar-nav">
-            <!--Элемент с классом active отображает ссылку подсвеченной -->
-            <li><a href="/">{{ lng.menu('menu_main_page') }}<span class="sr-only">(current)</span></a></li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_tenders') }}<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu('menu_item_create_tender') }}</a></li>
-                    <li><a href="{{ url_for('page_tender_bids')}}">{{ lng.menu('menu_item_tender_bids') }}</a></li>
-                    <li><a href="{{ url_for('page_create_monitoring')}}">{{ lng.menu('menu_item_create_monitoring') }}</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">...</a></li>
-                </ul>
-            </li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_auctions') }}<span class="caret"></span></a>
+        {% if logged_in %}
+            <ul class="nav navbar-nav">
+                <!--Элемент с классом active отображает ссылку подсвеченной -->
+                <li><a href="/">{{ lng.menu('menu_main_page') }}<span class="sr-only">(current)</span></a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_tenders') }}<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ url_for('page_create_tender')}}">{{ lng.menu('menu_item_create_tender') }}</a></li>
+                        <li><a href="{{ url_for('page_tender_bids')}}">{{ lng.menu('menu_item_tender_bids') }}</a></li>
+                        <li><a href="{{ url_for('page_create_monitoring')}}">{{ lng.menu('menu_item_create_monitoring') }}</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">...</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_auctions') }}<span class="caret"></span></a>
 
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('page_create_auction')}}">{{ lng.menu('menu_item_create_auction') }}</a></li>
-                    <li><a href="{{ url_for('page_auction_bids')}}">{{ lng.menu('menu_item_auction_bids') }}</a></li>
-                    <li><a href="{{ url_for('page_create_privatization')}}">{{ lng.menu('menu_item_create_privatization') }}</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">...</a></li>
-                </ul>
-            </li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_tools') }}<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ url_for('page_create_auction')}}">{{ lng.menu('menu_item_create_auction') }}</a></li>
+                        <li><a href="{{ url_for('page_auction_bids')}}">{{ lng.menu('menu_item_auction_bids') }}</a></li>
+                        <li><a href="{{ url_for('page_create_privatization')}}">{{ lng.menu('menu_item_create_privatization') }}</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">...</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_tools') }}<span class="caret"></span></a>
 
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('tools_pages', page='json-viewer') }}">JSON-Viewer</a></li>
-                </ul>
-            </li>
-            {% if user_role_id == 1 %}
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_admin') }}<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="{{ url_for('admin_pages', page='platforms') }}">{{ lng.menu('menu_item_platforms') }}</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='users') }}">{{ lng.menu('menu_item_users') }}</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='tenders') }}">{{ lng.menu('menu_item_list_of_tenders') }}</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='auctions') }}">{{ lng.menu('menu_item_list_of_auctions') }}</a></li>
-                    <li><a href="{{ url_for('admin_pages', page='reports') }}">{{ lng.menu('menu_item_list_of_reports') }}</a></li>
-                    <li class="divider"></li>
-                </ul>
-            </li>
-            {% endif %}
-        </ul>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ url_for('tools_pages', page='json-viewer') }}">JSON-Viewer</a></li>
+                    </ul>
+                </li>
+                {% if user_role_id == 1 %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ lng.menu('menu_admin') }}<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="{{ url_for('admin_pages', page='platforms') }}">{{ lng.menu('menu_item_platforms') }}</a></li>
+                        <li><a href="{{ url_for('admin_pages', page='users') }}">{{ lng.menu('menu_item_users') }}</a></li>
+                        <li><a href="{{ url_for('admin_pages', page='tenders') }}">{{ lng.menu('menu_item_list_of_tenders') }}</a></li>
+                        <li><a href="{{ url_for('admin_pages', page='auctions') }}">{{ lng.menu('menu_item_list_of_auctions') }}</a></li>
+                        <li><a href="{{ url_for('admin_pages', page='reports') }}">{{ lng.menu('menu_item_list_of_reports') }}</a></li>
+                        <li class="divider"></li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+        {% endif %}
         <!-- Список ссылок, расположенный справа -->
         <ul class="nav navbar-nav navbar-right">
             <li><a>{{ username }}</a></li>
-            <li><a href="{{ url_for('page_user_preferences') }}">{{ lng.menu('menu_item_preferences') }}</a></li>
-            <li><a href="/logout">{{ lng.menu('menu_exit') }}</a></li>
+            {% if logged_in %}
+                <li><a href="{{ url_for('page_user_preferences') }}">{{ lng.menu('menu_item_preferences') }}</a></li>
+                <li><a href="/logout">{{ lng.menu('menu_exit') }}</a></li>
+            {% else %}
+                {% if not disable_sign_in_link %}
+                    <li><a href="/">Sign In<span class="sr-only">(current)</span></a></li>
+                {% endif %}
+            {% endif %}
         </ul>
     </div>
 </nav>

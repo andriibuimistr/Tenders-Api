@@ -39,12 +39,6 @@ def custom400(error):
         {'error': '400 Bad Request', 'description': error.description}), 400)
 
 
-# @auth.error_handler  # 401 Error
-# def unauthorized():
-#     return make_response(jsonify({'error': '401 Unauthorized access', 'description':
-#                                  'You are not authorized to access this resource'}), 401)
-
-
 @app.errorhandler(401)
 def custom401(error):
     return make_response(jsonify(
@@ -66,8 +60,8 @@ def custom404(error):
         return make_response(jsonify(
             {'error': '404 Not Found', 'description': error.description}), 404)
     else:
-        return make_response(jsonify(
-            {'error': '404 Not Found', 'description': 'standard error 404'}), 404)
+        content = render_template('error_pages/page_error_404.html')
+        return render_template('index.html', content=content, disable_sidebar=True)
 
 
 @app.errorhandler(405)
@@ -124,6 +118,7 @@ def global_user_data():
     if 'username' in session:
         user_data['username'] = session['username']
         user_data['user_role_id'] = session['user_role']
+        user_data['logged_in'] = session['logged_in']
     return user_data
 
 
@@ -166,7 +161,8 @@ def before_request():
 
 # Generate template for Login form
 def login_form():
-    return render_template('login.html'), 403
+    content = render_template('login.html')
+    return render_template('index.html', content=content, disable_sidebar=True, disable_sign_in_link=True), 403
 
 
 # Forbidden error for jquery requests
