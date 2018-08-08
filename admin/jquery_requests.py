@@ -53,8 +53,8 @@ def add_user(request, session):
     if request.form['user-name'] in list_login:
         return abort(422, alert.error_404_not_found('alert_error_422_user_exists'))
 
-    password = hashlib.md5(new_user_data['user-password'].encode('utf8')).hexdigest()
-    user_to_sql = Users(None, new_user_data['user-name'], password, new_user_data['user_role'], int(new_user_data['user_status']), None, None)
+    psw = hashlib.md5(new_user_data['user-password'].encode('utf8')).hexdigest()
+    user_to_sql = Users(None, new_user_data['user-name'], psw, new_user_data['user_role'], int(new_user_data['user_status']), None, None)
     db.session.add(user_to_sql)
     last_id = Users.query.order_by(Users.id.desc()).first().id
     newly_added_user_data = Users.query.filter_by(id=last_id)

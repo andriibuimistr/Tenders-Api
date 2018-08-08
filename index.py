@@ -162,7 +162,7 @@ def login_form():
 
 # Forbidden error for jquery requests
 def jquery_forbidden_login():
-    return abort(403, alert.error_403_forbidden('alert_error_403_general'))
+    return abort(401, alert.error_401_unauthorized('alert_error_401_general'))
 
 
 # Redirect to previous url

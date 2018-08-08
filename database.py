@@ -3,11 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 db_host = '82.163.176.242'
-user = 'carrosde_python'
-password = 'python'
-d_base = 'carrosde_tenders'
+db_user = 'carrosde_python'
+db_password = 'python'
+db_name = 'carrosde_tenders'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/{}'.format(user, password, db_host, d_base)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/{}'.format(db_user, db_password, db_host, db_name)
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 30
 app.config['SQLALCHEMY_POOL_TIMEOUT'] = 60
 db = SQLAlchemy(app)
