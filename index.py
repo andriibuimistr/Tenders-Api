@@ -33,77 +33,72 @@ CORS(app)
 
 # ############################################################ CUSTOM ERRORS ####################################################
 
+
+def select_error_response(error, name, code):
+    if 'response_error' in error.description:
+        return make_response(jsonify(  # For response from CDB
+            {'error': '{}'.format(name), 'description': error.description['response_error']}), code)
+    elif '</' in error.description and '>' in error.description:
+        return make_response(jsonify(  # For alerts
+            {'error': '{}'.format(name), 'description': error.description}), code)
+    else:
+        content = render_template('page_error_x.html'.format(code), error_name=name, error_code=code)  # Select template
+        return render_template('index.html', content=content, disable_sidebar=True), code
+
+
 @app.errorhandler(400)
 def custom400(error):
-    return make_response(jsonify(
-        {'error': '400 Bad Request', 'description': error.description}), 400)
+    return select_error_response(error, '400 Bad Request', 400)
 
 
 @app.errorhandler(401)
 def custom401(error):
-    return make_response(jsonify(
-        {'error': '401 Unauthorized', 'description': error.description}), 401)
+    return select_error_response(error, '401 Unauthorized', 401)
 
 
 @app.errorhandler(403)
 def custom403(error):
-    return make_response(jsonify(
-        {'error': '403 Forbidden', 'description': error.description}), 403)
+    return select_error_response(error, '403 Forbidden', 403)
 
 
 @app.errorhandler(404)
 def custom404(error):
-    if 'response_error' in error.description:
-        return make_response(jsonify(
-            {'error': '404 Not Found', 'description': error.description['response_error']}), 404)
-    elif '</' in error.description and '>' in error.description:
-        return make_response(jsonify(
-            {'error': '404 Not Found', 'description': error.description}), 404)
-    else:
-        content = render_template('error_pages/page_error_404.html')
-        return render_template('index.html', content=content, disable_sidebar=True)
+    return select_error_response(error, '404 Not Found', 404)
 
 
 @app.errorhandler(405)
 def custom405(error):
-    return make_response(jsonify(
-        {'error': '405 Method Not Allowed', 'description': error.description}), 405)
+    return select_error_response(error, '405 Method Not Allowed', 405)
 
 
 @app.errorhandler(415)
 def custom415(error):
-    return make_response(jsonify(
-        {'error': '415 Unsupported Media Type', 'description': error.description}), 415)
+    return select_error_response(error, '415 Unsupported Media Type', 415)
 
 
 @app.errorhandler(422)
 def custom422(error):
-    return make_response(jsonify(
-        {'error': '422 Unprocessable Entity', 'description': error.description}), 422)
+    return select_error_response(error, '422 Unprocessable Entity', 422)
 
 
 @app.errorhandler(500)
 def custom500(error):
-    return make_response(jsonify(
-        {'error': '500 Internal Server Error', 'description': error.description}), 500)
+    return select_error_response(error, '500 Internal Server Error', 500)
 
 
 @app.errorhandler(501)
 def custom501(error):
-    return make_response(jsonify(
-        {'error': '501 Not Implemented', 'description': error.description}), 501)
+    return select_error_response(error, '501 Not Implemented', 501)
 
 
 @app.errorhandler(502)
 def custom502(error):
-    return make_response(jsonify(
-        {'error': '502 Bad Gateway', 'description': error.description}), 502)
+    return select_error_response(error, '502 Bad Gateway', 502)
 
 
 @app.errorhandler(503)
 def custom503(error):
-    return make_response(jsonify(
-        {'error': '503 Service Unavailable', 'description': error.description}), 503)
+    return select_error_response(error, '503 Service Unavailable', 503)
 
 
 # Get actual time for template
