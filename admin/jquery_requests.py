@@ -136,14 +136,14 @@ def delete_report_file(file_id):
     filename = ReportDocuments.query.filter_by(id=file_id).first().filename
     original_file = os.path.join(REPORTS_DOCS_DIR, filename)
     try:
-        if isfile(original_file):
+        if isfile(original_file):  # Check if original file exists
             # print('Original file exists: REMOVE ...')
-            os.remove(original_file)
-            if original_file.endswith((".jpg", ".jpeg", ".png")):
-                # print('Original file is an image, Check if thumbnail exists')
-                if isfile(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename))):
-                    # print('Thumbnail exists. REMOVE ...')
-                    os.remove(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename)))
+            os.remove(original_file)  # Remove original file
+        if original_file.endswith((".jpg", ".jpeg", ".png")):
+            # print('Original file is an image, Check if thumbnail exists')
+            if isfile(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename))):  # Check if thumbnail file exists
+                # print('Thumbnail exists. REMOVE ...')
+                os.remove(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename)))  # Remove thumbnail
     except Exception as e:
         print(str(e))
     ReportDocuments.query.filter_by(id=file_id).delete()

@@ -1023,4 +1023,16 @@ padding-left: 0px !important;
 
 .report-thumbnail {
     margin-top: 5px;
+    padding: 3px;
+    border: 1px solid #CCC;
+    opacity: 0.8;
+}
+
+.report-thumbnail:hover {
+    border: 1px solid #7b7b7b;
+    opacity: 1;
+}
+
+.report-thumbnail a img {
+    width: 100%;
 }
