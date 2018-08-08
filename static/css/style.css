@@ -1015,3 +1015,12 @@ padding-left: 0px !important;
 .report-files, .report-files-item, .report-files-item div {
     padding: 0px !important;
 }
+
+.report-thumbnails-section {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.report-thumbnail {
+    margin-top: 5px;
+}

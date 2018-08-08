@@ -35,5 +35,12 @@
         <div class="report-actions col-lg-48 col-md-48 col-sm-48 col-xs-48">
             <button class="btn btn-warning" id="editReportButton" type="button">{{ lng.button('button_edit') }}</button>
         </div>
+        <div class="report-thumbnails-section">
+            {% for image in report_images %}
+                <a>
+                    <img class="report-thumbnail col-lg-12 col-md-16 col-sm-16 col-xs-24" src="{{ image }}" />
+                </a>
+            {% endfor %}
+        </div>
     </div>
 </div>
