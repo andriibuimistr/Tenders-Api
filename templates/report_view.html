@@ -38,7 +38,7 @@
         <div class="report-thumbnails-section">
             {% for image in report_images %}
                 <a>
-                    <img class="report-thumbnail col-lg-12 col-md-16 col-sm-16 col-xs-24" src="{{ image }}" />
+                    <img class="report-thumbnail col-lg-12 col-md-16 col-sm-16 col-xs-24" src="{{ image.path }}" title="{{ image.title }}" />
                 </a>
             {% endfor %}
         </div>

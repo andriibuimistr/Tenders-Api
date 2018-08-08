@@ -137,12 +137,12 @@ def delete_report_file(file_id):
     original_file = os.path.join(REPORTS_DOCS_DIR, filename)
     try:
         if isfile(original_file):
-            print('Original file exists: REMOVE ...')
+            # print('Original file exists: REMOVE ...')
             os.remove(original_file)
             if original_file.endswith((".jpg", ".jpeg", ".png")):
-                print('Original file is an image, Check if thumbnail exists')
+                # print('Original file is an image, Check if thumbnail exists')
                 if isfile(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename))):
-                    print('Thumbnail exists. REMOVE ...')
+                    # print('Thumbnail exists. REMOVE ...')
                     os.remove(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename)))
     except Exception as e:
         print(str(e))
