@@ -565,7 +565,7 @@ class ES(object):
 
     # Alerts
     @staticmethod
-    def alerts(key):
+    def alerts(key):  # TODO Add alert for 400, alert_error_400_general, alert_error_400_no_form_submitted
         return {'alert_error_401_general': u'Usted no se ha identificado',
                 'alert_error_403_general': u'You are not allowed to perform this action',
                 'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local',
@@ -664,6 +664,10 @@ class Alerts(object):
     @staticmethod
     def error_404_not_found(message_key):
         return render_template('alerts/error/error_404_not_found.html', alert_text=message_key)
+
+    @staticmethod
+    def error_400_bad_request(message_key):
+        return render_template('alerts/error/error_400_bad_request.html', alert_text=message_key)
 
 
 alert = Alerts()

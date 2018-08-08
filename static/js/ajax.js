@@ -75,7 +75,8 @@ $(function() {
 
 //Add tender bid to company
 $(document).on("click",".tender-bid-company-button", function() {
-        $(this).prop('disabled', true);
+        var button = $(this).prop('disabled', true);
+        button = button.prop('disabled', true);
         var bid  = $(this).closest("form").attr('id');
 		var form = $(this).closest("form");
 		var parent_div = $(this).closest(".bid-company");
@@ -86,11 +87,11 @@ $(document).on("click",".tender-bid-company-button", function() {
             success: function(data) {
                 form.remove();
                 parent_div.append(data);
-                $(this).prop('disabled', false);
+                button.removeAttr("disabled");
             },
             error: function (jqXHR, textStatus, errorThrown) {
-            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
-                $(this).prop('disabled', false);
+            	getHtmlFromResponseError(jqXHR.responseText);
+                button.removeAttr("disabled");
             }
     });
 });
@@ -244,7 +245,8 @@ $(function() {
 
 //Add auction bid to company
 $(document).on("click",".auction-bid-company-button", function() {
-        $(this).prop('disabled', true);
+        var button = $(this).prop('disabled', true);
+        button = button.prop('disabled', true);
         var bid  = $(this).closest("form").attr('id');
 		var form = $(this).closest("form");
 		var parent_div = $(this).closest(".bid-company");
@@ -255,11 +257,11 @@ $(document).on("click",".auction-bid-company-button", function() {
             success: function(data) {
                 form.remove();
                 parent_div.append(data);
-                $(this).prop('disabled', false);
+                button.removeAttr("disabled");
             },
             error: function (jqXHR, textStatus, errorThrown) {
-            	alert(jqXHR.status + ' ' + errorThrown + ': ' + jqXHR.responseText);
-                $(this).prop('disabled', false);
+            	getHtmlFromResponseError(jqXHR.responseText);
+                button.removeAttr("disabled");
             }
         });
     });
@@ -280,10 +282,7 @@ $(function() {
                 $('#get-auction-bids-button').removeAttr("disabled");
             },
             error: function (jqXHR) {
-				var error_description = JSON.parse(jqXHR.responseText).description
-				var error_type = JSON.parse(jqXHR.responseText).error
-                $('#list-of-bids').empty();
-                $('#list-of-bids').append(jqXHR.responseText);
+				getHtmlFromResponseError(jqXHR.responseText);
                 $('#get-auction-bids-button').removeAttr("disabled");
             }
         });

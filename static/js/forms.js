@@ -302,13 +302,17 @@ $(document).on("blur", 'input:text', function() { // Trim input value
     $(this).val($(this).val().trim())
 });
 
-// Convert text into html
-//function parseTextToHtml(locator) {
-//	"use strict";
-//	var str;
-//	var html;
-//    str = locator.text();
-//	html = $.parseHTML(str);
-//	locator.empty();
-//	locator.append(html);
-//}
+
+
+// Get HTML from alert ERROR
+function getHtmlFromResponseError(value) {
+	"use strict";
+	var body;
+	var html;
+	console.log(value)
+	body = JSON.parse(value).description
+	html = $.parseHTML(body);
+	$('#alertContainer').append(html);
+	$('#alertContainer div:last-child').fadeIn(600);
+    return html
+};

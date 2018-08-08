@@ -350,10 +350,10 @@ def page_create_monitoring():
 @app.route('/api/tenders/bids/<bid_id>/company', methods=['PATCH'])
 def add_tender_bid_to_company(bid_id):
     if not session.get('logged_in'):
-        return abort(401)
+        return abort(401, alert.error_401_unauthorized('alert_error_401_general'))
     else:
         if not request.form:
-            abort(400)
+            abort(400, alert.error_400_bad_request('alert_error_400_no_form_submitted'))
         data = validator_add_tender_bid_to_company(bid_id, request.form)
         add_bid_company = core.add_one_bid_to_company(data['platform_host'], data['company-id'], bid_id, 'tender')
         if add_bid_company[1] == 201:
@@ -422,10 +422,10 @@ def create_entity_function(entity):
 @app.route('/api/auctions/bids/<bid_id>/company', methods=['PATCH'])
 def add_auction_bid_to_company(bid_id):
     if not session.get('logged_in'):
-        return abort(401)
+        return abort(401, alert.error_401_unauthorized('alert_error_401_general'))
     else:
         if not request.form:
-            abort(400)
+            abort(400, alert.error_400_bad_request('alert_error_400_no_form_submitted'))
         data = validator_add_auction_bid_to_company(bid_id, request.form)
         add_bid_company = core.add_one_bid_to_company(data['platform_host'], data['company-id'], bid_id, 'auction')
         if add_bid_company[1] == 201:
@@ -513,7 +513,7 @@ def page_user_preferences():
             return jquery_forbidden_login()
         else:
             if not request.form:
-                abort(400)
+                abort(400, alert.error_400_bad_request('alert_error_400_no_form_submitted'))
             save_user_preferences(request.form, session)
             return UserPages(session).page_preferences()
 
@@ -531,7 +531,7 @@ def add_report():
     else:
         if core.add_new_report(request, session):
             return render_template('modal_windows/modal_report_success.html', action='add')
-        return jsonify('Something went wrong'), 400
+        return jsonify('Something went wrong'), 400  # TODO Add template for Add report error
 
 
 @app.route("/modal/edit_report/<report_id>", methods=['GET', 'PATCH'])
@@ -550,7 +550,7 @@ def edit_report(report_id):
     else:
         if core.save_edited_report(request, report_data):
             return render_template('modal_windows/modal_report_success.html', action='edit')
-        return jsonify('Something went wrong'), 400
+        return jsonify('Something went wrong'), 400  # TODO Add template for Edit report error
 
 
 @app.route('/files/<entity>/<filename>', methods=['GET'])

@@ -161,16 +161,3 @@ $(document).on("click","#delete-auctions", function() {
             return false;
         }
 });
-
-
-// Get HTML from alert ERROR
-function getHtmlFromResponseError(value) {
-	"use strict";
-	var body;
-	var html;
-	body = JSON.parse(value).description
-	html = $.parseHTML(body);
-	$('#alertContainer').append(html);
-	$('#alertContainer div:last-child').fadeIn(600);
-    return html
-};
