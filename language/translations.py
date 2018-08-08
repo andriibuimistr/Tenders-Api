@@ -565,7 +565,9 @@ class ES(object):
 
     # Alerts
     @staticmethod
-    def alerts(key):  # TODO Add alert for 400, alert_error_400_general, alert_error_400_no_form_submitted
+    def alerts(key):  # TODO Add alert for 400, alert_error_400_general, alert_error_400_no_form_submitted, alert_error_400_empty_platform_name,
+        # alert_error_400_empty_platform_url, alert_error_400_url_invalid, alert_error_422_platform_exists_db, alert_error_400_password_min_length
+        # alert_error_422_user_exists, alert_error_403_not_allowed_delete_user, alert_error_403_not_allowed_delete_superuser
         return {'alert_error_401_general': u'Usted no se ha identificado',
                 'alert_error_403_general': u'You are not allowed to perform this action',
                 'alert_error_404_no_auction_id': u'Subasta con este ID no existe en la base de datos local',

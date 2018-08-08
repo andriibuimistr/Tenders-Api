@@ -12,12 +12,12 @@ from language.translations import alert
 
 def add_platform(request):
     if len(request.form['platform-name']) == 0:
-        return abort(400, 'Platform name can\'t be empty')
+        return abort(400, alert.error_404_not_found('alert_error_400_empty_platform_name'))
     if len(request.form['platform-url']) == 0:
-        return abort(400, 'Platform url can\'t be empty')
+        return abort(400, alert.error_404_not_found('alert_error_400_empty_platform_url'))
 
     if validators.url(request.form['platform-url']) is not True:
-        abort(400, 'URL is invalid')
+        abort(400, alert.error_404_not_found('alert_error_400_url_invalid'))
 
     if request.form['platform-url'][-1:] == '/':
         platform_url = request.form['platform-url'][:-1]
@@ -29,7 +29,7 @@ def add_platform(request):
     for url in range(len(platforms_url_list)):
         list_platform_url.append(platforms_url_list[url].platform_url)
     if platform_url in list_platform_url:
-        abort(422, 'URL exists in database')
+        abort(422, alert.error_404_not_found('alert_error_422_platform_exists_db'))
 
     platform_to_sql = Platforms(None, request.form['platform-name'], platform_url, int(request.form['platform_role']))
     db.session.add(platform_to_sql)
@@ -43,15 +43,15 @@ def add_platform(request):
 def add_user(request, session):
     new_user_data = request.form
     if len(request.form['user-name']) < 4:
-        return abort(400, 'User name length can\'t be less than 4')
+        return abort(400, alert.error_404_not_found('alert_error_400_username_min_length'))
     if len(request.form['user-password']) < 4:
-        return abort(400, 'User password length can\'t be less than 4')
+        return abort(400, alert.error_404_not_found('alert_error_400_password_min_length'))
     all_users = core.get_list_of_users()
     list_login = []
     for x in range(len(all_users)):
         list_login.append(all_users[x].user_login)
     if request.form['user-name'] in list_login:
-        return abort(422, 'We have this login yet')
+        return abort(422, alert.error_404_not_found('alert_error_422_user_exists'))
 
     password = hashlib.md5(new_user_data['user-password'].encode('utf8')).hexdigest()
     user_to_sql = Users(None, new_user_data['user-name'], password, new_user_data['user_role'], int(new_user_data['user_status']), None, None)
@@ -116,9 +116,9 @@ def delete_user(user_id, is_superuser):
         return abort(404, alert.error_404_not_found('alert_error_404_no_user_id'))
     user_for_delete_role = Users.query.filter_by(id=user_id).first().user_role_id
     if user_for_delete_role == 1 and not is_superuser:
-        return abort(403, 'You are not allowed to delete this user')
+        return abort(403, alert.error_404_not_found('alert_error_403_not_allowed_delete_user'))
     elif Users.query.filter_by(id=user_id).first().super_user == 1:
-        return abort(403, 'You can\'t delete super user')
+        return abort(403, alert.error_404_not_found('alert_error_403_not_allowed_delete_superuser'))
     Users.query.filter_by(id=user_id).delete()
     db.session.commit()
     db.session.remove()
@@ -131,7 +131,7 @@ def delete_report_file(file_id):
     for x in range(len(list_of_files_id_db)):
         existing_files_id.append(str(list_of_files_id_db[x].id))
     if file_id not in existing_files_id:
-        return abort(404, 'User with id {} does not exist'.format(file_id))
+        return abort(404, alert.error_404_not_found('alert_error_404_file_doesnt_exist'))
     filename = ReportDocuments.query.filter_by(id=file_id).first().filename
     try:
         os.remove(os.path.join(REPORTS_DOCS_DIR, filename))
