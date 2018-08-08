@@ -189,6 +189,11 @@ class RU(object):
                 'alert_error_404_no_user_id': u'Пользователь с данным ID отсутствует в базе данных',
                 'alert_error_404_no_platform_id': u'Площадка с данным ID отсутствует в базе данных'}.get(key, key)
 
+    # Error pages
+    @staticmethod
+    def error_pages(key):
+        return {'error_page_404': u'Запрошенный URL-адрес не найден на этом сервере'}.get(key, key)
+
 
 class EN(object):
     def __init__(self):
@@ -375,6 +380,11 @@ class EN(object):
                 'alert_error_404_no_tender_id': u'Tender with this ID doesn\'t exist in the local database',
                 'alert_error_404_no_user_id': u'User with this ID doesn\'t exist in the database',
                 'alert_error_404_no_platform_id': u'Platform with this ID doesn\'t exist in the database'}.get(key, key)
+
+    # Error pages
+    @staticmethod
+    def error_pages(key):
+        return {'error_page_404': u'The requested URL was not found on the server'}.get(key, key)
 
 
 class ES(object):
@@ -563,6 +573,11 @@ class ES(object):
                 'alert_error_404_no_user_id': u'Usuario con este ID no existe en la base de datos',
                 'alert_error_404_no_platform_id': u'Plataforma con este ID no existe en la base de datos'}.get(key, key)
 
+    # Error pages
+    @staticmethod
+    def error_pages(key):
+        return {'error_page_404': u'La URL solicitada no se encontró en este servidor'}.get(key, key)
+
 
 class Translations(object):
 
@@ -627,6 +642,10 @@ class Translations(object):
     # ALERTS
     def alert(self, key):
         return self.language_selector().alerts(key)
+
+    # ERROR PAGES
+    def error_page(self, key):
+        return self.language_selector().error_pages(key)
 
 
 class Alerts(object):

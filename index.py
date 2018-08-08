@@ -42,7 +42,7 @@ def select_error_response(error, name, code):
         return make_response(jsonify(  # For alerts
             {'error': '{}'.format(name), 'description': error.description}), code)
     else:
-        content = render_template('page_error_x.html'.format(code), error_code=code, error_message=name)  # Select template
+        content = render_template('page_error_x.html'.format(code), error_code=code, error_message=error.description)  # Select template
         return render_template('index.html', content=content, disable_sidebar=True, is_error_page=True), code
 
 
@@ -223,7 +223,7 @@ def check_if_admin():  # check if user is admin before generate a page
     if not session.get('logged_in'):
         return login_form()
     elif session['user_role'] != 1:
-        return abort(403, 'U r not allowed to access this page')
+        return abort(403)
     else:
         return True
 
