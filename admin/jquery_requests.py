@@ -8,6 +8,7 @@ from cdb_requests import TenderRequests, AuctionRequests
 import hashlib
 from config import *
 from language.translations import alert
+from os.path import isfile
 
 
 def add_platform(request):
@@ -133,8 +134,16 @@ def delete_report_file(file_id):
     if file_id not in existing_files_id:
         return abort(404, alert.error_404_not_found('alert_error_404_file_doesnt_exist'))
     filename = ReportDocuments.query.filter_by(id=file_id).first().filename
+    original_file = os.path.join(REPORTS_DOCS_DIR, filename)
     try:
-        os.remove(os.path.join(REPORTS_DOCS_DIR, filename))
+        if isfile(original_file):
+            print('Original file exists: REMOVE ...')
+            os.remove(original_file)
+            if original_file.endswith((".jpg", ".jpeg", ".png")):
+                print('Original file is an image, Check if thumbnail exists')
+                if isfile(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename))):
+                    print('Thumbnail exists. REMOVE ...')
+                    os.remove(os.path.join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(filename)))
     except Exception as e:
         print(str(e))
     ReportDocuments.query.filter_by(id=file_id).delete()
