@@ -1,2 +1,9 @@
-{{ error_name }}
- + ERROR IMAGE/error_code
+<div class="error-page-wrapper">
+    <div class="error-content-container">
+        <div class="head-line secondary-text">{{ error_code }}</div>
+        <!--<div class="subheader">Oops, the page you're<br>looking for does not exist.</div>-->
+        <div class="subheader">{{ error_message }}</div>
+        <div class="hr"></div><div class="clearfix"></div>
+        <!--<div class="context">You may want to head back to the homepage. If you think something is broken, report a problem.</div>-->
+    </div>
+</div>

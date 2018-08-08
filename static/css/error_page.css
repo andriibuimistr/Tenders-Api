@@ -1,0 +1,62 @@
+/*Styles for error pages*/
+.error-page-wrapper .error-content-container {
+    border-radius: 6px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,.2);
+    padding: 50px;
+    background-color: #fff;
+    max-width: 90%;
+    width: 525px;
+    position: absolute;
+    left: 50%;
+    top: 10vh;
+    box-shadow: rgba(0, 0, 0, 0.43) 0px 0px 57px;
+    transform: translate(-50%, 0%);
+}
+
+.error-page-wrapper.preview {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.error-content-container .head-line {
+    transition: color .2s linear;
+    font-size: 48px;
+    line-height: 60px;
+    letter-spacing: -1px;
+    margin-bottom: 5px;
+    color: #ccc;
+    color: rgb(170, 170, 170);
+}
+
+.error-page-wrapper .error-content-container {
+    text-align: center;
+}
+
+.error-content-container .subheader {
+    transition: color .2s linear;
+    font-size: 36px;
+    line-height: 46px;
+    color: #333;
+    color: rgb(73, 73, 73);
+}
+
+.error-content-container .hr {
+    height: 1px;
+    background-color: #ddd;
+    width: 60%;
+    max-width: 250px;
+    margin: 35px auto;
+}
+
+.clearfix {
+    clear: both;
+    zoom: 1;
+}
+
+.error-content-container .context {
+    transition: color .2s linear;
+    font-size: 18px;
+    line-height: 27px;
+    color: #bbb;
+    color: rgb(170, 170, 170);
+}

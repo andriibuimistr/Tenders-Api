@@ -8,6 +8,9 @@
 	<!--Иконка-->
 	<link rel="shortcut icon" href="/../static/images/favicon.ico" type="image/x-icon" />
 	<!--Свой CSS-->
+	{% if is_error_page %}
+		<link rel="stylesheet" type="text/css" href="/../static/css/error_page.css"/>
+	{% endif %}
 	<link rel="stylesheet" type="text/css" href="/../static/css/style.css"/>
 	<link rel="stylesheet" type="text/css" href="/../static/css/jquery.json-viewer.css">
 	<!-- Latest compiled and minified CSS -->
