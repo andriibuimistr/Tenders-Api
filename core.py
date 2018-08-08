@@ -7,6 +7,9 @@ from document import *
 import binascii
 from config import *
 from sqlalchemy import asc, desc
+from PIL import Image
+from os.path import isfile, join
+from resizeimage import resizeimage
 
 
 def get_random_32():
@@ -321,6 +324,26 @@ def get_report_documents(report_id):
     report_id_long = Reports.query.filter_by(id=report_id).first().id_long
     report_docs = ReportDocuments.query.filter_by(related_report_id=report_id_long).all()
     db.session.remove()
+    return report_docs
+
+
+def get_report_images(report_id):
+    report_id_long = Reports.query.filter_by(id=report_id).first().id_long
+    report_docs = ReportDocuments.query.filter_by(related_report_id=report_id_long).all()
+    db.session.remove()
+    for every_file in report_docs:
+        fn = every_file.filename
+        # print fn
+        filepath = join(REPORTS_DOCS_DIR, fn)
+        if isfile(join(REPORT_IMAGES_DIR, filepath)):  # Check if original file exists
+            if fn.endswith((".jpg", ".jpeg", ".png")):  # Check if file is an image
+                if not isfile(join(REPORT_IMAGES_DIR, 'thumbnail_{}'.format(fn))):  # Check if file's thumbnail wasn't created
+                    # print 'Generate file: {}'.format('thumbnail_{}'.format(fn))
+                    o_img = open(filepath, 'r')  # Open original image file
+                    img = Image.open(o_img)
+                    img = resizeimage.resize_cover(img, [200, 150])
+                    img.save(join(REPORT_IMAGES_DIR, 'thumbnail_{}'.format(fn)), img.format)  # Save thumbnail into report images directory
+                    o_img.close()
     return report_docs
 
 

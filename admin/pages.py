@@ -46,5 +46,6 @@ class AdminPages:
                                   report_types=core.get_list_of_report_types(),
                                   report_statuses=core.get_list_of_report_statuses(),
                                   report_priorities=core.get_list_of_report_priorities(),
-                                  report_documents=core.get_report_documents(report_id))
+                                  report_documents=core.get_report_documents(report_id),
+                                  report_images=core.get_report_images(report_id))
         return render_template('index.html', content=content)
