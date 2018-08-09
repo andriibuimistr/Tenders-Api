@@ -336,7 +336,7 @@ def get_report_images(report_id):
         fn = every_file.filename
         # print fn
         filepath = join(REPORTS_DOCS_DIR, fn)
-        if isfile(join(ROOT_DIR, REPORT_IMAGES_DIR, filepath)):  # Check if original file exists
+        if isfile(join(filepath)):  # Check if original file exists
             if fn.endswith((".jpg", ".jpeg", ".png")):  # Check if file is an image
                 thumbnail = join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(fn))
                 if not isfile(thumbnail):  # Check if file's thumbnail wasn't created
