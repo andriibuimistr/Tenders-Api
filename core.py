@@ -341,11 +341,11 @@ def get_report_images(report_id):
                 thumbnail = join(ROOT_DIR, REPORT_IMAGES_DIR, 'thumbnail_{}'.format(fn))
                 if not isfile(thumbnail):  # Check if file's thumbnail wasn't created
                     # print 'Generate file: {}'.format('thumbnail_{}'.format(fn))
-                    o_img = open(filepath, 'r')  # Open original image file
-                    img = Image.open(o_img)
+                    # o_img = open(filepath, 'r')  # Open original image file
+                    img = Image.open(filepath)
                     img = resizeimage.resize_cover(img, [200, 150])
                     img.save(thumbnail, img.format)  # Save thumbnail into report images directory
-                    o_img.close()
+                    img.close()
                 report_img_thumbnails.append({"path": join('/', REPORT_IMAGES_DIR, 'thumbnail_{}'.format(fn)), "title": every_file.original_filename})
     return report_img_thumbnails
 
