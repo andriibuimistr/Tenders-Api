@@ -556,9 +556,11 @@ def edit_report(report_id):
 @app.route('/files/<entity>/<filename>', methods=['GET'])
 def download_file(entity, filename):
     if not session.get('logged_in'):
-        return jquery_forbidden_login()
+        return login_form()
     if entity == 'report':
         return send_from_directory(REPORTS_DOCS_DIR, filename)
+    else:
+        return abort(404)
 
 
 if __name__ == '__main__':

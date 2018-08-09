@@ -346,7 +346,9 @@ def get_report_images(report_id):
                     img = resizeimage.resize_cover(img, [200, 150])
                     img.save(thumbnail, img.format)  # Save thumbnail into report images directory
                     img.close()
-                report_img_thumbnails.append({"path": join('/', REPORT_IMAGES_DIR, 'thumbnail_{}'.format(fn)), "title": every_file.original_filename})
+                report_img_thumbnails.append({"thumb_path": join('/', REPORT_IMAGES_DIR,
+                                              'thumbnail_{}'.format(fn)), "title": every_file.original_filename,
+                                              "path": '/files/report/{}'.format(fn)})
     return report_img_thumbnails
 
 
