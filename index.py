@@ -9,10 +9,8 @@ from tools.pages import Pages
 from flask import Flask, jsonify, request, make_response,\
     render_template, session, redirect, url_for, g, send_from_directory
 from flask_httpauth import HTTPBasicAuth
-import os
 import flask_login
 from flask_cors import CORS, cross_origin
-from datetime import datetime
 from admin import jquery_requests
 from admin.pages import AdminPages
 from user.pages import UserPages
@@ -23,7 +21,7 @@ from tenders import monitoring
 from tenders import tender_validators, tender
 import hashlib
 from language.translations import Translations, alert
-from config import REPORTS_DOCS_DIR
+from config import *
 
 auth = HTTPBasicAuth()
 app = Flask(__name__)
@@ -559,6 +557,16 @@ def download_file(entity, filename):
         return login_form()
     if entity == 'report':
         return send_from_directory(REPORTS_DOCS_DIR, filename)
+    else:
+        return abort(404)
+
+
+@app.route('/images/thumbnails/<entity>/<filename>', methods=['GET'])
+def download_thumbnail(entity, filename):
+    if not session.get('logged_in'):
+        return login_form()
+    if entity == 'report':
+        return send_from_directory(REPORT_THUMBS_DIR, filename)
     else:
         return abort(404)
 
