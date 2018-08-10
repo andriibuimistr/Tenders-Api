@@ -29,7 +29,13 @@
         {% for document in range(report_documents|length) %}
             <div class="report-file col-lg-24 col-md-48 col-sm-48 col-xs-48">
                 <div class="report-document-type-icon report-document-type-icon-{{ report_documents[document].original_filename.split('.')[-1].replace('jpeg', 'jpg') }}"></div>
-                <a target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}">{{ report_documents[document].original_filename }}</a>
+                {% if report_documents[document].original_filename|length > 40 %}
+                    <a target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}"
+                       title="{{ report_documents[document].original_filename }}">{{ report_documents[document].original_filename[:40] + '...' }}</a>
+                {% else %}
+                    <a target="_blank" href="{{ url_for('download_file', entity='report', filename=report_documents[document].filename) }}"
+                       title="{{ report_documents[document].original_filename }}">{{ report_documents[document].original_filename }}</a>
+                {% endif %}
             </div>
         {% endfor %}
         <div class="report-actions col-lg-48 col-md-48 col-sm-48 col-xs-48">

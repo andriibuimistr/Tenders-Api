@@ -280,7 +280,7 @@
     var preloader = new Image();
     preloader.onload = function() {
       var $preloader;
-      var imageHeight;
+//      var imageHeight;  // !!! Was disabled for better view on mobile devices
       var imageWidth;
       var maxImageHeight;
       var maxImageWidth;
