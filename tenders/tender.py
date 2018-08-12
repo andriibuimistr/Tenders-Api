@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from config import kiev_now
 from tenders.tender_bid import suppliers_for_limited
 import core
 from core import *
@@ -27,7 +26,7 @@ def tender_to_db(tender_id_long, tender_id_short, tender_token, procurement_meth
         tender_to_sql = Tenders(None, tender_id_long, tender_id_short, tender_token, procurement_method, None, tender_status, number_of_lots, None, None, None, creator_id, api_version)
         db.session.add(tender_to_sql)
         db.session.commit()
-        print "Tender was added to local database"
+        print("Tender was added to local database")
         return {"status": "success"}, 0
     except Exception as e:
         return e, 1
@@ -65,7 +64,7 @@ def create_limited(received_tender_status, response_json, response_code, number_
                     time.sleep(waiting_time + 5)
 
             for x in range(10):
-                print 'Check if contract exists'
+                print('Check if contract exists')
                 get_t_info = tender.get_tender_info(tender_id_long)
                 check_if_contract_exist = check_if_contract_exists(get_t_info)
                 if check_if_contract_exist == 200:
@@ -81,7 +80,7 @@ def create_limited(received_tender_status, response_json, response_code, number_
                                 response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                 return response_json, response_code
                             else:
-                                print 'Sleep 10 seconds'
+                                print('Sleep 10 seconds')
                                 time.sleep(10)
                         break
                 else:
@@ -109,7 +108,7 @@ def create_below_threshold(received_tender_status, response_json, response_code,
         attempt_counter = 0
         for x in range(30):
             attempt_counter += 1
-            print '{}{}'.format('Check tender status (active.tendering). Attempt ', attempt_counter)
+            print('{}{}'.format('Check tender status (active.tendering). Attempt ', attempt_counter))
             time.sleep(20)
             get_t_info = tender.get_tender_info(tender_id_long)
 
@@ -127,7 +126,7 @@ def create_below_threshold(received_tender_status, response_json, response_code,
                 attempt_counter = 0
                 for w in range(60):
                     attempt_counter += 1
-                    print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
+                    print('{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter))
                     time.sleep(20)
                     get_t_info = tender.get_tender_info(tender_id_long)
 
@@ -176,7 +175,9 @@ def creation_of_tender(tc_request, user_id):
     response_json = dict()
 
     list_of_id_lots = generate_id_for_lot(number_of_lots)  # get list of id for lots
-    json_tender = generate_tender_json(procurement_method, number_of_lots, number_of_items, accelerator, received_tender_status, list_of_id_lots, if_features, skip_auction)
+    json_tender = generate_tender_json(procurement_method, number_of_lots, number_of_items,
+                                       accelerator, received_tender_status, list_of_id_lots,
+                                       if_features, skip_auction)
 
     tender = TenderRequests(api_version)
     t_publish = tender.publish_tender(json_tender)
@@ -201,8 +202,8 @@ def creation_of_tender(tc_request, user_id):
     if add_documents_tender == 1:
         add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_version)
 
-    print 'Tender id ' + tender_id_long
-    print 'Tender token ' + tender_token
+    print('Tender id ' + tender_id_long)
+    print('Tender token ' + tender_token)
     response_json['id'] = tender_id_short
     response_code = 201
     response_json['status'] = 'success'
@@ -229,7 +230,7 @@ def creation_of_tender(tc_request, user_id):
                 attempt_counter = 0
                 for x in range(20):  # check "active.pre-qualification" status
                     attempt_counter += 1
-                    print '{}{}'.format('Check tender status (pre-qualification). Attempt ', attempt_counter)
+                    print('{}{}'.format('Check tender status (pre-qualification). Attempt ', attempt_counter))
                     time.sleep(30)
                     get_t_info = tender.get_tender_info(tender_id_long)
 
@@ -250,8 +251,8 @@ def creation_of_tender(tc_request, user_id):
                         attempt_counter = 0
                         for y in range(50):  # check for "active.stage2.pending" status
                             attempt_counter += 1
-                            print '{}{}'.format('Check tender status (active.stage2.pending). Attempt ',
-                                                attempt_counter)
+                            print('{}{}'.format('Check tender status (active.stage2.pending). Attempt ',
+                                                attempt_counter))
                             time.sleep(20)
                             get_t_info = tender.get_tender_info(tender_id_long)
 
@@ -263,7 +264,7 @@ def creation_of_tender(tc_request, user_id):
                                 attempt_counter = 0
                                 for z in range(50):  # check for "completed" status of first stage
                                     attempt_counter += 1
-                                    print '{}{}'.format('Check tender status (complete). Attempt ', attempt_counter)
+                                    print('{}{}'.format('Check tender status (complete). Attempt ', attempt_counter))
                                     time.sleep(20)
                                     get_t_info = tender.get_tender_info(tender_id_long)
 
@@ -273,7 +274,7 @@ def creation_of_tender(tc_request, user_id):
                                             return response_json, response_code
 
                                         second_stage_tender_id = get_t_info.json()['data']['stage2TenderID']  # get id of 2nd stage from json of 1st stage
-                                        print '2nd stage id: ' + second_stage_tender_id
+                                        print('2nd stage id: ' + second_stage_tender_id)
                                         get_info_2nd_stage = tender.get_2nd_stage_info(second_stage_tender_id, tender_token)
                                         second_stage_token = get_info_2nd_stage.json()['access']['token']  # get token of 2nd stage from json
 
@@ -318,7 +319,7 @@ def creation_of_tender(tc_request, user_id):
                                             attempt_counter = 0
                                             for v in range(20):
                                                 attempt_counter += 1
-                                                print '{}{}'.format('Check tender status (pre-qualification 2nd stage). Attempt ', attempt_counter)
+                                                print('{}{}'.format('Check tender status (pre-qualification 2nd stage). Attempt ', attempt_counter))
                                                 time.sleep(30)
                                                 get_t_info = tender.get_tender_info(second_stage_tender_id)
 
@@ -350,10 +351,10 @@ def creation_of_tender(tc_request, user_id):
                                                 attempt_counter = 0
                                                 for attempt in range(30):  # check if 2nd stage is in qualification status
                                                     attempt_counter += 1
-                                                    print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
+                                                    print('{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter))
                                                     time.sleep(60)
                                                     get_t_info = tender.get_tender_info(second_stage_tender_id)
-                                                    print get_t_info.json()['data']['status']
+                                                    print(get_t_info.json()['data']['status'])
                                                     if get_t_info.json()['data']['status'] == 'active.qualification':
                                                         response_json['tenderStatus'] = get_t_info.json()['data']['status']
                                                         return response_json, response_code
@@ -394,7 +395,7 @@ def creation_of_tender(tc_request, user_id):
                     attempt_counter = 0
                     for x in range(20):
                         attempt_counter += 1
-                        print '{}{}'.format('Check tender status (pre-qualification). Attempt ', attempt_counter)
+                        print('{}{}'.format('Check tender status (pre-qualification). Attempt ', attempt_counter))
                         time.sleep(30)
                         get_t_info = tender.get_tender_info(tender_id_long)
 
@@ -420,7 +421,7 @@ def creation_of_tender(tc_request, user_id):
                     attempt_counter = 0
                     for attempt in range(30):  # check if tender is in qualification status
                         attempt_counter += 1
-                        print '{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter)
+                        print('{}{}'.format('Check tender status (active.qualification). Attempt ', attempt_counter))
                         time.sleep(60)
                         get_t_info = tender.get_tender_info(tender_id_long)
 

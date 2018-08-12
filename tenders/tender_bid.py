@@ -3,7 +3,6 @@ from faker import Faker
 import document
 from tenders.tender_additional_data import below_threshold_procurement, above_threshold_active_bid_procurements, limited_procurement
 from database import BidsTender, db
-import time
 from random import randint
 from cdb_requests import TenderRequests
 
@@ -26,7 +25,7 @@ def bid_to_db(bid_id, bid_token, u_identifier, tender_id):
     db.session.add(bid_to_sql)
     db.session.commit()
     db.session.remove()
-    print 'Add bid to local database'
+    print('Add bid to local database')
     return "success"
 
 
@@ -164,7 +163,7 @@ def make_bids(bids_quantity, tender_id, procurement_method, api_version, if_docs
     activate_bid_body = determine_procedure_for_bid(procurement_method)
     # bids_json = []
     if bids_quantity == 0:
-        print 'Bids haven\'t been made!'
+        print('Bids haven\'t been made!')
         return {"description": "tender was created without bids"}
     else:
         count = 0
@@ -195,7 +194,7 @@ def make_bids(bids_quantity, tender_id, procurement_method, api_version, if_docs
             bid_to_db(bid_id, bid_token, identifier, tender_id)  # save bid info to db
 
             if if_docs == 1:
-                print "Documents will be added to bid!"
+                print("Documents will be added to bid!")
                 document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, procurement_method, api_version)
         return list_of_bids_json
 
@@ -203,7 +202,7 @@ def make_bids(bids_quantity, tender_id, procurement_method, api_version, if_docs
 def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_method, if_docs):
     tender = TenderRequests(api_version)
     if len(list_of_bids) == 0:
-        print 'Bids haven\'t been made!'
+        print('Bids haven\'t been made!')
     else:
         count = 0
         for bid in range(len(list_of_bids)):
@@ -221,7 +220,7 @@ def make_bid_competitive(list_of_bids, tender_id, api_version, procurement_metho
             tender.activate_tender_bid(tender_id, bid_id, bid_token, activate_bid_body, count)
 
             if if_docs == 1:
-                print "Documents will be added to bid!"
+                print("Documents will be added to bid!")
                 document.add_documents_to_bid_ds(tender_id, bid_id, bid_token, '{}.stage2'.format(procurement_method), api_version)  # add .stage2 to procurementMethodType
             bid_to_db(bid_id, bid_token, identifier, tender_id)
 

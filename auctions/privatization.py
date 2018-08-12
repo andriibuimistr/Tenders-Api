@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from auctions.data_for_privatization import *
 from core import *
-from auction import *
+from .auction import *
 
 
 def create_privatization(ac_request, session):

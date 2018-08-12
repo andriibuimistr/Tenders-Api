@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import render_template
 import core
-from tender_additional_data import *
+from .tender_additional_data import *
 
 
 class TenderPages:

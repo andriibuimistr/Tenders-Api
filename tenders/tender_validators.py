@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tender_additional_data import *
+from .tender_additional_data import *
 from flask import abort
 import core
 from database import BidsTender, Tenders, db

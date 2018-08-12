@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import render_template
 import core
-from auction_additional_data import *
+from .auction_additional_data import *
 
 
 class AuctionPages:

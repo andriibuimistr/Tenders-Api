@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from dk021 import classification_dk021, additional_class_scheme, additional_class_003, additional_class_015, additional_class_018, additional_class_INN
+from .dk021 import classification_dk021, additional_class_scheme, additional_class_003, additional_class_015, additional_class_018, additional_class_INN
 import binascii
 import os
 from random import randint, choice
@@ -45,6 +45,7 @@ def get_classification():
         classification_section["additionalClassifications"] = []
         additional_classification_scheme = ''
         random_ad_class = ''
+        new_key = ''
         if '99999999-9' in main_classification:
             additional_classification_scheme = choice(additional_class_scheme)
             random_ad_class = {"000": "Спеціальні норми та інше"}
@@ -59,10 +60,12 @@ def get_classification():
         elif '33600000-6' in main_classification:
             additional_classification_scheme = "INN"
             random_ad_class = choice(additional_class_INN)
+        for key in random_ad_class.keys():
+            new_key = key
         classification_section["additionalClassifications"].append({
                                                                         "scheme": additional_classification_scheme,
-                                                                        "id": random_ad_class.keys()[0],
-                                                                        "description": random_ad_class[random_ad_class.keys()[0]]
+                                                                        "id": new_key,
+                                                                        "description": random_ad_class[new_key]
                                                                     })
 
     classification_section['classification']['description'] = main_classification[1]

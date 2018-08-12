@@ -61,7 +61,7 @@ def patch_bid_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc, t_
     if type_for_doc == 'technicalSpecifications' and procurement_method not in documents_above_non_confidential:
         patch_bid_json['data']['confidentialityRationale'] = "Only our company sells badgers with pink hair."
         patch_bid_json['data']['confidentiality'] = "buyerOnly"
-        print '                    Confidential document!!!'
+        print('                    Confidential document!!!')
 
     if doc_of == 'lot':
         patch_bid_json['data']['relatedItem'] = lot_id
@@ -74,7 +74,7 @@ def patch_bid_documents_from_ds(type_for_doc, name_for_doc, added_tender_doc, t_
 
     if type_for_doc in financial_documents and procurement_method not in documents_above_non_financial:
         doc_type_url = 'financial_documents'  # upload financial documents
-        print '                    Financial document!!!'
+        print('                    Financial document!!!')
     else:
         doc_type_url = 'documents'
     ds.add_document_from_ds_to_tender_bid(t_id_long, bid_id, doc_type_url, bid_token, patch_bid_json, 'Add document from DS to bid - {}'.format(name_for_doc))

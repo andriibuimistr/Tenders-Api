@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from auction_additional_data import *
+from .auction_additional_data import *
 from flask import abort
 import core
 from database import BidsAuction, Auctions, db

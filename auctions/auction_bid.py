@@ -62,13 +62,13 @@ def bid_to_db(bid_id, bid_token, u_identifier, auction_id):
     db.session.add(bid_to_sql)
     db.session.commit()
     db.session.remove()
-    print 'Add auction bid to local database'
+    print('Add auction bid to local database')
     return "success"
 
 
 def create_bids(cdb, auction_id_long, procurement_method_type, number_of_bids):
     if number_of_bids == 0:
-        print 'Bids haven\'t been made!'
+        print('Bids haven\'t been made!')
     else:
         count = 0
         for bid in range(number_of_bids):
@@ -76,10 +76,10 @@ def create_bids(cdb, auction_id_long, procurement_method_type, number_of_bids):
             identifier = str(randint(10000000, 99999999))
             bid = AuctionRequests(cdb)
 
-            print 'Publish bid {}'.format(count)
+            print('Publish bid {}'.format(count))
             make_bid = bid.make_bid_auction(auction_id_long, json_for_bid_auction(procurement_method_type, identifier))
 
-            print 'Activate bid {}'.format(count)
+            print('Activate bid {}'.format(count))
             bid.activate_auction_bid(auction_id_long, make_bid.json()['data']['id'], make_bid.json()['access']['token'])
 
             bid_to_db(make_bid.json()['data']['id'], make_bid.json()['access']['token'], identifier, auction_id_long)

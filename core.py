@@ -39,7 +39,7 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
         add_count = 0
         for x in range(30):
             add_count += 1
-            print "Adding {} to company. Attempt {}".format(entity, add_count)
+            print("Adding {} to company. Attempt {}".format(entity, add_count))
             try:
                 add_to_site = requests.get('{}{}{}{}{}{}{}{}'.format(company_platform_host, '/tender/add-tender-to-company?tid=', entity_id_long, '&token=', entity_token, '&company=', company_id,
                                                                      '&acc_token=SUPPPER_SEEECRET_STRIIING'))
@@ -48,14 +48,14 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                     Auctions.query.filter_by(auction_id_long=entity_id_long).update(dict(added_to_site=1, company_uid=company_id))
                     db.session.commit()
                     db.session.remove()
-                    print '\nAuction was added to site - ' + entity_id_long
+                    print('\nAuction was added to site - ' + entity_id_long)
                     response = {'status': 'success'}, 201
                     break
                 if 'tid' in add_to_site_response:
                     Tenders.query.filter_by(tender_id_long=entity_id_long).update(dict(added_to_site=1, company_uid=company_id))  # set added to site=1
                     db.session.commit()
                     db.session.remove()
-                    print '\nTender was added to site - ' + entity_id_long
+                    print('\nTender was added to site - ' + entity_id_long)
                     response = {'status': 'success'}, 201, add_to_site_response['tid']
                     break
                 elif 'tender has company' in add_to_site_response['error']:
@@ -66,17 +66,17 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                     db.session.commit()
                     db.session.remove()
                     response = {'status': '{} has company'.format(entity)}, 201, add_to_site_response['tid']
-                    print '{} has company'.format(entity)
+                    print('{} has company'.format(entity))
                     break
                 else:
-                    print '{}{}{}'.format(entity_id_long, ' - ', add_to_site_response)
+                    print('{}{}{}'.format(entity_id_long, ' - ', add_to_site_response))
                     if add_count < 30:
                         time.sleep(20)
                         continue
                     else:
                         abort(422, add_to_site_response)
             except ConnectionError as e:
-                print 'Connection Error'
+                print('Connection Error')
                 if add_count < 30:
                     time.sleep(1)
                     continue
@@ -90,7 +90,7 @@ def add_one_tender_company(company_id, company_platform_host, entity_id_long, en
                     abort(500, 'Publish {} error: {}'.format(entity, str(e)))
         return response
     else:
-        print '{} {}{}'.format(entity, entity_id_long, ' was added to company before')
+        print('{} {}{}'.format(entity, entity_id_long, ' was added to company before'))
         return abort(422, '{} was added to site before'.format(entity))
 
 
@@ -111,7 +111,7 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id, entity):
         add_count = 0
         for x in range(30):
             add_count += 1
-            print "Adding bid to company. Attempt {}".format(add_count)
+            print("Adding bid to company. Attempt {}".format(add_count))
             try:
                 add_to_site = requests.get('{}{}{}{}{}{}{}{}{}{}'.format(
                     company_platform_host, '/tender/add-bid-to-company?tid=', tender_id, '&bid=', bid_id, '&token=', bid_token, '&company=', company_id, '&acc_token=SUPPPER_SEEECRET_STRIIING'))
@@ -123,8 +123,8 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id, entity):
                         BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
                     db.session.commit()
                     db.session.remove()
-                    print '\nBid was added to company - ' + bid_id
-                    print '{}{}'.format('Tender ID is: ', add_to_site_response['tid'])
+                    print('\nBid was added to company - ' + bid_id)
+                    print('{}{}'.format('Tender ID is: ', add_to_site_response['tid']))
                     return {'status': 'success'}, 201
                 elif 'Bid exist' in add_to_site_response['error']:
                     if entity == 'tender':
@@ -133,10 +133,10 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id, entity):
                         BidsAuction.query.filter_by(bid_id=bid_id).update(dict(added_to_site=1, company_id=company_id, bid_platform=company_platform_host))  # set added to site=1
                     db.session.commit()
                     db.session.remove()
-                    print 'Bid has company'
+                    print('Bid has company')
                     abort(422, 'Bid has company')
                 else:
-                    print '{}{}{}'.format(bid_id, ' - ', add_to_site_response)
+                    print('{}{}{}'.format(bid_id, ' - ', add_to_site_response))
                     return {'status': 'error', 'description': add_to_site_response}
             except Exception as e:
                 if add_count < 30:
@@ -145,7 +145,7 @@ def add_one_bid_to_company(company_platform_host, company_id, bid_id, entity):
                 else:
                     abort(500, 'Publish {} error: ' + str(e))
     else:
-        print '{}{}{}'.format('Bid ', bid_id, ' was added to company before')
+        print('{}{}{}'.format('Bid ', bid_id, ' was added to company before'))
         abort(422, 'Bid was added to company before')
 
 
@@ -359,7 +359,7 @@ def check_if_contract_exists(get_t_info):
         if get_t_info.json()['data']['contracts']:
             return 200
     except Exception as e:
-        print e
+        print(e)
         return e
 
 
@@ -384,7 +384,7 @@ def count_waiting_time(time_to_wait, time_template, api_version, entity=''):
 
 # get list of qualifications for tender (SQLA)
 def list_of_qualifications(tender_id_long, api_version):
-    print 'Get list of qualifications'
+    print('Get list of qualifications')
     tender_json = TenderRequests(api_version).get_tender_info(tender_id_long)
     response = tender_json.json()
     qualifications = response['data']['qualifications']

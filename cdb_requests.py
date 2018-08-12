@@ -9,7 +9,7 @@ import time
 from datetime import datetime, timedelta
 from pprint import pformat
 from config import ROOT_DIR
-from data_for_requests import auction_host_selector, auction_headers_request, privatization_host_selector, transfer_json, json_activate_auction_p
+from data_for_requests import *
 
 
 def save_log(code, body, resp_header, host, endpoint, method, request_name, entity, headers, json_request):
@@ -22,7 +22,7 @@ def save_log(code, body, resp_header, host, endpoint, method, request_name, enti
     try:
         body = json.loads(body)
     except Exception as e:
-        print e
+        print(e)
         body = body
     f.write('{} {}{}\n\n{}\n\n{}\n\n{}\n\n{}'.format(method, host, endpoint, str(headers).replace(',', ',\n'),
                                                      pformat(json_request), str(resp_header).replace(',', ',\n'), pformat(body)))
@@ -32,7 +32,7 @@ def save_log(code, body, resp_header, host, endpoint, method, request_name, enti
 # Send request to cdb
 def request_to_cdb(headers, host, method, json_request, request_name, entity, endpoint='', is_json=True, files=None):
     if is_json:
-        json_request = json.dumps(json_request)
+        json_request = json.dumps(json_bytes_to_string(json_request))
     attempts = 0
     for x in range(5):
         attempts += 1
@@ -50,19 +50,19 @@ def request_to_cdb(headers, host, method, json_request, request_name, entity, en
             if resp.status_code in [200, 201, 202]:
                 print("{}: Success".format(request_name))
                 print("       status code:  {}".format(resp.status_code))
-                # save_log(resp.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
+                # save_log(resp.status_code, resp.content.decode("utf-8"), resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
                 return resp
         except HTTPError as error:
             print("{}: Error".format(request_name))
             print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
+            print("       response content:  {}".format(resp.content.decode("utf-8")))
             print("       headers:           {}".format(resp.headers))
-            save_log(error.response.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
+            save_log(error.response.status_code, resp.content.decode("utf-8"), resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
             time.sleep(1)
             if attempts >= 5:
-                abort(error.response.status_code, {'response_error': resp.content})
+                abort(error.response.status_code, {'response_error': resp.content.decode("utf-8")})
         except ConnectionError as e:
-            print 'Connection Exception'
+            print('Connection Exception')
             if attempts < 5:
                 time.sleep(1)
                 continue
@@ -70,11 +70,11 @@ def request_to_cdb(headers, host, method, json_request, request_name, entity, en
                 save_log(503, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
                 abort(503, {'response_error': '{} error: {}'.format(request_name, e)})
         except requests.exceptions.MissingSchema as e:
-            print 'MissingSchema Exception'
+            print('MissingSchema Exception')
             save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
             abort(500, {'response_error': '{} error: {}'.format(request_name, e)})
         except Exception as e:
-            print 'General Exception'
+            print('General Exception')
             save_log(500, str(e), 'No header', host, endpoint, method, request_name, entity, headers, json_request)
             abort(500, {'response_error': '{} error: {}'.format(request_name, e)})
 

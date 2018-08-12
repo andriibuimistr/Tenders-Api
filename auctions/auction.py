@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from data_for_auction_cdb1 import generate_auction_json
-from data_for_auction_cdb2 import generate_auction_json_cdb_2
+from .data_for_auction_cdb1 import generate_auction_json
+from .data_for_auction_cdb2 import generate_auction_json_cdb_2
 import time
 from flask import abort
 from database import db, Auctions
 import core
-import auction_validators
-from auction_bid import create_bids
+from auctions import auction_validators
+from .auction_bid import create_bids
 from cdb_requests import AuctionRequests
 
 
@@ -16,7 +16,7 @@ def auction_to_db(auction_id_long, auction_id_short, auction_token, procurement_
         auction_to_sql = Auctions(None, auction_id_long, auction_id_short, auction_token, procurement_method, None, auction_status, None, None, None, None, creator_id, cdb_version)
         db.session.add(auction_to_sql)
         db.session.commit()
-        print "Auction was added to local database"
+        print("Auction was added to local database")
         return {"status": "success"}, 0
     except Exception as e:
         abort(500, str(e))
