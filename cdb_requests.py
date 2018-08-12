@@ -235,7 +235,7 @@ class TenderRequests(object):
                               files=files)
 
     def add_document_from_ds_to_tender(self, tender_id_long, tender_token, json_with_document, message):
-        return request_to_cdb(headers=tender_headers_patch_document_ds,
+        return request_to_cdb(headers=tender_headers_request(json_with_document),
                               host=self.host,
                               endpoint="/{}/documents?acc_token={}".format(tender_id_long, tender_token),
                               method='POST',
@@ -244,7 +244,7 @@ class TenderRequests(object):
                               entity=self.document)
 
     def add_document_from_ds_to_tender_bid(self, tender_id_long, bid_id, doc_type_url, bid_token, json_with_document, message):
-        return request_to_cdb(headers=tender_headers_patch_document_ds,
+        return request_to_cdb(headers=tender_headers_request(json_with_document),
                               host=self.host,
                               endpoint="/{}/bids/{}/{}?acc_token={}".format(tender_id_long, bid_id, doc_type_url, bid_token),
                               method='POST',
@@ -253,7 +253,7 @@ class TenderRequests(object):
                               entity=self.document)
 
     def add_document_from_ds_to_entity(self, tender_id_long, entity_id, tender_token, json_with_document, message, entity):
-        return request_to_cdb(headers=tender_headers_patch_document_ds,
+        return request_to_cdb(headers=tender_headers_request(json_with_document),
                               host=self.host,
                               endpoint="/{}/{}/{}/documents?acc_token={}".format(tender_id_long, entity, entity_id, tender_token),
                               method='POST',

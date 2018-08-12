@@ -5,14 +5,15 @@ from tenders.tender_additional_data import above_threshold_procurement, below_th
 
 # function for decode (convert) bytes-like objects in dictionary to string
 def json_bytes_to_string(json_bytes):
-    for key in json_bytes:
-        if type(json_bytes[key]) == bytes:
-            json_bytes[key] = json_bytes[key].decode("utf-8")
-        elif type(json_bytes[key]) == dict:
-            json_bytes_to_string(json_bytes[key])
-        elif type(json_bytes[key]) == list:
-            for element in json_bytes[key]:
-                json_bytes_to_string(element)
+    if type(json_bytes) == dict:
+        for key in json_bytes:
+            if type(json_bytes[key]) == bytes:
+                json_bytes[key] = json_bytes[key].decode("utf-8")
+            elif type(json_bytes[key]) == dict:
+                json_bytes_to_string(json_bytes[key])
+            elif type(json_bytes[key]) == list:
+                for element in json_bytes[key]:
+                    json_bytes_to_string(element)
     return json_bytes
 
 

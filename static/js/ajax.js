@@ -179,7 +179,7 @@ $(function() {
                     );
                 }
             });
-        };
+        }
     });
 });
 
@@ -239,7 +239,7 @@ $(function() {
                     );
                 }
             });
-        };
+        }
     });
 });
 
@@ -339,17 +339,17 @@ $(function() {
 												);
 				},
 				error: function (jqXHR) {
-					var error_description = JSON.parse(jqXHR.responseText).description
-					var error_type = JSON.parse(jqXHR.responseText).error
-					$('#' + request_id).addClass('response-content-error').toggleClass( "response-content-waiting" );
-					$('#' + request_id).empty();
-					$('#' + request_id).append('<button class="delete-alert" type="button">x</button>' +
-					'<div class="alert-response-status">' + error_type + '</div>' +
-					'<div class="alert-response-description">' + error_description + '</div>'
-					);
+                    var error_description = JSON.parse(jqXHR.responseText).description;
+                    var error_type = JSON.parse(jqXHR.responseText).error;
+                    $('#' + request_id).addClass('response-content-error').toggleClass( "response-content-waiting" );
+                    $('#' + request_id).empty();
+                    $('#' + request_id).append('<button class="delete-alert" type="button">x</button>' +
+                    '<div class="alert-response-status">' + error_type + '</div>' +
+                    '<div class="alert-response-description">' + error_description + '</div>'
+                    );
 				}
 			});
-		};
+		}
     });
 });
 
@@ -358,11 +358,10 @@ $(function() {
 $(document).on("click","#addReportButton", function(){
         var inputs = [$('#reportTitle'), $('#reportContent')]; // List of required inputs
         if (!validateInputs(inputs)){
-            console.log('BAD')
             if ($('#reportContent').hasClass('input-invalid')) {
-                $('.note-editor').addClass('input-invalid')
+                $('.note-editor').addClass('input-invalid');
             }
-            return false
+            return false;
         }
         else {
             var filesNumber = $('.form-control-file').length;  // Get number of files inputs
@@ -404,7 +403,7 @@ $(document).on("click","#saveReportButton", function(){
             return false
         }
         else {
-            var report_id =  $('#reportId').val()
+            var report_id =  $('#reportId').val();
             var filesNumber = $('.form-control-file').length;  // Get number of files inputs
             var fd = new FormData();
             for (i = 0; i < filesNumber; i++) {

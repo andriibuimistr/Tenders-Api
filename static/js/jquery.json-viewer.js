@@ -181,7 +181,7 @@ $(function() {
 //Render JSON from form (input)
 $(function() {
     $('#render_json_insert').click(function() {
-        if(testJSON($('#raw_json_input').val()) === true){
+        if(testJSON($('#raw_json_input').val()) === true){  // test JSON is in 'forms.js'
 			var raw_json = jQuery.parseJSON($('#raw_json_input').val());
 			$("#json_output").jsonViewer(raw_json);
 		}
@@ -190,16 +190,3 @@ $(function() {
 		}
     });
 });
-
-
-
-//Test if is JSON
-function testJSON(input){
-    try{
-        JSON.parse(input);
-        return true;
-    }
-    catch (error){
-        return false;
-    }
-}

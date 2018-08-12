@@ -316,3 +316,17 @@ function getHtmlFromResponseError(value) {
 	$('#alertContainer div:last-child').fadeIn(600);
     return html
 };
+
+
+
+
+//Test if data is JSON
+function testJSON(input){
+    try{
+        JSON.parse(input);
+        return true;
+    }
+    catch (error){
+        return false;
+    }
+}

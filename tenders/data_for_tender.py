@@ -60,12 +60,11 @@ def get_classification():
         elif '33600000-6' in main_classification:
             additional_classification_scheme = "INN"
             random_ad_class = choice(additional_class_INN)
-        for key in random_ad_class.keys():
-            new_key = key
+        key = list(random_ad_class.keys())[0]
         classification_section["additionalClassifications"].append({
                                                                         "scheme": additional_classification_scheme,
-                                                                        "id": new_key,
-                                                                        "description": random_ad_class[new_key]
+                                                                        "id": key,
+                                                                        "description": random_ad_class[key]
                                                                     })
 
     classification_section['classification']['description'] = main_classification[1]
