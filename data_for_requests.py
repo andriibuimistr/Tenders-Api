@@ -46,11 +46,11 @@ def tender_headers_request(json_data):
 
 
 tender_headers_add_document_ds = {'authorization': "Basic {}".format(auth_key_ds)}
-tender_headers_patch_document_ds = {
-    'authorization': "Basic {}".format(auth_key),
-    'content-type': "application/json",
-    'cache-control': "no-cache",
-    }
+# tender_headers_patch_document_ds = {
+#     'authorization': "Basic {}".format(auth_key),
+#     'content-type': "application/json",
+#     'cache-control': "no-cache",
+#     }
 monitoring_headers = {"Authorization": "Basic {}".format(key_monitoring.decode("utf-8")),
                       "Content-Type": "application/json"}  # "Host": "audit-api-sandbox.prozorro.gov.ua"
 
