@@ -73,6 +73,11 @@ def custom405(error):
     return select_error_response(error, '405 Method Not Allowed', 405)
 
 
+@app.errorhandler(409)
+def custom405(error):
+    return select_error_response(error, '409 Document Update Conflict', 409)
+
+
 @app.errorhandler(415)
 def custom415(error):
     return select_error_response(error, '415 Unsupported Media Type', 415)
