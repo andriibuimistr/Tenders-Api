@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from data_for_requests import *
 from flask import abort
 import os
-import json
 import requests
 from requests.exceptions import ConnectionError, HTTPError
 import time
