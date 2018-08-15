@@ -45,7 +45,6 @@ def get_classification():
         classification_section["additionalClassifications"] = []
         additional_classification_scheme = ''
         random_ad_class = ''
-        new_key = ''
         if '99999999-9' in main_classification:
             additional_classification_scheme = choice(additional_class_scheme)
             random_ad_class = {"000": "Спеціальні норми та інше"}

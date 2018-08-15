@@ -16,7 +16,6 @@ def decision_date():
 
 
 def auction_period_start_date(lot_accelerator):
-    print (datetime.now() + timedelta(minutes=5*int(ceil(1440/float(lot_accelerator))))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
     return (datetime.now() + timedelta(minutes=5*int(ceil(1440/float(lot_accelerator))))).strftime("%Y-%m-%dT%H:%M:%S{}".format(kiev_now))
 
 
