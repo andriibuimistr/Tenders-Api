@@ -444,8 +444,8 @@ def run_activate_contract(api_version, tender_id_long, tender_token, list_of_con
 
 def save_documents_for_report(request, report_id_long):
     if len(list(request.files.keys())) > 0:
-        for f in range(len(request.files.keys())):
-            file_key = request.files.keys()[f]  # file_key like 'file'
+        for f in range(len(list(request.files.keys()))):
+            file_key = list(request.files.keys())[f]  # file_key like 'file'
             uploaded_file = request.files[file_key]
             if uploaded_file.filename != '':
                 filename = request.files[file_key].filename
