@@ -4,6 +4,12 @@ from core import *
 from .auction import *
 
 
+def wait_for_auction_period_end_date(auction, auction_id_long):
+    tender_period = auction.get_auction_info(auction_id_long).json()['data']['tenderPeriod']['endDate']
+    waiting_time = count_waiting_time(tender_period, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now), 2, 'auction')
+    time_counter(waiting_time, 'Wait for tenderPeriod endDate')
+
+
 def create_privatization(ac_request, session):
     data = ac_request
     # data = auction_validators.validator_create_privatization(pr_request)  # validator of request data
@@ -15,6 +21,12 @@ def create_privatization(ac_request, session):
     platform_host = data['platform_host']
     received_auction_status = data['auctionStatus']
     number_of_bids = int(data['number_of_bids'])
+
+    # Initial 'Response JSON' data
+    response_json = dict()
+    response_code = 0
+    response_json['status'] = 'error'
+    response_json['auctionStatus'] = 'undefined'
 
     skip_auction = ''
     if 'skip_auction' in data:
@@ -102,8 +114,9 @@ def create_privatization(ac_request, session):
                                 "id": transfer['data']['id'],
                                 "transfer": lot_transfer
     }}
-    Privatization().change_auction_ownership(au_id_long, json_of_transfer)
-    activate_auction = Privatization().activate_auction_privatization(au_id_long, auction_token)
+    auction = Privatization()
+    auction.change_auction_ownership(au_id_long, json_of_transfer)
+    activate_auction = auction.activate_auction_privatization(au_id_long, auction_token)
     auction_id_long = activate_auction.json()['data']['id']
     auction_id_short = activate_auction.json()['data']['auctionID']
     procurement_method_type = activate_auction.json()['data']['procurementMethodType']
@@ -122,18 +135,29 @@ def create_privatization(ac_request, session):
 
     print('Long: {} Short: {}'.format(auction_id_long, auction_id_short))
 
-    # Initial 'Response JSON' data
-    response_json = dict()
-    response_json['tender_to_company'] = add_auction_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', auction_id_short)
-    response_json['id'] = auction_id_short
-    response_json['status'] = 'error'
-    response_code = 0
-    response_json['auctionStatus'] = 'undefined'
-
     if received_auction_status == 'active.tendering':
         if auction_status == 'active.tendering':
             response_json['auctionStatus'] = auction_status
             response_json['status'] = 'success'
             response_code = 201
+
+    if received_auction_status == 'active.qualification':
+        wait_for_auction_period_end_date(auction, auction_id_long)
+        for x in range(30):
+            get_a_info = auction.get_auction_info(auction_id_long)
+            response_json['auctionStatus'] = get_a_info.json()['data']['status']
+            print(response_json['auctionStatus'])
+            if response_json['auctionStatus'] in ['active.qualification', 'pending.admission']:
+                awards = get_a_info.json()['data']['awards']
+                for award in range(len(awards)):
+                    award_id = awards[award]['id']
+                    print(award_id)  # TODO Add admission protocol load
+                    # auction.award_pending_admission_to_pending(auction_id_long, auction_token, award_id, json_status('pending'))
+                break
+            else:
+                time.sleep(20)
+
+    response_json['tender_to_company'] = add_auction_to_company[0], '{}{}{}'.format(platform_host, '/buyer/tender/view/', auction_id_short)
+    response_json['id'] = auction_id_short
 
     return response_json, response_code

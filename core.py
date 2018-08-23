@@ -369,6 +369,8 @@ def get_time_difference(api_version, entity=''):
         r = Privatization(entity).get_list_of_lots()
     elif entity == 'monitoring':
         r = Monitoring(api_version).get_list_of_monitorings()
+    elif entity == 'auction':
+        r = AuctionRequests(api_version).get_list_of_auctions()
     else:
         r = TenderRequests(api_version).get_list_of_tenders()
     st = int(time.mktime(datetime.strptime(r.headers['Date'][-24:-4], "%d %b %Y %H:%M:%S").timetuple()))

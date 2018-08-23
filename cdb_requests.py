@@ -339,6 +339,15 @@ class AuctionRequests(object):
                               request_name='Activate auction privatization',
                               entity=self.__entity)
 
+    def award_pending_admission_to_pending(self, auction_id_long, token, award_id, json_patch_award):
+        return request_to_cdb(headers=auction_headers_request(self.cdb, json_patch_award, token),
+                              host=self.host,
+                              endpoint='/{}/awards/{}'.format(auction_id_long, award_id),
+                              method='PATCH',
+                              json_request=json_patch_award,
+                              request_name='Patch award {} (pending.admission->pending)'.format(award_id),
+                              entity=self.__entity)
+
 
 class Privatization(AuctionRequests):
 
