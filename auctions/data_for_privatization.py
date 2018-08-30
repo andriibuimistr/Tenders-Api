@@ -153,9 +153,12 @@ def generate_lot_json(asset_id, accelerator):
                         "decisionID": "decisionLotID"
                       }
                     ],
-                    "assets": [
-                        asset_id
-                    ],
+                    "relatedProcesses": [
+                       {
+                         "type": "asset",
+                         "relatedProcessID": asset_id
+                       }
+                     ],
                     "title": "Тестовий лот",
                     "mode": "test",
                     "sandboxParameters": "quick, accelerator={}".format(accelerator)
