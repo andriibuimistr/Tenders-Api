@@ -140,7 +140,8 @@ def generate_json_bid(user_idf, tender_json, lot_number=False):
                               "region": "м. Вінниця",
                               "streetAddress": "вул. Островського, 33",
                               "locality": "м. Вінниця"
-                            }
+                            },
+                            "scale": "large"
                           }
                         ],
                         "subcontractingDetails": "ДКП «Книга», Україна, м. Львів, вул. Островського, 33"

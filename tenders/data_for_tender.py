@@ -276,6 +276,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
     tender_data = {
                     "data": {
                         "procurementMethodType": procurement_method,
+                        "mainProcurementCategory": "goods",
                         "description": "Примечания для тендера Тест {}".format(datetime.now().strftime('%d-%H%M%S')),
                         "title": fake.text(200).replace('\n', ' '),
                         "status": "draft",

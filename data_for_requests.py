@@ -22,8 +22,8 @@ def tender_host_selector(cdb_version):
         host = 'https://api-sandbox.prozorro.openprocurement.net/api/dev/tenders'
         host_public = 'https://public.api-sandbox.prozorro.openprocurement.net/api/dev/tenders'
     else:
-        host = 'https://lb.api-sandbox.openprocurement.org/api/2.4/tenders'
-        host_public = 'https://public.api-sandbox.openprocurement.org/api/2.4/tenders'
+        host = 'https://lb-api-sandbox.prozorro.gov.ua/api/2.5/tenders'
+        host_public = 'https://public-api-sandbox.prozorro.gov.ua/api/2.5/tenders'
     return host, host_public
 
 
@@ -31,7 +31,7 @@ def tender_ds_host_selector(cdb_version):
     if cdb_version == 'dev':
         host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
     else:
-        host = 'https://upload.docs-sandbox.openprocurement.org/upload'
+        host = 'https://upload-docs-sandbox.prozorro.gov.ua/upload'
     return host
 
 
